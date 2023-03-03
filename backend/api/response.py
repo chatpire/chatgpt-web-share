@@ -1,0 +1,110 @@
+import json
+import typing
+from typing import Optional, Any, Generic, TypeVar, Dict
+
+from fastapi import Response
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi_users.router import ErrorCode
+from starlette.background import BackgroundTask
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.responses import JSONResponse
+
+from pydantic.generics import GenericModel
+
+from api.exceptions import SelfDefinedException
+from revChatGPT.V1 import Error as ChatGPTError
+
+T = TypeVar('T')
+
+
+class ResponseWrapper(GenericModel, Generic[T]):
+    """
+    使用自定义的返回格式：
+    - 统一状态码为 200
+    - 统一返回格式为 {"code", "message", "result"}
+    - code 为 200 表示成功，其余表示失败。
+        -1 表示一般失败
+        401 表示登陆超时，需要重新登陆
+        对于有状态码的错误，使用该状态码
+    """
+
+    code: int = 0
+    message: str = ""
+    result: Optional[T | Any] = None
+
+    def to_dict(self):
+        return jsonable_encoder(self)
+
+    def to_json(self):
+        return json.dumps(self.to_dict(), ensure_ascii=False)
+
+
+class CustomJSONResponse(Response):
+    media_type = "application/json"
+
+    def __init__(
+            self,
+            content: Any,
+            status_code: int = 200,
+            headers: Optional[Dict[str, str]] = None,
+            media_type: Optional[str] = None,
+            background: Optional[BackgroundTask] = None,
+    ) -> None:
+        super().__init__(content, status_code, headers, media_type, background)
+
+    def render(self, content: typing.Any) -> bytes:
+        if not isinstance(content, ResponseWrapper):
+            content = ResponseWrapper(code=self.status_code, message=get_http_message(self.status_code), result=content)
+        return content.to_json().encode("utf-8")
+
+
+class PrettyJSONResponse(Response):
+    media_type = "application/json"
+
+    def render(self, content: typing.Any) -> bytes:
+        return json.dumps(
+            jsonable_encoder(content),
+            ensure_ascii=False,
+            allow_nan=False,
+            indent=4,
+            separators=(", ", ": "),
+        ).encode("utf-8")
+
+
+def response(code: int = 200, message: str = "", result: Optional[Any] = None) -> CustomJSONResponse:
+    return CustomJSONResponse(
+        content=ResponseWrapper(code=code, message=message, result=result),
+        status_code=200
+    )
+
+
+def get_http_message(status_code: int) -> str:
+    return {
+        200: "tips.requestSuccess",
+        201: "tips.requestSuccess",
+        204: "tips.requestSuccess",
+        400: "errors.badCredentials",
+        401: "errors.userNotLogin",
+        # 404: "资源不存在",
+        # 502: "上游请求失败",
+        -1: "失败",
+    }.get(status_code, "")
+
+
+def handle_exception_response(e: Exception) -> CustomJSONResponse:
+    if isinstance(e, RequestValidationError):
+        return response(-1, f"errors.requestValidationError", e.errors())
+    elif isinstance(e, SelfDefinedException):
+        return response(-1, e.reason, e.message)
+    elif isinstance(e, StarletteHTTPException):
+        if e.detail == ErrorCode.REGISTER_USER_ALREADY_EXISTS:
+            message="errors.userAlreadyExists"
+        elif e.detail == ErrorCode.LOGIN_BAD_CREDENTIALS:
+            message="errors.badCredentials"
+        else:
+            message = get_http_message(e.status_code)
+        return response(e.status_code or -1, message or f"{e.status_code} {e.detail}")
+    elif isinstance(e, ChatGPTError):
+        return response(502, "errors.chatgptResponseError", f"{e.source} {e.code}: {e.message}")
+    return response(-1, str(e))

@@ -1,0 +1,71 @@
+<template>
+  <n-card content-style="padding: 0;">
+    <n-list hoverable show-divider v-for="item, i of items" :key="i">
+      <n-list-item>
+        <div class="flex flex-row justify-between content-center">
+          <div>{{ item.title }}</div>
+          <div>{{ item.value }}</div>
+        </div>
+      </n-list-item>
+    </n-list>
+  </n-card>
+</template> 
+
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useUserStore } from '@/store';
+import { ServerStatusSchema, UserRead, chatStatusMap } from '@/types/schema';
+import { i18n } from '@/i18n';
+const t = i18n.global.t as any;
+
+const serverStatus = ref<ServerStatusSchema>({});
+
+const userStore = useUserStore();
+const user: UserRead | null = userStore.user;
+
+const propsToShow = ['id', 'username', 'email', 'nickname', 'is_superuser', 'active_time', 'chat_status', 'can_use_paid', 'max_conv_count', 'available_ask_count'];
+
+const translateKey = (key: string) => {
+  if (['id', 'username', 'email'].includes(key)) {
+    return key;
+  }
+  return t(`labels.${key}`);
+}
+
+// const translateValue = (value: any) => {
+//   if (typeof value === 'boolean') {
+//     return value ? t('commons.yes') : t('commons.no');
+//   } else if (value === null) {
+//     return t('commons.neverActive');
+//   } else if (value instanceof Date) {
+//     return value.toLocaleString();
+//   }
+//   return value;
+// }
+const translateValue = (key: string, value: any) => {
+  if (['is_superuser', 'can_use_paid'].includes(key)) {
+    return value ? t('commons.yes') : t('commons.no');
+  } else if (key === 'active_time') {
+    return value ? new Date(value).toLocaleString() : t('commons.neverActive');
+  } else if (key === 'chat_status') {
+    return t(chatStatusMap[value as keyof typeof chatStatusMap])
+  } else if (key === 'max_conv_count') {
+    return value === -1 ? t('commons.unlimited') : value;
+  } else if (key === 'available_ask_count') {
+    return value === -1 ? t('commons.unlimited') : value;
+  }
+  return value;
+}
+
+const items = computed(() => {
+  if (!user) return [];
+  return propsToShow.map(prop => {
+    return {
+      title: translateKey(prop),
+      value: translateValue(prop, user[prop as keyof UserRead])
+    }
+  })
+})
+
+</script>
+

@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  chatgpt-share:
+    image: chatgpt-share
+    container_name: chatgpt-share
+    restart: always
+    network_mode: bridge
+    ports:
+      - 8080:80
+    volumes:
+      - ./data:/data
+      - ./config.yaml:/app/backend/api/config/config.yaml

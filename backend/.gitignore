@@ -1,0 +1,6 @@
+__pycache__
+.idea
+config.yaml
+*.db
+.vscode
+files
