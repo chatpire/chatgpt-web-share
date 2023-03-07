@@ -1,5 +1,4 @@
 import contextlib
-import uuid
 from datetime import datetime
 from typing import Any
 
@@ -11,9 +10,8 @@ from api.config import config
 from typing import Optional
 
 from fastapi import Depends, Request
-from fastapi_users import BaseUserManager, UUIDIDMixin, FastAPIUsers, models, exceptions, IntegerIDMixin, InvalidID, \
-    schemas
-from fastapi_users.authentication import CookieTransport, AuthenticationBackend, BearerTransport
+from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID, schemas
+from fastapi_users.authentication import CookieTransport, AuthenticationBackend
 from fastapi_users.authentication import JWTStrategy
 
 from api.database import get_user_db, get_async_session_context, get_user_db_context
@@ -21,26 +19,22 @@ from api.models import User
 
 from sqlalchemy import select, Integer
 from fastapi_users.models import UP
-from fastapi_users.authentication import Authenticator
 
 # 使用 cookie + JWT
 # 参考 https://fastapi-users.github.io/fastapi-users/10.2/configuration/full-example/
 
 cookie_transport = CookieTransport(
-    cookie_max_age=config.get("cookie_max_age", 3600),
+    cookie_max_age=config.get("cookie_max_age", 86400),
     cookie_name="user_auth",
     cookie_httponly=False,
     cookie_secure=False,
 )
 
 
-# bearer_transport = BearerTransport(tokenUrl="auth/login")
-
-
 # auth backend
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=config.get("jwt_secret"), lifetime_seconds=config.get("jwt_lifetime_seconds", 3600))
+    return JWTStrategy(secret=config.get("jwt_secret"), lifetime_seconds=config.get("jwt_lifetime_seconds", 86400))
 
 
 auth_backend = AuthenticationBackend(

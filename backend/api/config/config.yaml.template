@@ -4,6 +4,7 @@ port: 8000
 database_url: "sqlite+aiosqlite:///database.db"
 jwt_secret: "SECRET"
 jwt_lifetime_seconds: 86400
+cookie_max_age: 86400
 user_secret: "SECRET"
 
 sync_conversations_on_startup: true
