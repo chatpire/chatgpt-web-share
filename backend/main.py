@@ -6,6 +6,10 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from os import environ
+
+environ["CHATGPT_BASE_URL"] = environ.get("CHATGPT_BASE_URL", "https://apps.openai.com/")
+
 import api.globals as g
 from api.enums import ChatStatus
 from api.models import Conversation, User
@@ -131,7 +135,6 @@ async def on_startup():
                         conversation_id=conv["id"],
                         title=conv["title"],
                         is_valid=True,
-                        is_public=False,
                         create_time=dateutil.parser.isoparse(conv["create_time"]))
                     session.add(new_conv)
                     print(f"新增对话 {conv['title']}({conv['id']})")

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from api.enums import ChatStatus
 
+
 # declarative base class
 class Base(DeclarativeBase):
     pass
@@ -42,7 +43,8 @@ class User(Base):
 
 class Conversation(Base):
     """
-    ChatGPT Conversation
+    ChatGPT 非官方 API 所使用的对话
+    只记录对话和用户之间的对应关系，不存储内容
     """
 
     __tablename__ = "conversation"
@@ -53,9 +55,6 @@ class Conversation(Base):
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
     user: Mapped["User"] = relationship(back_populates="conversations")
     is_valid: Mapped[bool] = mapped_column(Boolean, default=True, comment="是否有效")
-    is_public: Mapped[bool] = mapped_column(Boolean, default=True, comment="是否公开")
     use_paid: Mapped[Optional[bool]] = mapped_column(Boolean, comment="是否使用paid模型(以最后一次消息为准)")
     create_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="创建时间")
     active_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="最后活跃时间")
-
-

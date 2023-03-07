@@ -5,7 +5,6 @@ import asyncio
 from revChatGPT.V1 import Error as ChatGPTError
 from api.config import config
 
-
 def chatbot_check_response(response):
     response.encoding = "utf-8"
     if response.status_code != 200:

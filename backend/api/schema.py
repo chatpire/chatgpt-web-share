@@ -54,7 +54,6 @@ class ConversationSchema(BaseModel):
     title: str = None
     user_id: int = None
     is_valid: bool = None
-    is_public: bool = None
     use_paid: bool = None
     create_time: datetime.datetime = None
     active_time: datetime.datetime = None

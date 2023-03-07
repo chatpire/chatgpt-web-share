@@ -28,7 +28,7 @@ async def get_conversation_by_id(conversation_id: str, user: User = Depends(curr
         conversation = r.scalars().one_or_none()
         if conversation is None:
             raise InvalidParamsException("errors.conversationNotFound")
-        if not conversation.is_public and not user.is_superuser and conversation.user_id != user.id:
+        if not user.is_superuser and conversation.user_id != user.id:
             raise AuthorityDenyException
         return conversation
 
@@ -43,7 +43,7 @@ async def get_all_conversations(user: User = Depends(current_active_user), valid
         raise AuthorityDenyException()
     stat = None
     if not user.is_superuser:
-        stat = and_(or_(Conversation.user_id == user.id, Conversation.is_public), Conversation.is_valid)
+        stat = and_(Conversation.user_id == user.id, Conversation.is_valid)
     else:
         if valid_only:
             stat = Conversation.is_valid
@@ -155,7 +155,7 @@ async def ask(websocket: WebSocket):
     """
     利用 WebSocket 实时更新 ChatGPT 回复.
 
-    客户端第一次连接：发送 { message, conversation_id?, parent_id?, use_paid?, timeout?, is_public? }
+    客户端第一次连接：发送 { message, conversation_id?, parent_id?, use_paid?, timeout? }
         conversation_id 为空则新建会话，否则回复 parent_id 指定的消息
     服务端返回格式：{ type, tip, message, conversation_id, parent_id, use_paid, title }
     其中：type 可以为 "waiting" / "message" / "title"
@@ -180,7 +180,6 @@ async def ask(websocket: WebSocket):
     parent_id = params.get("parent_id", None)
     use_paid = params.get("use_paid", None)
     timeout = params.get("timeout", 360)  # default 360s
-    is_public = params.get("is_public", False)
     new_title = params.get("new_title", None)
 
     if message is None:
@@ -261,8 +260,7 @@ async def ask(websocket: WebSocket):
                     finally:
                         current_time = datetime.utcnow()
                         conversation = Conversation(conversation_id=conversation_id, title=new_title, user_id=user.id,
-                                                    is_public=is_public, use_paid=use_paid,
-                                                    create_time=current_time, active_time=current_time)
+                                                    use_paid=use_paid, create_time=current_time, active_time=current_time)
                         session.add(conversation)
                 # 若更改了 paid 类型，则更新 conversation
                 if not new_conv:
