@@ -96,7 +96,7 @@ const bindOnclick = () => {
   // 获取模板引用中的所有 pre 元素和其子元素中的 button 元素
   const preElements = contentRef.value?.querySelectorAll('pre');
   if (!preElements) return;
-  for (const preElement of preElements) {
+  for (const preElement of (preElements as any)) {
     for (const button of preElement.querySelectorAll('button')) {
       (button as HTMLButtonElement).onclick = () => {
         if (!navigator.clipboard) return;
