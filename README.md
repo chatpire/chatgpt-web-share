@@ -48,7 +48,8 @@ port: 8000
 database_url: "sqlite+aiosqlite:////data/database.db"
 
 jwt_secret: "你的 jwt secret"    # 用于生成 jwt token，需要自行设置
-jwt_lifetime_seconds: 777600    # 登录过期时间
+jwt_lifetime_seconds: 86400
+cookie_max_age: 86400           # 登录过期时间
 user_secret: "你的 user secret"  # 用于生成用户密码，需要自行设置
 
 sync_conversations_on_startup: true # 是否在启动时同步同步 ChatGPT 对话，建议启用
@@ -62,6 +63,8 @@ initial_user_password: password     # 初始普通密码
 chatgpt_access_token: "你的access_token"    # 需要从 ChatGPT 获取
 chatgpt_paid: true  # 是否为 ChatGPT Plus 用户
 ```
+
+`chatgpt_access_token` 获取方法：打开登录 chat.openai.com 后，打开 https://chat.openai.com/api/auth/session 并获取 accessToken 字段。
 
 最后运行 `docker-compose up -d` 即可。
 
