@@ -1,7 +1,16 @@
 <template>
   <n-page-header>
     <template #title>
-      <a href="#" style="text-decoration: none; color: inherit">{{ $t("commons.siteTitle") }}</a>
+      <n-space :align="'center'">
+        <div>
+          <a href="#" style="text-decoration: none; color: inherit">{{ $t("commons.siteTitle") }}</a>
+        </div>
+        <div>
+          <a class="h-full inline-block flex" href="https://github.com/moeakwak/chatgpt-web-share" target="_blank">
+            <n-icon color="black" :component="LogoGithub" />
+          </a>
+        </div>
+      </n-space>
     </template>
     <template #avatar>
       <n-avatar src="/chatgpt-icon.svg" />
@@ -27,7 +36,7 @@
 
 <script setup lang="ts">
 import { useUserStore, useAppStore } from '@/store';
-import { SettingsSharp } from '@vicons/ionicons5';
+import { SettingsSharp, LogoGithub } from '@vicons/ionicons5';
 import { DarkModeRound, LightModeRound } from '@vicons/material';
 import { useI18n } from 'vue-i18n';
 import { Dialog, Message } from '@/utils/tips';

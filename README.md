@@ -1,10 +1,10 @@
-# ChatGPT Share
+# ChatGPT Web Share
 
-用于共享 ChatGPT 账号的前后端应用。
+共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。
 
 ## 特点
 
-- 美观简洁的 web 界面，使用 naive-ui
+- 美观简洁的 web 界面，使用 [naive-ui](https://www.naiveui.com/)
 - 使用 unofficial ChatGPT API，支持 ChatGPT Plus 账号
 - 支持选择要使用的 ChatGPT 模型
 - 创建多用户用于共享一个 ChatGPT 账号
@@ -28,8 +28,8 @@ version: "3"
 
 services:
   chatgpt-share:
-    image: ghcr.io/moeakwak/chatgpt-share:latest
-    container_name: chatgpt-share
+    image: ghcr.io/moeakwak/chatgpt-web-share:latest
+    container_name: chatgpt-web-share
     restart: always
     network_mode: bridge
     ports:
@@ -84,7 +84,7 @@ pnpm run build
 
 #### 后端
 
-需要先安装 poetry，并将 config.yaml 放置在 backend/app/config 目录下，然后运行：
+需要先安装 poetry，并将 config.yaml 放置在 backend/api/config 目录下，然后运行：
 
 ```bash
 cd backend
