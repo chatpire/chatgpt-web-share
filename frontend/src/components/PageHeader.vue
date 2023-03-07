@@ -10,6 +10,9 @@
       <n-space>
         <div v-if="userStore.user">
           <span>Hi, {{ userStore.user.nickname }}</span>
+          <n-button circle class="ml-3" @click="toggleTheme">
+            <n-icon :component="themeIcon" />
+          </n-button>
           <n-dropdown :options="options" placement="bottom-start">
             <n-button circle class="ml-3">
               <n-icon :component="SettingsSharp" />
@@ -23,17 +26,33 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/store';
+import { useUserStore, useAppStore } from '@/store';
 import { SettingsSharp } from '@vicons/ionicons5';
+import { DarkModeRound, LightModeRound } from '@vicons/material';
 import { useI18n } from 'vue-i18n';
 import { Dialog, Message } from '@/utils/tips';
 import router from '@/router';
 import { DropdownOption } from "naive-ui"
-import { ref, h } from 'vue';
+import { ref, computed, h } from 'vue';
 import UserProfileCard from './UserProfileCard.vue';
+
 
 const { t } = useI18n();
 const userStore = useUserStore();
+const appStore = useAppStore();
+
+const themeIcon = computed(() => {
+  if (appStore.theme == 'dark') {
+    return DarkModeRound
+  } else {
+    return LightModeRound
+  }
+})
+
+const toggleTheme = () => {
+  appStore.toggleTheme();
+}
+
 const options = ref<Array<DropdownOption>>([
   {
     label: t("commons.userProfile"),

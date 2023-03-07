@@ -1,6 +1,6 @@
 <template>
   <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
-  <div class="h-full pb-6 flex flex-col md:flex-row space-x-4">
+  <div class="h-full pb-6 flex flex-col md:flex-row md:space-x-4">
     <div class="md:w-1/4 w-full flex flex-col space-y-4">
       <StatusCard />
       <n-card class="max-h-full overflow-y-auto" content-style="padding: 4px;">
@@ -17,55 +17,55 @@
         <n-menu ref="menuRef" :disabled="loading" :options="menuOptions" :root-indent="18" v-model:value="currentConversationId"></n-menu>
       </n-card>
     </div>
-    <div class="md:w-3/4 w-full h-full">
-      <n-card :bordered="true" content-style="padding: 0;" class="h-full flex flex-col">
-        <div ref="historyRef" class="h-3/4 bg-gray-50 border-b-gray-200 overflow-y-auto overflow-x-hidden max-h-60vh">
-          <div v-if="currentConversationId" class="flex flex-col">
-            <div class="flex justify-center py-4 px-4 max-w-full bg-gray-50">
-              <n-text>{{ $t("commons.currentConversationModel") }}: {{ currentConversation?.use_paid ? $t("commons.paidModel") : $t("commons.shaModel")
-              }}</n-text>
-            </div>
-            <MessageRow :message="message" v-for="message in currentMessageListDisplay" :key="message.id" />
+    <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;" class="md:w-3/4 w-full h-full">
+      <!-- 消息记录列表 -->
+      <div ref="historyRef" class="h-3/4 overflow-x-hidden max-h-60vh">
+        <n-scrollbar v-if="currentConversationId" class="flex flex-col">
+          <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
+            <n-text>{{ $t("commons.currentConversationModel") }}: {{ currentConversation?.use_paid ? $t("commons.paidModel") : $t("commons.shaModel")
+            }}</n-text>
           </div>
-          <div v-else-if="loading" class="flex flex-col justify-center h-full">
-            <n-empty description="正在加载对话历史">
-              <template #icon>
-                <n-icon>
-                  <ReloadOutline />
-                </n-icon>
-              </template>
-            </n-empty>
-          </div>
-          <div v-else class="flex flex-col justify-center h-full">
-            <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
-              <template #icon>
-                <n-icon>
-                  <ChatboxEllipses />
-                </n-icon>
-              </template>
-              <template #extra>
-                <n-button @click="makeNewConversation">
-                  {{ $t("tips.newConversation") }}
-                </n-button>
-              </template>
-            </n-empty>
-          </div>
+          <MessageRow :message="message" v-for="message in currentMessageListDisplay" :key="message.id" />
+        </n-scrollbar>
+        <!-- <div v-else-if="loading" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
+          <n-empty description="正在加载对话历史">
+            <template #icon>
+              <n-icon>
+                <ReloadOutline />
+              </n-icon>
+            </template>
+          </n-empty>
+        </div> -->
+        <div v-else class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
+          <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
+            <template #icon>
+              <n-icon>
+                <ChatboxEllipses />
+              </n-icon>
+            </template>
+            <template #extra>
+              <n-button @click="makeNewConversation">
+                {{ $t("tips.newConversation") }}
+              </n-button>
+            </template>
+          </n-empty>
         </div>
-        <div class="h-1/4 p-0 flex flex-col">
-          <ToolButtonRow />
-          <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage')"
-            @keydown.shift.enter="shortcutSendMsg" />
-          <div class="m-2 flex flex-row justify-end">
-            <n-button :disabled="sendDisabled" @click="sendMsg" class="" type="primary" size="small">
-              发送
-              <template #icon><n-icon>
-                  <Send />
-                </n-icon></template>
-            </n-button>
-          </div>
+      </div>
+      <div class="flex-grow p-0 flex flex-col">
+        <ToolButtonRow />
+        <!-- 输入框 -->
+        <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage')"
+          @keydown.shift.enter="shortcutSendMsg" />
+        <div class="m-2 flex flex-row justify-end">
+          <n-button :disabled="sendDisabled" @click="sendMsg" class="" type="primary" size="small">
+            发送
+            <template #icon><n-icon>
+                <Send />
+              </n-icon></template>
+          </n-button>
         </div>
-      </n-card>
-    </div>
+      </div>
+    </n-card>
   </div>
 </template>
 
@@ -87,6 +87,9 @@ import { NDropdown, NEllipsis, NButton, NIcon } from 'naive-ui';
 import { Send, ChatboxEllipses, ReloadOutline, Add } from '@vicons/ionicons5';
 import { MdMore } from '@vicons/ionicons4';
 import { popupChangeConversationTitleDialog, dropdownRenderer, popupNewConversationDialog } from '@/utils/renders';
+
+import { useThemeVars } from "naive-ui"
+const themeVars = useThemeVars()
 
 const { t } = useI18n();
 

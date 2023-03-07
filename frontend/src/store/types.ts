@@ -6,4 +6,8 @@ interface UserState {
   savedPassword: string | null;
 }
 
-export type { UserState };
+interface AppState {
+  theme: string | null | undefined;
+}
+
+export type { UserState, AppState };

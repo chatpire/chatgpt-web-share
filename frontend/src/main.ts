@@ -7,7 +7,8 @@ import "uno.css";
 import { i18n } from "./i18n";
 import "@/api/interceptor";
 import router from "./router";
-import "highlight.js/styles/github.css";
+
+import "highlight.js/styles/atom-one-dark.css";
 import "highlight.js/lib/common";
 
 const app = createApp(App);
