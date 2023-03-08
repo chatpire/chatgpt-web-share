@@ -3,7 +3,7 @@
     <n-global-style />
     <div class="w-full lg:w-screen-lg mx-auto h-screen flex flex-col">
       <div class="my-4">
-        <PageHeader />
+        <PageHeader class="mx-2 lg:mx-0" />
       </div>
       <router-view></router-view>
     </div>

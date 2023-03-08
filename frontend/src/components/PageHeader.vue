@@ -17,24 +17,26 @@
     </template>
     <template #extra>
       <n-space>
-        <div v-if="userStore.user">
-          <span>Hi, {{ userStore.user.nickname }}</span>
+        <div>
+          <div v-if="userStore.user" class="inline-block">
+            <span>Hi, {{ userStore.user.nickname }}</span>
+            <n-dropdown :options="options" placement="bottom-start">
+              <n-button circle class="ml-3">
+                <n-icon :component="SettingsSharp" />
+              </n-button>
+            </n-dropdown>
+
+          </div>
+          <div v-else class="text-gray-500 inline-block">{{ $t("commons.notLogin") }}</div>
           <n-button circle class="ml-3" @click="toggleTheme">
             <n-icon :component="themeIcon" />
           </n-button>
-          <!-- dropdown for switch language: zh-CN and en-US -->
           <n-dropdown :options="languageOptions" placement="bottom-start">
             <n-button circle class="ml-3">
               <n-icon :component="Language" />
             </n-button>
           </n-dropdown>
-          <n-dropdown :options="options" placement="bottom-start">
-            <n-button circle class="ml-3">
-              <n-icon :component="SettingsSharp" />
-            </n-button>
-          </n-dropdown>
         </div>
-        <div v-else class="text-gray-500">{{ $t("commons.notLogin") }}</div>
       </n-space>
     </template>
   </n-page-header>

@@ -126,7 +126,8 @@
     "newConversation": "发起新对话",
     "loginSuccess": "登录成功",
     "jumpingPage": "正在跳转……",
-    "terminated": "连接被服务端终止"
+    "terminated": "连接被服务端终止",
+    "loading": "正在加载..."
   },
   "labels": {
     "nickname": "昵称",

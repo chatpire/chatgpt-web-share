@@ -11,10 +11,10 @@ const init = () => {
     legacy: false,
     locale: useStorage("language", "zh-CN").value,
     messages: {
-      en: {
+      "en-US": {
         ...EN
       },
-      zh: {
+      "zh-CN": {
         ...ZH
       },
     },

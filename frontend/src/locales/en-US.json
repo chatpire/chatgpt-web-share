@@ -126,7 +126,8 @@
     "newConversation": "start a new conversation",
     "loginSuccess": "Logged in successfully",
     "jumpingPage": "Jumping...",
-    "terminated": "Connection terminated by the server"
+    "terminated": "Connection terminated by the server",
+    "loading": "Loading..."
   },
   "labels": {
     "nickname": "Nickname",
