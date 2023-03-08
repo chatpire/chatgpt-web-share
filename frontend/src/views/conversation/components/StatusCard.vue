@@ -66,7 +66,7 @@ const handleExpand = (names: string[]) => {
 const updateData = () => {
   if (isExpaned.value)
     getServerStatusApi().then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       serverStatus.value = res.data;
     });
 };

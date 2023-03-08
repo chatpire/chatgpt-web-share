@@ -7,7 +7,8 @@ interface UserState {
 }
 
 interface AppState {
-  theme: string | null | undefined;
+  theme: any;
+  language: any;
 }
 
 export type { UserState, AppState };

@@ -4,10 +4,10 @@ import { createApp } from "vue";
 import "./style.css";
 import App from "./App.vue";
 import "uno.css";
-import { i18n } from "./i18n";
 import "@/api/interceptor";
 import router from "./router";
 
+import { i18n } from "./i18n";
 import "highlight.js/styles/atom-one-dark.css";
 import "highlight.js/lib/common";
 

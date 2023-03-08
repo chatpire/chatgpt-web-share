@@ -226,7 +226,7 @@ const handleChangeConversation = (key: string | null) => {
   loading.value = true;
   LoadingBar.start();
   conversationStore.fetchConversationHistory(key).then(() => {
-    console.log(conversationStore.conversationDetailMap);
+    // console.log(conversationStore.conversationDetailMap);
   }).catch((err: any) => {
     console.log(err);
   }).finally(() => {
@@ -317,7 +317,7 @@ const sendMsg = async () => {
 
   webSocket.onmessage = (event: MessageEvent) => {
     const reply = JSON.parse(event.data);
-    console.log('Received message from server:', reply);
+    // console.log('Received message from server:', reply);
     if (!reply.type) return;
     if (reply.type === 'waiting') {
       currentActiveMessageRecv.value!.message = t(reply.tip);

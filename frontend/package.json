@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@traptitech/markdown-it-katex": "^3.6.0",
+    "@vueuse/core": "^9.13.0",
     "axios": "^1.3.4",
     "highlight.js": "^11.7.0",
     "katex": "^0.16.4",

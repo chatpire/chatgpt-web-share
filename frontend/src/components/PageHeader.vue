@@ -22,6 +22,12 @@
           <n-button circle class="ml-3" @click="toggleTheme">
             <n-icon :component="themeIcon" />
           </n-button>
+          <!-- dropdown for switch language: zh-CN and en-US -->
+          <n-dropdown :options="languageOptions" placement="bottom-start">
+            <n-button circle class="ml-3">
+              <n-icon :component="Language" />
+            </n-button>
+          </n-dropdown>
           <n-dropdown :options="options" placement="bottom-start">
             <n-button circle class="ml-3">
               <n-icon :component="SettingsSharp" />
@@ -36,7 +42,7 @@
 
 <script setup lang="ts">
 import { useUserStore, useAppStore } from '@/store';
-import { SettingsSharp, LogoGithub } from '@vicons/ionicons5';
+import { SettingsSharp, LogoGithub, Language } from '@vicons/ionicons5';
 import { DarkModeRound, LightModeRound } from '@vicons/material';
 import { useI18n } from 'vue-i18n';
 import { Dialog, Message } from '@/utils/tips';
@@ -61,6 +67,27 @@ const themeIcon = computed(() => {
 const toggleTheme = () => {
   appStore.toggleTheme();
 }
+
+const languageOptions = [
+  {
+    label: '简体中文',
+    key: 'zh-CN',
+    props: {
+      onClick: () => {
+        appStore.setLanguage('zh-CN');
+      }
+    }
+  },
+  {
+    label: 'English',
+    key: 'en-US',
+    props: {
+      onClick: () => {
+        appStore.setLanguage('en-US');
+      }
+    }
+  }
+]
 
 const options = ref<Array<DropdownOption>>([
   {

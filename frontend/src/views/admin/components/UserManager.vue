@@ -84,7 +84,7 @@ const columns: DataTableColumns<UserRead> = [
     }
   },
   {
-    title: t('commons.askingChatStatus'),
+    title: t('commons.status'),
     key: 'chat_status',
     render(row) {
       console.log(row.chat_status, chatStatusMap)

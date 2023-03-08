@@ -64,7 +64,8 @@
     "chooseUser": "选择用户",
     "chooseUserToAssign": "分配当前对话给用户",
     "withdrawMessage": "撤回消息",
-    "askingChatStatus": "状态",
+    "status": "状态",
+    "askingChatStatus": "回复中",
     "queueingChatStatus": "排队中",
     "idlingChatStatus": "空闲",
     "userProfile": "用户信息"
@@ -124,7 +125,8 @@
     "loadConversation": "请从左侧选择对话以加载，或者",
     "newConversation": "发起新对话",
     "loginSuccess": "登录成功",
-    "jumpingPage": "正在跳转……"
+    "jumpingPage": "正在跳转……",
+    "terminated": "连接被服务端终止"
   },
   "labels": {
     "nickname": "昵称",

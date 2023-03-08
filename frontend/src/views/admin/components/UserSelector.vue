@@ -18,7 +18,6 @@ const emits = defineEmits(['update:value']);
 const getShow = (_option: any) => true;
 
 const update = (value: string | null) => {
-  console.log('update', value);
   emits('update:value', value);
 }
 
