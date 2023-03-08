@@ -5,8 +5,8 @@
     <div class="md:w-1/4 w-full flex flex-col space-y-4">
       <StatusCard />
       <n-card class="max-h-full overflow-y-auto" content-style="padding: 4px;">
-        <div class="flex box-content m-2">
-          <n-button v-if="!newConversation" secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loading">
+        <div class="flex box-content m-2" v-if="!newConversation">
+          <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loading">
             <template #icon>
               <n-icon class="">
                 <Add />
@@ -22,7 +22,7 @@
     <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;" class="md:w-3/4 w-full h-full">
       <!-- 消息记录列表 -->
       <div class="h-3/4 overflow-x-hidden max-h-60vh">
-        <n-scrollbar ref="historyRef" v-if="currentMessageListDisplay.length != 0" class="flex flex-col h-full">
+        <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0" class="flex flex-col h-full">
           <!-- 消息记录 -->
           <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
             <n-text>{{ $t("commons.currentConversationModel") }}: {{ currentConversation?.use_paid ? $t("commons.paidModel") : $t("commons.shaModel")
@@ -46,14 +46,14 @@
           </n-empty>
         </div>
         <!-- 加载消息记录中 -->
-        <div v-else class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
+        <div v-else-if="loading" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
           <n-empty :description="$t('tips.loading')">
             <template #icon>
               <n-spin size="medium" />
             </template>
           </n-empty>
         </div>
-        
+
       </div>
       <div class="flex-grow p-0 flex flex-col">
         <ToolButtonRow />
@@ -337,7 +337,7 @@ const sendMsg = async () => {
       currentActiveMessageRecv.value!.message = t(reply.tip);
       console.error(reply.tip, reply.message);
     }
-    historyRef.value.scrollTo({left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth'});
+    historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
   };
 
   webSocket.onclose = async (event: CloseEvent) => {

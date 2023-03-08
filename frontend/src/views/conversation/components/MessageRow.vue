@@ -11,8 +11,7 @@
     </div>
     <div class="mx-4 w-full">
       <div ref="contentRef" class="w-full" v-html="renderedContent"></div>
-      <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-1 right-1"
-        @click="copyMessageContent">
+      <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-1 right-1" @click="copyMessageContent">
         <n-icon>
           <CopyOutline />
         </n-icon>
@@ -163,6 +162,24 @@ code {
 ol,
 ul {
   padding-left: 16px;
+}
+
+table {
+  border: gray 1px solid;
+  @apply min-w-1/2 text-center border-collapse;
+}
+
+tr {
+  border: gray 1px solid;
+}
+
+th {
+  border: gray 1px solid;
+  @apply bg-gray-400
+}
+
+td {
+  border: gray 1px solid;
 }
 
 .hljs-copy-wrapper {

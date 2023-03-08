@@ -5,7 +5,7 @@ import presetUno from "@unocss/preset-uno";
 import { join } from "path";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
-import transformerDirectives from "@unocss/transformer-directives";
+import { transformerDirectives } from "unocss";
 import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
@@ -19,7 +19,7 @@ export default defineConfig({
         presetUno(),
       ],
       /* options */
-      // transformers: [transformerDirectives()],
+      transformers: [transformerDirectives()],
     }),
     Components({
       resolvers: [NaiveUiResolver()],
