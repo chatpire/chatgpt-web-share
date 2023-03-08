@@ -1,4 +1,5 @@
 import { ref, computed } from "vue";
+import { useStorage } from "@vueuse/core";
 
 import {
   createDiscreteApi,
@@ -7,7 +8,7 @@ import {
   lightTheme,
 } from "naive-ui";
 
-const themeRef = ref<"light" | "dark">("light");
+const themeRef = ref<"light" | "dark">(useStorage("theme", "light").value as any);
 const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
   theme: themeRef.value === "light" ? lightTheme : darkTheme,
 }));

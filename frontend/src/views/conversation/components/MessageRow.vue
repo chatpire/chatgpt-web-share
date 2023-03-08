@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row py-4 px-4 max-w-full" :style="{ backgroundColor: backgroundColor }">
+  <div class="flex flex-row py-4 px-4 max-w-full relative" :style="{ backgroundColor: backgroundColor }">
     <div class="w-10 ml-2">
       <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
       <n-avatar v-if="props.message.author_role == 'user'" class="mt-3" size="small">
@@ -11,6 +11,12 @@
     </div>
     <div class="mx-4 w-full">
       <div ref="contentRef" class="w-full" v-html="renderedContent"></div>
+      <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-1 right-1"
+        @click="copyMessageContent">
+        <n-icon>
+          <CopyOutline />
+        </n-icon>
+      </n-button>
     </div>
   </div>
 </template>
@@ -21,6 +27,11 @@ import { ChatMessage } from '@/types/custom';
 import md from "@/utils/markdown";
 import { useThemeVars } from "naive-ui"
 import { PersonFilled } from '@vicons/material';
+import { CopyOutline } from '@vicons/ionicons5';
+import { Message } from '@/utils/tips';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const themeVars = useThemeVars();
 
@@ -130,6 +141,17 @@ const bindOnclick = () => {
     }
   }
 };
+
+const copyMessageContent = () => {
+  if (!navigator.clipboard) return;
+  navigator.clipboard
+    .writeText(props.message.message || "")
+    .then(() => {
+      // console.log('copied', props.message.message);
+      Message.success(t('commons.copiedToClipboard'))
+    }
+    ).then();
+}
 </script>
 
 <style>

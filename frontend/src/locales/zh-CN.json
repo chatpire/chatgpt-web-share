@@ -68,7 +68,8 @@
     "askingChatStatus": "回复中",
     "queueingChatStatus": "排队中",
     "idlingChatStatus": "空闲",
-    "userProfile": "用户信息"
+    "userProfile": "用户信息",
+    "copiedToClipboard": "已复制到剪贴板"
   },
   "errors": {
     "403": "403 错误：无访问权限",

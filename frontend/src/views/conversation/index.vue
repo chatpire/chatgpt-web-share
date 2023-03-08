@@ -21,8 +21,8 @@
     <!-- 右栏 -->
     <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;" class="md:w-3/4 w-full h-full">
       <!-- 消息记录列表 -->
-      <div ref="historyRef" class="h-3/4 overflow-x-hidden max-h-60vh">
-        <n-scrollbar v-if="!loading && currentMessageListDisplay.length != 0" class="flex flex-col h-full">
+      <div class="h-3/4 overflow-x-hidden max-h-60vh">
+        <n-scrollbar ref="historyRef" v-if="currentMessageListDisplay.length != 0" class="flex flex-col h-full">
           <!-- 消息记录 -->
           <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
             <n-text>{{ $t("commons.currentConversationModel") }}: {{ currentConversation?.use_paid ? $t("commons.paidModel") : $t("commons.shaModel")
@@ -337,7 +337,7 @@ const sendMsg = async () => {
       currentActiveMessageRecv.value!.message = t(reply.tip);
       console.error(reply.tip, reply.message);
     }
-    historyRef.value.scrollTop = historyRef.value.scrollHeight;
+    historyRef.value.scrollTo({left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth'});
   };
 
   webSocket.onclose = async (event: CloseEvent) => {

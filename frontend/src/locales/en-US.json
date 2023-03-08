@@ -68,7 +68,8 @@
     "queueingChatStatus": "Queuing",
     "idlingChatStatus": "Idle",
     "userProfile": "User Profile",
-    "status": "Status"
+    "status": "Status",
+    "copiedToClipboard": "Copied to clipboard"
   },
   "errors": {
     "403": "403 error: access denied",

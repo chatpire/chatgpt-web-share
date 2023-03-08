@@ -7,7 +7,7 @@
         </div>
         <div>
           <a class="h-full inline-block flex" href="https://github.com/moeakwak/chatgpt-web-share" target="_blank">
-            <n-icon color="black" :component="LogoGithub" />
+            <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
           </a>
         </div>
       </n-space>

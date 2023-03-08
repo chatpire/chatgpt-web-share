@@ -4,6 +4,7 @@ import { useOsTheme } from "naive-ui";
 const osThemeRef = useOsTheme();
 import { useStorage } from "@vueuse/core";
 import { setLocale } from "@/i18n";
+import { themeRef } from "@/utils/tips";
 
 const useAppStore = defineStore("app", {
   state: (): AppState => ({
@@ -12,12 +13,13 @@ const useAppStore = defineStore("app", {
   }),
   getters: {},
   actions: {
-    setTheme(theme: string | null) {
-      this.theme = theme;
-    },
+    // setTheme(theme: string | null) {
+    //   this.theme = theme;
+    // },
     // 切换主题
     toggleTheme() {
       this.theme = this.theme === "dark" ? "light" : "dark";
+      themeRef.value = this.theme;
     },
     setLanguage(lang: string) {
       this.language = lang;
