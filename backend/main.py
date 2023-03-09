@@ -8,7 +8,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from os import environ
 
-environ["CHATGPT_BASE_URL"] = environ.get("CHATGPT_BASE_URL", "https://apps.openai.com/")
+environ["CHATGPT_BASE_URL"] = environ.get("CHATGPT_BASE_URL", "https://chat.openai.com/backend-api/")
 
 import api.globals as g
 from api.enums import ChatStatus

@@ -2,6 +2,8 @@
 
 共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。
 
+**由于 OpenAI 接口改变，目前暂时不能工作。**
+
 ## 特点
 
 - 美观简洁的 web 界面，使用 [naive-ui](https://www.naiveui.com/)
