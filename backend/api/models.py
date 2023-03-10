@@ -27,7 +27,6 @@ class User(Base):
     email: Mapped[str]
     active_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="最后活跃时间")
 
-    token_balance: Mapped[int] = mapped_column(Integer, default=0, comment="剩余token数量")
     chat_status: Mapped[ChatStatus] = mapped_column(Enum(ChatStatus), default=ChatStatus.idling, comment="对话状态")
     can_use_paid: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否可以使用paid模式")
     max_conv_count: Mapped[int] = mapped_column(Integer, default=-1, comment="最大对话数量")

@@ -1,12 +1,18 @@
 # ChatGPT Web Share
 
+**English Readme: [README.en.md](README.en.md)**
+
 共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。
 
-**由于 OpenAI 接口改变，目前暂时不能工作。**
+![screenshot](screenshot.jpeg)
 
 ## 特点
 
 - 美观简洁的 web 界面，使用 [naive-ui](https://www.naiveui.com/)
+  - 支持多语言
+  - 夜间模式
+  - 支持一键复制回复内容为 Markdown 格式
+  - 支持显示回复中的图像/表格/数学公式/语法高亮
 - 使用 unofficial ChatGPT API，支持 ChatGPT Plus 账号
 - 支持选择要使用的 ChatGPT 模型
 - 创建多用户用于共享一个 ChatGPT 账号
@@ -16,8 +22,10 @@
 
 下一步计划：
 
+- [x] 英语界面
 - [ ] 支持 official ChatGPT API
-- [ ] 英语界面
+
+注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。
 
 ## 部署
 
@@ -30,7 +38,7 @@ version: "3"
 
 services:
   chatgpt-share:
-    image: ghcr.io/moeakwak/chatgpt-web-share:latest
+    image: ghcr.io/moeakwak/chatgpt-web-share:0.1.1
     container_name: chatgpt-web-share
     restart: always
     network_mode: bridge
