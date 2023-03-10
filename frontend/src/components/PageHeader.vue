@@ -5,7 +5,7 @@
         <div>
           <a href="#" style="text-decoration: none; color: inherit">{{ $t("commons.siteTitle") }}</a>
         </div>
-        <div>
+        <div class="hidden sm:block">
           <a class="h-full inline-block flex" href="https://github.com/moeakwak/chatgpt-web-share" target="_blank">
             <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
           </a>
@@ -19,20 +19,19 @@
       <n-space>
         <div>
           <div v-if="userStore.user" class="inline-block">
-            <span>Hi, {{ userStore.user.nickname }}</span>
+            <span class="hidden sm:inline mr-1">Hi, {{ userStore.user.nickname }}</span>
             <n-dropdown :options="options" placement="bottom-start">
-              <n-button circle class="ml-3">
+              <n-button circle class="ml-2">
                 <n-icon :component="SettingsSharp" />
               </n-button>
             </n-dropdown>
-
           </div>
           <div v-else class="text-gray-500 inline-block">{{ $t("commons.notLogin") }}</div>
-          <n-button circle class="ml-3" @click="toggleTheme">
+          <n-button circle class="ml-2" @click="toggleTheme">
             <n-icon :component="themeIcon" />
           </n-button>
           <n-dropdown :options="languageOptions" placement="bottom-start">
-            <n-button circle class="ml-3">
+            <n-button circle class="ml-2">
               <n-icon :component="Language" />
             </n-button>
           </n-dropdown>

@@ -19,9 +19,9 @@
       </n-card>
     </div>
     <!-- 右栏 -->
-    <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;" class="md:w-3/4 w-full h-full">
+    <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column; hieght: 100%;">
       <!-- 消息记录列表 -->
-      <div class="h-3/4 overflow-x-hidden max-h-60vh">
+      <div class="overflow-x-hidden" :style="{ height: inputHeight }">
         <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0" class="flex flex-col h-full">
           <!-- 消息记录 -->
           <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
@@ -53,10 +53,18 @@
             </template>
           </n-empty>
         </div>
-
       </div>
-      <div class="flex-grow p-0 flex flex-col">
-        <ToolButtonRow />
+      <div class="flex-grow flex flex-col relative">
+        <n-divider />
+        <!-- <ToolButtonRow /> -->
+        <!-- 展开/收起按钮 -->
+        <div class="absolute left-0 -top-8 ml-1">
+          <n-button @click="toggleInputExpanded" circle secondary size="small">
+            <template #icon>
+              <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
+            </template>
+          </n-button>
+        </div>
         <!-- 输入框 -->
         <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage')"
           @keydown.shift.enter="shortcutSendMsg" />
@@ -89,7 +97,7 @@ import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 import { useI18n } from 'vue-i18n';
 import { NDropdown, NEllipsis, NButton, NIcon } from 'naive-ui';
 import { Send, ChatboxEllipses, ReloadOutline, Add } from '@vicons/ionicons5';
-import { MdMore } from '@vicons/ionicons4';
+import { KeyboardDoubleArrowUpRound, KeyboardDoubleArrowDownRound } from '@vicons/material';
 import { popupChangeConversationTitleDialog, dropdownRenderer, popupNewConversationDialog } from '@/utils/renders';
 
 import { useThemeVars } from "naive-ui"
@@ -101,6 +109,12 @@ const menuRef = ref(null);
 const historyRef = ref();
 const userStore = useUserStore();
 const conversationStore = useConversationStore();
+
+const inputExpanded = ref<Boolean>(false);
+const inputHeight = computed(() => inputExpanded.value ? '50vh' : '74vh');
+const toggleInputExpanded = () => {
+  inputExpanded.value = !inputExpanded.value;
+};
 
 const newConversation = ref<ConversationSchema | null>(null);
 const currentConversationId = ref<string | null>(null);
@@ -395,5 +409,10 @@ div.n-menu-item-content-header {
 
 span.n-menu-item-content-header__extra {
   display: inline-block;
+}
+
+.n-divider {
+  margin-bottom: 0px !important;
+  margin-top: 0px !important;
 }
 </style>
