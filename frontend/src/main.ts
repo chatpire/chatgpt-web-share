@@ -11,6 +11,8 @@ import { i18n } from "./i18n";
 import "highlight.js/styles/atom-one-dark.css";
 import "highlight.js/lib/common";
 
+import "katex/dist/katex.css";
+
 const app = createApp(App);
 
 app.use(router);
