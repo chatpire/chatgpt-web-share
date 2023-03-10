@@ -6,9 +6,9 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from os import environ
+# from os import environ
 
-environ["CHATGPT_BASE_URL"] = environ.get("CHATGPT_BASE_URL", "https://chat.openai.com/backend-api/")
+# environ["CHATGPT_BASE_URL"] = environ.get("CHATGPT_BASE_URL", "https://chat.openai.com/backend-api/")
 
 import api.globals as g
 from api.enums import ChatStatus
