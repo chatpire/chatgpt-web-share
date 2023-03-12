@@ -38,7 +38,7 @@ version: "3"
 
 services:
   chatgpt-share:
-    image: ghcr.io/moeakwak/chatgpt-web-share:0.1.1
+    image: ghcr.io/moeakwak/chatgpt-web-share:latest
     container_name: chatgpt-web-share
     restart: always
     network_mode: bridge
