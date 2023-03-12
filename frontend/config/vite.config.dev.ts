@@ -20,7 +20,7 @@ export default mergeConfig(
       },
     },
     define: {
-      "import.meta.env.VITE_API_WEBSOCKET_PROTOCOL": "'ws'",
+      "import.meta.env.VITE_API_WEBSOCKET_PROTOCOL": "'auto'",
     },
   },
   baseConfig

@@ -17,7 +17,7 @@ export default mergeConfig(
       chunkSizeWarningLimit: 2000,
     },
     define: {
-      "import.meta.env.VITE_API_WEBSOCKET_PROTOCOL": "'wss'",
+      "import.meta.env.VITE_API_WEBSOCKET_PROTOCOL": "'auto'",
     },
   },
   baseConfig
