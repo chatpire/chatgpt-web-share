@@ -12,6 +12,7 @@
   - 支持一键复制回复内容为 Markdown 格式
   - 支持显示回复中的图像/表格/数学公式/语法高亮
 - 使用 unofficial ChatGPT API，支持 ChatGPT Plus 账号
+- **支持 GPT-4！** 🥳
 - 支持选择要使用的 ChatGPT 模型
 - 创建多用户用于共享一个 ChatGPT 账号
 - 不同用户创建的 ChatGPT 对话互相分隔，不会相互影响
@@ -31,7 +32,7 @@ version: "3"
 
 services:
   chatgpt-share:
-    image: ghcr.io/moeakwak/chatgpt-web-share:latest
+    image: moeakwak/chatgpt-web-share:latest
     container_name: chatgpt-web-share
     restart: always
     network_mode: bridge

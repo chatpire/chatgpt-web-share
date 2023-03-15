@@ -16,6 +16,7 @@ This readme was translated by ChatGPT.
   - copying reply content as Markdown format with one click
   - showing images/tables/formulas/syntax highlighting in replies
 - Uses the unofficial ChatGPT API, supports ChatGPT Plus accounts
+- **Supports GPT-4** 🥳
 - Supports selecting which ChatGPT model to use (sha or turbo, if is plus account)
 - Creates multiple users to share a ChatGPT account
 - Different users' ChatGPT conversations are separated and do not affect each other
@@ -35,7 +36,7 @@ version: "3"
 
 services:
   chatgpt-share:
-    image: ghcr.io/moeakwak/chatgpt-web-share:latest
+    image: moeakwak/chatgpt-web-share:latest
     container_name: chatgpt-web-share
     restart: always
     network_mode: bridge
@@ -46,6 +47,8 @@ services:
       - ./config.yaml:/app/backend/api/config/config.yaml   # backend config file
 ```
  
+Notice: Due to ghcr.io server incident, change `image` to `moeakwak/chatgpt-web-share:latest`.
+
 In the same folder, create config.yaml with the following contents:
 
 Create a `config.yaml` file in the same directory with the following content:
