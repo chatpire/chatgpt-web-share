@@ -56,6 +56,7 @@ class Conversation(Base):
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
     user: Mapped["User"] = relationship(back_populates="conversations")
     is_valid: Mapped[bool] = mapped_column(Boolean, default=True, comment="是否有效")
-    model_name: Mapped[Optional[Enum["ChatModels"]]] = mapped_column(Enum(ChatModels), default=None, comment="使用的模型")
+    model_name: Mapped[Optional[Enum["ChatModels"]]] = mapped_column(
+        Enum(ChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None), default=None, comment="使用的模型")
     create_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="创建时间")
     active_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="最后活跃时间")
