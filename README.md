@@ -1,37 +1,34 @@
 # ChatGPT Web Share
 
-**English Readme: [README.en.md](README.en.md)**
+**中文 Readme 看这里: [README.zh.md](README.zh.md)**
 
-共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。
+A web application that allows multiple users to share a ChatGPT account at the same time, developed using FastAPI and Vue3. It can be used for sharing or renting a ChatGPT account among friends. It supports ChatGPT Plus, setting conversation models, and user request limits.
 
-![screenshot](screenshot.jpeg)
+![screenshot](screenshot.en.jpeg)
 
-## 特点
+This readme was translated by ChatGPT.
 
-- 美观简洁的 web 界面，使用 [naive-ui](https://www.naiveui.com/)
-  - 支持多语言
-  - 夜间模式
-  - 支持一键复制回复内容为 Markdown 格式
-  - 支持显示回复中的图像/表格/数学公式/语法高亮
-- 使用 unofficial ChatGPT API，支持 ChatGPT Plus 账号
-- 支持选择要使用的 ChatGPT 模型
-- 创建多用户用于共享一个 ChatGPT 账号
-- 不同用户创建的 ChatGPT 对话互相分隔，不会相互影响
-- 多用户同时请求时，会进行排队处理
-- 管理员可设置用户的最大对话数量、对话次数限制等
+## Features
 
-下一步计划：
+- A beautiful and concise web interface using [naive-ui](https://www.naiveui.com/)
+  - multiple languages
+  - dark mode
+  - copying reply content as Markdown format with one click
+  - showing images/tables/formulas/syntax highlighting in replies
+- Uses the unofficial ChatGPT API, supports ChatGPT Plus accounts
+- Supports selecting which ChatGPT model to use (sha or turbo, if is plus account)
+- Creates multiple users to share a ChatGPT account
+- Different users' ChatGPT conversations are separated and do not affect each other
+- When multiple users request at the same time, they will be queued for processing
+- Administrators can set users' maximum number of conversations and conversation time limits, etc.
 
-- [x] 英语界面
-- [ ] 支持 official ChatGPT API
+Note: Currently using [revChatGPT](https://github.com/acheong08/ChatGPT), which uses its reverse proxy to bypass Cloudflare verification, therefore it is subject to request limits and does not guarantee long-term stability.
 
-注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。
+## Deployment
 
-## 部署
+### Using docker
 
-### 使用 docker
-
-推荐使用 docker-compose 部署。新建 `docker-compose.yml` 文件，内容如下：
+It is recommended to use docker-compose for deployment. Create a new `docker-compose.yml` file with the following contents:
 
 ```yaml
 version: "3"
@@ -43,13 +40,15 @@ services:
     restart: always
     network_mode: bridge
     ports:
-      - 8080:80 # web 端口号
+      - 8080:80 # web port
     volumes:
-      - ./data:/data # 存放数据库文件
-      - ./config.yaml:/app/backend/api/config/config.yaml   # 后端配置文件
+      - ./data:/data # store database files
+      - ./config.yaml:/app/backend/api/config/config.yaml   # backend config file
 ```
+ 
+In the same folder, create config.yaml with the following contents:
 
-在同文件夹下创建 config.yaml，内容如下：
+Create a `config.yaml` file in the same directory with the following content:
 
 ```yaml
 print_sql: false
@@ -57,32 +56,32 @@ host: "127.0.0.1"
 port: 8000
 database_url: "sqlite+aiosqlite:////data/database.db"
 
-jwt_secret: "你的 jwt secret"    # 用于生成 jwt token，需要自行设置
+jwt_secret: "your jwt secret"    # Used for generating JWT token, needs to be set by yourself
 jwt_lifetime_seconds: 86400
-cookie_max_age: 86400           # 登录过期时间
-user_secret: "你的 user secret"  # 用于生成用户密码，需要自行设置
+cookie_max_age: 86400           # Login expiration time
+user_secret: "your user secret"  # Used for generating user password, needs to be set by yourself
 
-sync_conversations_on_startup: true # 是否在启动时同步同步 ChatGPT 对话，建议启用
-create_initial_admin_user: true     # 是否创建初始管理员用户
-create_initial_user: false          # 是否创建初始普通用户
-initial_admin_username: admin       # 初始管理员用户名
-initial_admin_password: password    # 初始管理员密码
-initial_user_username: user         # 初始普通用户名
-initial_user_password: password     # 初始普通密码
+sync_conversations_on_startup: true # Whether to synchronize ChatGPT conversations on startup, recommended to enable
+create_initial_admin_user: true     # Whether to create initial admin user
+create_initial_user: false          # Whether to create initial normal user
+initial_admin_username: admin       # Initial admin username
+initial_admin_password: password    # Initial admin password
+initial_user_username: user         # Initial normal username
+initial_user_password: password     # Initial normal password
 
-chatgpt_access_token: "你的access_token"    # 需要从 ChatGPT 获取
-chatgpt_paid: true  # 是否为 ChatGPT Plus 用户
+chatgpt_access_token: "your access_token"    # Need to get from ChatGPT
+chatgpt_paid: true  # Whether you are a ChatGPT Plus user
 ```
 
-`chatgpt_access_token` 获取方法：打开登录 chat.openai.com 后，打开 https://chat.openai.com/api/auth/session 并获取 accessToken 字段。
+How to get `chatgpt_access_token`: After logging in to `chat.openai.com`, open https://chat.openai.com/api/auth/session and get the `accessToken` field.
 
-最后运行 `docker-compose up -d` 即可。
+Finally, run `docker-compose up -d`.
 
-### 使用 Caddy
+### Using Caddy
 
-#### 前端
+#### Frontend
 
-需要先安装 nodejs 以及 pnpm，然后运行：
+You need to install nodejs and pnpm first, then run:
 
 ```bash
 cd frontend
@@ -90,11 +89,11 @@ pnpm install
 pnpm run build
 ```
 
-注意：如果你没有能够启用 https 的域名，请设置环境变量 `VITE_API_WEBSOCKET_PROTOCOL` 为 `ws` 再编译。
+Note: If you don't have a domain that enables https, please set the environment variable `VITE_API_WEBSOCKET_PROTOCOL` to `ws` before compiling.
 
-#### 后端
+#### Backend
 
-需要先安装 poetry，并将 config.yaml 放置在 backend/api/config 目录下，然后运行：
+You need to install poetry first and place config.yaml in the backend/api/config directory, then run:
 
 ```bash
 cd backend
@@ -102,6 +101,6 @@ poetry install
 poetry run python main.py
 ```
 
-安装 caddy 后，新建 Caddyfile 文件，内容参考 [Caddyfile](Caddyfile)。
+After installing Caddy, create a new Caddyfile and refer to the [Caddyfile](Caddyfile) for its content.
 
-使用 `caddy start` 启动 caddy 即可。
+Use `caddy start` to start Caddy.

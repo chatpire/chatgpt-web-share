@@ -70,7 +70,7 @@
           @keydown.shift.enter="shortcutSendMsg" />
         <div class="m-2 flex flex-row justify-end">
           <n-button :disabled="sendDisabled" @click="sendMsg" class="" type="primary" size="small">
-            发送
+            {{ $t("commons.send") }}
             <template #icon><n-icon>
                 <Send />
               </n-icon></template>

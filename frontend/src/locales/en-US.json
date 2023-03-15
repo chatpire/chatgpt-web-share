@@ -19,7 +19,7 @@
     "conversationManagement": "Conversation Management",
     "nickname": "Nickname",
     "email": "Email",
-    "isSuperuser": "Is Admin",
+    "isSuperuser": "Superuser",
     "yes": "Yes",
     "no": "No",
     "actions": "Actions",
@@ -69,7 +69,8 @@
     "idlingChatStatus": "Idle",
     "userProfile": "User Profile",
     "status": "Status",
-    "copiedToClipboard": "Copied to clipboard"
+    "copiedToClipboard": "Copied to clipboard",
+    "send": "Send"
   },
   "errors": {
     "403": "403 error: access denied",
