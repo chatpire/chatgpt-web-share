@@ -5,11 +5,17 @@
     <n-form-item v-model="props.limit" :label="t('commons.canUsePaidModel')" path="can_use_paid">
       <n-switch v-model:value="can_use_paid" placeholder="" />
     </n-form-item>
+    <n-form-item v-model="props.limit" :label="t('commons.canUseGPT4Model')" path="can_use_paid">
+      <n-switch v-model:value="can_use_gpt4" placeholder="" />
+    </n-form-item>
     <n-form-item v-model="props.limit" :label="t('commons.maxConversationCount')" path="max_conv_count">
       <n-input-number v-model:value="max_conv_count" :parse="parseValue" :format="formatValue" />
     </n-form-item>
     <n-form-item v-model="props.limit" :label="t('commons.availableAskCount')" path="available_ask_count">
       <n-input-number v-model:value="available_ask_count" :parse="parseValue" :format="formatValue" />
+    </n-form-item>
+    <n-form-item v-model="props.limit" :label="t('commons.availableGPT4AskCount')" path="available_gpt4_ask_count">
+      <n-input-number v-model:value="available_gpt4_ask_count" :parse="parseValue" :format="formatValue" />
     </n-form-item>
   </n-form>
 </template>
@@ -38,6 +44,14 @@ const can_use_paid = computed({
   },
 });
 
+const can_use_gpt4 = computed({
+  get: () => props.limit.can_use_gpt4,
+  set: (value) => {
+    props.limit.can_use_gpt4 = value;
+    emits('update:limit', { ...props.limit, can_use_gpt4: value });
+  },
+});
+
 const max_conv_count = computed({
   get: () => props.limit.max_conv_count,
   set: (value) => {
@@ -51,6 +65,14 @@ const available_ask_count = computed({
   set: (value) => {
     props.limit.available_ask_count = value;
     emits('update:limit', { ...props.limit, available_ask_count: value });
+  },
+});
+
+const available_gpt4_ask_count = computed({
+  get: () => props.limit.available_gpt4_ask_count,
+  set: (value) => {
+    props.limit.available_gpt4_ask_count = value;
+    emits('update:limit', { ...props.limit, available_gpt4_ask_count: value });
   },
 });
 </script>

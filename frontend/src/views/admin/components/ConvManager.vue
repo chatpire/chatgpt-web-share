@@ -20,6 +20,7 @@ import { TrashOutline } from '@vicons/ionicons5';
 import { EmojiFlagsFilled, PersonAddAlt1Filled } from '@vicons/material';
 import UserSelector from './UserSelector.vue';
 import { assignConversationToUserApi, deleteConversationApi, getAllConversationsApi, vanishConversationApi } from '@/api/chat';
+import { modelNameMap } from '@/utils/renders';
 
 const { t } = useI18n();
 
@@ -69,10 +70,10 @@ const columns: DataTableColumns<ConversationSchema> = [
     }
   },
   {
-    title: t("commons.usePaidModel"),
-    key: 'use_paid',
+    title: t("commons.modelName"),
+    key: 'model_name',
     render(row) {
-      return row.use_paid ? "Lagacy" : "Default"
+      return row.model_name ? modelNameMap[row.model_name!] : t("commons.unknown")
     }
   },
   {
@@ -80,13 +81,6 @@ const columns: DataTableColumns<ConversationSchema> = [
     key: 'is_valid',
     render(row) {
       return row.is_valid ? t("commons.yes") : t("commons.no")
-    }
-  },
-  {
-    title: t("commons.isPublic"),
-    key: 'is_public',
-    render(row) {
-      return row.is_public ? t("commons.yes") : t("commons.no")
     }
   },
   {

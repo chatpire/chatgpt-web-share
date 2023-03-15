@@ -51,7 +51,7 @@ export type AskInfo = {
   new_title?: string;
   conversation_id?: string;
   parent_id?: string;
-  use_paid?: boolean;
+  model_name?: string;
   is_public?: boolean;
   timeout?: number;
 };

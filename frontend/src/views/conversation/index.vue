@@ -25,8 +25,7 @@
         <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0" class="flex flex-col h-full">
           <!-- 消息记录 -->
           <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
-            <n-text>{{ $t("commons.currentConversationModel") }}: {{ currentConversation?.use_paid ? $t("commons.paidModel") : $t("commons.shaModel")
-            }}</n-text>
+            <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(currentConversation?.model_name) }}</n-text>
           </div>
           <MessageRow :message="message" v-for="message in currentMessageListDisplay" :key="message.id" />
         </n-scrollbar>
@@ -68,7 +67,10 @@
         <!-- 输入框 -->
         <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage')"
           @keydown.shift.enter="shortcutSendMsg" />
-        <div class="m-2 flex flex-row justify-end">
+        <div class="m-2 flex flex-row justify-between">
+          <n-text depth="3" class="hidden sm:block">
+            {{ currentAvaliableAskCountsTip }}
+          </n-text>
           <n-button :disabled="sendDisabled" @click="sendMsg" class="" type="primary" size="small">
             {{ $t("commons.send") }}
             <template #icon><n-icon>
@@ -98,7 +100,7 @@ import { useI18n } from 'vue-i18n';
 import { NDropdown, NEllipsis, NButton, NIcon } from 'naive-ui';
 import { Send, ChatboxEllipses, ReloadOutline, Add } from '@vicons/ionicons5';
 import { KeyboardDoubleArrowUpRound, KeyboardDoubleArrowDownRound } from '@vicons/material';
-import { popupChangeConversationTitleDialog, dropdownRenderer, popupNewConversationDialog } from '@/utils/renders';
+import { popupChangeConversationTitleDialog, dropdownRenderer, popupNewConversationDialog, getCountTrans, getModelNameTrans } from '@/utils/renders';
 
 import { useThemeVars } from "naive-ui"
 const themeVars = useThemeVars()
@@ -116,9 +118,17 @@ const toggleInputExpanded = () => {
   inputExpanded.value = !inputExpanded.value;
 };
 
+const currentAvaliableAskCountsTip = computed(() => {
+  let result = '';
+  if (userStore.user?.available_ask_count != -1)
+    result += `${t('commons.availableAskCount')}: ${getCountTrans(userStore.user?.available_ask_count!)}   `;
+  if (currentConversation.value && currentConversation.value.model_name === 'gpt-4' && userStore.user?.available_gpt4_ask_count != -1) result += `${t('commons.availableGPT4AskCount')}: ${getCountTrans(userStore.user?.available_gpt4_ask_count!)}`;
+  return result;
+});
+
 const newConversation = ref<ConversationSchema | null>(null);
 const currentConversationId = ref<string | null>(null);
-const currentConversation = computed(() => {
+const currentConversation = computed<ConversationSchema | any>(() => {
   if (newConversation.value?.conversation_id == currentConversationId.value) return newConversation.value;
   const conv = conversationStore.conversations?.find((conversation: ConversationSchema) => {
     return conversation.conversation_id == currentConversationId.value;
@@ -262,12 +272,13 @@ const sendDisabled = computed(() => {
 const makeNewConversation = () => {
   if (newConversation.value) return;
   popupNewConversationDialog(
-    async (title: string, model: string) => {
+    async (title: string, model_name: any) => {
+      console.log(title, model_name);
       newConversation.value = {
         conversation_id: "new_conversation",
         // 默认标题格式：MMDD - username
         title: title || `New Chat ${new Date().toLocaleString()} - ${userStore.user?.username}`,
-        use_paid: model === "paid" ? true : false,
+        model_name: model_name || 'text-davinci-002-render-sha',
         create_time: new Date().toISOString(),  // 仅用于当前排序到顶部
       };
       currentConversationId.value = "new_conversation";
@@ -301,7 +312,7 @@ const sendMsg = async () => {
   const askInfo: AskInfo = { message };
   if (newConversation.value) {
     askInfo.new_title = newConversation.value.title;
-    askInfo.use_paid = newConversation.value.use_paid;
+    askInfo.model_name = newConversation.value.model_name;
   } else {
     askInfo.conversation_id = currentConversation.value!.conversation_id;
     askInfo.parent_id = currentNode.value!;
@@ -382,6 +393,7 @@ const sendMsg = async () => {
         },
       })
     }
+    await userStore.fetchUserInfo();
     LoadingBar.finish();
     loading.value = false;
   };

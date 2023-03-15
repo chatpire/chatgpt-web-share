@@ -7,6 +7,7 @@ export type ConversationSchema = components["schemas"]["ConversationSchema"];
 export type ServerStatusSchema = components["schemas"]["ServerStatusSchema"];
 export type LimitSchema = components["schemas"]["LimitSchema"];
 export type ChatStatus = components["schemas"]["ChatStatus"];
+export type ChatModels = components["schemas"]["ChatModels"];
 
 export const chatStatusMap = {
   asking: "commons.askingChatStatus",

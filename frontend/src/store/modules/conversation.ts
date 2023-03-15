@@ -7,6 +7,7 @@ import {
   setConversationTitleApi,
 } from "@/api/chat";
 import { ConversationSchema } from "@/types/schema";
+import console from "console";
 
 const useConversationStore = defineStore("conversation", {
   state: (): any => ({

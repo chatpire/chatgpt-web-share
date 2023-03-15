@@ -5,16 +5,29 @@ import {
   NInput,
   NSelect,
   SelectOption,
-  NInputNumber,
-  NSwitch,
 } from "naive-ui";
 import { h } from "vue";
 import { MdMore } from "@vicons/ionicons4";
 import { i18n } from "@/i18n";
-import { ConversationSchema, LimitSchema } from "@/types/schema";
+import { ConversationSchema, ChatModels } from "@/types/schema";
 import { Dialog } from "@/utils/tips";
+import useUserStore from "@/store/modules/user";
 
 const t = i18n.global.t as any;
+
+const modelNameMap = {
+  "text-davinci-002-render-sha": t("commons.shaModel"),
+  "text-davinci-002-render-paid": t("commons.paidModel"),
+  "gpt-4": t("commons.gpt4Model"),
+};
+
+const getModelNameTrans = (model_name: keyof typeof modelNameMap) => {
+  return modelNameMap[model_name] || model_name;
+};
+
+const getCountTrans = (count: number): string => {
+  return count == -1 ? t("commons.unlimited") : `${count}`
+}
 
 const dropdownRenderer = (
   conversation: ConversationSchema,
@@ -97,6 +110,21 @@ const popupInputDialog = (
   });
 };
 
+const getAvailableModelOptions = (): SelectOption[] => {
+  const userStore = useUserStore();
+  let options = [
+    { label: t("commons.shaModel"), value: "text-davinci-002-render-sha" },
+  ];
+  if (userStore.user?.can_use_paid)
+    options.push({
+      label: t("commons.paidModel"),
+      value: "text-davinci-002-render-paid",
+    });
+  if (userStore.user?.can_use_gpt4)
+    options.push({ label: t("commons.gpt4Model"), value: "gpt-4" });
+  return options;
+};
+
 const popupNewConversationDialog = (
   callback: (_conv_title: string, _conv_model: string) => Promise<any>
 ) => {
@@ -125,10 +153,7 @@ const popupNewConversationDialog = (
           h(NSelect, {
             placeholder: t("tips.whetherUsePaidModel"),
             "onUpdate:value": (value: string) => (convModel = value),
-            options: [
-              { label: t("commons.shaModel"), value: "sha" },
-              { label: t("commons.paidModel"), value: "paid" },
-            ] as SelectOption[],
+            options: getAvailableModelOptions(),
           }),
         ]
       ),
@@ -184,4 +209,7 @@ export {
   popupNewConversationDialog,
   popupChangeConversationTitleDialog,
   popupResetUserPasswordDialog,
+  getModelNameTrans,
+  getCountTrans,
+  modelNameMap,
 };

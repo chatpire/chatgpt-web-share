@@ -123,6 +123,12 @@ export interface components {
       password: string;
     };
     /**
+     * ChatModels 
+     * @description An enumeration. 
+     * @enum {unknown}
+     */
+    ChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid";
+    /**
      * ChatStatus 
      * @description An enumeration. 
      * @enum {unknown}
@@ -146,10 +152,7 @@ export interface components {
       user_id?: number;
       /** Is Valid */
       is_valid?: boolean;
-      /** Is Public */
-      is_public?: boolean;
-      /** Use Paid */
-      use_paid?: boolean;
+      model_name?: components["schemas"]["ChatModels"];
       /**
        * Create Time 
        * Format: date-time
@@ -177,10 +180,14 @@ export interface components {
     LimitSchema: {
       /** Can Use Paid */
       can_use_paid?: boolean;
+      /** Can Use Gpt4 */
+      can_use_gpt4?: boolean;
       /** Max Conv Count */
       max_conv_count?: number;
       /** Available Ask Count */
       available_ask_count?: number;
+      /** Available Gpt4 Ask Count */
+      available_gpt4_ask_count?: number;
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {
@@ -263,10 +270,14 @@ export interface components {
       chat_status: components["schemas"]["ChatStatus"];
       /** Can Use Paid */
       can_use_paid: boolean;
+      /** Can Use Gpt4 */
+      can_use_gpt4: boolean;
       /** Max Conv Count */
       max_conv_count?: number;
       /** Available Ask Count */
       available_ask_count?: number;
+      /** Available Gpt4 Ask Count */
+      available_gpt4_ask_count?: number;
     };
     /**
      * UserUpdate 

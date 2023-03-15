@@ -2,7 +2,7 @@
   <div class="mb-4">
     <n-button type="primary" @click="handleAddUser"> {{ $t("commons.addUser") }} </n-button>
   </div>
-  <n-data-table size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
+  <n-data-table :scroll-x="1200" size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
     pageSize: 10
   }" />
 </template>
@@ -19,7 +19,7 @@ import { TrashOutline, Pencil } from '@vicons/ionicons5';
 import { PasswordRound } from '@vicons/material';
 import EditUserForm from './EditUserForm.vue';
 import EditLimitForm from './EditLimitForm.vue';
-import { popupResetUserPasswordDialog } from '@/utils/renders';
+import { getCountTrans, popupResetUserPasswordDialog } from '@/utils/renders';
 
 const { t } = useI18n();
 
@@ -66,14 +66,21 @@ const columns: DataTableColumns<UserRead> = [
     title: t("commons.maxConversationCount"),
     key: 'max_conv_count',
     render(row) {
-      return row.max_conv_count == -1 ? t("commons.unlimited") : row.max_conv_count
+      return getCountTrans(row.max_conv_count!);
     }
   },
   {
     title: t("commons.availableAskCount"),
     key: 'available_ask_count',
     render(row) {
-      return row.available_ask_count == -1 ? t("commons.unlimited") : row.available_ask_count
+      return getCountTrans(row.available_ask_count!);
+    }
+  },
+  {
+    title: t("commons.availableGPT4AskCount"),
+    key: 'available_gpt4_ask_count',
+    render(row) {
+      return getCountTrans(row.available_gpt4_ask_count!);
     }
   },
   {
@@ -81,6 +88,13 @@ const columns: DataTableColumns<UserRead> = [
     key: 'can_use_paid',
     render(row) {
       return row.can_use_paid ? t("commons.yes") : t("commons.no")
+    }
+  },
+  {
+    title: t("commons.canUseGPT4Model"),
+    key: 'can_use_gpt4',
+    render(row) {
+      return row.can_use_gpt4 ? t("commons.yes") : t("commons.no")
     }
   },
   {
@@ -94,6 +108,7 @@ const columns: DataTableColumns<UserRead> = [
   {
     title: t("commons.actions"),
     key: 'actions',
+    fixed: 'right',
     render(row) {
       // TODO: 删除、修改密码，两个按钮
       return h("div", {
@@ -212,7 +227,9 @@ const handleSetUserLimit = (user: UserRead) => () => {
   const limit = ref<LimitSchema>({
     max_conv_count: user.max_conv_count,
     available_ask_count: user.available_ask_count,
-    can_use_paid: user.can_use_paid
+    can_use_paid: user.can_use_paid,
+    can_use_gpt4: user.can_use_gpt4,
+    available_gpt4_ask_count: user.available_gpt4_ask_count
   })
   const d = Dialog.info({
     title: t("commons.setUserLimit"),
