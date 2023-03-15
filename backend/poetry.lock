@@ -396,14 +396,14 @@ test = ["anyio[trio] (>=3.2.1,<4.0.0)", "black (==23.1.0)", "coverage[toml] (>=6
 
 [[package]]
 name = "fastapi-users"
-version = "10.4.0"
+version = "10.4.1"
 description = "Ready-to-use and customizable users management for FastAPI"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "fastapi_users-10.4.0-py3-none-any.whl", hash = "sha256:c8edc0c16b3bca41c4b4cea479b85b8f37f6682414e8649e01a05c0b135dbe7d"},
-    {file = "fastapi_users-10.4.0.tar.gz", hash = "sha256:7f77a2a74be8833daaba5d60f8e8c5b445bc26f26aecc445eea9d80e877d5629"},
+    {file = "fastapi_users-10.4.1-py3-none-any.whl", hash = "sha256:42e24cd7dab59989c40b4beae970292d9a380ada234334d9d656488e533adc0f"},
+    {file = "fastapi_users-10.4.1.tar.gz", hash = "sha256:cbc589278ce35b4e6218ec00987c64bb4dfbfbde39c192d8327b51eda171b9f1"},
 ]
 
 [package.dependencies]
@@ -412,7 +412,7 @@ fastapi = ">=0.65.2"
 makefun = ">=1.11.2,<2.0.0"
 passlib = {version = "1.7.4", extras = ["bcrypt"]}
 pyjwt = {version = "2.6.0", extras = ["crypto"]}
-python-multipart = "0.0.5"
+python-multipart = "0.0.6"
 
 [package.extras]
 beanie = ["fastapi-users-db-beanie (>=1.0.0)"]
@@ -840,17 +840,18 @@ six = ">=1.5"
 
 [[package]]
 name = "python-multipart"
-version = "0.0.5"
+version = "0.0.6"
 description = "A streaming multipart parser for Python"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
+    {file = "python_multipart-0.0.6-py3-none-any.whl", hash = "sha256:ee698bab5ef148b0a760751c261902cd096e57e10558e11aca17646b74ee1c18"},
+    {file = "python_multipart-0.0.6.tar.gz", hash = "sha256:e9925a80bb668529f1b67c7fdb0a5dacdd7cbfc6fb0bff3ea443fe22bdd62132"},
 ]
 
-[package.dependencies]
-six = ">=1.4.0"
+[package.extras]
+dev = ["atomicwrites (==1.2.1)", "attrs (==19.2.0)", "coverage (==6.5.0)", "hatch", "invoke (==1.7.3)", "more-itertools (==4.3.0)", "pbr (==4.3.0)", "pluggy (==1.0.0)", "py (==1.11.0)", "pytest (==7.2.0)", "pytest-cov (==4.0.0)", "pytest-timeout (==2.1.0)", "pyyaml (==5.1)"]
 
 [[package]]
 name = "pyyaml"
@@ -1024,14 +1025,16 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
-name = "revChatGPT"
-version = "4.0.1"
-description = ""
+name = "revchatgpt"
+version = "4.0.2"
+description = "ChatGPT is a reverse engineering of OpenAI's ChatGPT API"
 category = "main"
 optional = false
 python-versions = "*"
-files = []
-develop = false
+files = [
+    {file = "revChatGPT-4.0.2-py3-none-any.whl", hash = "sha256:5d1e564a6e6d91816b8da4becd82a58867705b52ded612bc52a7d237fae4f67f"},
+    {file = "revChatGPT-4.0.2.tar.gz", hash = "sha256:361f87ce1b6df081b96a784b6a60298807feb509da8b46d7d9c0dacaeac5b0e2"},
+]
 
 [package.dependencies]
 httpx = {version = "*", extras = ["socks"]}
@@ -1041,11 +1044,7 @@ requests = {version = "*", extras = ["socks"]}
 tiktoken = ">=0.3.0"
 
 [package.extras]
-webgpt = ["duckduckgo_search"]
-
-[package.source]
-type = "directory"
-url = "revChatGPT"
+webgpt = ["duckduckgo-search"]
 
 [[package]]
 name = "rfc3986"
@@ -1402,4 +1401,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "231b01e2495333f75ae70ddc087b9dbe279ad71717f27ead063eb8f2bc5eca0c"
+content-hash = "4e525f10083d08f76d1b1a2c597753cc64547817cb9e28c1c3d859a2ff1f6e10"
