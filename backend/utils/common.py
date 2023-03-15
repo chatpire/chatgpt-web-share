@@ -1,6 +1,20 @@
 import asyncio, threading
 
 
+def get_conversation_model(conversation):
+    result = None
+    try:
+        current_node = conversation["current_node"]
+        while current_node:
+            node = conversation["mapping"][current_node]
+            result = node["message"]["metadata"]["model_slug"]
+            if result:
+                break
+            current_node = node["parent"]
+    finally:
+        return result
+
+
 def async_wrap_iter(it):
     """Wrap blocking iterator into an asynchronous one"""
     loop = asyncio.get_event_loop()

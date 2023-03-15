@@ -71,6 +71,7 @@ async def validation_exception_handler(request, exc):
 @app.on_event("startup")
 async def on_startup():
     await create_db_and_tables()
+    print("database initialized")
 
     if config.get("create_initial_admin_user", False):
         await create_user(config.get("initial_admin_username"),
@@ -142,6 +143,9 @@ async def on_startup():
                 await session.commit()
     except ChatGPTError as e:
         print(f"Fetch conversation error: {e.source} {e.code}: {e.message}")
+    except Exception as e:
+        print(e)
+        raise e
     print("Done!")
 
 

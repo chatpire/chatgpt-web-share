@@ -1,10 +1,9 @@
 import uuid
 import datetime
-from typing import List
 from fastapi_users import schemas
 from pydantic import Field, BaseModel
 
-from api.enums import ChatStatus
+from api.enums import ChatStatus, ChatModels
 
 
 class UserRead(schemas.BaseUser[int]):
@@ -17,8 +16,10 @@ class UserRead(schemas.BaseUser[int]):
     chat_status: ChatStatus
 
     can_use_paid: bool
+    can_use_gpt4: bool
     max_conv_count: int | None
     available_ask_count: int | None
+    available_gpt4_ask_count: int | None
 
     is_superuser: bool
     is_active: bool
@@ -27,8 +28,10 @@ class UserRead(schemas.BaseUser[int]):
 
 class LimitSchema(BaseModel):
     can_use_paid: bool | None = None
+    can_use_gpt4: bool | None = None
     max_conv_count: int | None = None
     available_ask_count: int | None = None
+    available_gpt4_ask_count: int | None = None
 
 
 class UserUpdate(schemas.BaseUser[int]):
@@ -54,9 +57,12 @@ class ConversationSchema(BaseModel):
     title: str = None
     user_id: int = None
     is_valid: bool = None
-    use_paid: bool = None
+    model_name: ChatModels = None
     create_time: datetime.datetime = None
     active_time: datetime.datetime = None
+
+    class Config:
+        use_enum_values = True
 
 
 class ServerStatusSchema(BaseModel):

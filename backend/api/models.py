@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
 
-from api.enums import ChatStatus
+from api.enums import ChatStatus, ChatModels
 
 
 # declarative base class
@@ -28,9 +28,11 @@ class User(Base):
     active_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="最后活跃时间")
 
     chat_status: Mapped[ChatStatus] = mapped_column(Enum(ChatStatus), default=ChatStatus.idling, comment="对话状态")
-    can_use_paid: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否可以使用paid模式")
+    can_use_paid: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否可以使用paid模型")
+    can_use_gpt4: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否可以使用gpt4模型")
     max_conv_count: Mapped[int] = mapped_column(Integer, default=-1, comment="最大对话数量")
     available_ask_count: Mapped[int] = mapped_column(Integer, default=-1, comment="可用的对话次数")
+    available_gpt4_ask_count: Mapped[int] = mapped_column(Integer, default=-1, comment="可用的gpt4对话次数")
 
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -54,6 +56,6 @@ class Conversation(Base):
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
     user: Mapped["User"] = relationship(back_populates="conversations")
     is_valid: Mapped[bool] = mapped_column(Boolean, default=True, comment="是否有效")
-    use_paid: Mapped[Optional[bool]] = mapped_column(Boolean, comment="是否使用paid模型(以最后一次消息为准)")
+    model_name: Mapped[Optional[Enum["ChatModels"]]] = mapped_column(Enum(ChatModels), default=None, comment="使用的模型")
     create_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="创建时间")
     active_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="最后活跃时间")
