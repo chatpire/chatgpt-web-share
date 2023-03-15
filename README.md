@@ -4,20 +4,22 @@
 
 A web application that allows multiple users to share a ChatGPT account at the same time, developed using FastAPI and Vue3. It can be used for sharing or renting a ChatGPT account among friends. It supports ChatGPT Plus, setting conversation models, and user request limits.
 
+**3.15 Update: Version 0.2.0 supports GPT-4!** Now you can share a ChatGPT Plus account with your friends and use GPT-4 together.
+
 ![screenshot](screenshot.en.jpeg)
 
 This readme was translated by ChatGPT.
 
 ## Features
 
+- Uses the unofficial ChatGPT API, supports ChatGPT Plus accounts
+- **Supports GPT-4** 🥳
+- Supports selecting which ChatGPT model to use (sha or paid or gpt-4, if is plus account)
 - A beautiful and concise web interface using [naive-ui](https://www.naiveui.com/)
   - multiple languages
   - dark mode
   - copying reply content as Markdown format with one click
   - showing images/tables/formulas/syntax highlighting in replies
-- Uses the unofficial ChatGPT API, supports ChatGPT Plus accounts
-- **Supports GPT-4** 🥳
-- Supports selecting which ChatGPT model to use (sha or turbo, if is plus account)
 - Creates multiple users to share a ChatGPT account
 - Different users' ChatGPT conversations are separated and do not affect each other
 - When multiple users request at the same time, they will be queued for processing
@@ -91,8 +93,6 @@ cd frontend
 pnpm install
 pnpm run build
 ```
-
-Note: If you don't have a domain that enables https, please set the environment variable `VITE_API_WEBSOCKET_PROTOCOL` to `ws` before compiling.
 
 #### Backend
 

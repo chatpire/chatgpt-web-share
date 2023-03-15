@@ -6,13 +6,13 @@
 
 ## 特点
 
+- 使用 unofficial ChatGPT API，支持 ChatGPT Plus 账号
+- **支持 GPT-4！** 🥳
 - 美观简洁的 web 界面，使用 [naive-ui](https://www.naiveui.com/)
   - 支持多语言
   - 夜间模式
   - 支持一键复制回复内容为 Markdown 格式
   - 支持显示回复中的图像/表格/数学公式/语法高亮
-- 使用 unofficial ChatGPT API，支持 ChatGPT Plus 账号
-- **支持 GPT-4！** 🥳
 - 支持选择要使用的 ChatGPT 模型
 - 创建多用户用于共享一个 ChatGPT 账号
 - 不同用户创建的 ChatGPT 对话互相分隔，不会相互影响
