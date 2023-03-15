@@ -5,7 +5,7 @@ RUN mkdir -p /app/backend
 RUN apk add --update caddy
 
 COPY backend/requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 
 COPY Caddyfile /app/Caddyfile
 COPY backend /app/backend
