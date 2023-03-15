@@ -50,12 +50,12 @@
     "deleteConversation": "Delete conversation",
     "invalidateConversation": "Mark as invalid",
     "vanishConversation": "Destroy conversation",
-    "shaModel": "Default (faster)",
-    "paidModel": "Legacy (may have better performance but slower)",
+    "shaModel": "Default",
+    "paidModel": "Legacy",
     "currentConversationModel": "Model currently used in this conversation",
     "canUsePaidModel": "Allow use of paid model",
     "maxConversationCount": "Max number of conversations",
-    "availableAskCount": "Remaining number of questions",
+    "availableAskCount": "Available Ask Count",
     "unlimited": "Unlimited",
     "setUserLimit": "Set user limit",
     "setUserLimitSuccess": "User limit set successfully",
@@ -70,7 +70,12 @@
     "userProfile": "User Profile",
     "status": "Status",
     "copiedToClipboard": "Copied to clipboard",
-    "send": "Send"
+    "send": "Send",
+    "modelName": "Model Name",
+    "gpt4Model": "GPT-4",
+    "unknown": "未知",
+    "availableGPT4AskCount": "Available GPT-4 Ask Count",
+    "canUseGPT4Model": "Allow GPT-4"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -92,7 +97,10 @@
     "userAlreadyExists": "User already exists",
     "badCredentials": "Incorrect username or password",
     "maxConversationCountReached": "Max number of conversations reached",
-    "cannotConnectMoreThanOneClient": "Current user has a conversation waiting for reply, cannot request again"
+    "cannotConnectMoreThanOneClient": "Current user has a conversation waiting for reply, cannot request again",
+    "noAvailableAskCount": "No Available Ask Count!",
+    "noAvailableGPT4AskCount": "No Available GPT-4 Ask Count!",
+    "userNotAllowToUseGPT4Model": "Not allowed to use GPT-4 model"
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
