@@ -1,0 +1,3 @@
+[submodule "backend/revChatGPT"]
+	path = backend/revChatGPT
+	url = git@github.com:moeakwak/ChatGPT.git

@@ -99,11 +99,10 @@ async def on_startup():
         await session.commit()
 
     # 获取 ChatGPT 对话，并同步数据库
-    loop = asyncio.get_event_loop()
     try:
-        result = await loop.run_in_executor(None, g.chatgpt_manager.get_conversations)
+        result = await g.chatgpt_manager.get_conversations()
         if result and len(result) > 0:
-            print(f"获取到 {len(result)} 条对话")
+            print(f"Fetched {len(result)} conversations")
             conversations_map = {conv['id']: conv for conv in result}
             async with get_async_session_context() as session:
                 r = await session.execute(select(Conversation))
@@ -115,18 +114,18 @@ async def on_startup():
                         # 同步标题
                         if conv["title"] != conv_db.title:
                             conv_db.title = conv["title"]
-                            print(f"对话 {conv_db.conversation_id} 标题变更：{conv_db.title}")
+                            print(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
                             session.add(conv_db)
                         # 同步时间
                         create_time = dateutil.parser.isoparse(conv["create_time"])
                         if create_time != conv_db.create_time:
                             conv_db.create_time = create_time
-                            print(f"对话 {conv_db.conversation_id} 创建时间变更：{conv_db.create_time}")
+                            print(f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
                             session.add(conv_db)
                         conversations_map.pop(conv_db.conversation_id)
                     elif not conv and conv_db.is_valid:  # 若数据库中存在，但 ChatGPT 中不存在，则将数据库中的对话标记为无效
                         conv_db.is_valid = False
-                        print(f"对话 {conv_db.title}({conv_db.conversation_id}) 不存在于 ChatGPT 记录中")
+                        print(f"Conversation {conv_db.title}({conv_db.conversation_id}) not recorded, added to database")
                         session.add(conv_db)
 
                 # 新增对话
@@ -135,14 +134,15 @@ async def on_startup():
                         conversation_id=conv["id"],
                         title=conv["title"],
                         is_valid=True,
-                        create_time=dateutil.parser.isoparse(conv["create_time"]))
+                        create_time=dateutil.parser.isoparse(conv["create_time"])
+                    )
                     session.add(new_conv)
-                    print(f"新增对话 {conv['title']}({conv['id']})")
+                    print(f"Found new conversation {conv['title']}({conv['id']})")
 
                 await session.commit()
     except ChatGPTError as e:
-        print(f"获取对话失败: {e.source} {e.code}: {e.message}")
-    print("对话同步完成")
+        print(f"Fetch conversation error: {e.source} {e.code}: {e.message}")
+    print("Done!")
 
 
 # @api.get("/routes")

@@ -1,8 +1,8 @@
-import asyncio
 import time
 from datetime import datetime
 from typing import List
 
+import httpx
 import requests
 from fastapi import APIRouter, Depends, WebSocket
 from fastapi.encoders import jsonable_encoder
@@ -15,7 +15,6 @@ from api.exceptions import InvalidParamsException, AuthorityDenyException
 from api.models import User, Conversation
 from api.schema import ConversationSchema
 from api.users import current_active_user, websocket_auth, current_super_user
-from utils.common import async_wrap_iter
 from revChatGPT.V1 import Error as ChatGPTError
 from api.response import response
 
@@ -59,8 +58,7 @@ async def get_all_conversations(user: User = Depends(current_active_user), valid
 
 @router.get("/conv/{conversation_id}", tags=["conversation"])
 async def get_conversation_history(conversation: Conversation = Depends(get_conversation_by_id)):
-    loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, g.chatgpt_manager.get_conversation_messages, conversation.conversation_id)
+    result = await g.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
     result = jsonable_encoder(result)
     return result
 
@@ -79,10 +77,12 @@ async def delete_conversation(conversation: Conversation = Depends(get_conversat
 @router.delete("/conv/{conversation_id}/vanish", tags=["conversation"])
 async def vanish_conversation(conversation: Conversation = Depends(get_conversation_by_id)):
     try:
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, g.chatgpt_manager.delete_conversation, conversation.conversation_id)
+        await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
     except ChatGPTError as e:
         print(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code != 404:
+            raise e
     async with get_async_session_context() as session:
         await session.execute(delete(Conversation).where(Conversation.conversation_id == conversation.conversation_id))
         await session.commit()
@@ -91,9 +91,8 @@ async def vanish_conversation(conversation: Conversation = Depends(get_conversat
 
 @router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationSchema)
 async def change_conversation_title(title: str, conversation: Conversation = Depends(get_conversation_by_id)):
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(None, g.chatgpt_manager.set_conversation_title, conversation.conversation_id,
-                               title)
+    await g.chatgpt_manager.set_conversation_title(conversation.conversation_id,
+                                                   title)
     async with get_async_session_context() as session:
         conversation.title = title
         session.add(conversation)
@@ -136,9 +135,7 @@ async def generate_conversation_title(message_id: str, conversation: Conversatio
     if conversation.title is not None:
         raise InvalidParamsException("errors.conversationTitleAlreadyGenerated")
     async with get_async_session_context() as session:
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, g.chatgpt_manager.generate_conversation_title, conversation.id,
-                                            message_id)
+        result = await g.chatgpt_manager.generate_conversation_title(conversation.id, message_id)
         if result["title"]:
             conversation.title = result["title"]
             session.add(conversation)
@@ -225,6 +222,7 @@ async def ask(websocket: WebSocket):
     try:
         # 标记用户为 queueing
         await change_user_chat_status(user.id, ChatStatus.queueing)
+
         async with g.chatgpt_manager.semaphore:
             await change_user_chat_status(user.id, ChatStatus.asking)
             await websocket.send_json({
@@ -232,8 +230,7 @@ async def ask(websocket: WebSocket):
                 "tip": "tips.waiting"
             })
             request_start_time = time.time()
-            ask_gen = g.chatgpt_manager.get_ask_generator(message, use_paid, conversation_id, parent_id, timeout)
-            async for data in async_wrap_iter(ask_gen):
+            async for data in g.chatgpt_manager.ask(message, conversation_id, parent_id, timeout):
                 reply = {
                     "type": "message",
                     "message": data["message"],
@@ -252,15 +249,14 @@ async def ask(websocket: WebSocket):
                     # 设置默认标题
                     try:
                         if new_title is not None:
-                            loop = asyncio.get_event_loop()
-                            await loop.run_in_executor(None, g.chatgpt_manager.set_conversation_title, conversation_id,
-                                                       new_title)
+                            await g.chatgpt_manager.set_conversation_title(conversation_id, new_title)
                     except Exception as e:
                         print(e)
                     finally:
                         current_time = datetime.utcnow()
                         conversation = Conversation(conversation_id=conversation_id, title=new_title, user_id=user.id,
-                                                    use_paid=use_paid, create_time=current_time, active_time=current_time)
+                                                    use_paid=use_paid, create_time=current_time,
+                                                    active_time=current_time)
                         session.add(conversation)
                 # 若更改了 paid 类型，则更新 conversation
                 if not new_conv:
@@ -284,7 +280,7 @@ async def ask(websocket: WebSocket):
             "tip": "errors.timeout"
         })
         websocket_code = 1001
-        websocket_reason = "tips.timout"
+        websocket_reason = "errors.timout"
     except ChatGPTError as e:
         await websocket.send_json({
             "type": "error",
@@ -292,16 +288,17 @@ async def ask(websocket: WebSocket):
             "message": f"{e.source} {e.code}: {e.message}"
         })
         websocket_code = 1001
-        websocket_reason = "tips.chatgptResponseError"
+        websocket_reason = "errors.chatgptResponseError"
     except Exception as e:
         print(e)
         await websocket.send_json({
             "type": "error",
-            "message": e
+            "tip": "errors.unknownError",
+            "message": str(e)
         })
         websocket_code = 1011
         websocket_reason = "errors.unknownError"
     finally:
         await change_user_chat_status(user.id, ChatStatus.idling)
-        g.chatgpt_manager.chatbot.reset_chat()
+        g.chatgpt_manager.reset_chat()
         await websocket.close(websocket_code, websocket_reason)
