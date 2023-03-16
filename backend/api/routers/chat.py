@@ -60,11 +60,10 @@ async def get_all_conversations(user: User = Depends(current_active_user), valid
 @router.get("/conv/{conversation_id}", tags=["conversation"])
 async def get_conversation_history(conversation: Conversation = Depends(get_conversation_by_id)):
     result = await g.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
-    result = jsonable_encoder(result)
     # 当不知道模型名时，顺便从对话中获取
     if conversation.model_name is None:
-        model_name = get_conversation_model(result)
-        if model_name is not None:
+        model_name = result.get("model_name")
+        if model_name is not None and not ChatModels.unknown.value:
             async with get_async_session_context() as session:
                 conversation = await session.get(Conversation, conversation.id)
                 conversation.model_name = model_name
@@ -248,7 +247,7 @@ async def ask(websocket: WebSocket):
                 "tip": "tips.waiting"
             })
             request_start_time = time.time()
-            async for data in g.chatgpt_manager.ask(message, conversation_id, parent_id, timeout):
+            async for data in g.chatgpt_manager.ask(message, conversation_id, parent_id, timeout, model_name):
                 reply = {
                     "type": "message",
                     "message": data["message"],
@@ -259,7 +258,7 @@ async def ask(websocket: WebSocket):
                 await websocket.send_json(reply)
                 if conversation_id is None:
                     conversation_id = data["conversation_id"]
-            print(f"finish ask {conversation_id}, using time: {time.time() - request_start_time}s")
+            print(f"finish ask {conversation_id} ({model_name}), using time: {time.time() - request_start_time}s")
 
             async with get_async_session_context() as session:
                 # 若新建了对话，则添加到数据库

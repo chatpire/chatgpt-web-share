@@ -1,7 +1,7 @@
 import asyncio, threading
 
 
-def get_conversation_model(conversation):
+def get_conversation_model(conversation) -> str:
     result = None
     try:
         current_node = conversation["current_node"]

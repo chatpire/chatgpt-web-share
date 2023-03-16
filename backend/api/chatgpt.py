@@ -1,6 +1,9 @@
+from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
 from api.config import config
+from api.enums import ChatModels
+from utils.common import get_conversation_model
 
 
 class ChatGPTManager:
@@ -21,20 +24,18 @@ class ChatGPTManager:
     async def get_conversation_messages(self, conversation_id: str):
         # TODO: 使用 redis 缓存
         messages = await self.chatbot.get_msg_history(conversation_id)
+        messages = jsonable_encoder(messages)
+        model_name = get_conversation_model(messages)
+        messages["model_name"] = model_name or ChatModels.unknown.value
         return messages
 
     async def clear_conversations(self):
         await self.chatbot.clear_conversations()
 
     def ask(self, message, conversation_id: str = None, parent_id: str = None,
-            timeout=360, model=None):
-        if model is not None:
-            assert model in [
-                "text-davinci-002-render-paid",
-                "text-davinci-002-render-sha",
-                "gpt-4"
-            ]
-            self.chatbot.config["model"] = model
+            timeout=360, model_name: ChatModels=None):
+        if model_name is not None and model_name != ChatModels.unknown:
+            self.chatbot.config["model"] = model_name.value
         return self.chatbot.ask(message, conversation_id, parent_id, timeout)
 
     async def delete_conversation(self, conversation_id: str):
