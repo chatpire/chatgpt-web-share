@@ -53,8 +53,8 @@ jobs:
       
       - name: build frontend
         run: |
+          cd frontend
           pnpm build
-          cd ..
       
       - name: Docker meta
         id: meta
