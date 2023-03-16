@@ -32,6 +32,11 @@ def run_stamp(conn, cfg, revision):
     command.stamp(cfg, revision)
 
 
+def run_ensure_version(conn, cfg):
+    cfg.attributes["connection"] = conn
+    command.ensure_version(cfg)
+
+
 async def create_db_and_tables():
     # 如果数据库不存在则创建数据库（数据表）；若有更新，则执行迁移
     # https://alembic.sqlalchemy.org/en/latest/autogenerate.html
@@ -50,6 +55,8 @@ async def create_db_and_tables():
             await conn.run_sync(run_stamp, alembic_cfg, "head")
             print(f"stamped database to head")
             return
+        else:
+            await conn.run_sync(run_ensure_version, alembic_cfg)
 
         if config.get("run_migration", False):
             try:
