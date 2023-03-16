@@ -2,7 +2,6 @@ name: Build and publish Docker image
 
 on:
   push:
-    branches: ['release']
     tags: ['v*']
 
 env:
@@ -61,7 +60,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ REGISTRY }}/${{ IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
