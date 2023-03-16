@@ -1,6 +1,5 @@
 import MarkdownIt from "markdown-it";
 import markdownItHighlight from "markdown-it-highlightjs";
-// import markdownItMathjax3 from "markdown-it-mathjax3";
 import markdownItKatex from "@traptitech/markdown-it-katex";
 import hljs from "highlight.js";
 

@@ -7,12 +7,11 @@ import {
   setConversationTitleApi,
 } from "@/api/chat";
 import { ConversationSchema } from "@/types/schema";
-import console from "console";
 
 const useConversationStore = defineStore("conversation", {
   state: (): any => ({
     conversations: [] as Array<ConversationSchema>,
-    conversationDetailMap: {}, // conv_id => ChatConversationDetail
+    conversationDetailMap: {} as Record<string, ChatConversationDetail>, // conv_id => ChatConversationDetail
   }),
   getters: {},
   actions: {
@@ -35,6 +34,7 @@ const useConversationStore = defineStore("conversation", {
         title: result.title,
         create_time: result.create_time,
         mapping: {},
+        model_name: result.model_name,
       };
 
       for (const message_id in result.mapping) {
@@ -76,6 +76,7 @@ const useConversationStore = defineStore("conversation", {
       }
     },
 
+    // 仅当收到新信息时调用，为了避免重复获取整个对话历史
     addMessageToConversation(
       conversation_id: string,
       sendMessage: ChatMessage,
@@ -89,13 +90,17 @@ const useConversationStore = defineStore("conversation", {
       conv_detail.mapping[sendMessage.id] = sendMessage;
       conv_detail.mapping[recvMessage.id] = recvMessage;
 
-      const lastTopMessage = conv_detail.mapping[conv_detail.current_node];
-      sendMessage.parent = lastTopMessage.id;
+      // 这里只有在新建对话时调用
+      if (conv_detail.current_node === null) {
+        conv_detail.current_node = recvMessage.id;
+      } else {
+        const lastTopMessage = conv_detail.mapping[conv_detail.current_node];
+        sendMessage.parent = lastTopMessage.id;
+        lastTopMessage.children.push(sendMessage.id);
+        conv_detail.current_node = recvMessage.id;
+      }
       sendMessage.children = [recvMessage.id];
-      lastTopMessage.children.push(sendMessage.id);
       recvMessage.parent = sendMessage.id;
-
-      conv_detail.current_node = recvMessage.id;
     },
   },
 });

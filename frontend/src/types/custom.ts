@@ -10,8 +10,9 @@ export type ChatMessage = {
 
 export type ChatConversationDetail = {
   id: string;
-  current_node: string;
+  current_node: string | null;
   title: string;
   create_time: number;
   mapping: Record<string, ChatMessage>;
+  model_name: string | null;
 };

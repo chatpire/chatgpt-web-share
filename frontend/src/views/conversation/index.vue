@@ -93,7 +93,7 @@ import StatusCard from './components/StatusCard.vue';
 import ToolButtonRow from './components/ToolButtonRow.vue';
 import MessageRow from './components/MessageRow.vue';
 
-import { ChatMessage } from '@/types/custom';
+import { ChatConversationDetail, ChatMessage } from '@/types/custom';
 import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 
 import { useI18n } from 'vue-i18n';
@@ -373,12 +373,28 @@ const sendMsg = async () => {
       if (newConversation.value) {
         await conversationStore.fetchAllConversations();
         currentConversationId.value = newConversation.value.conversation_id!;
-        newConversation.value = null;
-      }
-      // 将新消息存入 store
-      if (!currentActiveMessageRecv.value!.id.startsWith('recv')) {
-        // TODO 其它属性
+        // 解析 ISO string 为 小数时间戳
+        const create_time = new Date(newConversation.value.create_time!).getTime() / 1000;
+        conversationStore.$patch({
+          conversationDetailMap: {
+            [currentConversationId.value]: {
+              id: currentConversationId.value,
+              title: newConversation.value!.title,
+              model_name: newConversation.value!.model_name,
+              create_time,
+              mapping: {},
+              current_node: null,
+            } as ChatConversationDetail,
+          },
+        });
         conversationStore.addMessageToConversation(currentConversationId.value, currentActiveMessageSend.value!, currentActiveMessageRecv.value!);
+        newConversation.value = null;
+      } else {
+        // 将新消息存入 store
+        if (!currentActiveMessageRecv.value!.id.startsWith('recv')) {
+          // TODO 其它属性
+          conversationStore.addMessageToConversation(currentConversationId.value, currentActiveMessageSend.value!, currentActiveMessageRecv.value!);
+        }
       }
       currentActiveMessageSend.value = null;
       currentActiveMessageRecv.value = null;
