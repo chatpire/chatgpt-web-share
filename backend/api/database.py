@@ -22,22 +22,42 @@ alembic_cfg = Config("alembic.ini")
 alembic_cfg.set_main_option("sqlalchemy.url", database_url)
 
 
-def run_upgrade(connection, cfg):
-    cfg.attributes["connection"] = connection
+def run_upgrade(conn, cfg):
+    cfg.attributes["connection"] = conn
     command.upgrade(cfg, "head")
+
+
+def run_stamp(conn, cfg, revision):
+    cfg.attributes["connection"] = conn
+    command.stamp(cfg, revision)
 
 
 async def create_db_and_tables():
     # 如果数据库不存在则创建数据库（数据表）；若有更新，则执行迁移
     # https://alembic.sqlalchemy.org/en/latest/autogenerate.html
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-        try:
-            print("try to migrate database...")
-            await conn.run_sync(run_upgrade, alembic_cfg)
-        except Exception as e:
-            print(e)
-            print("database migration might fail, please check the database manually!")
+    async with engine.connect() as conn:
+        # 判断数据库是否存在
+        def use_inspector(conn):
+            inspector = sqlalchemy.inspect(conn)
+            return inspector.has_table("user")
+
+        result = await conn.run_sync(use_inspector)
+
+        if not result:
+            print("database not exists, creating database...")
+            await conn.run_sync(Base.metadata.create_all)
+            print("database created")
+            await conn.run_sync(run_stamp, alembic_cfg, "head")
+            print(f"stamped database to head")
+            return
+
+        if config.get("run_migration", False):
+            try:
+                print("try to migrate database...")
+                await conn.run_sync(run_upgrade, alembic_cfg)
+            except Exception as e:
+                print(e)
+                print("database migration might fail, please check the database manually!")
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
