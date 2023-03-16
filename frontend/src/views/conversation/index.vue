@@ -129,7 +129,7 @@ const currentAvaliableAskCountsTip = computed(() => {
 const newConversation = ref<ConversationSchema | null>(null);
 const currentConversationId = ref<string | null>(null);
 const currentConversation = computed<ConversationSchema | any>(() => {
-  if (newConversation.value?.conversation_id == currentConversationId.value) return newConversation.value;
+  if (newConversation.value?.conversation_id === currentConversationId.value) return newConversation.value;
   const conv = conversationStore.conversations?.find((conversation: ConversationSchema) => {
     return conversation.conversation_id == currentConversationId.value;
   });
@@ -356,8 +356,12 @@ const sendMsg = async () => {
     } else if (reply.type === 'message') {
       currentActiveMessageRecv.value!.message = reply.message;
       currentActiveMessageRecv.value!.id = reply.parent_id;
-      if (newConversation.value)
+      if (newConversation.value) {
         newConversation.value.conversation_id = reply.conversation_id;
+        if (currentConversationId.value !== newConversation.value.conversation_id) {
+          currentConversationId.value = newConversation.value.conversation_id!;
+        }
+      }
     } else if (reply.type === 'error') {
       currentActiveMessageRecv.value!.message = t(reply.tip);
       console.error(reply.tip, reply.message);
