@@ -1,11 +1,11 @@
 <template>
-  <div ref="rootRef">
+  <div class="h-full" ref="rootRef">
     <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
     <div class="h-full pb-6 flex flex-col md:flex-row md:space-x-4">
       <!-- 左栏 -->
-      <div class="md:w-1/4 w-full flex flex-col space-y-4">
+      <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:overflow-y-auto">
         <StatusCard />
-        <n-card class="max-h-full overflow-y-auto" content-style="padding: 4px;">
+        <n-card class="max-h-full" content-style="padding: 4px;">
           <div class="flex box-content m-2" v-if="!newConversation">
             <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loading">
               <template #icon>
@@ -20,13 +20,14 @@
         </n-card>
       </div>
       <!-- 右栏 -->
-      <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column; hieght: 100%;">
-        <!-- 消息记录列表 -->
-        <div class="overflow-x-hidden" :style="{ height: inputHeight }">
-          <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0" class="flex flex-col h-full">
+      <n-card class="md:w-3/4" :bordered="true" :class="{ 'h-90%': !!currentConversationId, 'h-98%': !currentConversationId || loading }"
+        content-style="padding: 0; display: flex; flex-direction: column; height: 100%;">
+        <!-- 上半部分 -->
+        <div class="flex-1 overflow-x-hidden h-full">
+          <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0">
             <!-- 消息记录内容（用于全屏展示） -->
-            <div ref="historyContentRef" id="print-content" :class="{ 'fullscreen-content': fullscreenHistory }" @keyup.esc="toggleFullscreenHistory(true)"
-              tabindex="0" style="outline:none;">
+            <div ref="historyContentRef" id="print-content" class="flex flex-col h-full" @keyup.esc="toggleFullscreenHistory(true)" tabindex="0"
+              style="outline:none;">
               <!-- 消息记录 -->
               <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
                 <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(currentConversation?.model_name) }}</n-text>
@@ -58,7 +59,8 @@
             </n-empty>
           </div>
         </div>
-        <div class="flex-grow flex flex-col relative">
+        <!-- 下半部分 -->
+        <div class="flex flex-col relative" :style="{ height: inputHeight }">
           <n-divider />
           <div class="absolute left-0 -top-8 ml-1 space-x-1">
             <!-- 展开/收起按钮 -->
@@ -145,7 +147,7 @@ const userStore = useUserStore();
 const conversationStore = useConversationStore();
 
 const inputExpanded = ref<Boolean>(false);
-const inputHeight = computed(() => inputExpanded.value ? '50vh' : '74vh');
+const inputHeight = computed(() => inputExpanded.value ? '50vh' : '24vh');
 const toggleInputExpanded = () => {
   inputExpanded.value = !inputExpanded.value;
 };
@@ -559,17 +561,6 @@ span.n-menu-item-content-header__extra {
 .n-divider {
   margin-bottom: 0px !important;
   margin-top: 0px !important;
-}
-
-.fullscreen-content {
-  /* position: fixed; */
-  /* top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  overflow-y: auto; */
-  /* transition: opacity 0.3s ease; */
 }
 
 @media print {

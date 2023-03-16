@@ -173,6 +173,12 @@ code {
   @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170
 }
 
+@media print {
+  code {
+    @apply max-w-160 !important
+  }
+}
+
 p {
   white-space: pre-line;
 }
