@@ -470,13 +470,13 @@ const exportToMarkdownFile = () => {
   let index = 0;
   for (const message of currentMessageListDisplay.value) {
     if (message.author_role === 'user') {
-      // 选取第一行作为标题，最多20个字符，如果有省略则加上...
-      let title = message.message!.split('\n')[0];
+      // 选取第一行作为标题，最多30个字符，如果有省略则加上...
+      let title = message.message!.trim().split('\n')[0];
       if (title.length >= 30) {
         title = title.slice(0, 27) + '...';
       }
       content += `## ${++index}. ${title}\n\n`;
-      content += "### User\n\n${message.message}\n\n";
+      content += `### User\n\n${message.message}\n\n`;
     } else {
       content += `### ChatGPT\n\n${message.message}\n\n`;
       content += "---\n\n";
