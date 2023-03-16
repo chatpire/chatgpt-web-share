@@ -24,6 +24,7 @@ This readme was translated by ChatGPT.
   - dark mode
   - copying reply content as Markdown format with one click
   - showing images/tables/formulas/syntax highlighting in replies
+  - Export conversation to beautiful markdown and PDF files 🤩 (new in v0.2.3)
 - Creates multiple users to share a ChatGPT account
 - Different users' ChatGPT conversations are separated and do not affect each other
 - When multiple users request at the same time, they will be queued for processing
