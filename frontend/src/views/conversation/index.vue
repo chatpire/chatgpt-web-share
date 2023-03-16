@@ -1,85 +1,114 @@
 <template>
-  <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
-  <div class="h-full pb-6 flex flex-col md:flex-row md:space-x-4">
-    <!-- 左栏 -->
-    <div class="md:w-1/4 w-full flex flex-col space-y-4">
-      <StatusCard />
-      <n-card class="max-h-full overflow-y-auto" content-style="padding: 4px;">
-        <div class="flex box-content m-2" v-if="!newConversation">
-          <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loading">
-            <template #icon>
-              <n-icon class="">
-                <Add />
-              </n-icon>
-            </template>
-            {{ $t("commons.newConversation") }}
-          </n-button>
+  <div ref="rootRef">
+    <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
+    <div class="h-full pb-6 flex flex-col md:flex-row md:space-x-4">
+      <!-- 左栏 -->
+      <div class="md:w-1/4 w-full flex flex-col space-y-4">
+        <StatusCard />
+        <n-card class="max-h-full overflow-y-auto" content-style="padding: 4px;">
+          <div class="flex box-content m-2" v-if="!newConversation">
+            <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loading">
+              <template #icon>
+                <n-icon class="">
+                  <Add />
+                </n-icon>
+              </template>
+              {{ $t("commons.newConversation") }}
+            </n-button>
+          </div>
+          <n-menu ref="menuRef" :disabled="loading" :options="menuOptions" :root-indent="18" v-model:value="currentConversationId"></n-menu>
+        </n-card>
+      </div>
+      <!-- 右栏 -->
+      <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column; hieght: 100%;">
+        <!-- 消息记录列表 -->
+        <div class="overflow-x-hidden" :style="{ height: inputHeight }">
+          <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0" class="flex flex-col h-full">
+            <!-- 消息记录内容（用于全屏展示） -->
+            <div ref="historyContentRef" id="print-content" :class="{ 'fullscreen-content': fullscreenHistory }" @keyup.esc="toggleFullscreenHistory(true)"
+              tabindex="0" style="outline:none;">
+              <!-- 消息记录 -->
+              <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
+                <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(currentConversation?.model_name) }}</n-text>
+              </div>
+              <MessageRow :message="message" v-for="message in currentMessageListDisplay" :key="message.id" />
+            </div>
+          </n-scrollbar>
+          <!-- 未选中对话 -->
+          <div v-else-if="!currentConversationId" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
+            <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
+              <template #icon>
+                <n-icon>
+                  <ChatboxEllipses />
+                </n-icon>
+              </template>
+              <template #extra>
+                <n-button @click="makeNewConversation">
+                  {{ $t("tips.newConversation") }}
+                </n-button>
+              </template>
+            </n-empty>
+          </div>
+          <!-- 加载消息记录中 -->
+          <div v-else-if="loading" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
+            <n-empty :description="$t('tips.loading')">
+              <template #icon>
+                <n-spin size="medium" />
+              </template>
+            </n-empty>
+          </div>
         </div>
-        <n-menu ref="menuRef" :disabled="loading" :options="menuOptions" :root-indent="18" v-model:value="currentConversationId"></n-menu>
+        <div class="flex-grow flex flex-col relative">
+          <n-divider />
+          <div class="absolute left-0 -top-8 ml-1 space-x-1">
+            <!-- 展开/收起按钮 -->
+            <n-button @click="toggleInputExpanded" circle secondary size="small">
+              <template #icon>
+                <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
+              </template>
+            </n-button>
+          </div>
+          <!-- 工具栏 -->
+          <div class="flex flex-row space-x-2 py-2 justify-center">
+            <n-button secondary type="info" size="small" @click="showFullscreenHistory">
+              <template #icon>
+                <n-icon :size="22">
+                  <FullscreenRound />
+                </n-icon>
+              </template>
+            </n-button>
+            <n-button secondary type="primary" size="small" @click="exportToMarkdownFile">
+              <template #icon>
+                <n-icon>
+                  <LogoMarkdown />
+                </n-icon>
+              </template>
+            </n-button>
+            <n-button secondary type="warning" size="small" @click="exportToPdfFile">
+              <template #icon>
+                <n-icon>
+                  <Print />
+                </n-icon>
+              </template>
+            </n-button>
+          </div>
+          <!-- 输入框 -->
+          <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage')"
+            @keydown.shift.enter="shortcutSendMsg" />
+          <div class="m-2 flex flex-row justify-between">
+            <n-text depth="3" class="hidden sm:block">
+              {{ currentAvaliableAskCountsTip }}
+            </n-text>
+            <n-button :disabled="sendDisabled" @click="sendMsg" class="" type="primary" size="small">
+              {{ $t("commons.send") }}
+              <template #icon><n-icon>
+                  <Send />
+                </n-icon></template>
+            </n-button>
+          </div>
+        </div>
       </n-card>
     </div>
-    <!-- 右栏 -->
-    <n-card :bordered="true" content-style="padding: 0; display: flex; flex-direction: column; hieght: 100%;">
-      <!-- 消息记录列表 -->
-      <div class="overflow-x-hidden" :style="{ height: inputHeight }">
-        <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0" class="flex flex-col h-full">
-          <!-- 消息记录 -->
-          <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
-            <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(currentConversation?.model_name) }}</n-text>
-          </div>
-          <MessageRow :message="message" v-for="message in currentMessageListDisplay" :key="message.id" />
-        </n-scrollbar>
-        <!-- 未选中对话 -->
-        <div v-else-if="!currentConversationId" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
-          <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
-            <template #icon>
-              <n-icon>
-                <ChatboxEllipses />
-              </n-icon>
-            </template>
-            <template #extra>
-              <n-button @click="makeNewConversation">
-                {{ $t("tips.newConversation") }}
-              </n-button>
-            </template>
-          </n-empty>
-        </div>
-        <!-- 加载消息记录中 -->
-        <div v-else-if="loading" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
-          <n-empty :description="$t('tips.loading')">
-            <template #icon>
-              <n-spin size="medium" />
-            </template>
-          </n-empty>
-        </div>
-      </div>
-      <div class="flex-grow flex flex-col relative">
-        <n-divider />
-        <!-- <ToolButtonRow /> -->
-        <!-- 展开/收起按钮 -->
-        <div class="absolute left-0 -top-8 ml-1">
-          <n-button @click="toggleInputExpanded" circle secondary size="small">
-            <template #icon>
-              <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
-            </template>
-          </n-button>
-        </div>
-        <!-- 输入框 -->
-        <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage')"
-          @keydown.shift.enter="shortcutSendMsg" />
-        <div class="m-2 flex flex-row justify-between">
-          <n-text depth="3" class="hidden sm:block">
-            {{ currentAvaliableAskCountsTip }}
-          </n-text>
-          <n-button :disabled="sendDisabled" @click="sendMsg" class="" type="primary" size="small">
-            {{ $t("commons.send") }}
-            <template #icon><n-icon>
-                <Send />
-              </n-icon></template>
-          </n-button>
-        </div>
-      </div>
-    </n-card>
   </div>
 </template>
 
@@ -90,7 +119,6 @@ import { ref, computed, watch, h, triggerRef } from 'vue';
 import { LoadingBar, Dialog, Message } from '@/utils/tips';
 
 import StatusCard from './components/StatusCard.vue';
-import ToolButtonRow from './components/ToolButtonRow.vue';
 import MessageRow from './components/MessageRow.vue';
 
 import { ChatConversationDetail, ChatMessage } from '@/types/custom';
@@ -98,15 +126,19 @@ import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 
 import { useI18n } from 'vue-i18n';
 import { NDropdown, NEllipsis, NButton, NIcon } from 'naive-ui';
-import { Send, ChatboxEllipses, ReloadOutline, Add } from '@vicons/ionicons5';
-import { KeyboardDoubleArrowUpRound, KeyboardDoubleArrowDownRound } from '@vicons/material';
+import { Send, ChatboxEllipses, LogoMarkdown, Add, Print } from '@vicons/ionicons5';
+import { KeyboardDoubleArrowUpRound, KeyboardDoubleArrowDownRound, FullscreenRound, PhotoRound } from '@vicons/material';
 import { popupChangeConversationTitleDialog, dropdownRenderer, popupNewConversationDialog, getCountTrans, getModelNameTrans } from '@/utils/renders';
 
 import { useThemeVars } from "naive-ui"
+import { saveAs } from 'file-saver';
+import md from "@/utils/markdown";
+
 const themeVars = useThemeVars()
 
 const { t } = useI18n();
 
+const rootRef = ref();
 const menuRef = ref(null);
 const historyRef = ref();
 const userStore = useUserStore();
@@ -423,9 +455,90 @@ const sendMsg = async () => {
   };
 }
 
+const exportToMarkdownFile = () => {
+  if (!currentConversation.value) {
+    Message.error(t('tips.pleaseSelectConversation'));
+    return;
+  }
+  let content = `# ${currentConversation.value!.title}\n\n`;
+  const create_time = new Date(currentConversation.value!.create_time!).toLocaleString();
+  content += `Date: ${create_time}\nModel: ${getModelNameTrans(currentConversation.value!.model_name)}\n`;
+  content += "generated by [ChatGPT Web Share](https://github.com/moeakwak/chatgpt-web-share)\n\n"
+  content += '---\n\n';
+  let index = 0;
+  for (const message of currentMessageListDisplay.value) {
+    if (message.author_role === 'user') {
+      // 选取第一行作为标题，最多20个字符，如果有省略则加上...
+      let title = message.message!.split('\n')[0];
+      if (title.length >= 30) {
+        title = title.slice(0, 27) + '...';
+      }
+      content += `## ${++index}. ${title}\n\n`;
+      content += "### User\n\n${message.message}\n\n";
+    } else {
+      content += `### ChatGPT\n\n${message.message}\n\n`;
+      content += "---\n\n";
+    }
+  }
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  saveAs(blob, `${currentConversation.value!.title} - ChatGPT history.md`);
+}
+
+const historyContentRef = ref();
+const fullscreenHistory = ref<Boolean>(false);
+const historyContentParent = ref<HTMLElement>();
+
+const toggleFullscreenHistory = (showTips: boolean) => {
+  console.log('toggleFullscreenHistory')
+  // fullscreenHistory.value = !fullscreenHistory.value;
+  const appElement = document.getElementById('app');
+  const bodyElement = document.body;
+  const historyContentElement = historyContentRef.value;
+  if (fullscreenHistory.value) {
+    // 将 historyContent 移动回来
+    historyContentParent.value!.appendChild(historyContentElement);
+    if (appElement) appElement.style.display = 'block';
+  } else {
+    historyContentParent.value = historyContentElement.parentElement!;
+    // 移动到body child的第一个
+    bodyElement.insertBefore(historyContentElement, bodyElement.firstChild);
+    // 将div#app 设置为不可见
+    if (appElement) {
+      appElement.style.display = 'none';
+    }
+    historyContentElement.focus();
+    if (showTips)
+      Message.success(t('tips.pressEscToExitFullscreen'), {
+        duration: 2000,
+      });
+  }
+  fullscreenHistory.value = !fullscreenHistory.value;
+};
+
+const showFullscreenHistory = () => {
+  if (!currentConversation.value) {
+    Message.error(t('tips.pleaseSelectConversation'));
+    return;
+  }
+  // focus historyContentRef
+  historyContentRef.value.focus();
+  toggleFullscreenHistory(true);
+}
+
+const exportToPdfFile = () => {
+  if (!currentConversation.value) {
+    Message.error(t('tips.pleaseSelectConversation'));
+    return;
+  }
+  toggleFullscreenHistory(false);
+  window.print();
+  toggleFullscreenHistory(false);
+}
+
 // 加载对话列表
 conversationStore.fetchAllConversations().then(() => {
 })
+
 
 </script>
 
@@ -446,5 +559,32 @@ span.n-menu-item-content-header__extra {
 .n-divider {
   margin-bottom: 0px !important;
   margin-top: 0px !important;
+}
+
+.fullscreen-content {
+  /* position: fixed; */
+  /* top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  overflow-y: auto; */
+  /* transition: opacity 0.3s ease; */
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #print-content * {
+    visibility: visible;
+  }
+
+  /* no margin in page */
+  @page {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 </style>

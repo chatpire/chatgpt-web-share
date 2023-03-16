@@ -12,16 +12,19 @@
     <div class="mx-4 w-full">
       <div v-show="!showRawContent" ref="contentRef" class="w-full" v-html="renderedContent"></div>
       <div v-show="showRawContent" class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
-      <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-1 right-1" @click="copyMessageContent">
-        <n-icon>
-          <CopyOutline />
-        </n-icon>
-      </n-button>
-      <n-button text ghost size="tiny" :type="showRawContent ? 'success' : 'tertiary'" class="mt-2 -ml-2 absolute bottom-1 right-5" @click="toggleShowRawContent">
-        <n-icon>
-          <CodeSlash />
-        </n-icon>
-      </n-button>
+      <div class="hide-in-print">
+        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-1 right-1" @click="copyMessageContent">
+          <n-icon>
+            <CopyOutline />
+          </n-icon>
+        </n-button>
+        <n-button text ghost size="tiny" :type="showRawContent ? 'success' : 'tertiary'" class="mt-2 -ml-2 absolute bottom-1 right-5"
+          @click="toggleShowRawContent">
+          <n-icon>
+            <CodeSlash />
+          </n-icon>
+        </n-button>
+      </div>
     </div>
   </div>
 </template>
@@ -80,7 +83,7 @@ function addButtonsToPreTags(htmlString: string): string {
 
     const button = Object.assign(document.createElement("button"), {
       innerHTML: "",
-      className: "hljs-copy-button",
+      className: "hljs-copy-button hide-in-print",
     });
     button.dataset.copied = "false";
     preTag.classList.add("hljs-copy-wrapper");
@@ -167,7 +170,7 @@ const copyMessageContent = () => {
 <style>
 /* modified from https://github.com/arronhunt/highlightjs-copy */
 code {
-  @apply w-full max-w-94 sm:max-w-138 md:max-w-156 lg:max-w-170
+  @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170
 }
 
 p {

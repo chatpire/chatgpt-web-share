@@ -137,7 +137,9 @@
     "loginSuccess": "登录成功",
     "jumpingPage": "正在跳转……",
     "terminated": "连接被服务端终止",
-    "loading": "正在加载..."
+    "loading": "正在加载...",
+    "pleaseSelectConversation": "请先选择一个对话",
+    "pressEscToExitFullscreen": "已进入全屏，单击Esc退出全屏"
   },
   "labels": {
     "nickname": "昵称",

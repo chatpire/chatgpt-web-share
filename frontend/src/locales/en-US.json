@@ -138,7 +138,9 @@
     "loginSuccess": "Logged in successfully",
     "jumpingPage": "Jumping...",
     "terminated": "Connection terminated by the server",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "pleaseSelectConversation": "Please select a conversation first",
+    "pressEscToExitFullscreen": "Full Screen | Press Esc To Exit"
   },
   "labels": {
     "nickname": "Nickname",
