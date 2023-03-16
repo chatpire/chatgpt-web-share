@@ -8,7 +8,7 @@
 
 A web application that allows multiple users to share a ChatGPT account at the same time, developed using FastAPI and Vue3. It can be used for sharing or renting a ChatGPT account among friends. It supports ChatGPT Plus, setting conversation models, and user request limits.
 
-**3.15 Update: Version 0.2.0 supports GPT-4!** Now you can share a ChatGPT Plus account with your friends and use GPT-4 together.
+**3.15 Update: Now supports GPT-4!** You can share a ChatGPT Plus account with your friends and use GPT-4 together.
 
 ![screenshot](screenshot.en.jpeg)
 
@@ -62,11 +62,12 @@ print_sql: false
 host: "127.0.0.1"
 port: 8000
 database_url: "sqlite+aiosqlite:////data/database.db"
+run_migration: false
 
-jwt_secret: "your jwt secret"    # Used for generating JWT token, needs to be set by yourself
+jwt_secret: "your jwt secret"    # Used for generating JWT token, like a password
 jwt_lifetime_seconds: 86400
-cookie_max_age: 86400           # Login expiration time
-user_secret: "your user secret"  # Used for generating user password, needs to be set by yourself
+cookie_max_age: 86400            # Login expiration time
+user_secret: "your user secret"  # Used for generating user password, like a password
 
 sync_conversations_on_startup: true # Whether to synchronize ChatGPT conversations on startup, recommended to enable
 create_initial_admin_user: true     # Whether to create initial admin user

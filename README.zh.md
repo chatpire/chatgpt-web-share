@@ -4,7 +4,7 @@
 [![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/moeakwak/chatgpt-web-share/actions)
 [![License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)](https://github.com/moeakwak/chatgpt-web-share/blob/main/LICENSE)
 
-共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。
+共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。支持使用 GPT-4！
 
 ![screenshot](screenshot.jpeg)
 
@@ -54,6 +54,7 @@ print_sql: false
 host: "127.0.0.1"
 port: 8000
 database_url: "sqlite+aiosqlite:////data/database.db"
+run_migration: false
 
 jwt_secret: "你的 jwt secret"    # 用于生成 jwt token，需要自行设置
 jwt_lifetime_seconds: 86400
