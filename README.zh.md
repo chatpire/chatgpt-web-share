@@ -1,5 +1,9 @@
 # ChatGPT Web Share
 
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/moeakwak/chatgpt-web-share?label=release)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=docker-build&logo=docker)
+![GitHub License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share?logo=license)
+
 共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。
 
 ![screenshot](screenshot.jpeg)
@@ -32,7 +36,7 @@ version: "3"
 
 services:
   chatgpt-share:
-    image: moeakwak/chatgpt-web-share:latest
+    image: ghcr.io/moeakwak/chatgpt-web-share:latest
     container_name: chatgpt-web-share
     restart: always
     network_mode: bridge
@@ -71,6 +75,8 @@ chatgpt_paid: true  # 是否为 ChatGPT Plus 用户
 `chatgpt_access_token` 获取方法：打开登录 chat.openai.com 后，打开 https://chat.openai.com/api/auth/session 并获取 accessToken 字段。
 
 最后运行 `docker-compose up -d` 即可。
+
+如要更新到最新版本，运行 `docker-compose pull` 以及 `docker-compose up -d` 即可。
 
 ### 使用 Caddy
 

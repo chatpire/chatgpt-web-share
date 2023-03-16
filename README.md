@@ -1,5 +1,9 @@
 # ChatGPT Web Share
 
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/moeakwak/chatgpt-web-share?label=release)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=docker-build&logo=docker)
+![GitHub](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)
+
 **中文 Readme 看这里: [README.zh.md](README.zh.md)**
 
 A web application that allows multiple users to share a ChatGPT account at the same time, developed using FastAPI and Vue3. It can be used for sharing or renting a ChatGPT account among friends. It supports ChatGPT Plus, setting conversation models, and user request limits.
@@ -38,7 +42,7 @@ version: "3"
 
 services:
   chatgpt-share:
-    image: moeakwak/chatgpt-web-share:latest
+    image: ghcr.io/moeakwak/chatgpt-web-share:latest
     container_name: chatgpt-web-share
     restart: always
     network_mode: bridge
@@ -48,8 +52,6 @@ services:
       - ./data:/data # store database files
       - ./config.yaml:/app/backend/api/config/config.yaml   # backend config file
 ```
- 
-Notice: Due to ghcr.io server incident, change `image` to `moeakwak/chatgpt-web-share:latest`.
 
 In the same folder, create config.yaml with the following contents:
 
@@ -81,6 +83,8 @@ chatgpt_paid: true  # Whether you are a ChatGPT Plus user
 How to get `chatgpt_access_token`: After logging in to `chat.openai.com`, open https://chat.openai.com/api/auth/session and get the `accessToken` field.
 
 Finally, run `docker-compose up -d`.
+
+To upgrade, run `docker-compose pull` and `docker-compose up -d`.
 
 ### Using Caddy
 
