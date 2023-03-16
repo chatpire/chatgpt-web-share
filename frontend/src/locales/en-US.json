@@ -145,8 +145,10 @@
     "is_superuser": "Is Admin",
     "active_time": "Last active time",
     "chat_status": "Current status",
-    "can_use_paid": "Can use paid model",
+    "can_use_paid": "Allow to use paid model",
+    "can_use_gpt4": "Allow to use GPT-4 model",
     "max_conv_count": "Max number of conversations",
-    "available_ask_count": "Remaining number of questions"
+    "available_ask_count": "Available ask count",
+    "available_gpt4_ask_count": "Available GPT-4 ask count"
   }
 }

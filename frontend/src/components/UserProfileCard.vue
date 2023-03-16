@@ -23,7 +23,7 @@ const serverStatus = ref<ServerStatusSchema>({});
 const userStore = useUserStore();
 const user: UserRead | null = userStore.user;
 
-const propsToShow = ['id', 'username', 'email', 'nickname', 'is_superuser', 'active_time', 'chat_status', 'can_use_paid', 'max_conv_count', 'available_ask_count'];
+const propsToShow = ['id', 'username', 'email', 'nickname', 'is_superuser', 'active_time', 'chat_status', 'can_use_paid', 'can_use_gpt4', 'max_conv_count', 'available_ask_count', 'available_gpt4_ask_count'];
 
 const translateKey = (key: string) => {
   if (['id', 'username', 'email'].includes(key)) {
@@ -32,18 +32,8 @@ const translateKey = (key: string) => {
   return t(`labels.${key}`);
 }
 
-// const translateValue = (value: any) => {
-//   if (typeof value === 'boolean') {
-//     return value ? t('commons.yes') : t('commons.no');
-//   } else if (value === null) {
-//     return t('commons.neverActive');
-//   } else if (value instanceof Date) {
-//     return value.toLocaleString();
-//   }
-//   return value;
-// }
 const translateValue = (key: string, value: any) => {
-  if (['is_superuser', 'can_use_paid'].includes(key)) {
+  if (['is_superuser', 'can_use_paid', 'can_use_gpt4'].includes(key)) {
     return value ? t('commons.yes') : t('commons.no');
   } else if (key === 'active_time') {
     return value ? new Date(value).toLocaleString() : t('commons.neverActive');
@@ -51,7 +41,7 @@ const translateValue = (key: string, value: any) => {
     return t(chatStatusMap[value as keyof typeof chatStatusMap])
   } else if (key === 'max_conv_count') {
     return value === -1 ? t('commons.unlimited') : value;
-  } else if (key === 'available_ask_count') {
+  } else if (key === 'available_ask_count' || key === 'available_gpt4_ask_count') {
     return value === -1 ? t('commons.unlimited') : value;
   }
   return value;
