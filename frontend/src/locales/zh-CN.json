@@ -99,7 +99,8 @@
     "userAlreadyExists": "用户已存在",
     "badCredentials": "用户名或密码错误",
     "maxConversationCountReached": "会话数量已达上限",
-    "cannotConnectMoreThanOneClient": "当前用户已有对话等待回复，不能再次请求"
+    "cannotConnectMoreThanOneClient": "当前用户已有对话等待回复，不能再次请求",
+    "noUserSelected": "未选择用户"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
@@ -127,7 +128,7 @@
     "failed": "失败",
     "requestSuccess": "请求成功",
     "requestFailed": "请求失败",
-    "invalidateConversation": "确定要将该会话标记为invalid吗？将不再出现在用户列表。",
+    "invalidateConversation": "确定要将这些会话标记为invalid吗？将不再出现在用户列表。",
     "vanishConversation": "确定要销毁该会话吗？将从数据库中删除内容，同时清除 OpenAI 账户上的记录。",
     "conversationTitle": "输入对话标题，为空则使用默认标题",
     "whetherUsePaidModel": "请选择使用的模型，为空则使用默认模型",

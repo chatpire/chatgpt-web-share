@@ -32,7 +32,7 @@
     "belongToUser": "Belongs to user",
     "isValid": "Valid",
     "isPublic": "Public",
-    "deleteInvalidConversations": "Delete invalid conversations",
+    "deleteInvalidConversations": "Destroy invalid conversations",
     "deleteInvalidConversationsConfirm": "Are you sure you want to delete all invalid conversations from the database?",
     "deleteSuccess": "Deleted successfully",
     "deleteFailed": "Failed to delete",
@@ -100,7 +100,8 @@
     "cannotConnectMoreThanOneClient": "Current user has a conversation waiting for reply, cannot request again",
     "noAvailableAskCount": "No Available Ask Count!",
     "noAvailableGPT4AskCount": "No Available GPT-4 Ask Count!",
-    "userNotAllowToUseGPT4Model": "Not allowed to use GPT-4 model"
+    "userNotAllowToUseGPT4Model": "Not allowed to use GPT-4 model",
+    "noUserSelected": "No User Selected"
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
@@ -128,7 +129,7 @@
     "failed": "Failed",
     "requestSuccess": "Request succeeded",
     "requestFailed": "Request failed",
-    "invalidateConversation": "Are you sure you want to mark this conversation as invalid? It will no longer appear in the user list.",
+    "invalidateConversation": "Are you sure you want to mark these conversations as invalid? It will no longer appear in the user list.",
     "vanishConversation": "Are you sure you want to destroy this conversation? It will be removed from the database and the records on the OpenAI account will be cleared.",
     "conversationTitle": "Enter conversation title, leave blank to use default title",
     "whetherUsePaidModel": "Please choose the model to use, leave blank to use default model",
