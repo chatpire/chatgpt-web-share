@@ -3,6 +3,7 @@ name: Build and publish Docker image
 on:
   push:
     tags: ["v*"]
+    branches: ["test-workflow"]
 
 env:
   REGISTRY: ghcr.io
@@ -65,8 +66,7 @@ jobs:
         run: |
           git clone https://github.com/moeakwak/ChatGPT-Proxy-V4.git
           cd ChatGPT-Proxy-V4
-          ls
-          go install
+          go mod download
           go build
 
       - name: Move ChatGPT-Proxy-V4 to backend
