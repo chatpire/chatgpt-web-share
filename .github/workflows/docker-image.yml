@@ -20,20 +20,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Clone ChatGPT-Proxy-V4
         run: git clone https://github.com/moeakwak/ChatGPT-Proxy-V4.git
-      
-      # - name: Setup Go
-      #   uses: actions/setup-go@v4
-      #   with:
-      #     go-version: "1.20"
-      #     cache-dependency-path: ChatGPT-Proxy-V4/go.sum
 
-      # - name: build ChatGPT-Proxy-V4
-      #   run: |
-      #     cd ChatGPT-Proxy-V4
-      #     go build
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.20"
+          cache-dependency-path: ChatGPT-Proxy-V4/go.sum
+
+      - name: build ChatGPT-Proxy-V4
+        run: |
+          cd ChatGPT-Proxy-V4
+          CGO_ENABLED=1 GOOS=linux go build -ldflags "-linkmode external -extldflags -static"
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -70,6 +70,10 @@ jobs:
         run: |
           cd frontend
           pnpm build
+
+      - name: Move ChatGPT-Proxy-V4 to backend
+        run: |
+          mv ChatGPT-Proxy-V4/ChatGPT-Proxy-V4 backend/
 
       - name: Docker meta
         id: meta
