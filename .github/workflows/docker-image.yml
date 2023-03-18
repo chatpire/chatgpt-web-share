@@ -65,6 +65,8 @@ jobs:
         run: |
           git clone https://github.com/moeakwak/ChatGPT-Proxy-V4.git
           cd ChatGPT-Proxy-V4
+          ls
+          go install
           go build
 
       - name: Move ChatGPT-Proxy-V4 to backend
