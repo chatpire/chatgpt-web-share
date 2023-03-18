@@ -1,3 +1,5 @@
+ARG PIP_CACHE_DIR=/pip_cache
+
 FROM python:3.10-alpine
 
 RUN mkdir -p /app/backend
@@ -5,7 +7,7 @@ RUN mkdir -p /app/backend
 RUN apk add --update caddy
 
 COPY backend/requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
+RUN pip install --cache-dir=${PIP_CACHE_DIR} -r /tmp/requirements.txt
 
 COPY Caddyfile /app/Caddyfile
 COPY backend /app/backend
