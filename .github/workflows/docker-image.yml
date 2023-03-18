@@ -21,14 +21,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
+      - name: Clone ChatGPT-Proxy-V4
+        run: git clone https://github.com/moeakwak/ChatGPT-Proxy-V4.git
+      
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: "1.20"
+          cache-dependency-path: ChatGPT-Proxy-V4/go.sum
 
-      - name: Clone ChatGPT-Proxy-V4 and build
+      - name: build ChatGPT-Proxy-V4
         run: |
-          git clone https://github.com/moeakwak/ChatGPT-Proxy-V4.git
           cd ChatGPT-Proxy-V4
           go build
 
