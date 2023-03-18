@@ -30,7 +30,7 @@ jobs:
         run: |
           git clone https://github.com/moeakwak/ChatGPT-Proxy-V4.git
           cd ChatGPT-Proxy-V4
-          go build
+          go build -ldflags="-linkmode external -extldflags -static
 
       - name: Install Node.js
         uses: actions/setup-node@v3
