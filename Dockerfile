@@ -1,22 +1,26 @@
-FROM python:3.10-slim-buster
+FROM golang:1.20-alpine AS ProxyBuilder
+
+COPY ChatGPT-Proxy-V4 /app/ChatGPT-Proxy-V4
+
+WORKDIR /app/ChatGPT-Proxy-V4
+
+RUN CGO_ENABLED=0 go build -a -installsuffix cgo .
+
+FROM python:3.10-alpine
 
 ARG PIP_CACHE_DIR=/pip_cache
 
 RUN mkdir -p /app/backend
 
-RUN apt update && apt-get install -y curl
-RUN apt install -y debian-keyring debian-archive-keyring apt-transport-https && \
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && \
-    apt update && apt install caddy
-
+RUN apk add --update caddy
 
 COPY backend/requirements.txt /tmp/requirements.txt
-RUN pip install --cache-dir=${PIP_CACHE_DIR} -r /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
 
 COPY Caddyfile /app/Caddyfile
 COPY backend /app/backend
 COPY frontend/dist /app/dist
+COPY --from=ProxyBuilder /app/ChatGPT-Proxy-V4/ChatGPT-Proxy-V4 /app/backend/ChatGPT-Proxy-V4
 
 WORKDIR /app
 
