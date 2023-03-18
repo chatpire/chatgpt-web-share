@@ -1,13 +1,15 @@
-FROM python:3.10-alpine
+FROM python:3.10-slim-buster
 
 ARG PIP_CACHE_DIR=/pip_cache
 
 RUN mkdir -p /app/backend
 
-RUN apk add --update caddy
-RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r0/glibc-2.35-r0.apk \
-    apk add glibc-2.35-r0.apk
+RUN apt update && apt-get install -y curl
+RUN apt install -y debian-keyring debian-archive-keyring apt-transport-https && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list && \
+    apt update && apt install caddy
+
 
 COPY backend/requirements.txt /tmp/requirements.txt
 RUN pip install --cache-dir=${PIP_CACHE_DIR} -r /tmp/requirements.txt
