@@ -57,9 +57,16 @@ async def get_status(_user: User = Depends(current_active_user)):
 
 
 @router.get("/logs/proxy", tags=["status"])
-async def get_proxy_logs(_user: User = Depends(current_super_user)):
-    # 读取最后 100 行
+async def get_proxy_logs(_user: User = Depends(current_super_user), max_lines: int = 100):
+    assert max_lines > 0
     with open(os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"), "r",
-                                    encoding="utf-8") as f:
-        lines = f.readlines()[-100:]
+              encoding="utf-8") as f:
+        lines = f.readlines()[-max_lines:]
+    return "".join(lines)
+
+@router.get("/logs/server", tags=["status"])
+async def get_server_logs(_user: User = Depends(current_super_user), max_lines: int = 100):
+    assert max_lines > 0
+    with open(g.server_log_filename, "r", encoding="utf-8") as f:
+        lines = f.readlines()[-max_lines:]
     return "".join(lines)

@@ -75,7 +75,13 @@
     "gpt4Model": "GPT-4",
     "unknown": "未知",
     "availableGPT4AskCount": "Available GPT-4 Ask Count",
-    "canUseGPT4Model": "Allow GPT-4"
+    "canUseGPT4Model": "Allow GPT-4",
+    "logViewer": "Log Viewer",
+    "serverLogs": "Server Logs",
+    "proxyLogs": "Reverse Proxy Logs",
+    "updateInterval": "Refresh Interval",
+    "autoScrolling": "Auto Scroll",
+    "maxLineCount": "Max Line Count"
   },
   "errors": {
     "403": "403 error: access denied",

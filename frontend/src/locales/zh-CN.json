@@ -74,7 +74,13 @@
     "gpt4Model": "GPT-4",
     "unknown": "未知",
     "availableGPT4AskCount": "剩余GPT-4对话次数",
-    "canUseGPT4Model": "允许GPT-4"
+    "canUseGPT4Model": "允许GPT-4",
+    "logViewer": "日志记录",
+    "serverLogs": "服务器日志",
+    "proxyLogs": "反向代理日志",
+    "updateInterval": "刷新间隔",
+    "autoScrolling": "自动滚动",
+    "maxLineCount": "行数"
   },
   "errors": {
     "403": "403 错误：无访问权限",

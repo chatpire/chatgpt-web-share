@@ -8,6 +8,8 @@ enum ApiUrl {
   UserList = "/user",
 
   ServerStatus = "/status",
+  ProxyLogs = "/logs/proxy",
+  ServerLogs = "/logs/server"
 }
 
 export default ApiUrl;
