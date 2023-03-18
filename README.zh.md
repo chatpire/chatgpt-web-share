@@ -26,9 +26,21 @@
 
 ## 使用 Proxy 绕过 Cloudflare 验证
 
-注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。此外，[OpenAI 可能会封禁使用 V1 Proxy 的账号](https://github.com/acheong08/ChatGPT/issues/1158)，请谨慎使用。目前正在想办法降低风险。
+注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。此外，[OpenAI 可能会封禁使用 V1 Proxy 的账号](https://github.com/acheong08/ChatGPT/issues/1158)。
 
 如果你有 Plus 账号，建议自己部署 V1 Proxy（https://github.com/acheong08/ChatGPT-Proxy-V4），之后在 config.yaml 中设置 `chatgpt_base_url` 为你的代理地址。
+
+0.2.7 版本更新：现在已经整合了反向代理服务到 docker 镜像中！如果你使用的是 docker 部署，可以在 config.yaml 中进行如下设置：
+
+```yaml
+chatgpt_base_url: http://127.0.0.1:6062/api/
+run_reverse_proxy: true
+reverse_proxy_port: 6062
+reverse_proxy_binary_path: ChatGPT-Proxy-V4
+reverse_proxy_puid: "_puid value from cookie"
+```
+
+其中，reverse_proxy_puid 需要从你的浏览器中获取：打开 https://chat.openai.com/，打开开发者工具，找到 cookie 中的 `_puid` 字段，将其值填入 config.yaml 中。
 
 ## 部署
 
