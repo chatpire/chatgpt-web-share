@@ -1,0 +1,3 @@
+[submodule "backend/proxy"]
+	path = backend/proxy
+	url = git@github.com:moeakwak/ChatGPT-Proxy-V4.git
