@@ -24,7 +24,11 @@
 - 多用户同时请求时，会进行排队处理
 - 管理员可设置用户的最大对话数量、对话次数限制等
 
-注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。此外，[OpenAI 可能会封禁使用 V1 Proxy 的账号](https://github.com/acheong08/ChatGPT/issues/1158)，请谨慎使用。目前正在想办法降低风险。（#13）
+## 使用 Proxy 绕过 Cloudflare 验证
+
+注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。此外，[OpenAI 可能会封禁使用 V1 Proxy 的账号](https://github.com/acheong08/ChatGPT/issues/1158)，请谨慎使用。目前正在想办法降低风险。
+
+如果你有 Plus 账号，建议自己部署 V1 Proxy（https://github.com/acheong08/ChatGPT-Proxy-V4），之后在 config.yaml 中设置 `chatgpt_base_url` 为你的代理地址。
 
 ## 部署
 
