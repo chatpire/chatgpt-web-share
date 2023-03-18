@@ -17,6 +17,7 @@ def get_log_config():
     os.makedirs(log_dir, exist_ok=True)
     filename = os.path.join(log_dir, f"{datetime.now().strftime('%Y%m%d_%H-%M-%S')}.log")
     log_config['handlers']['file_handler']['filename'] = filename
+    log_config['handlers']['console_handler']['level'] = config.get("console_log_level", "INFO")
     return log_config
 
 

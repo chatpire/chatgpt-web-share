@@ -18,3 +18,6 @@ initial_user_password: useruser
 
 chatgpt_access_token: "chatgpt_access_token"
 chatgpt_paid: false
+
+log_dir: ./logs
+console_log_level: TEST

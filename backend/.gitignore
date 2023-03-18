@@ -5,3 +5,4 @@ config.yaml
 .vscode
 files
 logs
+*.log

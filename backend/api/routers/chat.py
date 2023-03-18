@@ -91,7 +91,7 @@ async def vanish_conversation(conversation: Conversation = Depends(get_conversat
     try:
         await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
     except ChatGPTError as e:
-        logger.info(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
+        logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
     except httpx.HTTPStatusError as e:
         if e.response.status_code != 404:
             raise e
