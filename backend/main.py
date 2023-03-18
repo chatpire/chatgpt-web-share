@@ -6,15 +6,15 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-# from os import environ
+from api.config import config
+from os import environ
 
-# environ["CHATGPT_BASE_URL"] = environ.get("CHATGPT_BASE_URL", "https://chat.openai.com/backend-api/")
+environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url", environ.get("CHATGPT_BASE_URL"))
 
 import api.globals as g
 from api.enums import ChatStatus
 from api.models import Conversation, User
 from api.response import CustomJSONResponse, PrettyJSONResponse, handle_exception_response
-from api.config import config
 from api.database import create_db_and_tables, get_async_session_context
 from api.exceptions import SelfDefinedException
 from api.routers import users, chat, status
@@ -101,6 +101,7 @@ async def on_startup():
 
     # 获取 ChatGPT 对话，并同步数据库
     try:
+        print(f"Using {config.get('chatgpt_base_url', environ.get('CHATGPT_BASE_URL'))} as ChatGPT base url")
         result = await g.chatgpt_manager.get_conversations()
         if result and len(result) > 0:
             print(f"Fetched {len(result)} conversations")
