@@ -261,7 +261,8 @@ async def ask(websocket: WebSocket):
                 await websocket.send_json(reply)
                 if conversation_id is None:
                     conversation_id = data["conversation_id"]
-            logger.debug(f"finish ask {conversation_id} ({model_name}), using time: {time.time() - request_start_time}s")
+            logger.debug(
+                f"finish ask {conversation_id} ({model_name}), using time: {time.time() - request_start_time}s")
 
             async with get_async_session_context() as session:
                 # 若新建了对话，则添加到数据库
@@ -290,13 +291,13 @@ async def ask(websocket: WebSocket):
                 # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
                 # 如果都有限制，则都要扣除一次
                 # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
-                assert user.available_ask_count != 0
-                assert user.available_gpt4_ask_count != 0
                 if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
                     user = await session.get(User, user.id)
                     if user.available_ask_count != -1:
+                        assert user.available_ask_count > 0
                         user.available_ask_count -= 1
                     if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
+                        assert user.available_gpt4_ask_count > 0
                         user.available_gpt4_ask_count -= 1
                     session.add(user)
                 await session.commit()
