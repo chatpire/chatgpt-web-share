@@ -55,11 +55,29 @@ jobs:
           cd frontend
           pnpm build
 
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.20
+
+      - name: Clone ChatGPT-Proxy-V4 and build
+        run: |
+          git clone https://github.com/moeakwak/ChatGPT-Proxy-V4.git
+          cd ChatGPT-Proxy-V4
+          go build
+
+      - name: Move ChatGPT-Proxy-V4 to backend
+        run: |
+          mv ChatGPT-Proxy-V4/ChatGPT-Proxy-V4 backend/
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
