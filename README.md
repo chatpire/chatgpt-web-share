@@ -30,7 +30,7 @@ This readme was translated by ChatGPT.
 - When multiple users request at the same time, they will be queued for processing
 - Administrators can set users' maximum number of conversations and conversation time limits, etc.
 
-Note: Currently using [revChatGPT](https://github.com/acheong08/ChatGPT), which uses its reverse proxy to bypass Cloudflare verification, therefore it is subject to request limits and does not guarantee long-term stability.
+Risk Warning: This project is currently using [revChatGPT](https://github.com/acheong08/ChatGPT) V1, which uses its reverse proxy to bypass Cloudflare verification, therefore it is subject to request limits and does not guarantee long-term stability. And it has been recently reported that OpenAI may deactivate accounts that use this method. Please use it at your own risk. (#13)
 
 ## Deployment
 
