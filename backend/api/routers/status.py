@@ -1,17 +1,18 @@
+import os
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
 import api.globals as g
+from api.config import config
 from api.database import get_async_session_context
 from api.enums import ChatStatus
 from api.models import User
 from api.schema import ServerStatusSchema
-from api.users import current_active_user
+from api.users import current_active_user, current_super_user
 
 router = APIRouter()
-
 
 server_status_cache = None
 server_status_cache_last_update_time: datetime | None = None
@@ -54,3 +55,11 @@ async def get_status(_user: User = Depends(current_active_user)):
     server_status_cache_last_update_time = datetime.utcnow()
     return server_status_cache
 
+
+@router.get("/logs/proxy", tags=["status"])
+async def get_proxy_logs(_user: User = Depends(current_super_user)):
+    # 读取最后 100 行
+    with open(os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"), "r",
+                                    encoding="utf-8") as f:
+        lines = f.readlines()[-100:]
+    return "".join(lines)

@@ -10,10 +10,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from api.config import config
 from os import environ
 
-if config.get("run_proxy", False):
-    environ["CHATGPT_BASE_URL"] = f"http://127.0.0.1:{config.get('proxy_port', 6060)}/"
-else:
-    environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url", environ.get("CHATGPT_BASE_URL"))
+from utils.proxy import close_reverse_proxy
+
+environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url", environ.get("CHATGPT_BASE_URL"))
 
 import api.globals as g
 from api.enums import ChatStatus
@@ -108,6 +107,11 @@ async def on_startup():
             session.add(user)
         await session.commit()
 
+    # 运行 Proxy Server
+    if config.get("run_reverse_proxy", False):
+        from utils.proxy import run_reverse_proxy
+        run_reverse_proxy()
+
     # 获取 ChatGPT 对话，并同步数据库
     try:
         logger.debug(f"Using {config.get('chatgpt_base_url', environ.get('CHATGPT_BASE_URL'))} as ChatGPT base url")
@@ -159,6 +163,11 @@ async def on_startup():
         raise e
     logger.debug("Done!")
 
+
+# 关闭时
+@app.on_event("shutdown")
+async def on_shutdown():
+    close_reverse_proxy()
 
 # @api.get("/routes")
 # async def root():

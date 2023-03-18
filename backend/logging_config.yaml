@@ -18,12 +18,6 @@ handlers:
     level: DEBUG
     filename: cws.log
     maxBytes: 10485760  # 10MB
-  proxy_file_handler:
-    class: logging.handlers.RotatingFileHandler
-    formatter: proxy-output
-    encoding: utf-8
-    filename: proxy.log
-    maxBytes: 102400  # 100KB
   console_handler:
     class: logging.StreamHandler
     formatter: colored
@@ -39,9 +33,6 @@ loggers:
   cws:
     level: DEBUG
     handlers: [console_handler, file_handler]
-  proxy:
-    level: INFO
-    handlers: [proxy_file_handler]
   sqlalchemy:
     level: WARN
     handlers: [console_handler, file_handler]

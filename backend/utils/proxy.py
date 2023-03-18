@@ -1,9 +1,11 @@
+import os.path
 import subprocess
 from api.config import config
 import api.globals as g
-import logging
 
-logger = logging.getLogger("proxy")
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def run_reverse_proxy():
@@ -18,14 +20,14 @@ def run_reverse_proxy():
         exit(1)
 
     puid = config.get("reverse_proxy_puid")
-    env_vars = {}
-    env_vars["PORT"] = config.get("reverse_proxy_port", 6060)
+    env_vars = {"PORT": str(config.get("reverse_proxy_port", 6060))}
     if puid:
         env_vars["PUID"] = puid
     if config.get("auto_refresh_reverse_proxy_puid"):
         env_vars["ACCESS_TOKEN"] = config.get("chatgpt_access_token")
 
-    g.reverse_proxy_log_file = open("reverse_proxy.log", "w")
+    g.reverse_proxy_log_file = open(os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"), "w",
+                                    encoding="utf-8")
     logger.debug(f"Reverse proxy binary path: {proxy_path}")
     g.reverse_proxy_process = subprocess.Popen([proxy_path], env=env_vars, stdout=g.reverse_proxy_log_file,
                                                stderr=g.reverse_proxy_log_file)
@@ -38,4 +40,4 @@ def close_reverse_proxy():
         g.reverse_proxy_process = None
         g.reverse_proxy_log_file.close()
         g.reverse_proxy_log_file = None
-        logger.info("Reverse proxy stopped!")
+        logger.info("Reverse proxy stopped.")

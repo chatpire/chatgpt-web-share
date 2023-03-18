@@ -19,5 +19,12 @@ initial_user_password: useruser
 chatgpt_access_token: "chatgpt_access_token"
 chatgpt_paid: false
 
+# proxy configuration
+# chatgpt_base_url: http://127.0.0.1:6062/api/
+# run_reverse_proxy: true
+# reverse_proxy_port: 6062
+# reverse_proxy_binary_path: ../proxy
+# reverse_proxy_puid: "_puid value from cookie"
+
 log_dir: ./logs
 console_log_level: TEST
