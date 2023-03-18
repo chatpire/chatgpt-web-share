@@ -71,10 +71,6 @@ jobs:
           cd frontend
           pnpm build
 
-      - name: Move ChatGPT-Proxy-V4 to backend
-        run: |
-          mv ChatGPT-Proxy-V4/ChatGPT-Proxy-V4 backend/
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
