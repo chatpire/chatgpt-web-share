@@ -1,0 +1,50 @@
+version: 1
+formatters:
+  simple:
+    format: "%(asctime)s.%(msecs)03d %(levelname)8s: [%(name)s]\t%(message)s"
+    datefmt: '%Y/%m/%d %H:%M:%S'
+  proxy-output:
+    format: "%(message)s"
+    datefmt: '%Y/%m/%d %H:%M:%S'
+  colored:
+    (): colorlog.ColoredFormatter
+    format: "%(asctime)s.%(msecs)03d %(log_color)s%(levelname)8s%(reset)s: %(cyan)s[%(name)s]%(reset)s %(message)s"
+    datefmt: '%Y/%m/%d %H:%M:%S'
+handlers:
+  file_handler:
+    class: logging.handlers.RotatingFileHandler
+    formatter: simple
+    encoding: utf-8
+    level: INFO
+    filename: cws.log
+    maxBytes: 10485760  # 10MB
+  proxy_file_handler:
+    class: logging.handlers.RotatingFileHandler
+    formatter: proxy-output
+    encoding: utf-8
+    filename: proxy.log
+    maxBytes: 102400  # 100KB
+  console_handler:
+    class: logging.StreamHandler
+    formatter: colored
+    level: INFO
+
+root:
+  level: DEBUG
+  handlers: []
+loggers:
+  uvicorn:
+    level: INFO
+    handlers: [console_handler, file_handler]
+  cws:
+    level: DEBUG
+    handlers: [console_handler, file_handler]
+  proxy:
+    level: INFO
+    handlers: [proxy_file_handler]
+  sqlalchemy:
+    level: WARN
+    handlers: [console_handler, file_handler]
+  alembic:
+    level: INFO
+    handlers: [console_handler, file_handler]

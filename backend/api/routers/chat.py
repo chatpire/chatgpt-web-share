@@ -18,6 +18,9 @@ from api.users import current_active_user, websocket_auth, current_super_user
 from revChatGPT.V1 import Error as ChatGPTError
 from api.response import response
 from utils.common import get_conversation_model
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -88,7 +91,7 @@ async def vanish_conversation(conversation: Conversation = Depends(get_conversat
     try:
         await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
     except ChatGPTError as e:
-        print(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
+        logger.info(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
     except httpx.HTTPStatusError as e:
         if e.response.status_code != 404:
             raise e
@@ -169,7 +172,7 @@ async def ask(websocket: WebSocket):
 
     await websocket.accept()
     user = await websocket_auth(websocket)
-    print(f"{user.username} connected to websocket")
+    logger.debug(f"{user.username} connected to websocket")
 
     if user is None:
         await websocket.close(1008, "errors.unauthorized")
@@ -258,7 +261,7 @@ async def ask(websocket: WebSocket):
                 await websocket.send_json(reply)
                 if conversation_id is None:
                     conversation_id = data["conversation_id"]
-            print(f"finish ask {conversation_id} ({model_name}), using time: {time.time() - request_start_time}s")
+            logger.debug(f"finish ask {conversation_id} ({model_name}), using time: {time.time() - request_start_time}s")
 
             async with get_async_session_context() as session:
                 # 若新建了对话，则添加到数据库
@@ -268,7 +271,7 @@ async def ask(websocket: WebSocket):
                         if new_title is not None:
                             await g.chatgpt_manager.set_conversation_title(conversation_id, new_title)
                     except Exception as e:
-                        print(e)
+                        logger.warning(e)
                     finally:
                         current_time = datetime.utcnow()
                         conversation = Conversation(conversation_id=conversation_id, title=new_title, user_id=user.id,
@@ -315,7 +318,7 @@ async def ask(websocket: WebSocket):
         websocket_code = 1001
         websocket_reason = "errors.chatgptResponseError"
     except Exception as e:
-        print(e)
+        logger.error(e)
         await websocket.send_json({
             "type": "error",
             "tip": "errors.unknownError",

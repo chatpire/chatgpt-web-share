@@ -4,3 +4,4 @@ config.yaml
 *.db
 .vscode
 files
+logs

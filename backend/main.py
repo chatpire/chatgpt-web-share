@@ -1,4 +1,5 @@
 import asyncio
+from utils.logger import setup_logger, get_log_config, get_logger
 import uvicorn
 
 from fastapi import FastAPI
@@ -9,7 +10,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from api.config import config
 from os import environ
 
-environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url", environ.get("CHATGPT_BASE_URL"))
+if config.get("run_proxy", False):
+    environ["CHATGPT_BASE_URL"] = f"http://127.0.0.1:{config.get('proxy_port', 6060)}/"
+else:
+    environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url", environ.get("CHATGPT_BASE_URL"))
 
 import api.globals as g
 from api.enums import ChatStatus
@@ -21,8 +25,13 @@ from api.routers import users, chat, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from utils.create_user import create_user
+
 import dateutil.parser
 from revChatGPT.V1 import Error as ChatGPTError
+
+setup_logger()
+
+logger = get_logger(__name__)
 
 app = FastAPI(default_response_class=CustomJSONResponse)
 
@@ -71,7 +80,7 @@ async def validation_exception_handler(request, exc):
 @app.on_event("startup")
 async def on_startup():
     await create_db_and_tables()
-    print("database initialized")
+    logger.info("database initialized")
 
     if config.get("create_initial_admin_user", False):
         await create_user(config.get("initial_admin_username"),
@@ -101,10 +110,10 @@ async def on_startup():
 
     # 获取 ChatGPT 对话，并同步数据库
     try:
-        print(f"Using {config.get('chatgpt_base_url', environ.get('CHATGPT_BASE_URL'))} as ChatGPT base url")
+        logger.debug(f"Using {config.get('chatgpt_base_url', environ.get('CHATGPT_BASE_URL'))} as ChatGPT base url")
         result = await g.chatgpt_manager.get_conversations()
         if result and len(result) > 0:
-            print(f"Fetched {len(result)} conversations")
+            logger.info(f"Fetched {len(result)} conversations")
             conversations_map = {conv['id']: conv for conv in result}
             async with get_async_session_context() as session:
                 r = await session.execute(select(Conversation))
@@ -116,18 +125,19 @@ async def on_startup():
                         # 同步标题
                         if conv["title"] != conv_db.title:
                             conv_db.title = conv["title"]
-                            print(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
+                            logger.info(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
                             session.add(conv_db)
                         # 同步时间
                         create_time = dateutil.parser.isoparse(conv["create_time"])
                         if create_time != conv_db.create_time:
                             conv_db.create_time = create_time
-                            print(f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
+                            logger.info(f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
                             session.add(conv_db)
                         conversations_map.pop(conv_db.conversation_id)
                     elif not conv and conv_db.is_valid:  # 若数据库中存在，但 ChatGPT 中不存在，则将数据库中的对话标记为无效
                         conv_db.is_valid = False
-                        print(f"Conversation {conv_db.title}({conv_db.conversation_id}) not recorded, added to database")
+                        logger.info(
+                            f"Conversation {conv_db.title}({conv_db.conversation_id}) not recorded, added to database")
                         session.add(conv_db)
 
                 # 新增对话
@@ -139,15 +149,15 @@ async def on_startup():
                         create_time=dateutil.parser.isoparse(conv["create_time"])
                     )
                     session.add(new_conv)
-                    print(f"Found new conversation {conv['title']}({conv['id']})")
+                    logger.info(f"Found new conversation {conv['title']}({conv['id']})")
 
                 await session.commit()
     except ChatGPTError as e:
-        print(f"Fetch conversation error: {e.source} {e.code}: {e.message}")
+        logger.warning(f"Fetch conversation error: {e.source} {e.code}: {e.message}")
     except Exception as e:
-        print(e)
+        logger.error(e)
         raise e
-    print("Done!")
+    logger.debug("Done!")
 
 
 # @api.get("/routes")
@@ -159,4 +169,5 @@ async def on_startup():
 
 if __name__ == "__main__":
     uvicorn.run(app, host=config.get("host"),
-                port=config.get("port"), log_level="info")
+                port=config.get("port"),
+                log_config=get_log_config())

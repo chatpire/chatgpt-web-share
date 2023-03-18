@@ -1,6 +1,9 @@
 from api.schema import UserCreate
 from api.users import get_user_manager_context
 from api.database import get_user_db_context, get_async_session_context
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 async def create_user(username, nickname: str, email: str, password: str, is_superuser: bool = False, **kwargs):
@@ -15,8 +18,8 @@ async def create_user(username, nickname: str, email: str, password: str, is_sup
                             **kwargs
                         )
                     )
-                    print(f"User created: {user}")
+                    logger.info(f"User created: {user}")
                     return user
     except Exception as e:
-        print(f"Create User {username} Error: {e}")
+        logger.info(f"Create User {username} Error: {e}")
         return None

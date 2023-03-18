@@ -14,6 +14,10 @@ from alembic import command
 from api.config import config
 from api.models import Base, User
 
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 database_url = config.get("database_url")
 engine = create_async_engine(database_url, echo=config.get("print_sql", False))
 async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
@@ -49,22 +53,22 @@ async def create_db_and_tables():
         result = await conn.run_sync(use_inspector)
 
         if not result:
-            print("database not exists, creating database...")
+            logger.info("database not exists, creating database...")
             await conn.run_sync(Base.metadata.create_all)
-            print("database created")
+            logger.info("database created!")
             await conn.run_sync(run_stamp, alembic_cfg, "head")
-            print(f"stamped database to head")
+            logger.info(f"stamped database to head")
             return
         else:
             await conn.run_sync(run_ensure_version, alembic_cfg)
 
         if config.get("run_migration", False):
             try:
-                print("try to migrate database...")
+                logger.info("try to migrate database...")
                 await conn.run_sync(run_upgrade, alembic_cfg)
             except Exception as e:
-                print(e)
-                print("database migration might fail, please check the database manually!")
+                logger.warning("Database migration might fail, please check the database manually!")
+                logger.warning(f"detail: {str(e)}")
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:

@@ -19,6 +19,9 @@ from api.models import User
 
 from sqlalchemy import select, Integer
 from fastapi_users.models import UP
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 # 使用 cookie + JWT
 # 参考 https://fastapi-users.github.io/fastapi-users/10.2/configuration/full-example/
@@ -157,7 +160,7 @@ async def current_active_user(user: User = Depends(__current_active_user)):
             session.add(user_update)
             await session.commit()
     except Exception as e:
-        print(e)
+        logger.warning(e)
     finally:
         return user
 
