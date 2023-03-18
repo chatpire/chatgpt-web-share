@@ -30,17 +30,21 @@
 
 如果你有 Plus 账号，建议自己部署 V1 Proxy（https://github.com/acheong08/ChatGPT-Proxy-V4），之后在 config.yaml 中设置 `chatgpt_base_url` 为你的代理地址。
 
-0.2.7 版本更新：现在已经整合了反向代理服务到 docker 镜像中！如果你使用的是 docker 部署，可以在 config.yaml 中进行如下设置：
+**0.2.7 版本更新：** 现在已经整合了反向代理服务到 docker 镜像中！如果你使用的是 docker 部署，可以在 config.yaml 中进行如下设置：
 
 ```yaml
 chatgpt_base_url: http://127.0.0.1:6062/api/
 run_reverse_proxy: true
 reverse_proxy_port: 6062
-reverse_proxy_binary_path: ChatGPT-Proxy-V4
+reverse_proxy_binary_path: /app/backend/ChatGPT-Proxy-V4
 reverse_proxy_puid: "_puid value from cookie"
 ```
 
-其中，reverse_proxy_puid 需要从你的浏览器中获取：打开 https://chat.openai.com/，打开开发者工具，找到 cookie 中的 `_puid` 字段，将其值填入 config.yaml 中。
+其中，`reverse_proxy_puid` 需要从你的浏览器中获取：打开 https://chat.openai.com/，打开开发者工具，找到 cookie 中的 `_puid` 字段，将其值填入 `config.yaml` 中。
+
+`reverse_proxy_binary_path` 是反向代理服务的可执行文件路径，如果使用的是 Docker，它已经包含在镜像中的 `/app/backend/ChatGPT-Proxy-V4` 路径上。
+
+`chatgpt_base_url` 也可以设置为其它反向代理服务的地址。如果启用 `run_reverse_proxy`，请确保 `chatgpt_base_url` 的端口匹配 `reverse_proxy_port`。
 
 ## 部署
 

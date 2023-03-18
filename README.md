@@ -36,6 +36,22 @@ Risk Warning: This project is currently using [revChatGPT](https://github.com/ac
 
 However, if you have a ChatGPT Plus account, you can use a [custom proxy](https://github.com/acheong08/ChatGPT-Proxy-V4) to bypass the request limit. After deploying proxy server, set `chatgpt_base_url` to `http://your-hostname/api/` in `config.yaml`.
 
+**Version 0.2.7 update:** Reverse proxy service has now been integrated into the Docker image! If you are deploying with Docker, you can configure it in config.yaml as follows:
+
+```yaml
+chatgpt_base_url: http://127.0.0.1:6062/api/
+run_reverse_proxy: true
+reverse_proxy_port: 6062
+reverse_proxy_binary_path: ChatGPT-Proxy-V4
+reverse_proxy_puid: "_puid value from cookie"
+```
+
+Note that `reverse_proxy_puid` needs to be obtained from your browser: Open https://chat.openai.com/, open the developer tools, find the `_puid` field in the cookies, and enter its value in config.yaml.
+
+`reverse_proxy_binary_path` is the path to the executable file of the reverse proxy service. If using Docker, it is included in the image at the path `/app/backend/ChatGPT-Proxy-V4`.
+
+`chatgpt_base_url` can also be set to the address of another reverse proxy service. If `run_reverse_proxy` is enabled, make sure the port of `chatgpt_base_url` matches `reverse_proxy_port`.
+
 ## Deployment
 
 ### Using docker
