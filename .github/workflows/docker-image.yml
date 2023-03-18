@@ -8,7 +8,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  GOPATH: ${{ github.workspace }}/_GO
 
 jobs:
   build-and-push-image:
@@ -33,7 +32,7 @@ jobs:
       - name: build ChatGPT-Proxy-V4
         run: |
           cd ChatGPT-Proxy-V4
-          CGO_ENABLED=1 GOOS=linux go build -ldflags "-linkmode external -extldflags -static"
+          go build
 
       - name: Install Node.js
         uses: actions/setup-node@v3
