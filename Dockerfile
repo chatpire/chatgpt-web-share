@@ -5,7 +5,7 @@ FROM python:3.10-alpine
 RUN mkdir -p /app/backend
 
 RUN apk add --update caddy
-RUN apk add --no-cache libc6-compat
+RUN apk add gcompat
 
 COPY backend/requirements.txt /tmp/requirements.txt
 RUN pip install --cache-dir=${PIP_CACHE_DIR} -r /tmp/requirements.txt
