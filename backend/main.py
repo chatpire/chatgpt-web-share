@@ -12,7 +12,8 @@ from os import environ
 
 from utils.proxy import close_reverse_proxy
 
-environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url", environ.get("CHATGPT_BASE_URL"))
+if config.get("chatgpt_base_url"):
+    environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url")
 
 import api.globals as g
 from api.enums import ChatStatus
