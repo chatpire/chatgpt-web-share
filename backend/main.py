@@ -1,5 +1,4 @@
 import asyncio
-from utils.logger import setup_logger, get_log_config, get_logger
 import uvicorn
 
 from fastapi import FastAPI
@@ -8,12 +7,10 @@ from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from api.config import config
-from os import environ
-
-from utils.proxy import close_reverse_proxy
+import os
 
 if config.get("chatgpt_base_url"):
-    environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url")
+    os.environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url")
 
 import api.globals as g
 from api.enums import ChatStatus
@@ -24,6 +21,8 @@ from api.exceptions import SelfDefinedException
 from api.routers import users, chat, status
 from fastapi.middleware.cors import CORSMiddleware
 
+from utils.logger import setup_logger, get_log_config, get_logger
+from utils.proxy import close_reverse_proxy
 from utils.create_user import create_user
 
 import dateutil.parser
@@ -115,7 +114,7 @@ async def on_startup():
 
     # 获取 ChatGPT 对话，并同步数据库
     try:
-        logger.debug(f"Using {config.get('chatgpt_base_url', environ.get('CHATGPT_BASE_URL'))} as ChatGPT base url")
+        logger.debug(f"Using {os.environ['CHATGPT_BASE_URL']} as ChatGPT base url")
         result = await g.chatgpt_manager.get_conversations()
         if result and len(result) > 0:
             logger.info(f"Fetched {len(result)} conversations")
