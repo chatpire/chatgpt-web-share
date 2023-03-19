@@ -32,7 +32,8 @@ export default function setupUserLoginInfoGuard(router: Router) {
           }
         }
       }
+    } else {
+      next();
     }
-    next();
   });
 }
