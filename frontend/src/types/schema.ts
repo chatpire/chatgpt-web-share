@@ -9,6 +9,8 @@ export type LimitSchema = components["schemas"]["LimitSchema"];
 export type ChatStatus = components["schemas"]["ChatStatus"];
 export type ChatModels = components["schemas"]["ChatModels"];
 
+export type LogFilterOptions = components["schemas"]["LogFilterOptions"]
+
 export const chatStatusMap = {
   asking: "commons.askingChatStatus",
   queueing: "commons.queueingChatStatus",

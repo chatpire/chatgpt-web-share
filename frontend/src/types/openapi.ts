@@ -83,6 +83,14 @@ export interface paths {
     /** Get Status */
     get: operations["get_status_status_get"];
   };
+  "/logs/proxy": {
+    /** Get Proxy Logs */
+    post: operations["get_proxy_logs_logs_proxy_post"];
+  };
+  "/logs/server": {
+    /** Get Server Logs */
+    post: operations["get_server_logs_logs_server_post"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -127,7 +135,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {unknown}
      */
-    ChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid";
+    ChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid" | "";
     /**
      * ChatStatus 
      * @description An enumeration. 
@@ -188,6 +196,16 @@ export interface components {
       available_ask_count?: number;
       /** Available Gpt4 Ask Count */
       available_gpt4_ask_count?: number;
+    };
+    /** LogFilterOptions */
+    LogFilterOptions: {
+      /**
+       * Max Lines 
+       * @default 100
+       */
+      max_lines?: number;
+      /** Exclude Keywords */
+      exclude_keywords?: (string)[];
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {
@@ -815,6 +833,50 @@ export interface operations {
       200: {
         content: {
           "application/json": string;
+        };
+      };
+    };
+  };
+  get_proxy_logs_logs_proxy_post: {
+    /** Get Proxy Logs */
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["LogFilterOptions"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_server_logs_logs_server_post: {
+    /** Get Server Logs */
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["LogFilterOptions"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

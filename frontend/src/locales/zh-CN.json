@@ -81,7 +81,8 @@
     "updateInterval": "刷新间隔",
     "autoScrolling": "自动滚动",
     "maxLineCount": "行数",
-    "usePaidModel": "使用paid模型"
+    "usePaidModel": "使用paid模型",
+    "excludeKeywords": "排除关键词"
   },
   "errors": {
     "403": "403 错误：无访问权限",

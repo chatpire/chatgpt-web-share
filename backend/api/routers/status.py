@@ -9,7 +9,7 @@ from api.config import config
 from api.database import get_async_session_context
 from api.enums import ChatStatus
 from api.models import User
-from api.schema import ServerStatusSchema
+from api.schema import ServerStatusSchema, LogFilterOptions
 from api.users import current_active_user, current_super_user
 
 router = APIRouter()
@@ -56,17 +56,36 @@ async def get_status(_user: User = Depends(current_active_user)):
     return server_status_cache
 
 
-@router.get("/logs/proxy", tags=["status"])
-async def get_proxy_logs(_user: User = Depends(current_super_user), max_lines: int = 100):
-    assert max_lines > 0
-    with open(os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"), "r",
-              encoding="utf-8") as f:
-        lines = f.readlines()[-max_lines:]
-    return "".join(lines)
+def read_last_n_lines(file_path, n, exclude_key_words=None):
+    if exclude_key_words is None:
+        exclude_key_words = []
+    with open(file_path, "r") as f:
+        lines = f.readlines()[::-1]
+    last_n_lines = []
+    for line in lines:
+        if len(last_n_lines) >= n:
+            break
+        if any([line.find(key_word) != -1 for key_word in exclude_key_words]):
+            continue
+        last_n_lines.append(line)
+    return last_n_lines
 
-@router.get("/logs/server", tags=["status"])
-async def get_server_logs(_user: User = Depends(current_super_user), max_lines: int = 100):
-    assert max_lines > 0
-    with open(g.server_log_filename, "r", encoding="utf-8") as f:
-        lines = f.readlines()[-max_lines:]
-    return "".join(lines)
+
+@router.post("/logs/proxy", tags=["status"])
+async def get_proxy_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
+    lines = read_last_n_lines(
+        os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"),
+        options.max_lines,
+        options.exclude_keywords
+    )
+    return lines
+
+
+@router.post("/logs/server", tags=["status"])
+async def get_server_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
+    lines = read_last_n_lines(
+        g.server_log_filename,
+        options.max_lines,
+        options.exclude_keywords
+    )
+    return lines

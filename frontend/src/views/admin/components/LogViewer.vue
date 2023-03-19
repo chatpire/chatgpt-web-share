@@ -10,43 +10,53 @@
         <div class="my-auto"><n-text>{{ t("commons.maxLineCount") }}</n-text></div>
         <n-input-number size="small" v-model:value="maxLineCount" class="w-30" :min="100" :max="2000" :step="100" />
         <div class="my-auto"><n-text>{{ t("commons.updateInterval") }}</n-text></div>
-        <n-select size="small" v-model:value="refresh_duration" prefix="1" class="w-20" :options="[
+        <n-select size="small" v-model:value="refresh_duration" class="w-20" :options="[
           { label: '3s', value: 3 },
           { label: '5s', value: 5 },
           { label: '10s', value: 10 },
         ]"></n-select>
-      </div>
-      <div class="flex flex-row space-x-3">
-        <div class="my-auto"><n-text>{{ t("commons.autoScrolling") }}</n-text></div>
-        <div class="my-auto"><n-switch v-model:value="enableAutoScroll" size="small" /></div>
+        <div class="my-auto"><n-text>{{ t("commons.excludeKeywords") }}</n-text></div>
+        <div class="my-auto"><n-dynamic-tags v-if="tab === 'proxy'" size="small" v-model:value="proxyExcludeKeywords"
+          class="w-30"></n-dynamic-tags>
+        <n-dynamic-tags v-else size="small" v-model:value="serverExcludeKeywords"></n-dynamic-tags>
       </div>
     </div>
-    <n-card class="mt-3" :content-style="{ height: '100%' }">
-      <n-scrollbar ref="scrollRef" class="h-120 relative">
-        <div class="whitespace-pre-line font-mono text-[0.2rem]">
-          {{ filteredLogsContent }}
-        </div>
-      </n-scrollbar>
-    </n-card>
+    <div class="flex flex-row space-x-3">
+      <div class="my-auto"><n-text>{{ t("commons.autoScrolling") }}</n-text></div>
+      <div class="my-auto"><n-switch v-model:value="enableAutoScroll" size="small" /></div>
+    </div>
   </div>
-</template>
+  <n-card class="mt-3" :content-style="{ height: '100%' }">
+    <n-scrollbar ref="scrollRef" class="h-120 relative">
+      <div class="whitespace-pre-line font-mono text-[0.2rem]">
+        {{ filteredLogsContent }}
+      </div>
+    </n-scrollbar>
+  </n-card>
+</div></template>
 
 <script setup lang="ts">
 import { getProxyLogsApi, getServerLogsApi } from '@/api/status';
+import { LogFilterOptions } from '@/types/schema';
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 const scrollRef = ref();
 const refresh_duration = ref(5);
-const tab = ref('server');
-const logsContent = ref<string>();
+const tab = ref<string>('server');
+const logsContent = ref<Array<string>>();
 const enableAutoScroll = ref(true);
 const maxLineCount = ref(100);
+const proxyExcludeKeywords = ref<Array<string>>([])
+const serverExcludeKeywords = ref<Array<string>>([
+  "status",
+  "logs"
+])
 
 const filteredLogsContent = computed(() => {
   // 过滤含有/logs/server的行
-  return logsContent.value?.split('\n').filter((line) => !line.includes('/logs')).join('\n');
+  return logsContent.value?.join('');
 });
 
 watch(() => tab.value, () => {
@@ -58,11 +68,17 @@ watch(() => maxLineCount.value, () => {
 
 const loadLogs = () => {
   if (tab.value === 'server') {
-    getServerLogsApi(maxLineCount.value).then((res) => {
+    getServerLogsApi({
+      max_lines: maxLineCount.value,
+      exclude_keywords: serverExcludeKeywords.value,
+    } as LogFilterOptions).then((res) => {
       logsContent.value = res.data;
     });
   } else {
-    getProxyLogsApi(maxLineCount.value).then((res) => {
+    getProxyLogsApi({
+      max_lines: maxLineCount.value,
+      exclude_keywords: proxyExcludeKeywords.value,
+    } as LogFilterOptions).then((res) => {
       logsContent.value = res.data;
     });
   }
@@ -80,6 +96,14 @@ watch(() => refresh_duration.value, () => {
   interval = setInterval(() => {
     loadLogs();
   }, refresh_duration.value * 1000);
+});
+
+watch(() => serverExcludeKeywords.value, () => {
+  loadLogs();
+});
+
+watch(() => proxyExcludeKeywords.value, () => {
+  loadLogs();
 });
 
 </script>

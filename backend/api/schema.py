@@ -1,7 +1,7 @@
 import uuid
 import datetime
 from fastapi_users import schemas
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, validator
 
 from api.enums import ChatStatus, ChatModels
 
@@ -71,3 +71,14 @@ class ServerStatusSchema(BaseModel):
     active_user_in_1d: int = None
     is_chatbot_busy: bool = None
     chatbot_waiting_count: int = None
+
+
+class LogFilterOptions(BaseModel):
+    max_lines: int = 100
+    exclude_keywords: list[str] = None
+
+    @validator("max_lines")
+    def max_lines_must_be_positive(cls, v):
+        if v <= 0:
+            raise ValueError("max_lines must be positive")
+        return v

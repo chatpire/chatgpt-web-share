@@ -81,7 +81,8 @@
     "proxyLogs": "Reverse Proxy Logs",
     "updateInterval": "Refresh Interval",
     "autoScrolling": "Auto Scroll",
-    "maxLineCount": "Max Line Count"
+    "maxLineCount": "Max Line Count",
+    "excludeKeywords": "Exclude Keywords"
   },
   "errors": {
     "403": "403 error: access denied",
