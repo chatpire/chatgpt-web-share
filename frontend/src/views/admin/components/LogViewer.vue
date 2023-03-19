@@ -4,36 +4,38 @@
       <n-tab name="server">{{ t("commons.serverLogs") }}</n-tab>
       <n-tab name="proxy">{{ t("commons.proxyLogs") }}</n-tab>
     </n-tabs>
-    <!-- 一个selector用于切换更新频率 -->
+    <!-- 设置 -->
     <div class="flex flex-row mt-3 justify-between">
-      <div class="flex flex-row space-x-3">
-        <div class="my-auto"><n-text>{{ t("commons.maxLineCount") }}</n-text></div>
-        <n-input-number size="small" v-model:value="maxLineCount" class="w-30" :min="100" :max="2000" :step="100" />
-        <div class="my-auto"><n-text>{{ t("commons.updateInterval") }}</n-text></div>
-        <n-select size="small" v-model:value="refresh_duration" class="w-20" :options="[
-          { label: '3s', value: 3 },
-          { label: '5s', value: 5 },
-          { label: '10s', value: 10 },
-        ]"></n-select>
-        <div class="my-auto"><n-text>{{ t("commons.excludeKeywords") }}</n-text></div>
-        <div class="my-auto"><n-dynamic-tags v-if="tab === 'proxy'" size="small" v-model:value="proxyExcludeKeywords"
-          class="w-30"></n-dynamic-tags>
-        <n-dynamic-tags v-else size="small" v-model:value="serverExcludeKeywords"></n-dynamic-tags>
+      <div class="flex flex-wrap flex-row sm:space-x-3">
+        <div class="option-item"><n-text>{{ t("commons.maxLineCount") }}</n-text>
+          <n-input-number size="small" v-model:value="maxLineCount" class="w-27" :min="100" :max="2000" :step="100" />
+        </div>
+        <div class="option-item"><n-text>{{ t("commons.updateInterval") }}</n-text>
+          <n-select size="small" v-model:value="refresh_duration" class="w-20" :options="[
+            { label: '3s', value: 3 },
+            { label: '5s', value: 5 },
+            { label: '10s', value: 10 },
+          ]"></n-select>
+        </div>
+        <div class="option-item"><n-text>{{ t("commons.excludeKeywords") }}</n-text>
+          <n-dynamic-tags v-if="tab === 'proxy'" size="small" v-model:value="proxyExcludeKeywords"></n-dynamic-tags>
+          <n-dynamic-tags v-else size="small" v-model:value="serverExcludeKeywords"></n-dynamic-tags>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <n-text>{{ t("commons.autoScrolling") }}</n-text>
+        <n-switch v-model:value="enableAutoScroll" size="small" />
       </div>
     </div>
-    <div class="flex flex-row space-x-3">
-      <div class="my-auto"><n-text>{{ t("commons.autoScrolling") }}</n-text></div>
-      <div class="my-auto"><n-switch v-model:value="enableAutoScroll" size="small" /></div>
-    </div>
+    <n-card class="mt-3" :content-style="{ height: '100%' }">
+      <n-scrollbar ref="scrollRef" class="h-120 relative">
+        <div class="whitespace-pre-line font-mono text-[0.2em]">
+          {{ filteredLogsContent }}
+        </div>
+      </n-scrollbar>
+    </n-card>
   </div>
-  <n-card class="mt-3" :content-style="{ height: '100%' }">
-    <n-scrollbar ref="scrollRef" class="h-120 relative">
-      <div class="whitespace-pre-line font-mono text-[0.2rem]">
-        {{ filteredLogsContent }}
-      </div>
-    </n-scrollbar>
-  </n-card>
-</div></template>
+</template>
 
 <script setup lang="ts">
 import { getProxyLogsApi, getServerLogsApi } from '@/api/status';
@@ -107,3 +109,9 @@ watch(() => proxyExcludeKeywords.value, () => {
 });
 
 </script>
+
+<style>
+.option-item {
+  @apply flex flex-row space-x-2 items-center mr-1 my-1;
+}
+</style>
