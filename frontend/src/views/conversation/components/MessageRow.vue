@@ -10,7 +10,7 @@
       <n-avatar v-else class="mt-3" size="small" src="/chatgpt-icon.svg" />
     </div>
     <div class="mx-4 w-full">
-      <div v-show="!showRawContent" ref="contentRef" class="w-full" v-html="renderedContent"></div>
+      <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
       <div v-show="showRawContent" class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
         <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-1 right-1" @click="copyMessageContent">
@@ -169,6 +169,7 @@ const copyMessageContent = () => {
 
 <style>
 /* modified from https://github.com/arronhunt/highlightjs-copy */
+
 code {
   @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170
 }
@@ -188,21 +189,21 @@ ul {
   padding-left: 16px;
 }
 
-table {
+.message-content table {
   border: gray 1px solid;
   @apply min-w-1/2 text-center border-collapse;
 }
 
-tr {
+.message-content tr {
   border: gray 1px solid;
 }
 
-th {
+.message-content th {
   border: gray 1px solid;
   @apply bg-gray-400
 }
 
-td {
+.message-content td {
   border: gray 1px solid;
 }
 
