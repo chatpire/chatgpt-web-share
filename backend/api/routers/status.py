@@ -68,7 +68,7 @@ def read_last_n_lines(file_path, n, exclude_key_words=None):
         if any([line.find(key_word) != -1 for key_word in exclude_key_words]):
             continue
         last_n_lines.append(line)
-    return last_n_lines
+    return last_n_lines[::-1]
 
 
 @router.post("/logs/proxy", tags=["status"])
