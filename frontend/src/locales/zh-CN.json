@@ -80,7 +80,8 @@
     "proxyLogs": "反向代理日志",
     "updateInterval": "刷新间隔",
     "autoScrolling": "自动滚动",
-    "maxLineCount": "行数"
+    "maxLineCount": "行数",
+    "usePaidModel": "使用paid模型"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -106,7 +107,8 @@
     "badCredentials": "用户名或密码错误",
     "maxConversationCountReached": "会话数量已达上限",
     "cannotConnectMoreThanOneClient": "当前用户已有对话等待回复，不能再次请求",
-    "noUserSelected": "未选择用户"
+    "noUserSelected": "未选择用户",
+    "httpStatusError": "HTTP错误"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",

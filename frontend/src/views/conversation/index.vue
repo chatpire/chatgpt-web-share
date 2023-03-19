@@ -370,6 +370,7 @@ const sendMsg = async () => {
     typing: true,
   }
   const wsUrl = getAskWebsocketApiUrl();
+  let wsErrorMessage: string | null = null;
   console.log('Connecting to', wsUrl, askInfo);
   const webSocket = new WebSocket(wsUrl);
 
@@ -397,8 +398,11 @@ const sendMsg = async () => {
         }
       }
     } else if (reply.type === 'error') {
-      currentActiveMessageRecv.value!.message = t(reply.tip);
+      currentActiveMessageRecv.value!.message = `${t(reply.tip)}: ${reply.message}}`;
       console.error(reply.tip, reply.message);
+      if (reply.message) {
+        wsErrorMessage = reply.message;
+      }
     }
     historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
   };
@@ -439,7 +443,7 @@ const sendMsg = async () => {
     } else {
       Dialog.error({
         title: t('errors.askError'),
-        content: `${event.code}: ${t(event.reason)}`,
+        content: wsErrorMessage != null ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}` : `[${event.code}] ${t(event.reason)}`,
         positiveText: t('commons.withdrawMessage'),
         onPositiveClick: () => {
           currentActiveMessageSend.value = null;
