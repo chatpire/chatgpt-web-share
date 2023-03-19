@@ -102,7 +102,6 @@ const columns: DataTableColumns<ConversationSchema> = [
         trigger: () => new Date(row.create_time! + 'Z').toLocaleString(),
         default: () => row.create_time
       })
-
     }
   },
   {

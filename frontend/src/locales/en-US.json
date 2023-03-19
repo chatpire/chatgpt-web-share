@@ -39,7 +39,7 @@
     "deleteUser": "Delete user",
     "resetPassword": "Reset password",
     "neverActive": "Never logged in",
-    "activeTime": "Last active time (UTC+0)",
+    "activeTime": "Last active time",
     "serverStatus": "Server status",
     "activeUserIn5m": "Active in last 5 minutes",
     "activeUserIn1h": "Active in last 1 hour",

@@ -2,7 +2,7 @@
   <div class="mb-4">
     <n-button type="primary" @click="handleAddUser"> {{ $t("commons.addUser") }} </n-button>
   </div>
-  <n-data-table :scroll-x="1200" size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
+  <n-data-table :scroll-x="1400" size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
     pageSize: 20
   }" />
 </template>

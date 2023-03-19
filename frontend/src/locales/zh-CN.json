@@ -39,7 +39,7 @@
     "deleteUser": "删除用户",
     "resetPassword": "修改密码",
     "neverActive": "从未登录",
-    "activeTime": "最后活动时间(UTC+0)",
+    "activeTime": "最后活动时间",
     "serverStatus": "服务状态",
     "activeUserIn5m": "5分钟内活跃",
     "activeUserIn1h": "1小时内活跃",
