@@ -58,6 +58,7 @@ const isExpaned = ref(false);
 const handleExpand = (names: string[]) => {
   if (names.length > 0) {
     isExpaned.value = true;
+    updateData();
   } else {
     isExpaned.value = false;
   }
@@ -79,5 +80,3 @@ div.n-collapse-item {
   padding: 1em;
 }
 </style>
-
-
