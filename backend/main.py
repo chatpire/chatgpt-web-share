@@ -114,7 +114,7 @@ async def on_startup():
 
     # 获取 ChatGPT 对话，并同步数据库
     try:
-        logger.debug(f"Using {os.environ['CHATGPT_BASE_URL']} as ChatGPT base url")
+        logger.debug(f"Using {os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
         result = await g.chatgpt_manager.get_conversations()
         if result and len(result) > 0:
             logger.info(f"Fetched {len(result)} conversations")
