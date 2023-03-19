@@ -111,6 +111,7 @@ async def on_startup():
     if config.get("run_reverse_proxy", False):
         from utils.proxy import run_reverse_proxy
         run_reverse_proxy()
+        await asyncio.sleep(2)  # 等待 Proxy Server 启动
 
     # 获取 ChatGPT 对话，并同步数据库
     try:
