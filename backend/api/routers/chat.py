@@ -6,6 +6,7 @@ import httpx
 import requests
 from fastapi import APIRouter, Depends, WebSocket
 from fastapi.encoders import jsonable_encoder
+from httpx import HTTPStatusError
 from sqlalchemy import select, or_, and_, delete, func
 import api.globals as g
 from api.config import config
@@ -17,7 +18,6 @@ from api.schema import ConversationSchema
 from api.users import current_active_user, websocket_auth, current_super_user
 from revChatGPT.V1 import Error as ChatGPTError
 from api.response import response
-from utils.common import get_conversation_model
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -187,8 +187,8 @@ async def ask(websocket: WebSocket):
     message = params.get("message", None)
     conversation_id = params.get("conversation_id", None)
     parent_id = params.get("parent_id", None)
-    model_name = params.get("model_name", ChatModels.default)
-    timeout = params.get("timeout", 360)  # default 360s
+    model_name = params.get("model_name")
+    timeout = params.get("timeout", 30)  # default 30s
     new_title = params.get("new_title", None)
 
     if message is None:
@@ -197,31 +197,33 @@ async def ask(websocket: WebSocket):
     if parent_id is not None and conversation_id is None:
         await websocket.close(1007, "errors.missingConversationId")
         return
-    if model_name:
-        if isinstance(model_name, str):
-            model_name = ChatModels(model_name)
-        if model_name == ChatModels.paid and not user.can_use_paid:
-            await websocket.close(1007, "errors.userNotAllowToUsePaidModel")
-            return
-        if model_name == ChatModels.gpt4 and not user.can_use_gpt4:
-            await websocket.close(1007, "errors.userNotAllowToUseGPT4Model")
-            return
-        if model_name in [ChatModels.gpt4, ChatModels.paid] and not config.get("chatgpt_paid", False):
-            await websocket.close(1007, "errors.paidModelNotAvailable")
-            return
 
-    new_conv = conversation_id is None
-    if not new_conv:
+    is_new_conv = conversation_id is None
+    conversation = None
+    if not is_new_conv:
         conversation = await get_conversation_by_id(conversation_id, user)
-        if not model_name:
-            model_name = conversation.model_name
+        model_name = model_name or conversation.model_name
+    else:
+        model_name = model_name or ChatModels.default
+
+    if isinstance(model_name, str):
+        model_name = ChatModels(model_name)
+    if model_name == ChatModels.paid and not user.can_use_paid:
+        await websocket.close(1007, "errors.userNotAllowToUsePaidModel")
+        return
+    if model_name == ChatModels.gpt4 and not user.can_use_gpt4:
+        await websocket.close(1007, "errors.userNotAllowToUseGPT4Model")
+        return
+    if model_name in [ChatModels.gpt4, ChatModels.paid] and not config.get("chatgpt_paid", False):
+        await websocket.close(1007, "errors.paidModelNotAvailable")
+        return
 
     # 判断是否能新建对话，以及是否能继续提问
     async with get_async_session_context() as session:
         user_conversations_count = await session.execute(
             select(func.count(Conversation.id)).filter(Conversation.user_id == user.id))
         user_conversations_count = user_conversations_count.scalar()
-        if new_conv and user.max_conv_count != -1 and user_conversations_count >= user.max_conv_count:
+        if is_new_conv and user.max_conv_count != -1 and user_conversations_count >= user.max_conv_count:
             await websocket.close(1008, "errors.maxConversationCountReached")
             return
         if user.available_ask_count != -1 and user.available_ask_count <= 0:
@@ -266,7 +268,7 @@ async def ask(websocket: WebSocket):
 
             async with get_async_session_context() as session:
                 # 若新建了对话，则添加到数据库
-                if new_conv and conversation_id is not None:
+                if is_new_conv and conversation_id is not None:
                     # 设置默认标题
                     try:
                         if new_title is not None:
@@ -280,7 +282,7 @@ async def ask(websocket: WebSocket):
                                                     active_time=current_time)
                         session.add(conversation)
                 # 更新 conversation
-                if not new_conv:
+                if not is_new_conv:
                     conversation = await session.get(Conversation, conversation.id)  # 此前的 conversation 属于另一个session
                     conversation.active_time = datetime.utcnow()
                     if conversation.model_name != model_name:
@@ -318,8 +320,17 @@ async def ask(websocket: WebSocket):
         })
         websocket_code = 1001
         websocket_reason = "errors.chatgptResponseError"
+    except HTTPStatusError as e:
+        logger.error(str(e))
+        await websocket.send_json({
+            "type": "error",
+            "tip": "errors.httpStatusError",
+            "message": str(e)
+        })
+        websocket_code = 1014
+        websocket_reason = "errors.httpStatusError"
     except Exception as e:
-        logger.error(e)
+        logger.error(str(e))
         await websocket.send_json({
             "type": "error",
             "tip": "errors.unknownError",
