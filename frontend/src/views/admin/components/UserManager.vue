@@ -3,7 +3,7 @@
     <n-button type="primary" @click="handleAddUser"> {{ $t("commons.addUser") }} </n-button>
   </div>
   <n-data-table :scroll-x="1200" size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
-    pageSize: 10
+    pageSize: 20
   }" />
 </template>
 
@@ -45,22 +45,23 @@ const columns: DataTableColumns<UserRead> = [
     key: 'nickname'
   },
   {
-    title: t("commons.email"),
-    key: 'email'
-  },
-  {
-    title: t("commons.isSuperuser"),
-    key: 'is_superuser',
+    title: t('commons.status'),
+    key: 'chat_status',
     render(row) {
-      return row.is_superuser ? t("commons.yes") : t("commons.no")
+      console.log(row.chat_status, chatStatusMap)
+      return row.chat_status ? t(chatStatusMap[row.chat_status as keyof typeof chatStatusMap]) : ''
     }
   },
   {
     title: t("commons.activeTime"),
     key: 'active_time',
     render(row) {
-      return row.active_time ? new Date(row.active_time).toLocaleString() : t("commons.neverActive")
-    }
+      return row.active_time ? new Date(row.active_time + 'Z').toLocaleString() : t("commons.neverActive")
+    },
+    sorter: (a, b) => {
+      if (!a.active_time || !b.active_time) return 0;
+      return new Date(a.active_time!).getTime() - new Date(b.active_time!).getTime()
+    },
   },
   {
     title: t("commons.maxConversationCount"),
@@ -74,7 +75,7 @@ const columns: DataTableColumns<UserRead> = [
     key: 'available_ask_count',
     render(row) {
       return getCountTrans(row.available_ask_count!);
-    }
+    },
   },
   {
     title: t("commons.availableGPT4AskCount"),
@@ -98,11 +99,14 @@ const columns: DataTableColumns<UserRead> = [
     }
   },
   {
-    title: t('commons.status'),
-    key: 'chat_status',
+    title: t("commons.email"),
+    key: 'email'
+  },
+  {
+    title: t("commons.isSuperuser"),
+    key: 'is_superuser',
     render(row) {
-      console.log(row.chat_status, chatStatusMap)
-      return row.chat_status ? t(chatStatusMap[row.chat_status as keyof typeof chatStatusMap]) : ''
+      return row.is_superuser ? t("commons.yes") : t("commons.no")
     }
   },
   {

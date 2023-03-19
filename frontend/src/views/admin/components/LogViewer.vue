@@ -22,7 +22,7 @@
       </div>
     </div>
     <n-card class="mt-3" :content-style="{ height: '100%' }">
-      <n-scrollbar ref="scrollRef" class="h-100 relative">
+      <n-scrollbar ref="scrollRef" class="h-120 relative">
         <div class="whitespace-pre-line font-mono text-[0.2rem]">
           {{ filteredLogsContent }}
         </div>

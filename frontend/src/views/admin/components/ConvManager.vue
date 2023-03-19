@@ -29,7 +29,7 @@
     </div>
   </div>
   <n-data-table size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
-    pageSize: 15
+    pageSize: 20
   }" :row-key="rowKey" v-model:checked-row-keys="checkedRowKeys" />
 </template>
 
@@ -98,9 +98,8 @@ const columns: DataTableColumns<ConversationSchema> = [
     },
     render: (row) => {
       if (!row.create_time) return '';
-      // parse datetime, get local string
       return h(NTooltip, { trigger: "hover" }, {
-        trigger: () => new Date(row.create_time!).toLocaleDateString(),
+        trigger: () => new Date(row.create_time! + 'Z').toLocaleString(),
         default: () => row.create_time
       })
 

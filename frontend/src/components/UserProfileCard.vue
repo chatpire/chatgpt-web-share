@@ -36,7 +36,7 @@ const translateValue = (key: string, value: any) => {
   if (['is_superuser', 'can_use_paid', 'can_use_gpt4'].includes(key)) {
     return value ? t('commons.yes') : t('commons.no');
   } else if (key === 'active_time') {
-    return value ? new Date(value).toLocaleString() : t('commons.neverActive');
+    return value ? new Date(value + 'Z').toLocaleString() : t('commons.neverActive');
   } else if (key === 'chat_status') {
     return t(chatStatusMap[value as keyof typeof chatStatusMap])
   } else if (key === 'max_conv_count') {
