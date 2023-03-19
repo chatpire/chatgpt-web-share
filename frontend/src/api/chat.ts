@@ -2,9 +2,9 @@ import { ConversationSchema } from "@/types/schema";
 import axios from "axios";
 import ApiUrl from "./url";
 
-export function getAllConversationsApi(valid_only: boolean = true) {
+export function getAllConversationsApi(fetch_all: boolean = false) {
   return axios.get<Array<ConversationSchema>>(ApiUrl.Conversation, {
-    params: { valid_only },
+    params: { fetch_all },
   });
 }
 

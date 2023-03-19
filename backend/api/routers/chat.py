@@ -37,19 +37,17 @@ async def get_conversation_by_id(conversation_id: str, user: User = Depends(curr
 
 
 @router.get("/conv", tags=["conversation"], response_model=List[ConversationSchema])
-async def get_all_conversations(user: User = Depends(current_active_user), valid_only: bool = True):
+async def get_all_conversations(user: User = Depends(current_active_user), fetch_all: bool = False):
     """
-    对于普通用户，返回其自己的有效会话
+    返回自己的有效会话
     对于管理员，返回所有对话，并可以指定是否只返回有效会话
     """
-    if not valid_only and not user.is_superuser:
+    if fetch_all and not user.is_superuser:
         raise AuthorityDenyException()
-    stat = None
-    if not user.is_superuser:
-        stat = and_(Conversation.user_id == user.id, Conversation.is_valid)
-    else:
-        if valid_only:
-            stat = Conversation.is_valid
+
+    stat = and_(Conversation.user_id == user.id, Conversation.is_valid)
+    if fetch_all:
+        stat = None
     async with get_async_session_context() as session:
         if stat is not None:
             r = await session.execute(select(Conversation).where(stat))

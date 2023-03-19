@@ -15,11 +15,7 @@ let target = "";
 if (!userStore.user) {
   target = "login";
 } else {
-  if (userStore.user.is_superuser) {
-    target = "admin";
-  } else {
-    target = "conversation";
-  }
+  target = "conversation";
 }
 
 router.push({

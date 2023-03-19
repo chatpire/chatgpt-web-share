@@ -17,21 +17,24 @@
     </template>
     <template #extra>
       <n-space>
-        <div>
+        <div class="space-x-2">
           <div v-if="userStore.user" class="inline-block">
             <span class="hidden sm:inline mr-1">Hi, {{ userStore.user.nickname }}</span>
-            <n-dropdown :options="options" placement="bottom-start">
+            <n-dropdown :options="getOptions()" placement="bottom-start">
               <n-button circle class="ml-2">
                 <n-icon :component="SettingsSharp" />
               </n-button>
             </n-dropdown>
           </div>
           <div v-else class="text-gray-500 inline-block">{{ $t("commons.notLogin") }}</div>
-          <n-button circle class="ml-2" @click="toggleTheme">
+          <n-button v-if="userStore.user?.is_superuser" circle @click="jumpToAdmin">
+            <n-icon :component="ManageAccountsFilled" />
+          </n-button>
+          <n-button circle @click="toggleTheme">
             <n-icon :component="themeIcon" />
           </n-button>
           <n-dropdown :options="languageOptions" placement="bottom-start">
-            <n-button circle class="ml-2">
+            <n-button circle>
               <n-icon :component="Language" />
             </n-button>
           </n-dropdown>
@@ -44,7 +47,7 @@
 <script setup lang="ts">
 import { useUserStore, useAppStore } from '@/store';
 import { SettingsSharp, LogoGithub, Language } from '@vicons/ionicons5';
-import { DarkModeRound, LightModeRound } from '@vicons/material';
+import { DarkModeRound, LightModeRound, ManageAccountsFilled } from '@vicons/material';
 import { useI18n } from 'vue-i18n';
 import { Dialog, Message } from '@/utils/tips';
 import router from '@/router';
@@ -90,45 +93,53 @@ const languageOptions = [
   }
 ]
 
-const options = ref<Array<DropdownOption>>([
-  {
-    label: t("commons.userProfile"),
-    key: 'profile',
-    props: {
-      onClick: () => Dialog.info({
-        title: t("commons.userProfile"),
-        content: () => h(UserProfileCard, {}, {}),
-        positiveText: t("commons.confirm"),
-      })
+const getOptions = (): Array<DropdownOption> => {
+  const options: Array<DropdownOption>  = [
+    {
+      label: t("commons.userProfile"),
+      key: 'profile',
+      props: {
+        onClick: () => Dialog.info({
+          title: t("commons.userProfile"),
+          content: () => h(UserProfileCard, {}, {}),
+          positiveText: t("commons.confirm"),
+        })
+      }
+    },
+    {
+      label: t("commons.logout"),
+      key: 'logout',
+      props: {
+        onClick: () => Dialog.info({
+          title: t("commons.logout"),
+          content: t("tips.logoutConfirm"),
+          positiveText: t("commons.confirm"),
+          negativeText: t("commons.cancel"),
+          onPositiveClick: async () => {
+            await userStore.logout();
+            Message.success(t('commons.logoutSuccess'));
+            await router.push({ path: '/' });
+          }
+        })
+      }
     }
-  },
-  {
-    label: t("commons.logout"),
-    key: 'logout',
-    props: {
-      onClick: () => Dialog.info({
-        title: t("commons.logout"),
-        content: t("tips.logoutConfirm"),
-        positiveText: t("commons.confirm"),
-        negativeText: t("commons.cancel"),
-        onPositiveClick: () => userStore.logout().then(() => {
-          Message.success(t('commons.logoutSuccess'));
-          router.push({ path: '/' });
-        }),
-      })
-    }
+  ];
+  if (userStore.user?.is_superuser) {
+    options.unshift({
+      label: t("commons.enterConversation"),
+      key: 'conversation',
+      props: {
+        onClick: async () => { await router.push({ name: 'conversation' }) }
+      }
+    });
   }
-])
-
-if (userStore.user?.is_superuser) {
-  options.value.unshift({
-    label: t("commons.adminPanel"),
-    show: userStore.user?.is_superuser,
-    key: 'admin',
-    props: {
-      onClick: () => router.push({ name: 'admin' })
-    }
-  })
+  return options;
 }
+
+const jumpToAdmin = async () => {
+  await router.push({ name: 'admin' })
+}
+
+
 
 </script>

@@ -82,7 +82,9 @@
     "updateInterval": "Refresh Interval",
     "autoScrolling": "Auto Scroll",
     "maxLineCount": "Max Line Count",
-    "excludeKeywords": "Exclude Keywords"
+    "excludeKeywords": "Exclude Keywords",
+    "conversation": "Conversation",
+    "enterConversation": "Enter Conversation"
   },
   "errors": {
     "403": "403 error: access denied",

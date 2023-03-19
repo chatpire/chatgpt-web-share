@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useLoadingBar } from "naive-ui";
 import createRouteGuard from "./guard";
 
 const router = createRouter({
@@ -33,7 +32,7 @@ const router = createRouter({
       component: () => import("@/views/conversation/index.vue"),
       meta: {
         requiresAuth: true,
-        roles: ["user"],
+        roles: ["superuser", "user"],
       },
     },
     {

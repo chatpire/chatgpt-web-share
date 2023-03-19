@@ -52,7 +52,7 @@ const data = ref<Array<ConversationSchema>>([]);
 const rowKey = (row: ConversationSchema) => row.conversation_id;
 const checkedRowKeys = ref<Array<string>>([]);
 
-getAllConversationsApi(false).then(res => {
+getAllConversationsApi(true).then(res => {
   data.value = res.data;
 })
 
@@ -142,7 +142,7 @@ const handleInvalidateConversations = () => {
         }
         action().then(() => {
           Message.success(t("tips.deleteConversationSuccess"))
-          getAllConversationsApi(false).then(res => {
+          getAllConversationsApi(true).then(res => {
             data.value = res.data;
           })
           resolve(true)
@@ -173,7 +173,7 @@ const handleVanishConversations = () => {
         }
         action().then(() => {
           Message.success(t("tips.success"))
-          getAllConversationsApi(false).then(res => {
+          getAllConversationsApi(true).then(res => {
             data.value = res.data;
           })
           checkedRowKeys.value = [];
@@ -216,7 +216,7 @@ const handleAssignConversations = () => {
         }
         action().then(() => {
           Message.success(t("tips.success"))
-          getAllConversationsApi(false).then(res => {
+          getAllConversationsApi(true).then(res => {
             data.value = res.data;
           })
           checkedRowKeys.value = [];
