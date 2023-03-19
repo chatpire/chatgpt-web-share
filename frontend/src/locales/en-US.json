@@ -150,7 +150,8 @@
     "terminated": "Connection terminated by the server",
     "loading": "Loading...",
     "pleaseSelectConversation": "Please select a conversation first",
-    "pressEscToExitFullscreen": "Full Screen | Press Esc To Exit"
+    "pressEscToExitFullscreen": "Full Screen | Press Esc To Exit",
+    "refreshed": "Refreshed Successfully"
   },
   "labels": {
     "nickname": "Nickname",

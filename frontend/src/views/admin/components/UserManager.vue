@@ -1,7 +1,15 @@
 <template>
-  <div class="mb-4">
+  <div class="mb-4 flex flex-row space-x-2">
     <n-button type="primary" @click="handleAddUser"> {{ $t("commons.addUser") }} </n-button>
+    <n-button text @click="refreshData"> 
+      <template #icon>
+        <n-icon>
+          <RefreshFilled />
+        </n-icon>
+      </template>
+    </n-button>
   </div>
+
   <n-data-table :scroll-x="1400" size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
     pageSize: 20
   }" />
@@ -16,7 +24,7 @@ import { useI18n } from 'vue-i18n';
 import { getAllUserApi, registerApi, deleteUserApi, resetUserPasswordApi, updateUserLimitApi } from '@/api/user';
 import { Dialog, Message } from '@/utils/tips';
 import { TrashOutline, Pencil } from '@vicons/ionicons5';
-import { PasswordRound } from '@vicons/material';
+import { PasswordRound, RefreshFilled } from '@vicons/material';
 import EditUserForm from './EditUserForm.vue';
 import EditLimitForm from './EditLimitForm.vue';
 import { getCountTrans, popupResetUserPasswordDialog } from '@/utils/renders';
@@ -26,6 +34,13 @@ const { t } = useI18n();
 const userStore = useUserStore();
 
 const data = ref<Array<UserRead>>([]);
+
+const refreshData = () => {
+  getAllUserApi().then(res => {
+    data.value = res.data;
+    Message.success(t("tips.refreshed"));
+  })
+}
 
 getAllUserApi().then(res => {
   data.value = res.data;
@@ -49,7 +64,8 @@ const columns: DataTableColumns<UserRead> = [
     key: 'chat_status',
     render(row) {
       return row.chat_status ? t(chatStatusMap[row.chat_status as keyof typeof chatStatusMap]) : ''
-    }
+    },
+    sorter: 'default'
   },
   {
     title: t("commons.activeTime"),

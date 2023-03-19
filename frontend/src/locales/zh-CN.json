@@ -150,7 +150,8 @@
     "terminated": "连接被服务端终止",
     "loading": "正在加载...",
     "pleaseSelectConversation": "请先选择一个对话",
-    "pressEscToExitFullscreen": "已进入全屏，单击Esc退出全屏"
+    "pressEscToExitFullscreen": "已进入全屏，单击Esc退出全屏",
+    "refreshed": "已刷新"
   },
   "labels": {
     "nickname": "昵称",
