@@ -78,7 +78,20 @@ const columns: DataTableColumns<ConversationSchema> = [
   {
     title: t("commons.title"),
     key: 'title',
-    sorter: 'default'
+    sorter: 'default',
+    // render: (row) => {
+    //   return 
+    render: (row) => {
+      return h(NButton, {
+        text: true,
+        tag: 'a',
+        href: `/conv/${row.conversation_id}`,
+        target: '_blank'
+      }, {
+        default: () => row.title ? row.title : t("commons.empty")
+    // }
+      })
+    }
   },
   {
     title: t("commons.belongToUser"),
