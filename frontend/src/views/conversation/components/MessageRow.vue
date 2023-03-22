@@ -177,15 +177,20 @@ const copyMessageContent = () => {
 <style>
 /* modified from https://github.com/arronhunt/highlightjs-copy */
 
-code {
-  @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170
+pre {
+  @apply w-full flex;
+}
+
+pre code {
+  /* @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170 */
+  @apply w-0 flex-grow mr-0;
 }
 
 @media print {
   code {
     @apply max-w-160 !important
   }
-}
+} */
 
 p {
   white-space: pre-line;
