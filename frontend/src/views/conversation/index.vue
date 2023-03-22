@@ -26,14 +26,8 @@
         <div class="flex-1 overflow-x-hidden h-full">
           <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0">
             <!-- 消息记录内容（用于全屏展示） -->
-            <div ref="historyContentRef" id="print-content" class="flex flex-col h-full" @keyup.esc="toggleFullscreenHistory(true)" tabindex="0"
-              style="outline:none;">
-              <!-- 消息记录 -->
-              <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
-                <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(currentConversation?.model_name) }}</n-text>
-              </div>
-              <MessageRow :message="message" v-for="message in currentMessageListDisplay" :key="message.id" />
-            </div>
+            <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :conversation-id="currentConversationId" :fullscreen="false"
+            :model-name="currentConversation.model_name" :show-tips="showFullscreenTips" />
           </n-scrollbar>
           <!-- 未选中对话 -->
           <div v-else-if="!currentConversationId" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
@@ -117,25 +111,29 @@
 <script setup lang="ts">
 import { useConversationStore, useUserStore } from '@/store';
 import { ConversationSchema } from '@/types/schema';
-import { ref, computed, watch, h, triggerRef } from 'vue';
-import { LoadingBar, Dialog, Message } from '@/utils/tips';
+import { computed, h, ref, watch } from 'vue';
+import { Dialog, LoadingBar, Message } from '@/utils/tips';
 
 import StatusCard from './components/StatusCard.vue';
-import MessageRow from './components/MessageRow.vue';
 
 import { ChatConversationDetail, ChatMessage } from '@/types/custom';
 import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 
 import { useI18n } from 'vue-i18n';
-import { NDropdown, NEllipsis, NButton, NIcon } from 'naive-ui';
-import { Send, ChatboxEllipses, LogoMarkdown, Add, Print } from '@vicons/ionicons5';
-import { KeyboardDoubleArrowUpRound, KeyboardDoubleArrowDownRound, FullscreenRound, PhotoRound } from '@vicons/material';
-import { popupChangeConversationTitleDialog, dropdownRenderer, popupNewConversationDialog, getCountTrans, getModelNameTrans } from '@/utils/renders';
-
-import { useThemeVars } from "naive-ui"
+import { NButton, NEllipsis, NIcon, useThemeVars } from 'naive-ui';
+import { Add, ChatboxEllipses, LogoMarkdown, Print, Send } from '@vicons/ionicons5';
+import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound } from '@vicons/material';
+import {
+  dropdownRenderer,
+  getCountTrans,
+  getModelNameTrans,
+  popupChangeConversationTitleDialog,
+  popupNewConversationDialog
+} from '@/utils/renders';
 import { saveAs } from 'file-saver';
-import md from "@/utils/markdown";
+import HistoryContent from "@/views/conversation/components/HistoryContent.vue";
 
+import {getConvMessageListFromId} from "@/utils/conversation"
 const themeVars = useThemeVars()
 
 const { t } = useI18n();
@@ -174,6 +172,17 @@ const inputValue = ref('');
 const loading = ref(false);
 const currentActiveMessageSend = ref<ChatMessage | null>(null);
 const currentActiveMessageRecv = ref<ChatMessage | null>(null);
+const currentMessageListDisplay = computed(() => {
+  const conversationId = currentConversation.value?.conversation_id;
+  if (!conversationId) return [];
+  // const _ensure_conv = conversationStore.conversationDetailMap[props.conversationId];
+  let result = getConvMessageListFromId(conversationId);
+  if (currentActiveMessages.value.length > 0) {
+    result = result.concat(currentActiveMessages.value);
+  }
+  return result;
+});
+
 
 // 从 store 中获取对话列表
 const menuOptions = computed(() => {
@@ -256,19 +265,8 @@ const currentNode = computed<string | undefined>(() => {
 // });
 
 // 实际的 currentMessageList，加上当前正在发送的消息
-const currentMessageListDisplay = computed<Array<ChatMessage>>(() => {
-  const result = [];
-  const conversation_id = currentConversation.value?.conversation_id;
-  const conv = conversationStore.conversationDetailMap[conversation_id];
-  if (conv) {
-    let x = conv.current_node;
-    while (!!x) {
-      if (conv.mapping[x].message)
-        result.push(conv.mapping[x]);
-      x = conv.mapping[x].parent;
-    }
-    result.reverse();
-  }
+const currentActiveMessages = computed<Array<ChatMessage>>(() => {
+  const result: ChatMessage[] = [];
   if (currentActiveMessageSend.value && result.findIndex((message) => message.id === currentActiveMessageSend.value?.id) === -1)
     result.push(currentActiveMessageSend.value);
   if (currentActiveMessageRecv.value && result.findIndex((message) => message.id === currentActiveMessageRecv.value?.id) === -1)
@@ -491,35 +489,7 @@ const exportToMarkdownFile = () => {
 }
 
 const historyContentRef = ref();
-const fullscreenHistory = ref<Boolean>(false);
-const historyContentParent = ref<HTMLElement>();
-
-const toggleFullscreenHistory = (showTips: boolean) => {
-  console.log('toggleFullscreenHistory')
-  // fullscreenHistory.value = !fullscreenHistory.value;
-  const appElement = document.getElementById('app');
-  const bodyElement = document.body;
-  const historyContentElement = historyContentRef.value;
-  if (fullscreenHistory.value) {
-    // 将 historyContent 移动回来
-    historyContentParent.value!.appendChild(historyContentElement);
-    if (appElement) appElement.style.display = 'block';
-  } else {
-    historyContentParent.value = historyContentElement.parentElement!;
-    // 移动到body child的第一个
-    bodyElement.insertBefore(historyContentElement, bodyElement.firstChild);
-    // 将div#app 设置为不可见
-    if (appElement) {
-      appElement.style.display = 'none';
-    }
-    historyContentElement.focus();
-    if (showTips)
-      Message.success(t('tips.pressEscToExitFullscreen'), {
-        duration: 2000,
-      });
-  }
-  fullscreenHistory.value = !fullscreenHistory.value;
-};
+const showFullscreenTips = ref(false);
 
 const showFullscreenHistory = () => {
   if (!currentConversation.value) {
@@ -527,8 +497,9 @@ const showFullscreenHistory = () => {
     return;
   }
   // focus historyContentRef
+  console.log(historyContentRef.value);
   historyContentRef.value.focus();
-  toggleFullscreenHistory(true);
+  historyContentRef.value.toggleFullscreenHistory(true);
 }
 
 const exportToPdfFile = () => {
@@ -536,9 +507,9 @@ const exportToPdfFile = () => {
     Message.error(t('tips.pleaseSelectConversation'));
     return;
   }
-  toggleFullscreenHistory(false);
+  historyContentRef.value.toggleFullscreenHistory(false);
   window.print();
-  toggleFullscreenHistory(false);
+  historyContentRef.value.toggleFullscreenHistory(false);
 }
 
 // 加载对话列表

@@ -12,6 +12,7 @@ import { i18n } from "@/i18n";
 import { ConversationSchema, ChatModels } from "@/types/schema";
 import { Dialog } from "@/utils/tips";
 import useUserStore from "@/store/modules/user";
+import { ChatConversationDetail } from "@/types/custom";
 
 const t = i18n.global.t as any;
 
@@ -26,8 +27,8 @@ const getModelNameTrans = (model_name: keyof typeof modelNameMap) => {
 };
 
 const getCountTrans = (count: number): string => {
-  return count == -1 ? t("commons.unlimited") : `${count}`
-}
+  return count == -1 ? t("commons.unlimited") : `${count}`;
+};
 
 const dropdownRenderer = (
   conversation: ConversationSchema,
@@ -211,5 +212,5 @@ export {
   popupResetUserPasswordDialog,
   getModelNameTrans,
   getCountTrans,
-  modelNameMap,
+  modelNameMap
 };

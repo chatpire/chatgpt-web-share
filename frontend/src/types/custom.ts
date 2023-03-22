@@ -3,7 +3,7 @@ export type ChatMessage = {
   author_role: "user" | "assistant" | string;
   model_slug?: string;
   message?: string;
-  parent?: string;
+  parent?: string | null;
   children: Array<string>;
   typing?: boolean;
 };
