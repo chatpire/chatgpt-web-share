@@ -44,7 +44,7 @@ const useConversationStore = defineStore("conversation", {
           parent: current_msg.parent,
           children: current_msg.children,
           author_role: current_msg.message?.author?.role,
-          model_slug: current_msg.message?.meta_data?.model_slug,
+          model_slug: current_msg.message?.metadata?.model_slug,
           message: current_msg.message?.content?.parts.join("\n\n"),
         } as ChatMessage;
       }
