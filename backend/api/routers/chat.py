@@ -219,7 +219,7 @@ async def ask(websocket: WebSocket):
     # 判断是否能新建对话，以及是否能继续提问
     async with get_async_session_context() as session:
         user_conversations_count = await session.execute(
-            select(func.count(Conversation.id)).filter(Conversation.user_id == user.id))
+            select(func.count(Conversation.id)).filter(and_(Conversation.user_id == user.id, Conversation.is_valid)))
         user_conversations_count = user_conversations_count.scalar()
         if is_new_conv and user.max_conv_count != -1 and user_conversations_count >= user.max_conv_count:
             await websocket.close(1008, "errors.maxConversationCountReached")
