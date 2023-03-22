@@ -1,13 +1,13 @@
 <template>
-  <div class="h-full" ref="rootRef">
+  <div class="flex-grow mb-2" ref="rootRef">
     <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
-    <div class="h-full pb-6 flex flex-col md:flex-row md:space-x-4">
+    <div class="h-full flex flex-col md:flex-row md:space-x-4">
       <!-- 左栏 -->
       <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:overflow-y-auto">
         <StatusCard />
         <n-card class="max-h-full" content-style="padding: 4px;">
           <div class="flex box-content m-2" v-if="!newConversation">
-            <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loading">
+            <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loadingBar">
               <template #icon>
                 <n-icon class="">
                   <Add />
@@ -16,21 +16,20 @@
               {{ $t("commons.newConversation") }}
             </n-button>
           </div>
-          <n-menu ref="menuRef" :disabled="loading" :options="menuOptions" :root-indent="18" v-model:value="currentConversationId"></n-menu>
+          <n-menu ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18" v-model:value="currentConversationId"></n-menu>
         </n-card>
       </div>
       <!-- 右栏 -->
-      <n-card class="md:w-3/4" :bordered="true" :class="{ 'h-90%': !!currentConversationId, 'h-98%': !currentConversationId || loading }"
-        content-style="padding: 0; display: flex; flex-direction: column; height: 100%;">
+      <n-card class="md:w-3/4 h-full overflow-y-auto" :bordered="true"
+        content-style="padding: 0; display: flex; flex-direction: column;">
         <!-- 上半部分 -->
-        <div class="flex-1 overflow-x-hidden h-full">
-          <n-scrollbar ref="historyRef" :content-style="{ height: '100%' }" v-if="currentConversationId">
+          <n-scrollbar class="h-100 sm:h-0 flex-grow" ref="historyRef" :content-style="{ height: '100%' }" v-if="currentConversationId">
             <!-- 消息记录内容（用于全屏展示） -->
-            <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :conversation-id="currentConversationId" :fullscreen="false"
-            :model-name="currentConversation.model_name" :show-tips="showFullscreenTips" :loading="loading" />
+            <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :fullscreen="false"
+            :model-name="currentConversation.model_name" :show-tips="showFullscreenTips" :loading="loadingHistory" />
           </n-scrollbar>
           <!-- 未选中对话 -->
-          <div v-else-if="!currentConversationId" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
+          <div class="flex-grow flex flex-col justify-center" :style="{ backgroundColor: themeVars.cardColor }" v-else-if="!currentConversationId">
             <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
               <template #icon>
                 <n-icon>
@@ -44,15 +43,6 @@
               </template>
             </n-empty>
           </div>
-          <!-- 加载消息记录中 -->
-          <!-- <div v-else-if="loading" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
-            <n-empty :description="$t('tips.loading')">
-              <template #icon>
-                <n-spin size="medium" />
-              </template>
-            </n-empty>
-          </div> -->
-        </div>
         <!-- 下半部分 -->
         <div class="flex flex-col relative" :style="{ height: inputHeight }">
           <n-divider />
@@ -144,11 +134,14 @@ const historyRef = ref();
 const userStore = useUserStore();
 const conversationStore = useConversationStore();
 
-const inputExpanded = ref<Boolean>(false);
+const inputExpanded = ref<boolean>(false);
 const inputHeight = computed(() => inputExpanded.value ? '50vh' : '24vh');
 const toggleInputExpanded = () => {
   inputExpanded.value = !inputExpanded.value;
 };
+
+const loadingBar = ref(false);
+const loadingHistory = ref<boolean>(false);
 
 const currentAvaliableAskCountsTip = computed(() => {
   let result = '';
@@ -169,7 +162,6 @@ const currentConversation = computed<ConversationSchema | any>(() => {
 });
 
 const inputValue = ref('');
-const loading = ref(false);
 const currentActiveMessageSend = ref<ChatMessage | null>(null);
 const currentActiveMessageRecv = ref<ChatMessage | null>(null);
 const currentMessageListDisplay = computed(() => {
@@ -199,7 +191,7 @@ const menuOptions = computed(() => {
       label: () =>
         h(NEllipsis, null, { default: () => conversation.title }),
       key: conversation.conversation_id,
-      disabled: loading.value == true,
+      disabled: loadingBar.value == true,
       extra: () => dropdownRenderer(conversation, handleDeleteConversation, handleChangeConversationTitle)
     }
   });
@@ -207,7 +199,7 @@ const menuOptions = computed(() => {
     results?.unshift({
       label: newConversation.value.title,
       key: newConversation.value.conversation_id,
-      disabled: loading.value == true,
+      disabled: loadingBar.value == true,
     });
   }
   return results;
@@ -282,22 +274,24 @@ watch(currentConversationId, (newVal, oldVal) => {
 });
 
 const handleChangeConversation = (key: string | null) => {
-  if (loading.value || !key) return;
-  loading.value = true;
+  if (loadingBar.value || !key) return;
+  loadingBar.value = true;
+  loadingHistory.value = true;
   LoadingBar.start();
   conversationStore.fetchConversationHistory(key).then(() => {
     // console.log(conversationStore.conversationDetailMap);
   }).catch((err: any) => {
     console.log(err);
   }).finally(() => {
-    loading.value = false;
+    loadingBar.value = false;
+    loadingHistory.value = false;
     LoadingBar.finish();
   })
 };
 
 
 const sendDisabled = computed(() => {
-  return loading.value || currentConversationId.value == null || inputValue.value === null || inputValue.value.trim() == '';
+  return loadingBar.value || currentConversationId.value == null || inputValue.value === null || inputValue.value.trim() == '';
 });
 
 
@@ -325,12 +319,12 @@ const shortcutSendMsg = (e: KeyboardEvent) => {
 
 
 const sendMsg = async () => {
-  if (sendDisabled.value || loading.value) {
+  if (sendDisabled.value || loadingBar.value) {
     return;
   }
 
   LoadingBar.start();
-  loading.value = true;
+  loadingBar.value = true;
   const message = inputValue.value;
   inputValue.value = '';
 
@@ -451,7 +445,7 @@ const sendMsg = async () => {
     }
     await userStore.fetchUserInfo();
     LoadingBar.finish();
-    loading.value = false;
+    loadingBar.value = false;
   };
 
   webSocket.onerror = (event: Event) => {
