@@ -1,11 +1,18 @@
 <template>
   <div ref="contentRef" id="print-content" class="flex flex-col h-full" @keyup.esc="toggleFullscreenHistory(true)" tabindex="0" style="outline:none;">
-    <!-- 消息记录 -->
-    <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
-      <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(modelName as any) }}
-      </n-text>
+    <div v-if="!props.loading">
+      <!-- 消息记录 -->
+      <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
+        <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(modelName as any) }}
+        </n-text>
+      </div>
+      <MessageRow :message="message" v-for="message in messages" :key="message.id" />
     </div>
-    <MessageRow :message="message" v-for="message in messages" :key="message.id" />
+    <n-empty v-else class="h-full flex justify-center" :style="{ backgroundColor: themeVars.cardColor }" :description="$t('tips.loading')">
+      <template #icon>
+        <n-spin size="medium" />
+      </template>
+    </n-empty>
   </div>
 </template>
 
@@ -30,6 +37,7 @@ const props = defineProps<{
   modelName?: string;
   fullscreen: boolean;  // 初始状态下是否全屏
   showTips: boolean;
+  loading: boolean;
 }>();
 
 const contentRef = ref();

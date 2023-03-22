@@ -24,10 +24,10 @@
         content-style="padding: 0; display: flex; flex-direction: column; height: 100%;">
         <!-- 上半部分 -->
         <div class="flex-1 overflow-x-hidden h-full">
-          <n-scrollbar ref="historyRef" v-if="newConversation || currentMessageListDisplay.length != 0">
+          <n-scrollbar ref="historyRef" :content-style="{ height: '100%' }" v-if="currentConversationId">
             <!-- 消息记录内容（用于全屏展示） -->
             <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :conversation-id="currentConversationId" :fullscreen="false"
-            :model-name="currentConversation.model_name" :show-tips="showFullscreenTips" />
+            :model-name="currentConversation.model_name" :show-tips="showFullscreenTips" :loading="loading" />
           </n-scrollbar>
           <!-- 未选中对话 -->
           <div v-else-if="!currentConversationId" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
@@ -45,13 +45,13 @@
             </n-empty>
           </div>
           <!-- 加载消息记录中 -->
-          <div v-else-if="loading" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
+          <!-- <div v-else-if="loading" class="flex flex-col justify-center h-full" :style="{ backgroundColor: themeVars.cardColor }">
             <n-empty :description="$t('tips.loading')">
               <template #icon>
                 <n-spin size="medium" />
               </template>
             </n-empty>
-          </div>
+          </div> -->
         </div>
         <!-- 下半部分 -->
         <div class="flex flex-col relative" :style="{ height: inputHeight }">
