@@ -7,6 +7,7 @@
           <PersonFilled />
         </n-icon>
       </n-avatar>
+      <n-avatar v-else-if="isGpt4" class="mt-3" size="small" src="/chatgpt-icon-black.svg" />
       <n-avatar v-else class="mt-3" size="small" src="/chatgpt-icon.svg" />
     </div>
     <div class="mx-4 w-full">
@@ -48,6 +49,8 @@ let observer = null;
 const contentRef = ref<HTMLDivElement>();
 const showRawContent = ref(false);
 
+
+
 const toggleShowRawContent = () => {
   showRawContent.value = !showRawContent.value;
 }
@@ -55,6 +58,10 @@ const toggleShowRawContent = () => {
 const props = defineProps<{
   message: ChatMessage;
 }>()
+
+const isGpt4 = computed(() => {
+  return props.message.model_slug == 'gpt-4';
+})
 
 const backgroundColor = computed(() => {
   if (props.message.author_role == 'user') {
