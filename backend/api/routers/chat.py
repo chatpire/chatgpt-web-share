@@ -6,7 +6,7 @@ import httpx
 import requests
 from fastapi import APIRouter, Depends, WebSocket
 from fastapi.encoders import jsonable_encoder
-from httpx import HTTPStatusError
+from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
 import api.globals as g
 from api.config import config
@@ -318,15 +318,15 @@ async def ask(websocket: WebSocket):
         })
         websocket_code = 1001
         websocket_reason = "errors.chatgptResponseError"
-    except HTTPStatusError as e:
+    except HTTPError as e:
         logger.error(str(e))
         await websocket.send_json({
             "type": "error",
-            "tip": "errors.httpStatusError",
+            "tip": "errors.httpError",
             "message": str(e)
         })
         websocket_code = 1014
-        websocket_reason = "errors.httpStatusError"
+        websocket_reason = "errors.httpError"
     except Exception as e:
         logger.error(str(e))
         await websocket.send_json({

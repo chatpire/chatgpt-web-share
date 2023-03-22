@@ -1,4 +1,6 @@
 import asyncio
+
+from httpx import HTTPError
 import uvicorn
 
 from fastapi import FastAPI
@@ -114,6 +116,9 @@ async def on_startup():
         await asyncio.sleep(2)  # 等待 Proxy Server 启动
 
     # 获取 ChatGPT 对话，并同步数据库
+    if not config.get("sync_conversations_on_startup", True):
+        logger.info("Sync conversations on startup disabled. Jumping...")
+        return # 跳过同步对话
     try:
         logger.debug(f"Using {os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
         result = await g.chatgpt_manager.get_conversations()
@@ -158,11 +163,14 @@ async def on_startup():
 
                 await session.commit()
     except ChatGPTError as e:
-        logger.warning(f"Fetch conversation error: {e.source} {e.code}: {e.message}")
+        logger.error(f"Fetch conversation error (ChatGPTError): {e.source} {e.code}: {e.message}")
+        logger.warning("Sync conversations on startup failed!")
+    except HTTPError as e:
+        logger.error(f"Fetch conversation error (httpx.HTTPError): {str(e)}")
+        logger.warning("Sync conversations on startup failed!")
     except Exception as e:
-        logger.error(e)
-        raise e
-    logger.debug("Done!")
+        logger.error(f"Fetch conversation error (unknown): {str(e)}")
+        logger.warning("Sync conversations on startup failed!")
 
 
 # 关闭时

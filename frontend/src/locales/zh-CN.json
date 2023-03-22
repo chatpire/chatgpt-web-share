@@ -112,7 +112,7 @@
     "maxConversationCountReached": "会话数量已达上限",
     "cannotConnectMoreThanOneClient": "当前用户已有对话等待回复，不能再次请求",
     "noUserSelected": "未选择用户",
-    "httpStatusError": "HTTP错误"
+    "httpError": "HTTP错误"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
