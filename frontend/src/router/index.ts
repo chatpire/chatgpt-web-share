@@ -36,6 +36,15 @@ const router = createRouter({
       },
     },
     {
+      path: "/conv/:conversation_id",
+      name: "conversationHistory",
+      component: () => import("@/views/conversation/history-viewer.vue"),
+      meta: {
+        requiresAuth: true,
+        roles: ["superuser", "user"],
+      },
+    },
+    {
       path: "/admin",
       name: "admin",
       component: () => import("@/views/admin/index.vue"),
@@ -72,8 +81,18 @@ const router = createRouter({
             roles: ["superuser", "user"],
           },
         },
+        {
+          path: "/error/404",
+          name: "404",
+          component: () => import("@/views/error/404.vue"),
+          meta: {
+            requiresAuth: false,
+            roles: ["superuser", "user"],
+          },
+        },
       ],
     },
+    { path: "/:pathMatch(.*)*", name: "NotFound", redirect: "/error/404" },
   ],
   scrollBehavior() {
     return { top: 0 };
