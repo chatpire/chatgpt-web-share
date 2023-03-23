@@ -32,7 +32,7 @@ This readme was translated by ChatGPT.
 
 ## Using Proxy
 
-Risk Warning: This project is currently using [revChatGPT](https://github.com/acheong08/ChatGPT) V1, which uses its reverse proxy to bypass Cloudflare verification, therefore it is subject to request limits and does not guarantee long-term stability. And it has been recently reported that OpenAI may deactivate accounts that use this method. Please use it at your own risk. 
+Risk Warning: This project is currently using [revChatGPT](https://github.com/acheong08/ChatGPT) V1, which uses its reverse proxy to bypass Cloudflare verification, therefore it is subject to request limits and does not guarantee long-term stability. And it has been recently reported that OpenAI may deactivate accounts that use this method. Please use it at your own risk.
 
 However, if you have a ChatGPT Plus account, you can use a [custom proxy](https://github.com/acheong08/ChatGPT-Proxy-V4) to bypass the request limit. After deploying proxy server, set `chatgpt_base_url` to `http://your-hostname/api/` in `config.yaml`.
 
@@ -71,7 +71,7 @@ services:
       - 8080:80 # web port
     volumes:
       - ./data:/data # store database files
-      - ./config.yaml:/app/backend/api/config/config.yaml   # backend config file
+      - ./config.yaml:/app/backend/api/config/config.yaml # backend config file
 ```
 
 In the same folder, create config.yaml with the following contents:
@@ -85,21 +85,21 @@ port: 8000
 database_url: "sqlite+aiosqlite:////data/database.db"
 run_migration: false
 
-jwt_secret: "your jwt secret"    # Used for generating JWT token, like a password
+jwt_secret: "your jwt secret" # Used for generating JWT token, like a password
 jwt_lifetime_seconds: 86400
-cookie_max_age: 86400            # Login expiration time
-user_secret: "your user secret"  # Used for generating user password, like a password
+cookie_max_age: 86400 # Login expiration time
+user_secret: "your user secret" # Used for generating user password, like a password
 
 sync_conversations_on_startup: true # Whether to synchronize ChatGPT conversations on startup, recommended to enable
-create_initial_admin_user: true     # Whether to create initial admin user
-create_initial_user: false          # Whether to create initial normal user
-initial_admin_username: admin       # Initial admin username
-initial_admin_password: password    # Initial admin password
-initial_user_username: user         # Initial normal username
-initial_user_password: password     # Initial normal password
+create_initial_admin_user: true # Whether to create initial admin user
+create_initial_user: false # Whether to create initial normal user
+initial_admin_username: admin # Initial admin username
+initial_admin_password: password # Initial admin password
+initial_user_username: user # Initial normal username
+initial_user_password: password # Initial normal password
 
-chatgpt_access_token: "your access_token"    # Need to get from ChatGPT
-chatgpt_paid: true  # Whether you are a ChatGPT Plus user
+chatgpt_access_token: "your access_token" # Need to get from ChatGPT
+chatgpt_paid: true # Whether you are a ChatGPT Plus user
 ```
 
 How to get `chatgpt_access_token`: After logging in to `chat.openai.com`, open https://chat.openai.com/api/auth/session and get the `accessToken` field.
@@ -133,3 +133,9 @@ poetry run python main.py
 After installing Caddy, create a new Caddyfile and refer to the [Caddyfile](Caddyfile) for its content.
 
 Use `caddy start` to start Caddy.
+
+## Information Collection and Privacy Statement
+
+Starting from version v0.2.16, this project utilizes Sentry to collect error information. By using this project, you agree to the Sentry privacy policy. Any anonymous information collected through Sentry will only be used for development and debugging purposes. We will never collect or store any of your private data, like username, password, access token, etc.
+
+If you do not want to be tracked by Sentry, you can set the environment variable `VITE_DISABLE_SENTRY` to "yes" before build the frontend.

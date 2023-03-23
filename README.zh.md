@@ -65,7 +65,7 @@ services:
       - 8080:80 # web 端口号
     volumes:
       - ./data:/data # 存放数据库文件
-      - ./config.yaml:/app/backend/api/config/config.yaml   # 后端配置文件
+      - ./config.yaml:/app/backend/api/config/config.yaml # 后端配置文件
 ```
 
 在同文件夹下创建 config.yaml，内容如下：
@@ -77,21 +77,21 @@ port: 8000
 database_url: "sqlite+aiosqlite:////data/database.db"
 run_migration: false
 
-jwt_secret: "你的 jwt secret"    # 用于生成 jwt token，需要自行设置
+jwt_secret: "你的 jwt secret" # 用于生成 jwt token，需要自行设置
 jwt_lifetime_seconds: 86400
-cookie_max_age: 86400           # 登录过期时间
-user_secret: "你的 user secret"  # 用于生成用户密码，需要自行设置
+cookie_max_age: 86400 # 登录过期时间
+user_secret: "你的 user secret" # 用于生成用户密码，需要自行设置
 
 sync_conversations_on_startup: true # 是否在启动时同步同步 ChatGPT 对话，建议启用
-create_initial_admin_user: true     # 是否创建初始管理员用户
-create_initial_user: false          # 是否创建初始普通用户
-initial_admin_username: admin       # 初始管理员用户名
-initial_admin_password: password    # 初始管理员密码
-initial_user_username: user         # 初始普通用户名
-initial_user_password: password     # 初始普通密码
+create_initial_admin_user: true # 是否创建初始管理员用户
+create_initial_user: false # 是否创建初始普通用户
+initial_admin_username: admin # 初始管理员用户名
+initial_admin_password: password # 初始管理员密码
+initial_user_username: user # 初始普通用户名
+initial_user_password: password # 初始普通密码
 
-chatgpt_access_token: "你的access_token"    # 需要从 ChatGPT 获取
-chatgpt_paid: true  # 是否为 ChatGPT Plus 用户
+chatgpt_access_token: "你的access_token" # 需要从 ChatGPT 获取
+chatgpt_paid: true # 是否为 ChatGPT Plus 用户
 ```
 
 `chatgpt_access_token` 获取方法：打开登录 chat.openai.com 后，打开 https://chat.openai.com/api/auth/session 并获取 accessToken 字段。
@@ -127,3 +127,9 @@ poetry run python main.py
 安装 caddy 后，新建 Caddyfile 文件，内容参考 [Caddyfile](Caddyfile)。
 
 使用 `caddy start` 启动 caddy 即可。
+
+## 调试信息收集和隐私声明
+
+从版本 v0.2.16 开始，本项目使用 Sentry 来收集错误信息。使用本项目即表示您同意 Sentry 的隐私政策。通过 Sentry 收集的任何匿名信息仅用于开发和调试目的。我们永远不会收集或存储您的私人数据，如用户名、密码、access token 等。
+
+如果不希望被 Sentry 追踪，可以在编译前端时将环境变量 VITE_DISABLE_SENTRY 设置为“yes”。设置后，前端将不会初始化 Sentry，从而不会上传任何信息。
