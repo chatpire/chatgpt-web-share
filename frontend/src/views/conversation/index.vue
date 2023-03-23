@@ -1,9 +1,9 @@
 <template>
-  <div class="flex-grow mb-2" ref="rootRef">
+  <div class="flex-grow mb-4" ref="rootRef">
     <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
     <div class="h-full flex flex-col md:flex-row md:space-x-4">
       <!-- 左栏 -->
-      <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:overflow-y-auto">
+      <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:h-full md:overflow-y-auto">
         <StatusCard />
         <n-card class="max-h-full" content-style="padding: 4px;">
           <div class="flex box-content m-2" v-if="!newConversation">
@@ -383,6 +383,7 @@ const sendMsg = async () => {
     } else if (reply.type === 'message') {
       currentActiveMessageRecv.value!.message = reply.message;
       currentActiveMessageRecv.value!.id = reply.parent_id;
+      currentActiveMessageRecv.value!.model_slug = reply.model;
       if (newConversation.value) {
         newConversation.value.conversation_id = reply.conversation_id;
         if (currentConversationId.value !== newConversation.value.conversation_id) {
