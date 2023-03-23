@@ -1,8 +1,8 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Seek help
+about: Ask for help when you meet trouble
 title: ''
-labels: bug
+labels: ''
 assignees: ''
 
 ---
@@ -10,20 +10,13 @@ assignees: ''
 **Version**
 v0.x.x
 
-**What's your deploying method?**
+**What's your deploying environment?**
 - [ ] Docker
 - [ ] Caddy
 - [ ] Other
 
-**Describe the bug**
-A clear and concise description of what the bug is.
-
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Describe the problem**
+A clear and concise description of your problem.
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
