@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chatgpt-share-backend"
-version = "0.2.16"
+version = "0.2.17"
 description = ""
 authors = ["moeakwak <moeakwak@gmail.com>"]
 readme = "README.md"
@@ -9,9 +9,9 @@ packages = []
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "^0.94.1"
-uvicorn = "^0.21.0"
+uvicorn = "^0.21.1"
 aiosqlite = "^0.18.0"
-sqlalchemy = "^2.0.6"
+sqlalchemy = "^2.0.7"
 fastapi-users-db-sqlalchemy = "^5.0.0"
 revchatgpt = "4.0.2"
 greenlet = "^2.0.2"
