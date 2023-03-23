@@ -289,11 +289,9 @@ const handleChangeConversation = (key: string | null) => {
   })
 };
 
-
 const sendDisabled = computed(() => {
   return loadingBar.value || currentConversationId.value == null || inputValue.value === null || inputValue.value.trim() == '';
 });
-
 
 const makeNewConversation = () => {
   if (newConversation.value) return;

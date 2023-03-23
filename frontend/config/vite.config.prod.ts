@@ -6,6 +6,7 @@ export default mergeConfig(
     mode: "production",
     plugins: [],
     build: {
+      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks: {
@@ -15,9 +16,6 @@ export default mergeConfig(
         },
       },
       chunkSizeWarningLimit: 2000,
-    },
-    define: {
-      "import.meta.env.VITE_API_WEBSOCKET_PROTOCOL": "'auto'",
     },
   },
   baseConfig
