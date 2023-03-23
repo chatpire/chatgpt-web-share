@@ -190,7 +190,7 @@ pre code {
   code {
     @apply max-w-160 !important
   }
-} */
+}
 
 p {
   white-space: pre-line;
