@@ -48,7 +48,6 @@ axios.interceptors.response.use(
     const res = response.data;
     if (!successCode.includes(res.code)) {
       console.log("Error: ", res);
-      console.log(res.code);
       let msg = `${res.code}`;
       if (res.message) {
         msg += `: ${res.message}`;

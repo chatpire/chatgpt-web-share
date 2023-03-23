@@ -297,7 +297,7 @@ const makeNewConversation = () => {
   if (newConversation.value) return;
   popupNewConversationDialog(
     async (title: string, model_name: any) => {
-      console.log(title, model_name);
+      // console.log(title, model_name);
       newConversation.value = {
         conversation_id: "new_conversation",
         // 默认标题格式：MMDD - username
@@ -365,7 +365,7 @@ const sendMsg = async () => {
   const webSocket = new WebSocket(wsUrl);
 
   webSocket.onopen = (event: Event) => {
-    console.log('WebSocket connection is open', askInfo);
+    // console.log('WebSocket connection is open', askInfo);
     webSocket.send(JSON.stringify(askInfo));
   };
 
@@ -490,7 +490,6 @@ const showFullscreenHistory = () => {
     return;
   }
   // focus historyContentRef
-  console.log(historyContentRef.value);
   historyContentRef.value.focus();
   historyContentRef.value.toggleFullscreenHistory(true);
 }

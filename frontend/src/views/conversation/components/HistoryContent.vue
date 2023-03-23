@@ -48,7 +48,6 @@ const modelName = computed(() => {
   if (props.modelName) {
     return props.modelName;
   } else {
-    console.log('getModelNameFromMessages', getModelNameFromMessages(props.messages))
     return getModelNameFromMessages(props.messages);
   }
 });
@@ -88,7 +87,6 @@ if (props.fullscreen) {
 }
 
 const focus = () => {
-  console.log('focus');
   contentRef.value.focus();
 };
 
