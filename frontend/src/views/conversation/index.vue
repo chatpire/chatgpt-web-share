@@ -358,6 +358,7 @@ const sendMsg = async () => {
     parent: `send_${random_strid}`,
     children: [],
     typing: true,
+    model_slug: currentConversation.value?.model_slug,
   }
   const wsUrl = getAskWebsocketApiUrl();
   let wsErrorMessage: string | null = null;

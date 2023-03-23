@@ -186,7 +186,8 @@ async def ask(websocket: WebSocket):
     conversation_id = params.get("conversation_id", None)
     parent_id = params.get("parent_id", None)
     model_name = params.get("model_name")
-    timeout = params.get("timeout", 30)  # default 30s
+    # timeout = params.get("timeout", 30)  # default 30s
+    timeout = config.get("ask_timeout", 300)
     new_title = params.get("new_title", None)
 
     if message is None:
