@@ -47,7 +47,13 @@ axios.interceptors.response.use(
     }
     const res = response.data;
     if (!successCode.includes(res.code)) {
-      Message.error(res.message || `Error Code: ${res.code}`, {
+      console.log("Error: ", res);
+      console.log(res.code);
+      let msg = `${res.code}`;
+      if (res.message) {
+        msg += `: ${res.message}`;
+      }
+      Message.error(msg, {
         duration: 5 * 1000,
       });
       if (
@@ -70,15 +76,16 @@ axios.interceptors.response.use(
           },
         });
       }
-      return Promise.reject(
-        new Error(res.message || `Error Code: ${res.code}`)
-      );
+      return Promise.reject(res);
     }
     (response.data as any) = res.result;
     return response;
   },
   (error) => {
-    Message.error(error.msg || "Request Error", { duration: 5 * 1000 });
+    Message.error((error.msg && t(error.msg)) || `Request Error`, {
+      duration: 5 * 1000,
+    });
+    console.error("Request Error", error);
     return Promise.reject(error);
   }
 );

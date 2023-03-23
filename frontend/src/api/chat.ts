@@ -65,7 +65,7 @@ export function getAskWebsocketApiUrl() {
     protocol = window.location.protocol === "https:" ? "wss" : "ws";
   }
   const url = `${protocol}://${window.location.host}/api${ApiUrl.Conversation}`;
-  console.log("getAskWebsocketApiUrl", url);
+  // console.log("getAskWebsocketApiUrl", url);
   return url;
 }
 

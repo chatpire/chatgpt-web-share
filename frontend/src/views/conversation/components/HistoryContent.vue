@@ -58,7 +58,6 @@ watch(() => props.fullscreen, () => {
 });
 
 const toggleFullscreenHistory = (showTips: boolean) => {
-  console.log('toggleFullscreenHistory')
   // fullscreenHistory.value = !fullscreenHistory.value;
   const appElement = document.getElementById('app');
   const bodyElement = document.body;

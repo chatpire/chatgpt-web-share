@@ -47,7 +47,7 @@ const loginRules = {
 const login = async () => {
   if (loading.value) return;
   formRef.value?.validate(async (errors?: Array<FormValidationError>) => {
-    if (errors == undefined) {
+    if (!errors) {
       loading.value = true;
       try {
         await userStore.login(formValue as LoginData);
@@ -58,6 +58,8 @@ const login = async () => {
           name: userStore.user?.is_superuser ? 'admin' : 'conversation'
         });
         // TODO: 记住密码
+      } catch (error) {
+        console.log(error);
       } finally {
         loading.value = false;
       }

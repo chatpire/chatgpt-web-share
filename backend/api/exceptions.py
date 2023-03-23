@@ -9,24 +9,24 @@ class SelfDefinedException(Exception):
 
 class AuthorityDenyException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("[errors.authorityDeny]", message)
+        super().__init__("errors.authorityDeny", message)
 
 
 class UserNotExistException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("[errors.userNotExist]", message)
+        super().__init__("errors.userNotExist", message)
 
 
 class InvalidParamsException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("[errors.invalidParams]", message)
+        super().__init__("errors.invalidParams", message)
 
 
 class ResourceNotFoundException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("[errors.resourceNotFound]", message)
+        super().__init__("errors.resourceNotFound", message)
 
 
 class InvalidRequestException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("[errors.invalidRequest]", message)
+        super().__init__("errors.invalidRequest", message)
