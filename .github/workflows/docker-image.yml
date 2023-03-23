@@ -93,6 +93,7 @@ jobs:
         with:
           environment: production
           sourcemaps: frontend/dist/assets
+          version: ${{ github.ref }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
