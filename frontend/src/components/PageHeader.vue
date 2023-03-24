@@ -27,8 +27,8 @@
             </n-dropdown>
           </div>
           <div v-else class="text-gray-500 inline-block">{{ $t("commons.notLogin") }}</div>
-          <n-button v-if="userStore.user?.is_superuser" circle @click="jumpToAdmin">
-            <n-icon :component="ManageAccountsFilled" />
+          <n-button v-if="userStore.user?.is_superuser" circle @click="jumpToAdminOrConv">
+            <n-icon :component="isInAdmin ? ChatFilled : ManageAccountsFilled" />
           </n-button>
           <n-button circle @click="toggleTheme">
             <n-icon :component="themeIcon" />
@@ -47,10 +47,11 @@
 <script setup lang="ts">
 import { useUserStore, useAppStore } from '@/store';
 import { SettingsSharp, LogoGithub, Language } from '@vicons/ionicons5';
-import { DarkModeRound, LightModeRound, ManageAccountsFilled } from '@vicons/material';
+import { DarkModeRound, LightModeRound, ManageAccountsFilled, ChatFilled } from '@vicons/material';
 import { useI18n } from 'vue-i18n';
 import { Dialog, Message } from '@/utils/tips';
 import router from '@/router';
+import { useRoute } from 'vue-router';
 import { DropdownOption } from "naive-ui"
 import { ref, computed, h } from 'vue';
 import UserProfileCard from './UserProfileCard.vue';
@@ -59,6 +60,13 @@ import UserProfileCard from './UserProfileCard.vue';
 const { t } = useI18n();
 const userStore = useUserStore();
 const appStore = useAppStore();
+const route = useRoute();
+
+console.log(route);
+
+const isInAdmin = computed(() => {
+  return route.name == 'admin';
+})
 
 const themeIcon = computed(() => {
   if (appStore.theme == 'dark') {
@@ -94,7 +102,7 @@ const languageOptions = [
 ]
 
 const getOptions = (): Array<DropdownOption> => {
-  const options: Array<DropdownOption>  = [
+  const options: Array<DropdownOption> = [
     {
       label: t("commons.userProfile"),
       key: 'profile',
@@ -124,20 +132,15 @@ const getOptions = (): Array<DropdownOption> => {
       }
     }
   ];
-  if (userStore.user?.is_superuser) {
-    options.unshift({
-      label: t("commons.enterConversation"),
-      key: 'conversation',
-      props: {
-        onClick: async () => { await router.push({ name: 'conversation' }) }
-      }
-    });
-  }
   return options;
 }
 
-const jumpToAdmin = async () => {
-  await router.push({ name: 'admin' })
+const jumpToAdminOrConv = async () => {
+  if (isInAdmin.value) {
+    await router.push({ name: 'conversation' });
+  } else {
+    await router.push({ name: 'admin' });
+  }
 }
 
 
