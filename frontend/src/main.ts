@@ -29,6 +29,7 @@ if (import.meta.env.VITE_DISABLE_SENTRY !== "yes") {
       }),
     ],
     tracesSampleRate: 1.0,
+    ignoreErrors: ["AxiosError", "errors."]
   });
 }
 
