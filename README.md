@@ -4,43 +4,43 @@
 [![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/moeakwak/chatgpt-web-share/actions)
 [![License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)](https://github.com/moeakwak/chatgpt-web-share/blob/main/LICENSE)
 
-**中文 Readme 看这里: [README.zh.md](README.zh.md)**
+[English Readme](README.en.md)
 
-A web application that allows multiple users to share a ChatGPT account at the same time, developed using FastAPI and Vue3. It can be used for sharing or renting a ChatGPT account among friends. It supports ChatGPT Plus, setting conversation models, and user request limits.
+共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。支持使用 GPT-4！
 
-**3.15 Update: Now supports GPT-4!** You can share a ChatGPT Plus account with your friends and use GPT-4 together.
+![screenshot](screenshot.jpeg)
 
-![screenshot](screenshot.en.jpeg)
+通知/讨论 Channel：https://t.me/chatgptwebshare
 
-This readme was translated by ChatGPT.
+## 特点
 
-## Features
+- 美观简洁的 web 界面，使用 [naive-ui](https://www.naiveui.com/)
+  - 支持多语言
+  - 切换夜间模式
+  - 支持一键复制回复内容或代码内容
+  - 支持显示回复中的图像/表格/数学公式/语法高亮
+  - **支持导出对话为美观的 Markdown 或 PDF 文件**
+  - 动态显示回复内容
+- 丰富的对话功能
+  - **支持 GPT-4！** 🥳
+  - 使用 unofficial ChatGPT API，优先支持 ChatGPT Plus 账号
+- 多用户共享管理
+  - 创建多用户用于共享一个 ChatGPT 账号
+  - 不同用户创建的 ChatGPT 对话互相分隔，不会相互影响
+  - 多用户同时请求时，会进行排队处理
+  - 管理员可设置用户的最大对话数量、对话次数限制等
 
-- Uses the unofficial ChatGPT API, supports ChatGPT Plus accounts
-- **Supports GPT-4** 🥳
-- Supports selecting which ChatGPT model to use (sha or paid or gpt-4, if is plus account)
-- A beautiful and concise web interface using [naive-ui](https://www.naiveui.com/)
-  - multiple languages
-  - dark mode
-  - copying reply content as Markdown format with one click
-  - showing images/tables/formulas/syntax highlighting in replies
-  - Export conversation to beautiful markdown and PDF files 🤩 (new in v0.2.3)
-- Creates multiple users to share a ChatGPT account
-- Different users' ChatGPT conversations are separated and do not affect each other
-- When multiple users request at the same time, they will be queued for processing
-- Administrators can set users' maximum number of conversations and conversation time limits, etc.
+## 使用 Proxy 绕过 Cloudflare 验证
 
-## Using Proxy
+注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。此外，[OpenAI 可能会封禁使用 V1 Proxy 的账号](https://github.com/acheong08/ChatGPT/issues/1158)。
 
-Risk Warning: This project is currently using [revChatGPT](https://github.com/acheong08/ChatGPT) V1, which uses its reverse proxy to bypass Cloudflare verification, therefore it is subject to request limits and does not guarantee long-term stability. And it has been recently reported that OpenAI may deactivate accounts that use this method. Please use it at your own risk.
+如果你有 Plus 账号，强烈建议使用 [自定义 Proxy](https://github.com/acheong08/ChatGPT-Proxy-V4)。该代理程序现在已经整合到了 docker 镜像中。如果你使用的是 docker 部署，根据下方的说明进行设置即可。
 
-However, if you have a ChatGPT Plus account, you can use a [custom proxy](https://github.com/acheong08/ChatGPT-Proxy-V4) to bypass the request limit, which was already integrated into the docker container. See below for details.
+## 部署
 
-## Deployment
+### 使用 docker
 
-### Using docker
-
-It is recommended to use docker-compose for deployment. Create a new `docker-compose.yml` file with the following contents:
+推荐使用 docker-compose 部署。新建 `docker-compose.yml` 文件，内容如下：
 
 ```yaml
 version: "3"
@@ -52,16 +52,14 @@ services:
     restart: always
     network_mode: bridge
     ports:
-      - 8080:80 # web port
+      - 8080:80 # web 端口号
     volumes:
-      - ./data:/data # store database files
-      - ./config.yaml:/app/backend/api/config/config.yaml # backend config file
-      - ./logs:/app/logs # log files
+      - ./data:/data # 存放数据库文件
+      - ./config.yaml:/app/backend/api/config/config.yaml # 后端配置文件
+      - ./logs:/app/bogs # 存放日志文件
 ```
 
-In the same folder, create config.yaml with the following contents:
-
-Create a `config.yaml` file in the same directory with the following content:
+在同文件夹下创建 config.yaml，内容如下：
 
 ```yaml
 print_sql: false
@@ -70,30 +68,30 @@ port: 8000
 database_url: "sqlite+aiosqlite:////data/database.db"
 run_migration: false
 
-jwt_secret: "your jwt secret" # Used for generating JWT token, like a password
+jwt_secret: "你的 jwt secret" # 用于生成 jwt token，需要自行设置
 jwt_lifetime_seconds: 86400
-cookie_max_age: 86400 # Login expiration time
-user_secret: "your user secret" # Used for generating user password, like a password
+cookie_max_age: 86400 # 登录过期时间
+user_secret: "你的 user secret" # 用于生成用户密码，需要自行设置
 
-sync_conversations_on_startup: true # Whether to synchronize ChatGPT conversations on startup, recommended to enable
-create_initial_admin_user: true # Whether to create initial admin user
-create_initial_user: false # Whether to create initial normal user
-initial_admin_username: admin # Initial admin username
-initial_admin_password: password # Initial admin password
-initial_user_username: user # Initial normal username
-initial_user_password: password # Initial normal password
-ask_timeout: 600 # Timeout for ChatGPT requests, in seconds
+sync_conversations_on_startup: true # 是否在启动时同步同步 ChatGPT 对话，建议启用
+create_initial_admin_user: true # 是否创建初始管理员用户
+create_initial_user: false # 是否创建初始普通用户
+initial_admin_username: admin # 初始管理员用户名
+initial_admin_password: password # 初始管理员密码
+initial_user_username: user # 初始普通用户名
+initial_user_password: password # 初始普通密码
+ask_timeout: 600
 
-chatgpt_access_token: "your access_token" # Need to get from ChatGPT
-chatgpt_paid: true # Whether you are a ChatGPT Plus user
+chatgpt_access_token: "你的access_token" # 需要从 ChatGPT 获取
+chatgpt_paid: true # 是否为 ChatGPT Plus 用户
 
-log_dir: /app/logs  # Log file directory
+log_dir: /app/logs  # 日志存储位置
 console_log_level: DEBUG
 ```
 
-How to get `chatgpt_access_token`: After logging in to `chat.openai.com`, open https://chat.openai.com/api/auth/session and get the `accessToken` field.
+`chatgpt_access_token` 获取方法：打开登录 chat.openai.com 后，打开 https://chat.openai.com/api/auth/session 并获取 accessToken 字段。
 
-It's highly recommended to use a plus account, so that you can use your own proxy. If you have a plus account, add the following to `config.yaml`:
+如果你是 Plus 用户，请增加如下配置到 `config.yaml` 中：
 
 ```yaml
 chatgpt_base_url: http://127.0.0.1:6062/api/
@@ -103,23 +101,23 @@ reverse_proxy_binary_path: /app/backend/ChatGPT-Proxy-V4
 reverse_proxy_puid: "_puid value from cookie"
 ```
 
-Note that `reverse_proxy_puid` needs to be obtained from your browser: Open https://chat.openai.com/, open the developer tools, find the `_puid` field in the cookies.
+其中，`reverse_proxy_puid` 需要从你的浏览器中获取：打开 https://chat.openai.com/，打开开发者工具，找到 cookie 中的 `_puid` 字段，将其值填入 `reverse_proxy_puid` 中。
 
-`reverse_proxy_binary_path` is the path to the executable file of the reverse proxy service. If using Docker, it is included in the image at the path `/app/backend/ChatGPT-Proxy-V4`.
+`reverse_proxy_binary_path` 是反向代理服务的可执行文件路径，如果使用的是 Docker，它已经包含在镜像中的 `/app/backend/ChatGPT-Proxy-V4` 路径上。
 
-`chatgpt_base_url` can also be set to the address of another reverse proxy service. If `run_reverse_proxy` is enabled, make sure the port of `chatgpt_base_url` matches `reverse_proxy_port`.
+`chatgpt_base_url` 也可以设置为其它反向代理服务的地址。如果启用 `run_reverse_proxy`，请确保 `chatgpt_base_url` 的端口匹配 `reverse_proxy_port`。
 
-Finally, run `docker-compose up -d`.
+最后运行 `docker-compose up -d` 即可。
 
-#### Upgrading
+#### 更新版本
 
-To upgrade, run `docker-compose pull` and `docker-compose up -d`.
+如要更新到最新版本，运行 `docker-compose pull` 以及 `docker-compose up -d` 即可。
 
-### Using Caddy
+### 使用 Caddy
 
-#### Frontend
+#### 前端
 
-You need to install nodejs and pnpm first, then run:
+需要先安装 nodejs 以及 pnpm，然后运行：
 
 ```bash
 cd frontend
@@ -127,9 +125,9 @@ pnpm install
 pnpm run build
 ```
 
-#### Backend
+#### 后端
 
-You need to install poetry first and place config.yaml in the `backend/api/config` directory, then run:
+需要先安装 poetry，并将 config.yaml 放置在 backend/api/config 目录下，然后运行：
 
 ```bash
 cd backend
@@ -137,12 +135,12 @@ poetry install
 poetry run python main.py
 ```
 
-After installing Caddy, create a new Caddyfile and refer to the [Caddyfile](Caddyfile) for its content.
+安装 caddy 后，新建 Caddyfile 文件，内容参考 [Caddyfile](Caddyfile)。
 
-Use `caddy start` to start Caddy.
+使用 `caddy start` 启动 caddy 即可。
 
-## Information Collection and Privacy Statement
+## 调试信息收集和隐私声明
 
-Starting from version v0.2.16, this project utilizes Sentry to collect error information. By using this project, you agree to the Sentry privacy policy. Any anonymous information collected through Sentry will only be used for development and debugging purposes. We will never collect or store any of your private data, like username, password, access token, etc.
+从版本 v0.2.16 开始，本项目使用 Sentry 来收集错误信息。使用本项目即表示您同意 Sentry 的隐私政策。通过 Sentry 收集的任何匿名信息仅用于开发和调试目的。我们永远不会收集或存储您的私人数据，如用户名、密码、access token 等。
 
-If you do not want to be tracked by Sentry, you can set the environment variable `VITE_DISABLE_SENTRY` to "yes" before build the frontend.
+如果不希望被 Sentry 追踪，可以在编译前端时将环境变量 VITE_DISABLE_SENTRY 设置为“yes”。设置后，前端将不会初始化 Sentry，从而不会上传任何信息。
