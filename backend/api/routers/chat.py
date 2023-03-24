@@ -251,17 +251,25 @@ async def ask(websocket: WebSocket):
                 "tip": "tips.waiting"
             })
             request_start_time = time.time()
-            async for data in g.chatgpt_manager.ask(message, conversation_id, parent_id, timeout, model_name):
-                reply = {
-                    "type": "message",
-                    "message": data["message"],
-                    "conversation_id": data["conversation_id"],
-                    "parent_id": data["parent_id"],
-                    "model_name": model_name.value
-                }
-                await websocket.send_json(reply)
-                if conversation_id is None:
-                    conversation_id = data["conversation_id"]
+            try:
+                async for data in g.chatgpt_manager.ask(message, conversation_id, parent_id, timeout, model_name):
+                    reply = {
+                        "type": "message",
+                        "message": data["message"],
+                        "conversation_id": data["conversation_id"],
+                        "parent_id": data["parent_id"],
+                        "model_name": data["model"],
+                    }
+                    await websocket.send_json(reply)
+                    if conversation_id is None:
+                        conversation_id = data["conversation_id"]
+            except Exception as e:
+                # 修复 message 为 None 时的错误
+                if str(e).startswith("Field missing"):
+                    logger.warning(str(e))
+                else:
+                    logger.error(e)
+                    raise e
             logger.debug(
                 f"finish ask {conversation_id} ({model_name}), using time: {time.time() - request_start_time}s")
 
