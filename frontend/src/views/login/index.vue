@@ -46,10 +46,12 @@ const loginRules = {
 
 const login = async () => {
   if (loading.value) return;
-  formRef.value?.validate(async (errors?: Array<FormValidationError>) => {
+  formRef.value?.validate((errors?: Array<FormValidationError>) => {
     if (!errors) {
       loading.value = true;
-      try {
+    }
+  }).then(async () => {
+    try {
         await userStore.login(formValue as LoginData);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         await userStore.fetchUserInfo();
@@ -63,7 +65,6 @@ const login = async () => {
       } finally {
         loading.value = false;
       }
-    }
   });
 }
 
