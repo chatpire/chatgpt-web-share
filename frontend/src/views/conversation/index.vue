@@ -20,29 +20,28 @@
         </n-card>
       </div>
       <!-- 右栏 -->
-      <n-card class="md:w-3/4 h-full overflow-y-auto" :bordered="true"
-        content-style="padding: 0; display: flex; flex-direction: column;">
+      <n-card class="md:w-3/4 h-full overflow-y-auto" :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;">
         <!-- 上半部分 -->
-          <n-scrollbar class="h-100 sm:h-0 flex-grow" ref="historyRef" :content-style="{ height: '100%' }" v-if="currentConversationId">
-            <!-- 消息记录内容（用于全屏展示） -->
-            <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :fullscreen="false"
-            :model-name="currentConversation.model_name" :show-tips="showFullscreenTips" :loading="loadingHistory" />
-          </n-scrollbar>
-          <!-- 未选中对话 -->
-          <div class="flex-grow flex flex-col justify-center" :style="{ backgroundColor: themeVars.cardColor }" v-else-if="!currentConversationId">
-            <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
-              <template #icon>
-                <n-icon>
-                  <ChatboxEllipses />
-                </n-icon>
-              </template>
-              <template #extra>
-                <n-button @click="makeNewConversation">
-                  {{ $t("tips.newConversation") }}
-                </n-button>
-              </template>
-            </n-empty>
-          </div>
+        <n-scrollbar class="h-100 sm:h-0 flex-grow" ref="historyRef" :content-style="{ height: '100%' }" v-if="currentConversationId">
+          <!-- 消息记录内容（用于全屏展示） -->
+          <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :fullscreen="false" :model-name="currentConversation.model_name"
+            :show-tips="showFullscreenTips" :loading="loadingHistory" />
+        </n-scrollbar>
+        <!-- 未选中对话 -->
+        <div class="flex-grow flex flex-col justify-center" :style="{ backgroundColor: themeVars.cardColor }" v-else-if="!currentConversationId">
+          <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
+            <template #icon>
+              <n-icon>
+                <ChatboxEllipses />
+              </n-icon>
+            </template>
+            <template #extra>
+              <n-button @click="makeNewConversation">
+                {{ $t("tips.newConversation") }}
+              </n-button>
+            </template>
+          </n-empty>
+        </div>
         <!-- 下半部分 -->
         <div class="flex flex-col relative" :style="{ height: inputHeight }">
           <n-divider />
@@ -123,7 +122,7 @@ import {
 import { saveAs } from 'file-saver';
 import HistoryContent from "@/views/conversation/components/HistoryContent.vue";
 
-import {getConvMessageListFromId} from "@/utils/conversation"
+import { getConvMessageListFromId } from "@/utils/conversation"
 const themeVars = useThemeVars()
 
 const { t } = useI18n();
@@ -153,7 +152,7 @@ const currentAvaliableAskCountsTip = computed(() => {
 
 const newConversation = ref<ConversationSchema | null>(null);
 const currentConversationId = ref<string | null>(null);
-const currentConversation = computed<ConversationSchema | any>(() => {
+const currentConversation = computed<ConversationSchema>(() => {
   if (newConversation.value?.conversation_id === currentConversationId.value) return newConversation.value;
   const conv = conversationStore.conversations?.find((conversation: ConversationSchema) => {
     return conversation.conversation_id == currentConversationId.value;
@@ -246,7 +245,9 @@ const handleChangeConversationTitle = (conversation_id: string | undefined) => {
 
 // 从 store 中获取当前对话最新消息的 id
 const currentNode = computed<string | undefined>(() => {
-  return conversationStore.conversationDetailMap[currentConversation.value?.conversation_id]?.current_node;
+  if (currentConversation.value?.conversation_id)
+    return conversationStore.conversationDetailMap[currentConversation.value?.conversation_id]?.current_node;
+  else return undefined;
 })
 
 // 从 store 中获取当前对话的消息列表，将链表转换为数组
@@ -358,7 +359,7 @@ const sendMsg = async () => {
     parent: `send_${random_strid}`,
     children: [],
     typing: true,
-    model_slug: currentConversation.value?.model_slug,
+    model_slug: currentConversation.value?.model_name,
   }
   const wsUrl = getAskWebsocketApiUrl();
   let wsErrorMessage: string | null = null;
@@ -380,6 +381,7 @@ const sendMsg = async () => {
         currentActiveMessageRecv.value!.message += `(${reply.waiting_count})`;
       }
     } else if (reply.type === 'message') {
+      console.log(reply)
       currentActiveMessageRecv.value!.message = reply.message;
       currentActiveMessageRecv.value!.id = reply.parent_id;
       currentActiveMessageRecv.value!.model_slug = reply.model;
@@ -460,7 +462,7 @@ const exportToMarkdownFile = () => {
   }
   let content = `# ${currentConversation.value!.title}\n\n`;
   const create_time = new Date(currentConversation.value!.create_time! + 'Z').toLocaleString();
-  content += `Date: ${create_time}\nModel: ${getModelNameTrans(currentConversation.value!.model_name)}\n`;
+  content += `Date: ${create_time}\nModel: ${getModelNameTrans(currentConversation.value!.model_name as any)}\n`;
   content += "generated by [ChatGPT Web Share](https://github.com/moeakwak/chatgpt-web-share)\n\n"
   content += '---\n\n';
   let index = 0;
