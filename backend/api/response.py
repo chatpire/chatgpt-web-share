@@ -13,7 +13,7 @@ from starlette.responses import JSONResponse
 from pydantic.generics import GenericModel
 
 from api.exceptions import SelfDefinedException
-from revChatGPT.V1 import Error as ChatGPTError
+from revChatGPT.typing import Error as revChatGPTError
 
 T = TypeVar('T')
 
@@ -105,6 +105,6 @@ def handle_exception_response(e: Exception) -> CustomJSONResponse:
         else:
             message = get_http_message(e.status_code)
         return response(e.status_code or -1, message or f"{e.status_code} {e.detail}")
-    elif isinstance(e, ChatGPTError):
+    elif isinstance(e, revChatGPTError):
         return response(502, "errors.chatgptResponseError", f"{e.source} {e.code}: {e.message}")
     return response(-1, str(e))

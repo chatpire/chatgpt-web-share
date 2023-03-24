@@ -28,7 +28,7 @@ from utils.proxy import close_reverse_proxy
 from utils.create_user import create_user
 
 import dateutil.parser
-from revChatGPT.V1 import Error as ChatGPTError
+from revChatGPT.typing import Error as revChatGPTError
 
 setup_logger()
 
@@ -73,7 +73,7 @@ async def validation_exception_handler(request, exc):
     return handle_exception_response(exc)
 
 
-@app.exception_handler(ChatGPTError)
+@app.exception_handler(revChatGPTError)
 async def validation_exception_handler(request, exc):
     return handle_exception_response(exc)
 
@@ -162,7 +162,7 @@ async def on_startup():
                     logger.info(f"Found new conversation {conv['title']}({conv['id']})")
 
                 await session.commit()
-    except ChatGPTError as e:
+    except revChatGPTError as e:
         logger.error(f"Fetch conversation error (ChatGPTError): {e.source} {e.code}: {e.message}")
         logger.warning("Sync conversations on startup failed!")
     except HTTPError as e:

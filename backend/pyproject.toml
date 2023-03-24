@@ -8,12 +8,12 @@ packages = []
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.94.1"
+fastapi = "^0.95.0"
 uvicorn = "^0.21.1"
 aiosqlite = "^0.18.0"
 sqlalchemy = "^2.0.7"
 fastapi-users-db-sqlalchemy = "^5.0.0"
-revchatgpt = "4.0.2"
+revchatgpt = "4.0.8"
 greenlet = "^2.0.2"
 websockets = "^10.4"
 setuptools = "^67.6.0"

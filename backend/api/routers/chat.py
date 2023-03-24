@@ -16,7 +16,7 @@ from api.exceptions import InvalidParamsException, AuthorityDenyException
 from api.models import User, Conversation
 from api.schema import ConversationSchema
 from api.users import current_active_user, websocket_auth, current_super_user
-from revChatGPT.V1 import Error as ChatGPTError
+from revChatGPT.typing import Error as revChatGPTError
 from api.response import response
 from utils.logger import get_logger
 
@@ -88,7 +88,7 @@ async def delete_conversation(conversation: Conversation = Depends(get_conversat
 async def vanish_conversation(conversation: Conversation = Depends(get_conversation_by_id)):
     try:
         await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
-    except ChatGPTError as e:
+    except revChatGPTError as e:
         logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
     except httpx.HTTPStatusError as e:
         if e.response.status_code != 404:
@@ -319,7 +319,7 @@ async def ask(websocket: WebSocket):
         })
         websocket_code = 1001
         websocket_reason = "errors.timout"
-    except ChatGPTError as e:
+    except revChatGPTError as e:
         await websocket.send_json({
             "type": "error",
             "tip": "errors.chatgptResponseError",
