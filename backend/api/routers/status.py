@@ -59,8 +59,11 @@ async def get_status(_user: User = Depends(current_active_user)):
 def read_last_n_lines(file_path, n, exclude_key_words=None):
     if exclude_key_words is None:
         exclude_key_words = []
-    with open(file_path, "r") as f:
-        lines = f.readlines()[::-1]
+    try:
+        with open(file_path, "r") as f:
+            lines = f.readlines()[::-1]
+    except FileNotFoundError:
+        return [f"File not found: {file_path}"]
     last_n_lines = []
     for line in lines:
         if len(last_n_lines) >= n:
