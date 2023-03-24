@@ -28,23 +28,7 @@
 
 注意：当前使用 [revChatGPT](https://github.com/acheong08/ChatGPT)，使用其反向代理绕过 Cloudflare 验证，因而受到请求限制，并且不保证长期稳定性。此外，[OpenAI 可能会封禁使用 V1 Proxy 的账号](https://github.com/acheong08/ChatGPT/issues/1158)。
 
-如果你有 Plus 账号，建议自己部署 V1 Proxy（https://github.com/acheong08/ChatGPT-Proxy-V4），之后在 config.yaml 中设置 `chatgpt_base_url` 为你的代理地址。
-
-**0.2.7 版本更新：** 现在已经整合了反向代理服务到 docker 镜像中！如果你使用的是 docker 部署，可以在 config.yaml 中进行如下设置：
-
-```yaml
-chatgpt_base_url: http://127.0.0.1:6062/api/
-run_reverse_proxy: true
-reverse_proxy_port: 6062
-reverse_proxy_binary_path: /app/backend/ChatGPT-Proxy-V4
-reverse_proxy_puid: "_puid value from cookie"
-```
-
-其中，`reverse_proxy_puid` 需要从你的浏览器中获取：打开 https://chat.openai.com/，打开开发者工具，找到 cookie 中的 `_puid` 字段，将其值填入 `config.yaml` 中。
-
-`reverse_proxy_binary_path` 是反向代理服务的可执行文件路径，如果使用的是 Docker，它已经包含在镜像中的 `/app/backend/ChatGPT-Proxy-V4` 路径上。
-
-`chatgpt_base_url` 也可以设置为其它反向代理服务的地址。如果启用 `run_reverse_proxy`，请确保 `chatgpt_base_url` 的端口匹配 `reverse_proxy_port`。
+如果你有 Plus 账号，强烈建议使用 [自定义 Proxy](https://github.com/acheong08/ChatGPT-Proxy-V4)。该代理程序现在已经整合到了 docker 镜像中。如果你使用的是 docker 部署，根据下方的说明进行设置即可。
 
 ## 部署
 
@@ -66,6 +50,7 @@ services:
     volumes:
       - ./data:/data # 存放数据库文件
       - ./config.yaml:/app/backend/api/config/config.yaml # 后端配置文件
+      - ./logs:/app/bogs # 存放日志文件
 ```
 
 在同文件夹下创建 config.yaml，内容如下：
@@ -89,14 +74,36 @@ initial_admin_username: admin # 初始管理员用户名
 initial_admin_password: password # 初始管理员密码
 initial_user_username: user # 初始普通用户名
 initial_user_password: password # 初始普通密码
+ask_timeout: 600
 
 chatgpt_access_token: "你的access_token" # 需要从 ChatGPT 获取
 chatgpt_paid: true # 是否为 ChatGPT Plus 用户
+
+log_dir: /app/logs  # 日志存储位置
+console_log_level: DEBUG
 ```
 
 `chatgpt_access_token` 获取方法：打开登录 chat.openai.com 后，打开 https://chat.openai.com/api/auth/session 并获取 accessToken 字段。
 
+如果你是 Plus 用户，请增加如下配置到 `config.yaml` 中：
+
+```yaml
+chatgpt_base_url: http://127.0.0.1:6062/api/
+run_reverse_proxy: true
+reverse_proxy_port: 6062
+reverse_proxy_binary_path: /app/backend/ChatGPT-Proxy-V4
+reverse_proxy_puid: "_puid value from cookie"
+```
+
+其中，`reverse_proxy_puid` 需要从你的浏览器中获取：打开 https://chat.openai.com/，打开开发者工具，找到 cookie 中的 `_puid` 字段，将其值填入 `reverse_proxy_puid` 中。
+
+`reverse_proxy_binary_path` 是反向代理服务的可执行文件路径，如果使用的是 Docker，它已经包含在镜像中的 `/app/backend/ChatGPT-Proxy-V4` 路径上。
+
+`chatgpt_base_url` 也可以设置为其它反向代理服务的地址。如果启用 `run_reverse_proxy`，请确保 `chatgpt_base_url` 的端口匹配 `reverse_proxy_port`。
+
 最后运行 `docker-compose up -d` 即可。
+
+#### 更新版本
 
 如要更新到最新版本，运行 `docker-compose pull` 以及 `docker-compose up -d` 即可。
 
