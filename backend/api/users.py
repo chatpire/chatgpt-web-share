@@ -62,9 +62,9 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         # 检查用户名、手机、邮箱是否已经存在
         async with get_async_session_context() as session:
             if (await session.execute(select(User).filter(User.username == user_create.username))).scalar_one_or_none():
-                raise api.exceptions.InvalidRequestException("用户名已存在")
+                raise api.exceptions.InvalidRequestException("Username already exists")
             if (await session.execute(select(User).filter(User.email == user_create.email))).scalar_one_or_none():
-                raise api.exceptions.InvalidRequestException("邮箱已存在")
+                raise api.exceptions.InvalidRequestException("Email already exists")
         return await super().create(user_create, safe, request)
 
     reset_password_token_secret = SECRET
