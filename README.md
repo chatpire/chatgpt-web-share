@@ -61,7 +61,7 @@ services:
     volumes:
       - ./data:/data # 存放数据库文件
       - ./config.yaml:/app/backend/api/config/config.yaml # 后端配置文件
-      - ./logs:/app/bogs # 存放日志文件
+      - ./logs:/app/logs # 存放日志文件
 ```
 
 在同文件夹下创建 config.yaml，内容如下：
