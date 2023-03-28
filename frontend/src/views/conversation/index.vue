@@ -275,6 +275,7 @@ watch(currentConversationId, (newVal, oldVal) => {
 });
 
 const handleChangeConversation = (key: string | null) => {
+  // TODO: 清除当前已询问、得到回复，但是发生错误的两条消息
   if (loadingBar.value || !key) return;
   loadingBar.value = true;
   loadingHistory.value = true;
@@ -468,10 +469,10 @@ const exportToMarkdownFile = () => {
   let index = 0;
   for (const message of currentMessageListDisplay.value) {
     if (message.author_role === 'user') {
-      // 选取第一行作为标题，最多30个字符，如果有省略则加上...
+      // 选取第一行作为标题，最多50个字符，如果有省略则加上...
       let title = message.message!.trim().split('\n')[0];
-      if (title.length >= 30) {
-        title = title.slice(0, 27) + '...';
+      if (title.length >= 50) {
+        title = title.slice(0, 47) + '...';
       }
       content += `## ${++index}. ${title}\n\n`;
       content += `### User\n\n${message.message}\n\n`;
