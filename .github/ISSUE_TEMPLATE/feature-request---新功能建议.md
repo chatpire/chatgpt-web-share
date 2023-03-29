@@ -1,6 +1,6 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Feature request / 新功能建议
+about: Suggest an idea for this project / 提建议前请先看有没有重复的 issue
 title: ''
 labels: enhancement
 assignees: ''

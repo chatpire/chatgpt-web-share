@@ -1,6 +1,6 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Bug report / bug 报告
+about: report a code bug / 除非你肯定是代码的问题而不是你的问题
 title: ''
 labels: bug
 assignees: ''

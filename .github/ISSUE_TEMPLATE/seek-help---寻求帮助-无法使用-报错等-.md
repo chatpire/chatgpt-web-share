@@ -1,6 +1,6 @@
 ---
-name: Seek help
-about: Ask for help when you meet trouble
+name: Seek help / 寻求帮助（无法使用、报错等）
+about: Ask for help when you meet trouble / 请按照模版填写，提供尽可能多的信息，否则不予回复
 title: ''
 labels: ''
 assignees: ''
