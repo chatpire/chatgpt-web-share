@@ -120,7 +120,7 @@
     "pleaseEnterPassword": "Please enter password",
     "waiting": "Thinking...",
     "queueing": "Replying to other users, in queue...",
-    "deleteConversation": "Are you sure you want to delete this conversation?",
+    "deleteConversation": "Are you sure you want to delete this conversation? You cannot access this conversation anymore.",
     "deleteConversationSuccess": "Deleted successfully",
     "deleteConversationFailed": "Failed to delete",
     "changeConversationTitleSuccess": "Title changed successfully",

@@ -75,8 +75,16 @@ async def get_conversation_history(conversation: Conversation = Depends(get_conv
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
 async def delete_conversation(conversation: Conversation = Depends(get_conversation_by_id)):
+    """remove conversation from database and chatgpt server"""
     if not conversation.is_valid:
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
+    try:
+        await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
+    except revChatGPTError as e:
+        logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code != 404:
+            raise e
     async with get_async_session_context() as session:
         conversation.is_valid = False
         session.add(conversation)
@@ -86,13 +94,21 @@ async def delete_conversation(conversation: Conversation = Depends(get_conversat
 
 @router.delete("/conv/{conversation_id}/vanish", tags=["conversation"])
 async def vanish_conversation(conversation: Conversation = Depends(get_conversation_by_id)):
-    try:
-        await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
-    except revChatGPTError as e:
-        logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code != 404:
-            raise e
+    # try:
+    #     await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
+    # except revChatGPTError as e:
+    #     logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
+    # except httpx.HTTPStatusError as e:
+    #     if e.response.status_code != 404:
+    #         raise e
+    if conversation.is_valid:
+        try:
+            await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
+        except revChatGPTError as e:
+            logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code != 404:
+                raise e
     async with get_async_session_context() as session:
         await session.execute(delete(Conversation).where(Conversation.conversation_id == conversation.conversation_id))
         await session.commit()
