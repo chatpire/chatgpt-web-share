@@ -96,7 +96,9 @@ console_log_level: DEBUG
 
 `chatgpt_access_token` 获取方法：打开登录 chat.openai.com 后，打开 https://chat.openai.com/api/auth/session 并获取 accessToken 字段。
 
-如果你是 Plus 用户，请增加如下配置到 `config.yaml` 中：
+如果你是 Plus 用户，可以启用镜像内置的 V4 Proxy，以降低风险。注意：这需要你的 IP 地址能够正常使用 ChatGPT。
+
+请增加如下配置到 `config.yaml` 中：
 
 ```yaml
 chatgpt_base_url: http://127.0.0.1:6062/api/
@@ -104,6 +106,7 @@ run_reverse_proxy: true
 reverse_proxy_port: 6062
 reverse_proxy_binary_path: /app/backend/ChatGPT-Proxy-V4
 reverse_proxy_puid: "_puid value from cookie"
+auto_refresh_reverse_proxy_puid: true  # 如果需要自动更新 puid，设置为 true
 ```
 
 其中，`reverse_proxy_puid` 需要从你的浏览器中获取：打开 https://chat.openai.com/，打开开发者工具，找到 cookie 中的 `_puid` 字段，将其值填入 `reverse_proxy_puid` 中。

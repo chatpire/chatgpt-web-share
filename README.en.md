@@ -99,6 +99,7 @@ run_reverse_proxy: true
 reverse_proxy_port: 6062
 reverse_proxy_binary_path: /app/backend/ChatGPT-Proxy-V4
 reverse_proxy_puid: "_puid value from cookie"
+auto_refresh_reverse_proxy_puid: true
 ```
 
 Note that `reverse_proxy_puid` needs to be obtained from your browser: Open https://chat.openai.com/, open the developer tools, find the `_puid` field in the cookies.
