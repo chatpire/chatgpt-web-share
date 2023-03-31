@@ -3,9 +3,9 @@
     <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
     <div class="h-full flex flex-col md:flex-row md:space-x-4">
       <!-- 左栏 -->
-      <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:h-full md:overflow-y-auto">
+      <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:h-full">
         <StatusCard />
-        <n-card class="max-h-full" content-style="padding: 4px;">
+        <n-card class="h-full flex-col left-col" content-style="padding: 4px;">
           <div class="flex box-content m-2" v-if="!newConversation">
             <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loadingBar">
               <template #icon>
@@ -16,7 +16,10 @@
               {{ $t("commons.newConversation") }}
             </n-button>
           </div>
-          <n-menu ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18" v-model:value="currentConversationId"></n-menu>
+          <n-scrollbar class="max-h-20 md:max-h-max md:h-0 md:flex-grow md:overflow-y-auto">
+            <n-menu :content-style="{ backgroundColor: 'red' }" ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18"
+              v-model:value="currentConversationId"></n-menu>
+          </n-scrollbar>
         </n-card>
       </div>
       <!-- 右栏 -->
@@ -532,6 +535,10 @@ span.n-menu-item-content-header__extra {
 .n-divider {
   margin-bottom: 0px !important;
   margin-top: 0px !important;
+}
+
+.left-col .n-card__content {
+  @apply flex flex-col @apply overflow-auto !important
 }
 
 @media print {
