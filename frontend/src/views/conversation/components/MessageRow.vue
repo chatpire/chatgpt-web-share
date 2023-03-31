@@ -1,16 +1,16 @@
 <template>
-  <div class="flex flex-row py-4 px-4 max-w-full relative" :style="{ backgroundColor: backgroundColor }">
-    <div class="w-10 ml-2">
+  <div class="flex flex-col md:flex-row py-2 md:py-4 px-5 md:px-4 max-w-full relative" :style="{ backgroundColor: backgroundColor }">
+    <div class="w-10 ml-0 md:ml-2 mt-3">
       <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
-      <n-avatar v-if="props.message.author_role == 'user'" class="mt-3" size="small">
+      <n-avatar v-if="props.message.author_role == 'user'" size="small">
         <n-icon>
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <n-avatar v-else-if="isGpt4" class="mt-3" size="small" src="/chatgpt-icon-black.svg" />
-      <n-avatar v-else class="mt-3" size="small" src="/chatgpt-icon.svg" />
+      <n-avatar v-else-if="isGpt4"  size="small" src="/chatgpt-icon-black.svg" />
+      <n-avatar v-else  size="small" src="/chatgpt-icon.svg" />
     </div>
-    <div class="mx-4 w-full">
+    <div class="mx-0 md:mx-4 w-full">
       <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
       <div v-show="showRawContent" class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
