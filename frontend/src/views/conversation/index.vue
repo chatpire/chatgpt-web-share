@@ -23,7 +23,7 @@
         </n-card>
       </div>
       <!-- 右栏 -->
-      <n-card class="md:w-3/4 h-full overflow-y-auto" :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;">
+      <n-card class="md:w-3/4 h-full" :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;">
         <!-- 上半部分 -->
         <n-scrollbar class="h-140 sm:h-0 flex-grow" ref="historyRef" :content-style="{ height: '100%' }" v-if="currentConversationId">
           <!-- 消息记录内容（用于全屏展示） -->
@@ -48,16 +48,22 @@
         <!-- 下半部分 -->
         <div class="flex flex-col relative" :style="{ height: inputHeight }">
           <n-divider />
-          <div class="absolute left-0 -top-8 ml-1 space-x-1">
-            <!-- 展开/收起按钮 -->
-            <n-button @click="toggleInputExpanded" circle secondary size="small">
+          <div class="right-4 -top-12 lg:-right-10 lg:-top-8 ml-1 absolute">
+            <!-- 回到底部按钮 -->
+            <n-button @click="scrollToBottomSmooth" secondary circle size="small">
               <template #icon>
-                <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
+                <ArrowDown />
               </template>
             </n-button>
           </div>
           <!-- 工具栏 -->
-          <div class="flex flex-row space-x-2 py-2 justify-center">
+          <div class="flex flex-row space-x-2 py-2 justify-center relative">
+            <!-- 展开/收起按钮 -->
+            <n-button @click="toggleInputExpanded" quaternary circle size="small" class="absolute left-1">
+              <template #icon>
+                <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
+              </template>
+            </n-button>
             <n-button secondary type="info" size="small" @click="showFullscreenHistory">
               <template #icon>
                 <n-icon :size="22">
@@ -103,7 +109,7 @@
 <script setup lang="ts">
 import { useConversationStore, useUserStore } from '@/store';
 import { ConversationSchema } from '@/types/schema';
-import { computed, h, ref, watch } from 'vue';
+import { computed, h, onMounted, ref, watch } from 'vue';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 
 import StatusCard from './components/StatusCard.vue';
@@ -113,7 +119,7 @@ import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 
 import { useI18n } from 'vue-i18n';
 import { NButton, NEllipsis, NIcon, useThemeVars } from 'naive-ui';
-import { Add, ChatboxEllipses, LogoMarkdown, Print, Send } from '@vicons/ionicons5';
+import { Add, ChatboxEllipses, LogoMarkdown, Print, Send, ArrowDown } from '@vicons/ionicons5';
 import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound } from '@vicons/material';
 import {
   dropdownRenderer,
@@ -320,6 +326,19 @@ const shortcutSendMsg = (e: KeyboardEvent) => {
   sendMsg();
 }
 
+const autoScrolling = ref<boolean>(true);
+const toggleAutoScrolling = () => {
+  autoScrolling.value = !autoScrolling.value;
+}
+
+
+const scrollToBottom = () => {
+  historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
+}
+
+const scrollToBottomSmooth = () => {
+  historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
+}
 
 const sendMsg = async () => {
   if (sendDisabled.value || loadingBar.value) {
@@ -373,6 +392,7 @@ const sendMsg = async () => {
   webSocket.onopen = (event: Event) => {
     // console.log('WebSocket connection is open', askInfo);
     webSocket.send(JSON.stringify(askInfo));
+    autoScrolling.value = true;
   };
 
   webSocket.onmessage = (event: MessageEvent) => {
@@ -402,7 +422,8 @@ const sendMsg = async () => {
         wsErrorMessage = reply.message;
       }
     }
-    historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
+    if (autoScrolling.value)
+      scrollToBottom();
   };
 
   webSocket.onclose = async (event: CloseEvent) => {
