@@ -55,6 +55,8 @@ import { useRoute } from 'vue-router';
 import { DropdownOption } from "naive-ui"
 import { ref, computed, h } from 'vue';
 import UserProfileCard from './UserProfileCard.vue';
+import { popupResetUserPasswordDialog } from '@/utils/renders';
+import { resetUserPasswordApi } from '@/api/user';
 
 
 const { t } = useI18n();
@@ -115,6 +117,13 @@ const getOptions = (): Array<DropdownOption> => {
       }
     },
     {
+      label: t("commons.resetPassword"),
+      key: 'resetpwd',
+      props: {
+        onClick: resetPassword
+      }
+    },
+    {
       label: t("commons.logout"),
       key: 'logout',
       props: {
@@ -133,6 +142,16 @@ const getOptions = (): Array<DropdownOption> => {
     }
   ];
   return options;
+}
+
+const resetPassword = () => {
+  popupResetUserPasswordDialog(
+    async (password: string) => {
+      await resetUserPasswordApi(userStore.user!.id, password);
+    },
+    () => { Message.info(t("tips.resetUserPasswordSuccess")) },
+    () => { Message.error(t("tips.resetUserPasswordFailed")) }
+  )
 }
 
 const jumpToAdminOrConv = async () => {

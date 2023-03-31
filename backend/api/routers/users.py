@@ -37,9 +37,11 @@ async def get_all_users(_user: User = Depends(current_super_user)):
 
 
 @router.patch("/user/{user_id}/reset-password", tags=["user"])
-async def reset_password(user_id: int = None, new_password: str = None, _user: User = Depends(current_super_user)):
+async def reset_password(user_id: int = None, new_password: str = None, _user: User = Depends(current_active_user)):
     if not new_password:
         raise InvalidParamsException("errors.newPasswordRequired")
+    if _user.id != user_id and not _user.is_superuser:
+        raise AuthorityDenyException("errors.noPermission")
     async with get_async_session_context() as session:
         async with get_user_db_context(session) as db:
             async with get_user_manager_context(db) as user_manager:
