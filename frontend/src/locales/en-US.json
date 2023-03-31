@@ -152,7 +152,8 @@
     "loading": "Loading...",
     "pleaseSelectConversation": "Please select a conversation first",
     "pressEscToExitFullscreen": "Full Screen | Press Esc To Exit",
-    "refreshed": "Refreshed Successfully"
+    "refreshed": "Refreshed Successfully",
+    "autoScrolling": "auto scroll"
   },
   "labels": {
     "nickname": "Nickname",

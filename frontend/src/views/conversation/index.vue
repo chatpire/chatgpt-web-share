@@ -64,6 +64,17 @@
                 <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
               </template>
             </n-button>
+            <!-- 是否启用自动滚动 -->
+            <n-tooltip>
+              <template #trigger>
+                <n-switch  v-model:value="autoScrolling" size="small" class="absolute right-2 top-3">
+                  <template #icon>
+                    <HdrAutoFilled />
+                  </template>
+                </n-switch>
+              </template>
+              {{ $t("tips.autoScrolling") }}
+            </n-tooltip>
             <n-button secondary type="info" size="small" @click="showFullscreenHistory">
               <template #icon>
                 <n-icon :size="22">
@@ -120,7 +131,7 @@ import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 import { useI18n } from 'vue-i18n';
 import { NButton, NEllipsis, NIcon, useThemeVars } from 'naive-ui';
 import { Add, ChatboxEllipses, LogoMarkdown, Print, Send, ArrowDown } from '@vicons/ionicons5';
-import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound } from '@vicons/material';
+import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound, HdrAutoFilled } from '@vicons/material';
 import {
   dropdownRenderer,
   getCountTrans,
@@ -327,9 +338,6 @@ const shortcutSendMsg = (e: KeyboardEvent) => {
 }
 
 const autoScrolling = ref<boolean>(true);
-const toggleAutoScrolling = () => {
-  autoScrolling.value = !autoScrolling.value;
-}
 
 
 const scrollToBottom = () => {
@@ -392,7 +400,6 @@ const sendMsg = async () => {
   webSocket.onopen = (event: Event) => {
     // console.log('WebSocket connection is open', askInfo);
     webSocket.send(JSON.stringify(askInfo));
-    autoScrolling.value = true;
   };
 
   webSocket.onmessage = (event: MessageEvent) => {

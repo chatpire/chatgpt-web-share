@@ -152,7 +152,8 @@
     "loading": "正在加载...",
     "pleaseSelectConversation": "请先选择一个对话",
     "pressEscToExitFullscreen": "已进入全屏，单击Esc退出全屏",
-    "refreshed": "已刷新"
+    "refreshed": "已刷新",
+    "autoScrolling": "自动滚动"
   },
   "labels": {
     "nickname": "昵称",
