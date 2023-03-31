@@ -10,6 +10,9 @@
             <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
           </a>
         </div>
+        <n-tag :bordered="false" type="success" size="small" class="hidden sm:inline-flex">
+          {{ version }}
+        </n-tag>
       </n-space>
     </template>
     <template #avatar>
@@ -63,6 +66,7 @@ const { t } = useI18n();
 const userStore = useUserStore();
 const appStore = useAppStore();
 const route = useRoute();
+const version = 'v' + import.meta.env.PACKAGE_VERSION;
 
 console.log(route);
 
