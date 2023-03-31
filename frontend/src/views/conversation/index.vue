@@ -69,7 +69,7 @@
               <template #trigger>
                 <n-switch  v-model:value="autoScrolling" size="small" class="absolute right-2 top-3">
                   <template #icon>
-                    <HdrAutoFilled />
+                    A
                   </template>
                 </n-switch>
               </template>
@@ -131,7 +131,7 @@ import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 import { useI18n } from 'vue-i18n';
 import { NButton, NEllipsis, NIcon, useThemeVars } from 'naive-ui';
 import { Add, ChatboxEllipses, LogoMarkdown, Print, Send, ArrowDown } from '@vicons/ionicons5';
-import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound, HdrAutoFilled } from '@vicons/material';
+import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound } from '@vicons/material';
 import {
   dropdownRenderer,
   getCountTrans,
