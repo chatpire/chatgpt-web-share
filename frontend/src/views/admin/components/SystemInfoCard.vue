@@ -1,13 +1,13 @@
 <template>
   <n-card :title="t('commons.serverOverview')">
-    <div class="grid grid-cols-4 gap-4">
+    <div class="grid grid-cols-3 md:grid-cols-5 gap-4">
       <n-statistic v-for="item in statistics" :key="item.label" :label="item.label" :value="item.value">
         <template #prefix v-if="item.prefixIcon">
           <n-icon :component="item.prefixIcon"></n-icon>
         </template>
         <template #suffix>
           <n-text>
-          {{ item.suffix }}
+            {{ item.suffix }}
           </n-text>
         </template>
       </n-statistic>
@@ -27,6 +27,17 @@ const props = defineProps<{
   systemInfo?: SystemInfo;
   serverStatus?: ServerStatusSchema;
 }>();
+
+function hoursSince(timestamp?: number) {
+  if (!timestamp) {
+    return 'N/A'
+  }
+  const now = new Date()
+  const diff = now.getTime() - timestamp * 1000 // 将 Unix 时间戳转换为毫秒
+  const hours = diff / 1000 / 3600 // 将毫秒转换为小时
+  return hours.toFixed(1) // 保留一位小数
+}
+
 
 const statistics = computed(() => {
   return [
@@ -51,6 +62,12 @@ const statistics = computed(() => {
       label: t('commons.chatbotWaitingCount'),
       value: props.serverStatus?.chatbot_waiting_count,
       prefixIcon: null,
+    },
+    {
+      label: t('commons.startUpDuration'),
+      value: hoursSince(props.systemInfo?.startup_time),
+      prefixIcon: null,
+      suffix: ' h'
     },
   ];
 })

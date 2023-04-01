@@ -46,7 +46,7 @@
     "activeUserIn1d": "Active in last 1 day",
     "isChatbotBusy": "Processing replies",
     "person": "Person",
-    "chatbotWaitingCount": "Number of users waiting for reply",
+    "chatbotWaitingCount": "Users Waiting for Reply",
     "deleteConversation": "Delete conversation",
     "invalidateConversation": "Mark as invalid",
     "vanishConversation": "Destroy conversation",
@@ -87,9 +87,12 @@
     "enterConversation": "Enter Conversation",
     "systemManagement": "System Management",
     "statisticsInfo": "Statistics",
-    "userCountAndOnlineCount": "active users / total users",
-    "conversationCount": "Valid and Total Conversations",
-    "serverOverview": "Server Overview"
+    "userCountAndOnlineCount": "Active / Total Users",
+    "conversationCount": "Valid / Total Conversations",
+    "serverOverview": "Overview",
+    "chatbotStatus": "Reply Status",
+    "startUpDuration": "Run Time",
+    "totalRequestsCount": "Total Number of Requests"
   },
   "errors": {
     "403": "403 error: access denied",
