@@ -1,5 +1,6 @@
 import asyncio
 
+from asgi_logger import AccessLoggerMiddleware
 from httpx import HTTPError
 import uvicorn
 
@@ -21,6 +22,7 @@ from api.response import CustomJSONResponse, PrettyJSONResponse, handle_exceptio
 from api.database import create_db_and_tables, get_async_session_context
 from api.exceptions import SelfDefinedException
 from api.routers import users, chat, system, status
+from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from utils.logger import setup_logger, get_log_config, get_logger
@@ -34,7 +36,12 @@ setup_logger()
 
 logger = get_logger(__name__)
 
-app = FastAPI(default_response_class=CustomJSONResponse)
+app = FastAPI(
+    default_response_class=CustomJSONResponse,
+    middleware=[Middleware(AccessLoggerMiddleware, format='%(client_addr)s | "%(request_line)s" | %(status_code)s | %(M)s ms', logger=get_logger("asgi.access"))]
+)
+
+
 
 app.include_router(users.router)
 app.include_router(chat.router)
@@ -192,4 +199,5 @@ if __name__ == "__main__":
                 port=config.get("port"),
                 proxy_headers=True,
                 forwarded_allow_ips='*',
-                log_config=get_log_config())
+                log_config=get_log_config(),
+                )

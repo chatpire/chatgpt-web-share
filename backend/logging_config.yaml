@@ -27,9 +27,15 @@ root:
   level: DEBUG
   handlers: []
 loggers:
-  uvicorn:
+  asgi.access:
     level: INFO
     handlers: [console_handler, file_handler]
+  uvicorn.error:
+    level: INFO
+    handlers: [console_handler, file_handler]
+  uvicorn.access:
+    level: INFO
+    handlers: []  # disable uvicorn access log
   cws:
     level: DEBUG
     handlers: [console_handler, file_handler]

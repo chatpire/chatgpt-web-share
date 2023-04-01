@@ -20,7 +20,7 @@ router = APIRouter()
 check_users_cache = None
 check_users_cache_last_update_time: datetime | None = None
 
-CACHE_DURATION_SECONDS = 3
+CACHE_DURATION_SECONDS = 0  # currently do not cache, for there seems no significant performance improvement
 
 
 async def check_users(refresh_cache: bool = False):

@@ -178,6 +178,36 @@ test = ["contextlib2", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=
 trio = ["trio (>=0.16,<0.22)"]
 
 [[package]]
+name = "asgi-logger"
+version = "0.1.0"
+description = "Middleware based uvicorn access logger! :tada:"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "asgi-logger-0.1.0.tar.gz", hash = "sha256:b289f530bf49d14320242a567580ffc8ad053ba5667eece27d25a97822d3a0aa"},
+    {file = "asgi_logger-0.1.0-py3-none-any.whl", hash = "sha256:f2d1252cfc48b4a806d1810f0308ba2979fa73aca06ecc809903a8ebc5a6ef23"},
+]
+
+[package.dependencies]
+asgiref = ">=3.4.1,<4.0.0"
+
+[[package]]
+name = "asgiref"
+version = "3.6.0"
+description = "ASGI specs, helper code, and adapters"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "asgiref-3.6.0-py3-none-any.whl", hash = "sha256:71e68008da809b957b7ee4b43dbccff33d1b23519fb8344e33f049897077afac"},
+    {file = "asgiref-3.6.0.tar.gz", hash = "sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506"},
+]
+
+[package.extras]
+tests = ["mypy (>=0.800)", "pytest", "pytest-asyncio"]
+
+[[package]]
 name = "async-timeout"
 version = "4.0.2"
 description = "Timeout context manager for asyncio programs"
@@ -1843,4 +1873,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7f62e0cc8c400ed92d4916a2ec4e7f9ef5c7b97cf1e2d2b16aca0c0a27afd4f2"
+content-hash = "c0fd3b59bfb930a8fb6cb21c21fbfbc146325176cc543564483e8825de13a085"
