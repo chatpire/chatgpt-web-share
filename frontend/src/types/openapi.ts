@@ -54,7 +54,7 @@ export interface paths {
   "/conv": {
     /**
      * Get All Conversations 
-     * @description 对于普通用户，返回其自己的有效会话
+     * @description 返回自己的有效会话
      * 对于管理员，返回所有对话，并可以指定是否只返回有效会话
      */
     get: operations["get_all_conversations_conv_get"];
@@ -62,7 +62,10 @@ export interface paths {
   "/conv/{conversation_id}": {
     /** Get Conversation History */
     get: operations["get_conversation_history_conv__conversation_id__get"];
-    /** Delete Conversation */
+    /**
+     * Delete Conversation 
+     * @description remove conversation from database and chatgpt server
+     */
     delete: operations["delete_conversation_conv__conversation_id__delete"];
     /** Change Conversation Title */
     patch: operations["change_conversation_title_conv__conversation_id__patch"];
@@ -79,17 +82,28 @@ export interface paths {
     /** Generate Conversation Title */
     patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
   };
-  "/status": {
-    /** Get Status */
-    get: operations["get_status_status_get"];
+  "/system/info": {
+    /** Get System Info */
+    get: operations["get_system_info_system_info_get"];
   };
-  "/logs/proxy": {
+  "/system/request_statistics": {
+    /** Get Request Statistics */
+    get: operations["get_request_statistics_system_request_statistics_get"];
+  };
+  "/system/proxy_logs": {
     /** Get Proxy Logs */
-    post: operations["get_proxy_logs_logs_proxy_post"];
+    post: operations["get_proxy_logs_system_proxy_logs_post"];
   };
-  "/logs/server": {
+  "/system/server_logs": {
     /** Get Server Logs */
-    post: operations["get_server_logs_logs_server_post"];
+    post: operations["get_server_logs_system_server_logs_post"];
+  };
+  "/status": {
+    /**
+     * Get Server Status 
+     * @description 普通用户获取服务器状态
+     */
+    get: operations["get_server_status_status_get"];
   };
 }
 
@@ -207,6 +221,15 @@ export interface components {
       /** Exclude Keywords */
       exclude_keywords?: (string)[];
     };
+    /** RequestStatistics */
+    RequestStatistics: {
+      /** Request Counts Interval */
+      request_counts_interval: number;
+      /** Request Counts */
+      request_counts: (([[object Object], [object Object]])[])[];
+      /** Ask Records */
+      ask_records: (([[object Object], [object Object]])[])[];
+    };
     /** ServerStatusSchema */
     ServerStatusSchema: {
       /** Active User In 5M */
@@ -219,6 +242,15 @@ export interface components {
       is_chatbot_busy?: boolean;
       /** Chatbot Waiting Count */
       chatbot_waiting_count?: number;
+    };
+    /** SystemInfo */
+    SystemInfo: {
+      /** Total User Count */
+      total_user_count: number;
+      /** Total Conversation Count */
+      total_conversation_count: number;
+      /** Valid Conversation Count */
+      valid_conversation_count: number;
     };
     /** UserCreate */
     UserCreate: {
@@ -664,12 +696,12 @@ export interface operations {
   get_all_conversations_conv_get: {
     /**
      * Get All Conversations 
-     * @description 对于普通用户，返回其自己的有效会话
+     * @description 返回自己的有效会话
      * 对于管理员，返回所有对话，并可以指定是否只返回有效会话
      */
     parameters?: {
       query?: {
-        valid_only?: boolean;
+        fetch_all?: boolean;
       };
     };
     responses: {
@@ -710,7 +742,10 @@ export interface operations {
     };
   };
   delete_conversation_conv__conversation_id__delete: {
-    /** Delete Conversation */
+    /**
+     * Delete Conversation 
+     * @description remove conversation from database and chatgpt server
+     */
     parameters: {
       path: {
         conversation_id: string;
@@ -826,8 +861,8 @@ export interface operations {
       };
     };
   };
-  get_status_status_get: {
-    /** Get Status */
+  get_system_info_system_info_get: {
+    /** Get System Info */
     responses: {
       /** @description Successful Response */
       200: {
@@ -837,7 +872,18 @@ export interface operations {
       };
     };
   };
-  get_proxy_logs_logs_proxy_post: {
+  get_request_statistics_system_request_statistics_get: {
+    /** Get Request Statistics */
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+    };
+  };
+  get_proxy_logs_system_proxy_logs_post: {
     /** Get Proxy Logs */
     requestBody?: {
       content: {
@@ -859,7 +905,7 @@ export interface operations {
       };
     };
   };
-  get_server_logs_logs_server_post: {
+  get_server_logs_system_server_logs_post: {
     /** Get Server Logs */
     requestBody?: {
       content: {
@@ -877,6 +923,20 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_server_status_status_get: {
+    /**
+     * Get Server Status 
+     * @description 普通用户获取服务器状态
+     */
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
         };
       };
     };

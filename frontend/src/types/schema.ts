@@ -9,6 +9,9 @@ export type LimitSchema = components["schemas"]["LimitSchema"];
 export type ChatStatus = components["schemas"]["ChatStatus"];
 export type ChatModels = components["schemas"]["ChatModels"];
 
+export type SystemInfo = components["schemas"]["SystemInfo"];
+export type RequestStatistics = components["schemas"]["RequestStatistics"];
+
 export type LogFilterOptions = components["schemas"]["LogFilterOptions"]
 
 export const chatStatusMap = {
