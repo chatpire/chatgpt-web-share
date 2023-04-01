@@ -27,11 +27,12 @@
         <n-switch v-model:value="enableAutoScroll" size="small" />
       </div>
     </div>
-    <n-card class="mt-3" :content-style="{ height: '100%' }">
-      <n-scrollbar ref="scrollRef" class="h-120 relative">
-        <div class="whitespace-pre-line font-mono text-[0.2em]">
+    <n-card class="mt-3 flex-grow h-full" :content-style="{ height: '100%' }">
+      <n-scrollbar ref="scrollRef" class="h-160 relative">
+        <!-- <div class="whitespace-pre-line font-mono text-[0.2em]">
           {{ filteredLogsContent }}
-        </div>
+        </div> -->
+        <n-log :rows="maxLineCount" :log="filteredLogsContent" />
       </n-scrollbar>
     </n-card>
   </div>
