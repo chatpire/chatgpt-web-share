@@ -88,7 +88,7 @@
     "systemManagement": "系统管理",
     "statisticsInfo": "统计信息",
     "userCountAndOnlineCount": "活跃用户 / 总用户",
-    "conversationCount": "有效/总对话数量",
+    "conversationCount": "有效 / 总对话数量",
     "chatbotStatus": "回复状态",
     "serverOverview": "服务概况",
     "totalRequestsCount": "请求总数量",
