@@ -1,4 +1,6 @@
 import asyncio
+import time
+from datetime import datetime
 
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from httpx import HTTPError
@@ -91,6 +93,7 @@ async def validation_exception_handler(request, exc):
 async def on_startup():
     await create_db_and_tables()
     logger.info("database initialized")
+    g.startup_time = time.time()
 
     if config.get("create_initial_admin_user", False):
         await create_user(config.get("initial_admin_username"),

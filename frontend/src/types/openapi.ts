@@ -245,6 +245,8 @@ export interface components {
     };
     /** SystemInfo */
     SystemInfo: {
+      /** Startup Time */
+      startup_time: number;
       /** Total User Count */
       total_user_count: number;
       /** Total Conversation Count */

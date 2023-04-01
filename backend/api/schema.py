@@ -81,6 +81,7 @@ class RequestStatistics(BaseModel):
 
 
 class SystemInfo(BaseModel):
+    startup_time: float
     total_user_count: int
     total_conversation_count: int
     valid_conversation_count: int

@@ -7,11 +7,15 @@ from utils.time_queue import TimeQueue
 
 chatgpt_manager = ChatGPTManager()
 
+# log settings
+
 reverse_proxy_log_file = None
-
 reverse_proxy_process = None
-
 server_log_filename = None
+
+# system info
+
+startup_time = None
 
 # request_statistics
 

@@ -70,6 +70,7 @@ async def get_system_info(_user: User = Depends(current_super_user)):
         conversations = await session.execute(select(Conversation))
         conversations = conversations.scalars().all()
     result = SystemInfo(
+        startup_time=g.startup_time,
         total_user_count=len(users),
         total_conversation_count=len(conversations),
         valid_conversation_count=len([c for c in conversations if c.is_valid]),
