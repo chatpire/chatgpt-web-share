@@ -1,6 +1,6 @@
 import asyncio
 
-from asgi_logger import AccessLoggerMiddleware
+from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from httpx import HTTPError
 import uvicorn
 
@@ -38,10 +38,11 @@ logger = get_logger(__name__)
 
 app = FastAPI(
     default_response_class=CustomJSONResponse,
-    middleware=[Middleware(AccessLoggerMiddleware, format='%(client_addr)s | "%(request_line)s" | %(status_code)s | %(M)s ms', logger=get_logger("asgi.access"))]
+    middleware=[
+        Middleware(AccessLoggerMiddleware, format='%(client_addr)s | %(request_line)s | %(status_code)s | %(M)s ms',
+                   logger=get_logger("access")),
+        Middleware(StatisticsMiddleware)]
 )
-
-
 
 app.include_router(users.router)
 app.include_router(chat.router)
@@ -126,7 +127,7 @@ async def on_startup():
     # 获取 ChatGPT 对话，并同步数据库
     if not config.get("sync_conversations_on_startup", True):
         logger.info("Sync conversations on startup disabled. Jumping...")
-        return # 跳过同步对话
+        return  # 跳过同步对话
     try:
         logger.debug(f"Using {os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
         result = await g.chatgpt_manager.get_conversations()
@@ -148,7 +149,8 @@ async def on_startup():
                     create_time = dateutil.parser.isoparse(openai_conv["create_time"])
                     if create_time != conv_db.create_time:
                         conv_db.create_time = create_time
-                        logger.info(f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
+                        logger.info(
+                            f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
                         session.add(conv_db)
                     openai_conversations_map.pop(conv_db.conversation_id)
                 else:
@@ -186,6 +188,7 @@ async def on_startup():
 @app.on_event("shutdown")
 async def on_shutdown():
     close_reverse_proxy()
+
 
 # @api.get("/routes")
 # async def root():

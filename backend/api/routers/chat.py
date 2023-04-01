@@ -187,6 +187,7 @@ async def ask(websocket: WebSocket):
     await websocket.accept()
     user = await websocket_auth(websocket)
     logger.debug(f"{user.username} connected to websocket")
+    websocket.scope["auth_user"] = user
 
     if user is None:
         await websocket.close(1008, "errors.unauthorized")
