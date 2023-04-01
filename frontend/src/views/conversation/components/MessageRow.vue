@@ -7,8 +7,8 @@
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <n-avatar v-else-if="isGpt4"  size="small" src="/chatgpt-icon-black.svg" />
-      <n-avatar v-else  size="small" src="/chatgpt-icon.svg" />
+      <n-avatar v-else-if="isGpt4" size="small" src="/chatgpt-icon-black.svg" />
+      <n-avatar v-else size="small" src="/chatgpt-icon.svg" />
     </div>
     <div class="mx-0 md:mx-4 w-full">
       <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
@@ -33,12 +33,21 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import { ChatMessage } from '@/types/custom';
-import md from "@/utils/markdown";
 import { useThemeVars } from "naive-ui"
 import { PersonFilled } from '@vicons/material';
 import { CopyOutline, CodeSlash } from '@vicons/ionicons5';
 import { Message } from '@/utils/tips';
 import { useI18n } from 'vue-i18n';
+// import md from "@/utils/markdown";
+let md: any;
+let mdLoaded = ref(false);
+
+onMounted(() => {
+  import("@/utils/markdown").then((module) => {
+    md = module.default;
+    mdLoaded.value = true;
+  });
+});
 
 const { t } = useI18n();
 
@@ -48,8 +57,6 @@ let observer = null;
 
 const contentRef = ref<HTMLDivElement>();
 const showRawContent = ref(false);
-
-
 
 const toggleShowRawContent = () => {
   showRawContent.value = !showRawContent.value;
@@ -72,6 +79,9 @@ const backgroundColor = computed(() => {
 })
 
 const renderedContent = computed(() => {
+  if (!mdLoaded.value) {
+    return '';
+  }
   const result = md.render(props.message.message || '');
   return addButtonsToPreTags(result);
 });
