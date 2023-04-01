@@ -34,10 +34,10 @@ class StatisticsMiddleware:
             end_time = time.time()
 
             g.request_log_counter.count()
-            logger.debug(g.request_log_counter)
+            # logger.debug(g.request_log_counter)
             # path = scope["root_path"] + scope["path"]
 
             if scope["type"] == "websocket":
                 user_name = scope["auth_user"].username or None
                 g.ask_log_queue.enqueue((user_name, end_time - start_time))
-                logger.debug(g.ask_log_queue)
+                # logger.debug(g.ask_log_queue)

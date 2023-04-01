@@ -15,8 +15,10 @@ server_log_filename = None
 
 # request_statistics
 
+request_log_counter_time_window = config.get("request_log_counter_time_window", 30 * 24 * 60 * 60)  # 30 days
+request_log_counter_interval = config.get("request_log_counter_interval", 10 * 60)  # 10 minutes
 request_log_counter = TimeCounter(
-    time_window=config.get("request_log_counter_time_window", 30 * 24 * 60 * 60),  # 30 days
-    duration=config.get("request_log_counter_duration", 10 * 60)  # 10 minutes
+    time_window=request_log_counter_time_window,
+    interval=request_log_counter_interval
 )
-ask_log_queue = TimeQueue(config.get("statistic_log_time_window", 7 * 24 * 60 * 60))  # 7 days
+ask_log_queue = TimeQueue(config.get("ask_log_time_window", 7 * 24 * 60 * 60))  # 7 days

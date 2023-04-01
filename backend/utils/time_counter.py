@@ -3,11 +3,11 @@ from collections import OrderedDict
 
 
 class TimeCounter:
-    def __init__(self, time_window: int=None, duration: int=None):
-        if time_window % duration != 0 or time_window <= 0 or duration <= 0 or time_window < duration:
+    def __init__(self, time_window: int=None, interval: int=None):
+        if time_window % interval != 0 or time_window <= 0 or interval <= 0 or time_window < interval:
             raise ValueError("time_window must be a multiple of duration, and both must be positive")
         self.time_window = time_window or 3 * 24 * 60 * 60
-        self.duration = duration or 30
+        self.duration = interval or 30
         self.counter = OrderedDict()
 
     def count(self):

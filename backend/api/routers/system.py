@@ -9,7 +9,7 @@ from api.config import config
 from api.database import get_async_session_context
 from api.enums import ChatStatus
 from api.models import User, Conversation
-from api.schema import ServerStatusSchema, LogFilterOptions, SystemStatistics
+from api.schema import ServerStatusSchema, LogFilterOptions, SystemInfo, RequestStatistics
 from api.users import current_super_user
 from utils.logger import get_logger
 
@@ -62,24 +62,27 @@ async def check_users(refresh_cache: bool = False):
     return check_users_cache
 
 
-@router.get("/statistics", tags=["system"], response_model=SystemStatistics)
-async def get_statistics(_user: User = Depends(current_super_user)):
+@router.get("/system/info", tags=["system"], response_model=SystemInfo)
+async def get_system_info(_user: User = Depends(current_super_user)):
     active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, users = await check_users(
         refresh_cache=True)
     async with get_async_session_context() as session:
         conversations = await session.execute(select(Conversation))
         conversations = conversations.scalars().all()
-    result = SystemStatistics(
+    result = SystemInfo(
         total_user_count=len(users),
         total_conversation_count=len(conversations),
         valid_conversation_count=len([c for c in conversations if c.is_valid]),
-        server_status=ServerStatusSchema(
-            active_user_in_5m=active_user_in_5m,
-            active_user_in_1h=active_user_in_1h,
-            active_user_in_1d=active_user_in_1d,
-            is_chatbot_busy=g.chatgpt_manager.is_busy(),
-            chatbot_waiting_count=queueing_count
-        )
+    )
+    return result
+
+
+@router.get("/system/request_statistics", tags=["system"], response_model=RequestStatistics)
+async def get_request_statistics(_user: User = Depends(current_super_user)):
+    result = RequestStatistics(
+        request_counts_interval=g.request_log_counter_interval,
+        request_counts=list(g.request_log_counter.counter.items()),
+        ask_records=list(g.ask_log_queue.queue)
     )
     return result
 
@@ -102,7 +105,7 @@ def read_last_n_lines(file_path, n, exclude_key_words=None):
     return last_n_lines[::-1]
 
 
-@router.post("/logs/proxy", tags=["system"])
+@router.post("/system/proxy_logs", tags=["system"])
 async def get_proxy_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
     lines = read_last_n_lines(
         os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"),
@@ -112,7 +115,7 @@ async def get_proxy_logs(_user: User = Depends(current_super_user), options: Log
     return lines
 
 
-@router.post("/logs/server", tags=["system"])
+@router.post("/system/server_logs", tags=["system"])
 async def get_server_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
     lines = read_last_n_lines(
         g.server_log_filename,
