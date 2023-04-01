@@ -2,6 +2,9 @@
 <template>
   <n-card class="h-full mb-6">
     <n-tabs type="line" justify-content="center" animated>
+      <n-tab-pane name="sys" :tab="$t('commons.systemManagement')">
+        <SystemManager />
+      </n-tab-pane>
       <n-tab-pane name="user" :tab="$t('commons.userManagement')">
         <UserManager />
       </n-tab-pane>
@@ -16,7 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import UserManager from './components/UserManager.vue';
-import ConvManager from './components/ConvManager.vue';
-import LogViewer from './components/LogViewer.vue';
+import SystemManager from './system_manager.vue';
+import UserManager from './user_manager.vue';
+import ConvManager from './conversation_manager.vue';
+import LogViewer from './log_viewer.vue';
 </script>

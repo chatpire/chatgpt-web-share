@@ -84,7 +84,12 @@
     "maxLineCount": "Max Line Count",
     "excludeKeywords": "Exclude Keywords",
     "conversation": "Conversation",
-    "enterConversation": "Enter Conversation"
+    "enterConversation": "Enter Conversation",
+    "systemManagement": "System Management",
+    "statisticsInfo": "Statistics",
+    "userCountAndOnlineCount": "active users / total users",
+    "conversationCount": "Valid and Total Conversations",
+    "serverOverview": "Server Overview"
   },
   "errors": {
     "403": "403 error: access denied",

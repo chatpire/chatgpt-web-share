@@ -42,7 +42,7 @@ import { useI18n } from 'vue-i18n';
 import { Dialog, Message } from '@/utils/tips';
 import { TrashOutline } from '@vicons/ionicons5';
 import { EmojiFlagsFilled, PersonAddAlt1Filled } from '@vicons/material';
-import UserSelector from './UserSelector.vue';
+import UserSelector from './components/UserSelector.vue';
 import { assignConversationToUserApi, deleteConversationApi, getAllConversationsApi, vanishConversationApi } from '@/api/chat';
 import { getModelNameTrans, modelNameMap } from '@/utils/renders';
 

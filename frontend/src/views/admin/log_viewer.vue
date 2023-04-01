@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { getProxyLogsApi, getServerLogsApi } from '@/api/status';
+import { getServerLogsApi, getProxyLogsApi } from '@/api/system';
 import { LogFilterOptions } from '@/types/schema';
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';

@@ -25,8 +25,8 @@ import { getAllUserApi, registerApi, deleteUserApi, resetUserPasswordApi, update
 import { Dialog, Message } from '@/utils/tips';
 import { TrashOutline, Pencil } from '@vicons/ionicons5';
 import { PasswordRound, RefreshFilled } from '@vicons/material';
-import EditUserForm from './EditUserForm.vue';
-import EditLimitForm from './EditLimitForm.vue';
+import EditUserForm from './components/EditUserForm.vue';
+import EditLimitForm from './components/EditLimitForm.vue';
 import { getCountTrans, popupResetUserPasswordDialog } from '@/utils/renders';
 
 const { t } = useI18n();

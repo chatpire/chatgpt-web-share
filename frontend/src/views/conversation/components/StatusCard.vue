@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { getServerStatusApi } from '@/api/status';
+import { getServerStatusApi } from "@/api/status"
 import { ServerStatusSchema } from '@/types/schema';
 import { MdPeople } from '@vicons/ionicons4';
 import { EventBusyFilled, QueueFilled } from '@vicons/material';
