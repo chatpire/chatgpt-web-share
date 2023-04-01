@@ -16,7 +16,7 @@
               {{ $t("commons.newConversation") }}
             </n-button>
           </div>
-          <n-scrollbar class="max-h-20 md:max-h-max md:h-0 md:flex-grow md:overflow-y-auto">
+          <n-scrollbar class="max-h-30 md:max-h-max md:min-h-0 md:flex-grow md:overflow-y-auto">
             <n-menu :content-style="{ backgroundColor: 'red' }" ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18"
               v-model:value="currentConversationId"></n-menu>
           </n-scrollbar>
