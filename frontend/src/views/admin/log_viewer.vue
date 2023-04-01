@@ -32,7 +32,7 @@
         <!-- <div class="whitespace-pre-line font-mono text-[0.2em]">
           {{ filteredLogsContent }}
         </div> -->
-        <n-log :rows="maxLineCount" :log="filteredLogsContent" />
+        <n-log :font-size="10" :rows="maxLineCount" :lines="logsContent" />
       </n-scrollbar>
     </n-card>
   </div>
@@ -57,10 +57,10 @@ const serverExcludeKeywords = ref<Array<string>>([
   "logs"
 ])
 
-const filteredLogsContent = computed(() => {
-  // 过滤含有/logs/server的行
-  return logsContent.value?.join('');
-});
+// const filteredLogsContent = computed(() => {
+//   // 过滤含有/logs/server的行
+//   return logsContent.value?.join('');
+// });
 
 watch(() => tab.value, () => {
   loadLogs();
