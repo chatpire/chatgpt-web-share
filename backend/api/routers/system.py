@@ -1,4 +1,5 @@
 import os
+import random
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends
@@ -32,9 +33,9 @@ async def check_users(refresh_cache: bool = False):
         check_users_cache_last_update_time = None
     if check_users_cache is not None and check_users_cache_last_update_time is not None:
         if check_users_cache_last_update_time > datetime.utcnow() - timedelta(seconds=CACHE_DURATION_SECONDS):
-            logger.debug("Using cached check_users result")
+            # logger.debug("Using cached check_users result")
             return check_users_cache
-    logger.debug("Refreshing check_users cache")
+    # logger.debug("Refreshing check_users cache")
     check_users_cache_last_update_time = datetime.utcnow()
     async with get_async_session_context() as session:
         users = await session.execute(select(User))
@@ -83,6 +84,7 @@ async def get_request_statistics(_user: User = Depends(current_super_user)):
     result = RequestStatistics(
         request_counts_interval=g.request_log_counter_interval,
         request_counts=list(g.request_log_counter.counter.items()),
+        # request_counts=list([(2800612 + i, random.randint(1, 100)) for i in range(100)]),
         ask_records=list(g.ask_log_queue.queue)
     )
     return result

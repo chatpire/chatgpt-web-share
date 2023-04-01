@@ -226,9 +226,9 @@ export interface components {
       /** Request Counts Interval */
       request_counts_interval: number;
       /** Request Counts */
-      request_counts: (([[object Object], [object Object]])[])[];
+      request_counts: (Record<string, never>)[];
       /** Ask Records */
-      ask_records: (([[object Object], [object Object]])[])[];
+      ask_records: (Record<string, never>)[];
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {

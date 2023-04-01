@@ -25,6 +25,6 @@ const requestCountsInterval = computed(() => {
 })
 
 const requestCounts = computed(() => {
-  return props.requestStatistics?.request_counts;
+  return props.requestStatistics?.request_counts as any;
 })
 </script>

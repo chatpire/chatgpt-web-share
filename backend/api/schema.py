@@ -75,9 +75,8 @@ class ServerStatusSchema(BaseModel):
 
 class RequestStatistics(BaseModel):
     request_counts_interval: int
-    request_counts: list[tuple[int, int]]  # list of (timestamp // request_counts_interval, count) (2800591, 31)
-    ask_records: list[
-        tuple[tuple[str, float], float]]  # list of (ask, time_used), timestamp. (('user', 1.5979), 1680355121.721198)
+    request_counts: list  # list of (timestamp // request_counts_interval, count) (2800591, 31)
+    ask_records: list  # list of (ask, time_used), timestamp. (('user', 1.5979), 1680355121.721198)
 
 
 class SystemInfo(BaseModel):

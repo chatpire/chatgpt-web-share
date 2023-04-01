@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, watchEffect, Ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { ChatMessage } from '@/types/custom';
 import md from "@/utils/markdown";
 import { useThemeVars } from "naive-ui"

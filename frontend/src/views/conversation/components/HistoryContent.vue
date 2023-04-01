@@ -24,10 +24,8 @@ import { ChatMessage } from "@/types/custom";
 import { Message } from "@/utils/tips";
 import { useI18n } from "vue-i18n";
 import MessageRow from "./MessageRow.vue";
-import { useConversationStore } from "@/store";
 import { getModelNameFromMessages } from "@/utils/conversation";
 
-const conversationStore = useConversationStore();
 const { t } = useI18n();
 
 const themeVars = useThemeVars();
