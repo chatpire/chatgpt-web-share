@@ -73,6 +73,13 @@ class ServerStatusSchema(BaseModel):
     chatbot_waiting_count: int = None
 
 
+class SystemStatistics(BaseModel):
+    total_user_count: int
+    total_conversation_count: int
+    valid_conversation_count: int
+    server_status: ServerStatusSchema
+
+
 class LogFilterOptions(BaseModel):
     max_lines: int = 100
     exclude_keywords: list[str] = None
