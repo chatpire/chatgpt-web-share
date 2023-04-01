@@ -178,21 +178,6 @@ test = ["contextlib2", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=
 trio = ["trio (>=0.16,<0.22)"]
 
 [[package]]
-name = "asgi-logger"
-version = "0.1.0"
-description = "Middleware based uvicorn access logger! :tada:"
-category = "main"
-optional = false
-python-versions = ">=3.8,<4.0"
-files = [
-    {file = "asgi-logger-0.1.0.tar.gz", hash = "sha256:b289f530bf49d14320242a567580ffc8ad053ba5667eece27d25a97822d3a0aa"},
-    {file = "asgi_logger-0.1.0-py3-none-any.whl", hash = "sha256:f2d1252cfc48b4a806d1810f0308ba2979fa73aca06ecc809903a8ebc5a6ef23"},
-]
-
-[package.dependencies]
-asgiref = ">=3.4.1,<4.0.0"
-
-[[package]]
 name = "asgiref"
 version = "3.6.0"
 description = "ASGI specs, helper code, and adapters"
@@ -1873,4 +1858,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c0fd3b59bfb930a8fb6cb21c21fbfbc146325176cc543564483e8825de13a085"
+content-hash = "4f4a4562e671b038d8cbc0eaff67469f0122d6c441ce968b88126ce302903ccb"

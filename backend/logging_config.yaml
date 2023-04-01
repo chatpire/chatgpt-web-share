@@ -27,9 +27,6 @@ root:
   level: DEBUG
   handlers: []
 loggers:
-  asgi.access:
-    level: INFO
-    handlers: [console_handler, file_handler]
   uvicorn.error:
     level: INFO
     handlers: [console_handler, file_handler]
