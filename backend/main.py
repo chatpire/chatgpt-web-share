@@ -147,7 +147,7 @@ async def on_startup():
                     if conv_db.is_valid:  # 若数据库中存在，但 ChatGPT 中不存在，则将数据库中的对话标记为无效
                         conv_db.is_valid = False
                         logger.info(
-                            f"Conversation {conv_db.title}({conv_db.conversation_id}) is not valid, marked as invalid")
+                            f"Conversation [{conv_db.title}]({conv_db.conversation_id}) is not valid, marked as invalid")
                         session.add(conv_db)
 
             # 新增对话
@@ -160,7 +160,7 @@ async def on_startup():
                 )
                 session.add(new_conv)
                 logger.info(
-                    f"Conversation {conv_db.title}({conv_db.conversation_id}) not recorded, added to database")
+                    f"Conversation [{new_conv.title}]({new_conv.conversation_id}) not recorded, added to database")
 
             await session.commit()
     except revChatGPTError as e:
