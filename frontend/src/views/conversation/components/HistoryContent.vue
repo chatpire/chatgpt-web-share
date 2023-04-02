@@ -2,9 +2,16 @@
   <div ref="contentRef" id="print-content" class="flex flex-col h-full" @keyup.esc="toggleFullscreenHistory(true)" tabindex="0" style="outline:none;">
     <div v-if="!props.loading">
       <!-- 消息记录 -->
-      <div class="flex justify-center py-4 px-4 max-w-full" :style="{ backgroundColor: themeVars.baseColor }">
+      <div class="flex justify-center py-4 px-4 max-w-full relative" :style="{ backgroundColor: themeVars.baseColor }">
         <n-text>{{ $t("commons.currentConversationModel") }}: {{ getModelNameTrans(modelName as any) }}
         </n-text>
+        <n-button class="absolute left-4 hide-in-print" v-if="_fullscreen" text @click="toggleFullscreenHistory">
+          <template #icon>
+            <n-icon>
+              <Close />
+            </n-icon>
+          </template>
+        </n-button>
       </div>
       <MessageRow :message="message" v-for="message in messages" :key="message.id" />
     </div>
@@ -23,6 +30,7 @@ import { getModelNameTrans } from "@/utils/renders";
 import { ChatMessage } from "@/types/custom";
 import { Message } from "@/utils/tips";
 import { useI18n } from "vue-i18n";
+import { Close } from "@vicons/ionicons5";
 import MessageRow from "./MessageRow.vue";
 import { getModelNameFromMessages } from "@/utils/conversation";
 
