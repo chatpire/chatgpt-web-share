@@ -67,6 +67,26 @@ class ConversationSchema(BaseModel):
         use_enum_values = True
 
 
+class AskParams(BaseModel):
+    message: str
+    conversation_id: str | None
+    parent_id: int | None
+    use_paid: bool = False
+    timeout: int = 600
+    new_title: str | None = None
+    model_name: ChatModels | None = None
+
+
+class AskResponse(BaseModel):
+    type: str
+    tip: str = None
+    message: str = None
+    conversation_id: str = None
+    parent_id: str = None
+    use_paid: bool = None
+    model_name: str = None
+
+
 class ServerStatusSchema(BaseModel):
     active_user_in_5m: int = None
     active_user_in_1h: int = None
