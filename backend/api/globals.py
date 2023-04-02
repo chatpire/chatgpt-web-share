@@ -15,7 +15,7 @@ startup_time = None
 
 config = Config(config_file)
 request_log_counter_time_window = config.get("request_log_counter_time_window", 30 * 24 * 60 * 60)  # 30 days
-request_log_counter_interval = config.get("request_log_counter_interval", 10 * 60)  # 10 minutes
+request_log_counter_interval = config.get("request_log_counter_interval", 30 * 60)  # 30 minutes
 request_log_counter = RequestCounter(
     time_window=request_log_counter_time_window,
     interval=request_log_counter_interval

@@ -1,6 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-60" :option="option" :loading="props.loading" />
+    <v-chart class="h-50" :option="option" :loading="props.loading" />
   </div>
 </template>
 
@@ -14,7 +14,10 @@ import {
   // GraphicComponent,
   TooltipComponent,
   LegendComponent,
-  DatasetComponent
+  DatasetComponent,
+  DataZoomComponent,
+  ToolboxComponent,
+  BrushComponent,
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 import { ToolTipFormatterParams } from '@/types/echarts';
@@ -34,7 +37,10 @@ use([
   // GraphicComponent,
   TooltipComponent,
   LegendComponent,
-  DatasetComponent
+  DatasetComponent,
+  DataZoomComponent,
+  ToolboxComponent,
+  BrushComponent
 ]);
 
 // provide(THEME_KEY, appStore.theme);
@@ -52,20 +58,6 @@ const findUsername = (user_id: number) => {
 };
 
 const isDark = computed(() => appStore.theme === 'dark');
-// const xAxis = computed(() => {
-//   return props.requestCounts ? Object.keys(props.requestCounts).map((key) => {
-//     const date = new Date(parseInt(key) * 1000 * props.requestCountsInterval!);
-//     const month = (date.getMonth() + 1).toString().padStart(2, '0')
-//     const day = date.getDate().toString().padStart(2, '0')
-//     const hour = date.getHours().toString().padStart(2, '0')
-//     const minute = date.getMinutes().toString().padStart(2, '0')
-//     return `${month}-${day} ${hour}:${minute}`
-//   }) : [];
-
-// })
-// const totalRequestsCountData = computed(() => {
-//   return props.requestCounts ? Object.values(props.requestCounts).map(([count, _]) => count) : [];
-// });
 
 const datasetSource = computed(() => {
   const data = props.requestCounts ? Object.keys(props.requestCounts).map((key) => {
@@ -130,6 +122,23 @@ const timeFormatter = (value: number) => {
   return `${month}-${day} ${hour}:${minute}`
 }
 
+const showDataZoom = ref(false);
+const dataZoomOption = computed(() => {
+  return showDataZoom.value ? [
+      {
+        type: 'slider',
+        show: showDataZoom.value,
+        xAxisIndex: 0,
+        start: 0,
+        end: 100,
+        filterMode: 'filter'
+      }
+    ] : [];
+})
+const gridBottom = computed(() => {
+  return showDataZoom.value ? '25%' : '5%';
+})
+
 const option = computed(() => {
   return {
     title: {
@@ -146,7 +155,7 @@ const option = computed(() => {
       left: '2.6%',
       right: '4',
       top: '40',
-      bottom: '40',
+      bottom: gridBottom.value,
       containLabel: true
     },
     dataset: {
@@ -224,6 +233,35 @@ const option = computed(() => {
         '#E8F3FF'
       ),
     ],
+
+    toolbox: {
+      feature: {
+        myDataZoom: {
+          show: true,
+          title: {
+            zoom: '区域缩放',
+            back: '还原缩放'
+          },
+          icon: 'path://M0,0H12V2H0V0ZM0,14H12V16H0V14ZM0,6H12V8H0V6ZM0,10H12V12H0V10Z',
+          onclick: () =>  {
+            showDataZoom.value = !showDataZoom.value;
+          }
+        },
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    dataZoom: dataZoomOption.value,
+    // brush: {
+    //   xAxisIndex: 0,
+    //   throttleDelay: 300,
+    //   brushType: 'lineX',
+    //   brushMode: 'single',
+    //   rangeMode: ['percent', 'percent'],
+    //   outOfBrush: {
+    //     colorAlpha: 0.1
+    //   },
+    // },
   }
 })
 
@@ -232,7 +270,7 @@ watchEffect(() => {
   // console.log('xAxis', xAxis.value);
   // console.log('totalRequestsCountData', totalRequestsCountData.value);
   // console.log('datasetSource', datasetSource.value);
-  console.log('users', props.users)
+  // console.log('users', props.users)
   console.log('option', option.value);
 });
 </script>

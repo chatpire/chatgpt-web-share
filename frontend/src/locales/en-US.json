@@ -92,7 +92,9 @@
     "serverOverview": "Overview",
     "chatbotStatus": "Reply Status",
     "startUpDuration": "Run Time",
-    "totalRequestsCount": "Total Number of Requests"
+    "totalRequestsCount": "Total Number of Requests",
+    "requestUsers": "Request Users",
+    "requestUsersCount": "Number of requesting users"
   },
   "errors": {
     "403": "403 error: access denied",

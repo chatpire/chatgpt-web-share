@@ -93,7 +93,8 @@
     "serverOverview": "服务概况",
     "totalRequestsCount": "请求总数量",
     "startUpDuration": "运行时长",
-    "requestUsers": "请求用户"
+    "requestUsers": "请求用户",
+    "requestUsersCount": "请求用户数量"
   },
   "errors": {
     "403": "403 错误：无访问权限",
