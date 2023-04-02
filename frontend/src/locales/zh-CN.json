@@ -92,7 +92,8 @@
     "chatbotStatus": "回复状态",
     "serverOverview": "服务概况",
     "totalRequestsCount": "请求总数量",
-    "startUpDuration": "运行时长"
+    "startUpDuration": "运行时长",
+    "requestUsers": "请求用户"
   },
   "errors": {
     "403": "403 错误：无访问权限",

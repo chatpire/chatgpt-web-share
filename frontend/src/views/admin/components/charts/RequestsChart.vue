@@ -13,7 +13,8 @@ import {
   GridComponent,
   // GraphicComponent,
   TooltipComponent,
-  LegendComponent
+  LegendComponent,
+  DatasetComponent
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 import { ToolTipFormatterParams } from '@/types/echarts';
@@ -21,75 +22,79 @@ import { ref, watchEffect, computed } from "vue";
 import { LineSeriesOption } from 'echarts';
 import { useAppStore } from "@/store";
 import { useI18n } from "vue-i18n";
+import { UserRead } from "@/types/schema";
 const { t } = useI18n();
 const appStore = useAppStore();
 
 use([
-TitleComponent,
+  TitleComponent,
   CanvasRenderer,
   LineChart,
   GridComponent,
   // GraphicComponent,
   TooltipComponent,
-  LegendComponent
+  LegendComponent,
+  DatasetComponent
 ]);
 
 // provide(THEME_KEY, appStore.theme);
 
-const tooltipItemsHtmlString = (items: any[]) => {
-  return items
-    .map(
-      (el) => `<div class="content-panel">
-          <span>${el.seriesName}: ${el.value}</span>
-      </div>`
-    )
-    .join('');
-};
-
 const props = defineProps<{
   loading: boolean;
-  requestCounts?: [number, number][];
+  requestCounts?: Record<string, [number, number[]]>; // list of [timestage, [total, user_id_list]]
   requestCountsInterval?: number;
-  // askRequestCountData: [[string, number], number][];
+  users?: UserRead[];
 }>();
 
-const isDark = computed(() => appStore.theme === 'dark');
-const xAxis = computed(() => {
-  return props.requestCounts?.map(([timestage, _]) => {
-    const date = new Date(timestage * 1000 * props.requestCountsInterval!);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    const hour = date.getHours().toString().padStart(2, '0')
-    const minute = date.getMinutes().toString().padStart(2, '0')
-    return `${month}-${day} ${hour}:${minute}`
+const findUsername = (user_id: number) => {
+  const user = props.users?.find((u) => u.id === user_id);
+  return user?.username || user_id;
+};
 
-  }) || [];
-})
-const totalRequestsCountData = computed(() => {
-  return props.requestCounts?.map(([_, count]) => count) || [];
-});
-// const askRequestCountData = computed(() => {
-//   props.askRequestCountData.map(([_, count]) => count);
+const isDark = computed(() => appStore.theme === 'dark');
+// const xAxis = computed(() => {
+//   return props.requestCounts ? Object.keys(props.requestCounts).map((key) => {
+//     const date = new Date(parseInt(key) * 1000 * props.requestCountsInterval!);
+//     const month = (date.getMonth() + 1).toString().padStart(2, '0')
+//     const day = date.getDate().toString().padStart(2, '0')
+//     const hour = date.getHours().toString().padStart(2, '0')
+//     const minute = date.getMinutes().toString().padStart(2, '0')
+//     return `${month}-${day} ${hour}:${minute}`
+//   }) : [];
+
+// })
+// const totalRequestsCountData = computed(() => {
+//   return props.requestCounts ? Object.values(props.requestCounts).map(([count, _]) => count) : [];
 // });
 
-watchEffect(() => {
-  console.log('props', props.requestCounts);
-  console.log('xAxis', xAxis.value);
-  console.log('totalRequestsCountData', totalRequestsCountData.value);
-  // console.log('askRequestCountData', askRequestCountData.value);
+const datasetSource = computed(() => {
+  const data = props.requestCounts ? Object.keys(props.requestCounts).map((key) => {
+    const timestamp = parseInt(key) * 1000 * props.requestCountsInterval!;
+    const count = props.requestCounts![key][0];
+    const userIds = props.requestCounts![key][1] as number[];
+    // const userString = userIds.map((i) => `${i}`).join(', ');
+    return {
+      timestamp,
+      count,
+      userIds
+    }
+  }) : [];
+  return data;
 });
 
 const generateSeries = (
   name: string,
   lineColor: string,
   itemBorderColor: string,
-  data: number[]
 ): LineSeriesOption => {
   return {
-    name,
-    data,
-    stack: 'Total',
     type: 'line',
+    name,
+    encode: {
+      x: 'timestamp',
+      y: 'count'
+    },
+    stack: 'Total',
     smooth: true,
     symbol: 'circle',
     symbolSize: 10,
@@ -116,6 +121,15 @@ const generateSeries = (
   };
 };
 
+const timeFormatter = (value: number) => {
+  const date = new Date(value);
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  const hour = date.getHours().toString().padStart(2, '0')
+  const minute = date.getMinutes().toString().padStart(2, '0')
+  return `${month}-${day} ${hour}:${minute}`
+}
+
 const option = computed(() => {
   return {
     title: {
@@ -135,18 +149,14 @@ const option = computed(() => {
       bottom: '40',
       containLabel: true
     },
+    dataset: {
+      source: datasetSource.value,
+    },
     xAxis: {
-      type: 'category',
-      offset: 2,
-      data: xAxis.value,
-      boundaryGap: false,
+      type: 'time',
       axisLabel: {
         color: '#4E5969',
-        formatter(value: number, idx: number) {
-          if (idx === 0) return '';
-          if (idx === xAxis.value.length - 1) return '';
-          return `${value}`;
-        },
+        formatter: timeFormatter,
       },
       axisLine: {
         show: false,
@@ -156,11 +166,11 @@ const option = computed(() => {
       },
       splitLine: {
         show: true,
-        interval: (idx: number) => {
-          if (idx === 0) return false;
-          if (idx === xAxis.value.length - 1) return false;
-          return true;
-        },
+        // interval: (idx: number) => {
+        //   if (idx === 0) return false;
+        //   if (idx === xAxis.value.length - 1) return false;
+        //   return true;
+        // },
         lineStyle: {
           type: 'dashed',
           color: isDark.value ? '#2E2E30' : '#E5E8EF',
@@ -195,23 +205,34 @@ const option = computed(() => {
     tooltip: {
       trigger: 'axis',
       formatter(params: any[]) {
-        const [firstElement] = params as ToolTipFormatterParams[];
+        const [el] = params as ToolTipFormatterParams[];
+        const data = el.data as any;
         return `<div>
-            <p class="tooltip-title">${firstElement.axisValueLabel}</p>
-            ${tooltipItemsHtmlString(params as ToolTipFormatterParams[])}
-          </div>`;
+                  <span>${timeFormatter(data.timestamp)} ~ ${timeFormatter(data.timestamp + props.requestCountsInterval! * 1000)}</span>
+                  <br />
+                  <span>${el.seriesName}: ${data.count}</span> <br />
+                  <span>${t("commons.requestUsers")}: ${data.userIds.map((id: number) => findUsername(id))}</span>
+                </div>`;
       },
       className: 'echarts-tooltip-diy',
     },
+
     series: [
       generateSeries(
-        '总请求数',
+        t("commons.totalRequestsCount"),
         '#3469FF',
-        '#E8F3FF',
-        totalRequestsCountData.value
+        '#E8F3FF'
       ),
     ],
   }
 })
 
+watchEffect(() => {
+  // console.log('props', props.requestCounts);
+  // console.log('xAxis', xAxis.value);
+  // console.log('totalRequestsCountData', totalRequestsCountData.value);
+  // console.log('datasetSource', datasetSource.value);
+  console.log('users', props.users)
+  console.log('option', option.value);
+});
 </script>

@@ -86,7 +86,7 @@ async def get_request_statistics(_user: User = Depends(current_super_user)):
     result = RequestStatistics(
         request_counts_interval=g.request_log_counter_interval,
         request_counts=dict(g.request_log_counter.counter),
-        # request_counts=list([(2800612 + i, random.randint(1, 100)) for i in range(100)]),
+        # request_counts={str(2800612 + i): [random.randint(1, 100), [1]] for i in range(100)},
         ask_records=list(g.ask_log_queue.queue)
     )
     return result

@@ -226,7 +226,9 @@ export interface components {
       /** Request Counts Interval */
       request_counts_interval: number;
       /** Request Counts */
-      request_counts: (Record<string, never>)[];
+      request_counts: {
+        [key: string]: (Record<string, never>)[] | undefined;
+      };
       /** Ask Records */
       ask_records: (Record<string, never>)[];
     };
