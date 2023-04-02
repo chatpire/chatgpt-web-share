@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { LineChart, BarChart } from "echarts/charts";
+import { BarChart } from "echarts/charts";
 import {
   TitleComponent,
   GridComponent,
@@ -32,7 +32,6 @@ const appStore = useAppStore();
 use([
   TitleComponent,
   CanvasRenderer,
-  LineChart,
   BarChart,
   GridComponent,
   TooltipComponent,
@@ -154,9 +153,6 @@ const generateSeries = (
       y: 'count'
     },
     stack: 'total',
-    // smooth: false,
-    // symbol: 'circle',
-    // symbolSize: 10,
     itemStyle: {
       color: lineColor,
     },
@@ -168,15 +164,6 @@ const generateSeries = (
         borderColor: itemBorderColor,
       },
     },
-    // lineStyle: {
-    //   width: 2,
-    //   color: lineColor,
-    // },
-    // showSymbol: false,
-    // areaStyle: {
-    //   opacity: 0.1,
-    //   color: lineColor,
-    // },
   };
 };
 
@@ -223,6 +210,7 @@ const option = computed(() => {
       axisLabel: {
         color: '#4E5969',
         formatter: (val: any) => timeFormatter(val, false),
+        hideOverlap: true
       },
       axisLine: {
         show: false,
@@ -283,7 +271,9 @@ const option = computed(() => {
                   <span>${el0.seriesName}: ${data0.count}</span> <br />
                   <span>${el1.seriesName}: ${data1.count}</span> <br />
                   <span>${t("commons.normalAskUsers")}: ${data0.userIds.map((id: number) => findUsername(id))}</span> <br />
-                  <span>${t("commons.gpt4AskUsers")}: ${data1.userIds.map((id: number) => findUsername(id))}</span>
+                  <span>${t("commons.gpt4AskUsers")}: ${data1.userIds.map((id: number) => findUsername(id))}</span> <br />
+                  <span>${t("commons.sumOfNormalAskDuration")}: ${data0.sumAskDuration.toFixed(2)} s</span> <br />
+                  <span>${t("commons.sumOfGpt4AskDuration")}: ${data1.sumAskDuration.toFixed(2)} s</span> <br />
                 </div>`;
       },
       className: 'echarts-tooltip-diy',
@@ -319,16 +309,6 @@ const option = computed(() => {
       }
     },
     dataZoom: dataZoomOption.value,
-    // brush: {
-    //   xAxisIndex: 0,
-    //   throttleDelay: 300,
-    //   brushType: 'lineX',
-    //   brushMode: 'single',
-    //   rangeMode: ['percent', 'percent'],
-    //   outOfBrush: {
-    //     colorAlpha: 0.1
-    //   },
-    // },
   }
 })
 

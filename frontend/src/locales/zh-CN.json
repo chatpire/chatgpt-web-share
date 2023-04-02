@@ -99,7 +99,9 @@
     "normalAskUsers": "使用普通模型",
     "gpt4AskUsers": "使用GPT-4模型",
     "gpt4AskCount": "GPT-4模型回复次数",
-    "askRequestsCount": "对话次数"
+    "askRequestsCount": "对话次数",
+    "sumOfNormalAskDuration": "普通对话总耗时",
+    "sumOfGpt4AskDuration": "GPT-4对话总耗时"
   },
   "errors": {
     "403": "403 错误：无访问权限",

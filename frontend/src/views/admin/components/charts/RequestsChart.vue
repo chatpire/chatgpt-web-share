@@ -158,6 +158,7 @@ const option = computed(() => {
       axisLabel: {
         color: '#4E5969',
         formatter: (val: any) => timeFormatter(val, false),
+        hideOverlap: true
       },
       axisLine: {
         show: false,

@@ -3,7 +3,7 @@
     <template #title>
       <n-space :align="'center'">
         <div>
-          <a href="#" style="text-decoration: none; color: inherit">{{ $t("commons.siteTitle") }}</a>
+          <a href="/" style="text-decoration: none; color: inherit">{{ $t("commons.siteTitle") }}</a>
         </div>
         <div class="hidden sm:block">
           <a class="h-full inline-block flex" href="https://github.com/moeakwak/chatgpt-web-share" target="_blank">

@@ -22,8 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { InformationCircleOutline, DocumentTextOutline } from '@vicons/ionicons5';
-import { SupervisedUserCircleRound, MessageRound } from '@vicons/material';
+import { InformationCircle, ChatbubbleEllipses, FileTrayFull } from '@vicons/ionicons5';
+import { SupervisedUserCircleRound } from '@vicons/material';
 
 import { ref, computed, watch, h } from 'vue';
 import { NIcon } from 'naive-ui';
@@ -43,7 +43,7 @@ const menuOptions = [
   {
     label: t('commons.systemManagement'),
     key: 'systemManagement',
-    icon: renderIcon(InformationCircleOutline),
+    icon: renderIcon(InformationCircle),
   },
   {
     label: t('commons.userManagement'),
@@ -53,12 +53,12 @@ const menuOptions = [
   {
     label: t('commons.conversationManagement'),
     key: 'conversationManagement',
-    icon: renderIcon(MessageRound),
+    icon: renderIcon(ChatbubbleEllipses),
   },
   {
     label: t('commons.logViewer'),
     key: 'logViewer',
-    icon: renderIcon(DocumentTextOutline),
+    icon: renderIcon(FileTrayFull),
   },
 ];
 
