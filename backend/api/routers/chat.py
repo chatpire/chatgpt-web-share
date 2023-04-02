@@ -382,4 +382,4 @@ async def ask(websocket: WebSocket):
 
         # 写入到 scope 中，供统计
         g.ask_log_queue.enqueue(
-            (user.id, model_name, ask_stop_time - ask_start_time, stop_time - start_time))
+            (user.id, model_name.value, ask_stop_time - ask_start_time, stop_time - start_time))
