@@ -50,7 +50,7 @@ axios.interceptors.response.use(
       console.log("Error: ", res);
       let msg = `${res.code}`;
       if (res.message) {
-        msg += `: ${res.message}`;
+        msg += `: ${t(res.message)}`;
       }
       Message.error(msg, {
         duration: 5 * 1000,
