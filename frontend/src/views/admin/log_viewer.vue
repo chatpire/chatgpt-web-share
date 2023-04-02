@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-4 h-full flex flex-col">
+  <div class="mb-4 flex flex-col">
     <n-tabs type="segment" v-model:value="tab">
       <n-tab name="server">{{ t("commons.serverLogs") }}</n-tab>
       <n-tab name="proxy">{{ t("commons.proxyLogs") }}</n-tab>
@@ -28,12 +28,12 @@
       </div>
     </div>
     <n-card class="mt-3 flex-grow h-full" :content-style="{ height: '100%' }">
-      <n-scrollbar ref="scrollRef" class="h-160 relative">
-        <!-- <div class="whitespace-pre-line font-mono text-[0.2em]">
+      <!-- <n-scrollbar ref="scrollRef" class="h-160 relative"> -->
+      <!-- <div class="whitespace-pre-line font-mono text-[0.2em]">
           {{ filteredLogsContent }}
         </div> -->
-        <n-log :font-size="10" :rows="maxLineCount" :lines="logsContent" />
-      </n-scrollbar>
+      <n-log ref="logInstRef" :font-size="10" :rows="40" :lines="logsContent" />
+      <!-- </n-scrollbar> -->
     </n-card>
   </div>
 </template>
@@ -41,11 +41,10 @@
 <script setup lang="ts">
 import { getServerLogsApi, getProxyLogsApi } from '@/api/system';
 import { LogFilterOptions } from '@/types/schema';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
-const scrollRef = ref();
 const refresh_duration = ref(5);
 const tab = ref<string>('server');
 const logsContent = ref<Array<string>>();
@@ -57,10 +56,7 @@ const serverExcludeKeywords = ref<Array<string>>([
   "logs"
 ])
 
-// const filteredLogsContent = computed(() => {
-//   // 过滤含有/logs/server的行
-//   return logsContent.value?.join('');
-// });
+const logInstRef = ref();
 
 watch(() => tab.value, () => {
   loadLogs();
@@ -68,6 +64,12 @@ watch(() => tab.value, () => {
 watch(() => maxLineCount.value, () => {
   loadLogs();
 });
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    logInstRef.value?.scrollTo({ position: 'bottom', slient: false })
+  })
+}
 
 const loadLogs = () => {
   if (tab.value === 'server') {
@@ -85,8 +87,9 @@ const loadLogs = () => {
       logsContent.value = res.data;
     });
   }
-  if (enableAutoScroll.value)
-    scrollRef.value?.scrollTo({ left: 0, top: scrollRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
+  if (enableAutoScroll.value) {
+    scrollToBottom();
+  }
 }
 
 loadLogs();

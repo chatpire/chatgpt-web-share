@@ -47,11 +47,34 @@ const router = createRouter({
     {
       path: "/admin",
       name: "admin",
+      redirect: "/admin/system",
       component: () => import("@/views/admin/index.vue"),
       meta: {
         requiresAuth: true,
         roles: ["superuser"],
       },
+      children: [
+        {
+          path: "system",
+          name: "systemManagement",
+          component: () => import("@/views/admin/system_manager.vue"),
+        },
+        {
+          path: "user",
+          name: "userManagement",
+          component: () => import("@/views/admin/user_manager.vue"),
+        },
+        {
+          path: "conversation",
+          name: "conversationManagement",
+          component: () => import("@/views/admin/conversation_manager.vue"),
+        },
+        {
+          path: "log",
+          name: "logViewer",
+          component: () => import("@/views/admin/log_viewer.vue"),
+        },
+      ],
     },
     {
       path: "/redirect",
