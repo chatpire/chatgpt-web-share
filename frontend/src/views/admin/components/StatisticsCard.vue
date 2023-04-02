@@ -32,7 +32,7 @@ const requestCounts = computed(() => {
   return props.requestStatistics?.request_counts as any;
 })
 
-const askRecords = computed(() => {
+const askRecords = computed<any>(() => {
   return props.requestStatistics?.ask_records;
 })
 </script>

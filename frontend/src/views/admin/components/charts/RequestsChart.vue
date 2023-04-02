@@ -1,6 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-50" :option="option" :loading="props.loading" />
+    <v-chart class="h-35" :option="option" :loading="props.loading" />
   </div>
 </template>
 
@@ -26,6 +26,7 @@ import { LineSeriesOption } from 'echarts';
 import { useAppStore } from "@/store";
 import { useI18n } from "vue-i18n";
 import { UserRead } from "@/types/schema";
+import { timeFormatter } from "./helpers"
 const { t } = useI18n();
 const appStore = useAppStore();
 
@@ -113,15 +114,6 @@ const generateSeries = (
   };
 };
 
-const timeFormatter = (value: number) => {
-  const date = new Date(value);
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-  const hour = date.getHours().toString().padStart(2, '0')
-  const minute = date.getMinutes().toString().padStart(2, '0')
-  return `${month}-${day} ${hour}:${minute}`
-}
-
 const showDataZoom = ref(false);
 const dataZoomOption = computed(() => {
   return showDataZoom.value ? [
@@ -136,7 +128,7 @@ const dataZoomOption = computed(() => {
     ] : [];
 })
 const gridBottom = computed(() => {
-  return showDataZoom.value ? '25%' : '5%';
+  return showDataZoom.value ? '35%' : '5%';
 })
 
 const option = computed(() => {
@@ -154,7 +146,7 @@ const option = computed(() => {
     grid: {
       left: '2.6%',
       right: '4',
-      top: '40',
+      top: '30',
       bottom: gridBottom.value,
       containLabel: true
     },
@@ -165,7 +157,7 @@ const option = computed(() => {
       type: 'time',
       axisLabel: {
         color: '#4E5969',
-        formatter: timeFormatter,
+        formatter: (val: any) => timeFormatter(val, false),
       },
       axisLine: {
         show: false,
@@ -217,7 +209,7 @@ const option = computed(() => {
         const [el] = params as ToolTipFormatterParams[];
         const data = el.data as any;
         return `<div>
-                  <span>${timeFormatter(data.timestamp)} ~ ${timeFormatter(data.timestamp + props.requestCountsInterval! * 1000)}</span>
+                  <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(data.timestamp + props.requestCountsInterval! * 1000, true)}</span>
                   <br />
                   <span>${el.seriesName}: ${data.count}</span> <br />
                   <span>${t("commons.requestUsers")}: ${data.userIds.map((id: number) => findUsername(id))}</span>

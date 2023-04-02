@@ -82,6 +82,17 @@ async def get_system_info(_user: User = Depends(current_super_user)):
     return result
 
 
+START_TIMESTAMP = 1672502400  # 2023-01-01 00:00:00
+
+
+def make_fake_requests_count(total=100, max=500):
+    result = {}
+    start_stage = START_TIMESTAMP // g.request_log_counter_interval
+    for i in range(total):
+        result[start_stage + i] = [random.randint(0, max), [1]]
+    return result
+
+
 def make_fake_ask_records(total=100, days=2):
     result = []
     model_names = list(api.enums.ChatModels.__members__.values())
@@ -96,7 +107,7 @@ def make_fake_ask_records(total=100, days=2):
                 ask_time,
                 total_time
             ],
-            1672502400 + random.random() * 60 * 60 * 24 * days,  # ask_time
+            START_TIMESTAMP + random.random() * 60 * 60 * 24 * days,  # ask_time
         ])
     return result
 
@@ -105,8 +116,8 @@ def make_fake_ask_records(total=100, days=2):
 async def get_request_statistics(_user: User = Depends(current_super_user)):
     result = RequestStatistics(
         request_counts_interval=g.request_log_counter_interval,
-        # request_counts=dict(g.request_log_counter.counter),
-        request_counts={str(2800612 + i): [random.randint(0, 1000), [1]] for i in range(300)},
+        request_counts=dict(g.request_log_counter.counter),
+        # request_counts=make_fake_requests_count(20, 500),
         ask_records=list(g.ask_log_queue.queue)
         # ask_records=make_fake_ask_records(3000, 7)
     )

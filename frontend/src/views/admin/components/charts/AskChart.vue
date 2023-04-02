@@ -1,6 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-50" :option="option" :loading="props.loading" />
+    <v-chart v-if="props.askRecords?.length > 0" class="h-60" :option="option" :loading="props.loading" />
   </div>
 </template>
 
@@ -25,6 +25,7 @@ import { BarSeriesOption, LineSeriesOption } from 'echarts';
 import { useAppStore } from "@/store";
 import { useI18n } from "vue-i18n";
 import { UserRead } from "@/types/schema";
+import { timeFormatter } from "./helpers"
 const { t } = useI18n();
 const appStore = useAppStore();
 
@@ -61,13 +62,13 @@ const props = defineProps<{
 
 function makeDataset(askRecords: AskRecord[]) {
   // 获得最早的时间戳
-  const earliestTimestamp = askRecords.reduce((min, record) => Math.min(min, record[1]), Number.MAX_VALUE) * 1000;
+  const earliestTimestamp = askRecords.reduce((min, record) => Math.min(min, record[1]), Number.MAX_VALUE);
 
-  const latestTimestamp = askRecords.reduce((max, record) => Math.max(max, record[1]), Number.MIN_VALUE) * 1000;
+  const latestTimestamp = askRecords.reduce((max, record) => Math.max(max, record[1]), Number.MIN_VALUE);
 
   // 对齐到整点或半点
-  const alignedEarliestTimestamp = Math.floor(earliestTimestamp / 1800) * 1800;
-  const alignedLatestTimestamp = Math.ceil(latestTimestamp / 1800) * 1800;
+  const alignedEarliestTimestamp = Math.floor(earliestTimestamp / 1800) * 1800 * 1000;
+  const alignedLatestTimestamp = Math.ceil(latestTimestamp / 1800) * 1800 * 1000;
 
   // 数据分类
   const otherRecords: AskRecord[] = [];
@@ -179,14 +180,6 @@ const generateSeries = (
   };
 };
 
-const timeFormatter = (value: number) => {
-  const date = new Date(value);
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-  const hour = date.getHours().toString().padStart(2, '0')
-  const minute = date.getMinutes().toString().padStart(2, '0')
-  return `${month}-${day} ${hour}:${minute}`
-}
 
 const showDataZoom = ref(false);
 const dataZoomOption = computed(() => {
@@ -229,7 +222,7 @@ const option = computed(() => {
       type: 'time',
       axisLabel: {
         color: '#4E5969',
-        formatter: timeFormatter,
+        formatter: (val: any) => timeFormatter(val, false),
       },
       axisLine: {
         show: false,
@@ -285,7 +278,7 @@ const option = computed(() => {
         const data0 = el0.data as StatRecord;
         const data1 = el1.data as StatRecord;
         return `<div>
-                  <span>${timeFormatter(data0.timestamp)} ~ ${timeFormatter(data0.timestamp + 1800 * 1000)}</span>
+                  <span>${timeFormatter(data0.timestamp, true)} ~ ${timeFormatter(data0.timestamp + 1800 * 1000, true)}</span>
                   <br />
                   <span>${el0.seriesName}: ${data0.count}</span> <br />
                   <span>${el1.seriesName}: ${data1.count}</span> <br />
@@ -300,7 +293,7 @@ const option = computed(() => {
       generateSeries(
         t("commons.normalAskCount"),
         '#9ce6aa',
-          '#E8FFFB',
+        '#E8FFFB',
         0
       ),
       generateSeries(
