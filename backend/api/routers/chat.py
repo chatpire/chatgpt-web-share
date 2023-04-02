@@ -8,10 +8,12 @@ from fastapi import APIRouter, Depends, WebSocket
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
+from starlette.requests import Request
 
 import api.chatgpt
 import api.globals as g
 import api.globals as g
+
 config = g.config
 from api.database import get_async_session_context
 from api.enums import ChatStatus, ChatModels
@@ -187,6 +189,7 @@ async def ask(websocket: WebSocket):
     其中：type 可以为 "waiting" / "message" / "title"
     """
 
+    start_time = time.time()
     await websocket.accept()
     user = await websocket_auth(websocket)
     logger.debug(f"{user.username} connected to websocket")
@@ -270,9 +273,10 @@ async def ask(websocket: WebSocket):
                 "type": "waiting",
                 "tip": "tips.waiting"
             })
-            request_start_time = time.time()
+            ask_start_time = time.time()
             try:
-                async for data in api.chatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout, model_name):
+                async for data in api.chatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,
+                                                                  model_name):
                     reply = {
                         "type": "message",
                         "message": data["message"],
@@ -290,8 +294,11 @@ async def ask(websocket: WebSocket):
                 else:
                     logger.error(e)
                     raise e
-            logger.debug(
-                f"finish ask {conversation_id} ({model_name}), using time: {time.time() - request_start_time}s")
+            finally:
+                ask_stop_time = time.time()
+
+                logger.debug(
+                    f"finish ask {conversation_id} ({model_name}), reply using : {ask_stop_time - ask_start_time}s")
 
             async with get_async_session_context() as session:
                 # 若新建了对话，则添加到数据库
@@ -330,8 +337,10 @@ async def ask(websocket: WebSocket):
                         user.available_gpt4_ask_count -= 1
                     session.add(user)
                 await session.commit()
+
             websocket_code = 1000
             websocket_reason = "tips.finished"
+
     except requests.exceptions.Timeout:
         await websocket.send_json({
             "type": "error",
@@ -369,3 +378,8 @@ async def ask(websocket: WebSocket):
         await change_user_chat_status(user.id, ChatStatus.idling)
         api.chatgpt.chatgpt_manager.reset_chat()
         await websocket.close(websocket_code, websocket_reason)
+        stop_time = time.time()
+
+        # 写入到 scope 中，供统计
+        g.ask_log_queue.enqueue(
+            (user.id, model_name, ask_stop_time - ask_start_time, stop_time - start_time))

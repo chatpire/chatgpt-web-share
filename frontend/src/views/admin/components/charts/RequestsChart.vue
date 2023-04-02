@@ -238,10 +238,7 @@ const option = computed(() => {
       feature: {
         myDataZoom: {
           show: true,
-          title: {
-            zoom: '区域缩放',
-            back: '还原缩放'
-          },
+          title: "DataZoom",
           icon: 'path://M0,0H12V2H0V0ZM0,14H12V16H0V14ZM0,6H12V8H0V6ZM0,10H12V12H0V10Z',
           onclick: () =>  {
             showDataZoom.value = !showDataZoom.value;

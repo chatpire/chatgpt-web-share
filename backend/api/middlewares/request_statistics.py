@@ -41,11 +41,3 @@ class StatisticsMiddleware:
 
             g.request_log_counter.count(user_id)
             # logger.debug(g.request_log_counter)
-            # path = scope["root_path"] + scope["path"]
-
-            if scope["type"] == "websocket":
-                user_name = None
-                if user is not None:
-                    user_name = user.username
-                g.ask_log_queue.enqueue((user_name, end_time - start_time))
-                # logger.debug(g.ask_log_queue)

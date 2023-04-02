@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
+import api.enums
 import api.globals as g
 import api.globals as g
 
@@ -81,13 +82,33 @@ async def get_system_info(_user: User = Depends(current_super_user)):
     return result
 
 
+def make_fake_ask_records(total=100, days=2):
+    result = []
+    model_names = list(api.enums.ChatModels.__members__.values())
+    for i in range(total):
+        ask_time = random.random() * 60 + 1
+        total_time = ask_time + random.random() * 30
+        result.append([
+            [
+                # random.randint(1, 10),  # user_id
+                1,
+                model_names[random.randint(0, len(model_names) - 1)].value,  # model_name
+                ask_time,
+                total_time
+            ],
+            1672502400 + random.random() * 60 * 60 * 24 * days,  # ask_time
+        ])
+    return result
+
+
 @router.get("/system/request_statistics", tags=["system"], response_model=RequestStatistics)
 async def get_request_statistics(_user: User = Depends(current_super_user)):
     result = RequestStatistics(
         request_counts_interval=g.request_log_counter_interval,
-        request_counts=dict(g.request_log_counter.counter),
-        # request_counts={str(2800612 + i): [random.randint(1, 100), [1]] for i in range(100)},
+        # request_counts=dict(g.request_log_counter.counter),
+        request_counts={str(2800612 + i): [random.randint(0, 1000), [1]] for i in range(300)},
         ask_records=list(g.ask_log_queue.queue)
+        # ask_records=make_fake_ask_records(3000, 7)
     )
     return result
 
