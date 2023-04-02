@@ -15,7 +15,7 @@ def dump():
     data = {
         "request_log_counter_interval": g.request_log_counter_interval,
         "request_log_counter": g.request_log_counter.counter,
-        "ask_log_queue": g.ask_log_queue.queue
+        "ask_log_queue": list(g.ask_log_queue.queue)
     }
     with open(path, "w") as f:
         json.dump(data, f)
@@ -29,15 +29,13 @@ def load():
         with open(path, "r") as f:
             data = json.load(f)
 
-            if g.config.get("request_log_counter_interval") != data["request_log_counter_interval"]:
+            if g.request_log_counter_interval != data["request_log_counter_interval"]:
                 logger.warning("request_log_counter_interval is different from the saved one, counter cleared.")
                 return
-            else:
-                g.request_log_counter_interval = data["request_log_counter_interval"]
-                g.request_log_counter.interval = data["request_log_counter_interval"]
 
             for k, v in data["request_log_counter"].items():
-                g.request_log_counter.counter[k] = v
+                g.request_log_counter.counter[int(k)] = v
+            g.request_log_counter.remove_expired_intervals()
             g.ask_log_queue.queue = deque(data["ask_log_queue"])
 
             logger.info("Requests statistics loaded.")

@@ -34,10 +34,12 @@ class StatisticsMiddleware:
             end_time = time.time()
 
             user = None
+            user_id = None
             if "auth_user" in scope:
                 user = scope["auth_user"]
+                user_id = user.id
 
-            g.request_log_counter.count(user.id)
+            g.request_log_counter.count(user_id)
             # logger.debug(g.request_log_counter)
             # path = scope["root_path"] + scope["path"]
 

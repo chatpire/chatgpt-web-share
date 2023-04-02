@@ -35,7 +35,7 @@ class ChatGPTManager:
     def ask(self, message, conversation_id: str = None, parent_id: str = None,
             timeout=360, model_name: ChatModels=None):
         if model_name is not None and model_name != ChatModels.unknown:
-            self.chatbot.g.config["model"] = model_name.value
+            self.chatbot.config["model"] = model_name.value
         return self.chatbot.ask(message, conversation_id, parent_id, timeout)
 
     async def delete_conversation(self, conversation_id: str):
@@ -64,8 +64,8 @@ class ChatGPTManager:
 
     def reset_chat(self):
         self.chatbot.reset_chat()
-        if self.chatbot.g.config.get("model"):
-            self.chatbot.g.config["model"] = None
+        if self.chatbot.config.get("model"):
+            self.chatbot.config["model"] = None
 
 
 chatgpt_manager = ChatGPTManager()
