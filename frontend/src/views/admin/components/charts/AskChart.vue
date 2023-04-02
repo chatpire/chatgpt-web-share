@@ -1,6 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart v-if="props.askRecords?.length > 0" class="h-60" :option="option" :loading="props.loading" />
+    <v-chart class="h-60" :option="option" :loading="props.loading" />
   </div>
 </template>
 
