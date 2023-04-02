@@ -71,7 +71,7 @@ const version = 'v' + import.meta.env.PACKAGE_VERSION;
 console.log(route);
 
 const isInAdmin = computed(() => {
-  return route.name == 'admin';
+  return route.path.startsWith('/admin');
 })
 
 const themeIcon = computed(() => {
