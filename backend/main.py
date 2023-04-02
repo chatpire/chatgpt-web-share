@@ -35,7 +35,7 @@ from utils.proxy import close_reverse_proxy
 from utils.create_user import create_user
 
 import dateutil.parser
-from revChatGPT.typing import Error as revChatGPTError
+from revChatGPT.typings import Error as revChatGPTError
 
 setup_logger()
 

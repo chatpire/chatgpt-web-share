@@ -13,7 +13,7 @@ from starlette.responses import JSONResponse
 from pydantic.generics import GenericModel
 
 from api.exceptions import SelfDefinedException
-from revChatGPT.typing import Error as revChatGPTError
+from revChatGPT.typings import Error as revChatGPTError
 
 T = TypeVar('T')
 

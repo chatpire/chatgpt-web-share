@@ -21,7 +21,7 @@ from api.exceptions import InvalidParamsException, AuthorityDenyException
 from api.models import User, Conversation
 from api.schema import ConversationSchema
 from api.users import current_active_user, websocket_auth, current_super_user
-from revChatGPT.typing import Error as revChatGPTError
+from revChatGPT.typings import Error as revChatGPTError
 from api.response import response
 from utils.logger import get_logger
 
