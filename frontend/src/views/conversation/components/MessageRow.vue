@@ -193,7 +193,7 @@ pre {
 
 pre code {
   /* @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170 */
-  @apply w-0 flex-grow mr-0;
+  @apply w-0 flex-grow mr-0 font-mono;
 }
 
 @media print {
