@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
-from api.globals import config
+import api.globals as g
 from api.enums import ChatModels
 from utils.common import get_conversation_model
 
@@ -9,8 +9,8 @@ from utils.common import get_conversation_model
 class ChatGPTManager:
     def __init__(self):
         self.chatbot = AsyncChatbot({
-            "access_token": config.get("chatgpt_access_token"),
-            "paid": config.get("chatgpt_paid"),
+            "access_token": g.config.get("chatgpt_access_token"),
+            "paid": g.config.get("chatgpt_paid"),
         })
         self.semaphore = asyncio.Semaphore(1)
 
@@ -35,7 +35,7 @@ class ChatGPTManager:
     def ask(self, message, conversation_id: str = None, parent_id: str = None,
             timeout=360, model_name: ChatModels=None):
         if model_name is not None and model_name != ChatModels.unknown:
-            self.chatbot.config["model"] = model_name.value
+            self.chatbot.g.config["model"] = model_name.value
         return self.chatbot.ask(message, conversation_id, parent_id, timeout)
 
     async def delete_conversation(self, conversation_id: str):
@@ -64,5 +64,8 @@ class ChatGPTManager:
 
     def reset_chat(self):
         self.chatbot.reset_chat()
-        if self.chatbot.config.get("model"):
-            self.chatbot.config["model"] = None
+        if self.chatbot.g.config.get("model"):
+            self.chatbot.g.config["model"] = None
+
+
+chatgpt_manager = ChatGPTManager()

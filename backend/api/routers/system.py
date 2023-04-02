@@ -6,7 +6,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
 import api.globals as g
-from api.globals import config
+import api.globals as g
+
+config = g.config
 from api.database import get_async_session_context
 from api.enums import ChatStatus
 from api.models import User, Conversation
@@ -83,7 +85,7 @@ async def get_system_info(_user: User = Depends(current_super_user)):
 async def get_request_statistics(_user: User = Depends(current_super_user)):
     result = RequestStatistics(
         request_counts_interval=g.request_log_counter_interval,
-        request_counts=list(g.request_log_counter.counter.items()),
+        request_counts=dict(g.request_log_counter.counter),
         # request_counts=list([(2800612 + i, random.randint(1, 100)) for i in range(100)]),
         ask_records=list(g.ask_log_queue.queue)
     )

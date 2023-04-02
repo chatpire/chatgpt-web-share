@@ -6,10 +6,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette.websockets import WebSocket
 
 import api.exceptions
-from api.globals import config
+import api.globals as g
+
+config = g.config
 from typing import Optional
 
-from fastapi import Depends, Request
+from fastapi import Depends, Request, HTTPException
 from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID, schemas
 from fastapi_users.authentication import CookieTransport, AuthenticationBackend
 from fastapi_users.authentication import JWTStrategy
@@ -150,7 +152,7 @@ fastapi_users = FastAPIUsers[User, Integer](get_user_manager, [auth_backend])
 __current_active_user = fastapi_users.current_user(active=True)
 
 
-async def current_active_user(user: User = Depends(__current_active_user)):
+async def current_active_user(request: Request, user: User = Depends(__current_active_user)):
     current_time = datetime.utcnow()
     user.active_time = current_time
     try:
@@ -159,10 +161,16 @@ async def current_active_user(user: User = Depends(__current_active_user)):
             user_update.active_time = current_time
             session.add(user_update)
             await session.commit()
+        request.scope["auth_user"] = user
     except Exception as e:
-        logger.warning(e)
+        raise e
     finally:
         return user
 
 
-current_super_user = fastapi_users.current_user(active=True, superuser=True)
+# current_super_user = fastapi_users.current_user(active=True, superuser=True)
+
+async def current_super_user(user: User = Depends(current_active_user)):
+    if not user.is_superuser:
+        raise api.exceptions.AuthorityDenyException("You are not super user")
+    return user

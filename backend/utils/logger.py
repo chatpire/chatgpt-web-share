@@ -7,7 +7,8 @@ import api.globals as g
 
 import yaml
 
-from api.globals import config
+import api.globals as g
+config = g.config
 
 
 def get_log_config():

@@ -11,7 +11,8 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from alembic.config import Config
 from alembic import command
 
-from api.globals import config
+import api.globals as g
+config = g.config
 from api.models import Base, User
 
 from utils.logger import get_logger

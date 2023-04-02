@@ -7,3 +7,4 @@ files
 logs
 *.log
 ChatGPT-Proxy-V4
+*.json

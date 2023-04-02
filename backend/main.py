@@ -2,6 +2,7 @@ import asyncio
 import time
 from datetime import datetime
 
+import api.chatgpt
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from httpx import HTTPError
 import uvicorn
@@ -11,8 +12,10 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from api.globals import config
+import api.globals as g
+config = g.config
 import os
+import utils.store_statistics
 
 if config.get("chatgpt_base_url"):
     os.environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url")
@@ -95,6 +98,8 @@ async def on_startup():
     logger.info("database initialized")
     g.startup_time = time.time()
 
+    utils.store_statistics.load()
+
     if config.get("create_initial_admin_user", False):
         await create_user(config.get("initial_admin_username"),
                           "admin",
@@ -133,7 +138,7 @@ async def on_startup():
         return  # 跳过同步对话
     try:
         logger.debug(f"Using {os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
-        result = await g.chatgpt_manager.get_conversations()
+        result = await api.chatgpt.chatgpt_manager.get_conversations()
         logger.info(f"Fetched {len(result)} conversations")
         openai_conversations_map = {conv['id']: conv for conv in result}
         async with get_async_session_context() as session:
@@ -191,6 +196,7 @@ async def on_startup():
 @app.on_event("shutdown")
 async def on_shutdown():
     close_reverse_proxy()
+    utils.store_statistics.dump()
 
 
 # @api.get("/routes")

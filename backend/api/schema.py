@@ -1,5 +1,7 @@
 import uuid
 import datetime
+from typing import List
+
 from fastapi_users import schemas
 from pydantic import Field, BaseModel, validator
 
@@ -75,8 +77,8 @@ class ServerStatusSchema(BaseModel):
 
 class RequestStatistics(BaseModel):
     request_counts_interval: int
-    request_counts: list  # list of (timestamp // request_counts_interval, count) (2800591, 31)
-    ask_records: list  # list of (ask, time_used), timestamp. (('user', 1.5979), 1680355121.721198)
+    request_counts: dict[int, list]  # {timestage: [count, [user_ids]]}
+    ask_records: list  # list of (ask, time_used), timestamp.
 
 
 class SystemInfo(BaseModel):

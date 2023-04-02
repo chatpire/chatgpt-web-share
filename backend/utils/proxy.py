@@ -1,6 +1,7 @@
 import os.path
 import subprocess
-from api.globals import config
+import api.globals as g
+config = g.config
 import api.globals as g
 
 from utils.logger import get_logger
