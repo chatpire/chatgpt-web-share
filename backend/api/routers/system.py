@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
 import api.globals as g
-from api.config import config
+from api.globals import config
 from api.database import get_async_session_context
 from api.enums import ChatStatus
 from api.models import User, Conversation

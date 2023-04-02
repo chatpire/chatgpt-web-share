@@ -29,4 +29,3 @@ class Config:
 
 
 config_file = os.path.join(os.path.dirname(__file__), "config.yaml")
-config = Config(config_file)

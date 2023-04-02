@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette.websockets import WebSocket
 
 import api.exceptions
-from api.config import config
+from api.globals import config
 from typing import Optional
 
 from fastapi import Depends, Request

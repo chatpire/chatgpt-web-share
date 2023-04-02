@@ -1,9 +1,8 @@
 from api.chatgpt import ChatGPTManager
 from collections import deque
 
-from api.config import config
-from utils.time_counter import TimeCounter
-from utils.time_queue import TimeQueue
+from api.config import Config, config_file
+from utils.data_types import TimeCounter, TimeQueue
 
 chatgpt_manager = ChatGPTManager()
 
@@ -19,6 +18,7 @@ startup_time = None
 
 # request_statistics
 
+config = Config(config_file)
 request_log_counter_time_window = config.get("request_log_counter_time_window", 30 * 24 * 60 * 60)  # 30 days
 request_log_counter_interval = config.get("request_log_counter_interval", 10 * 60)  # 10 minutes
 request_log_counter = TimeCounter(

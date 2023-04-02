@@ -11,7 +11,7 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from api.config import config
+from api.globals import config
 import os
 
 if config.get("chatgpt_base_url"):

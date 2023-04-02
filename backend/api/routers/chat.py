@@ -9,7 +9,7 @@ from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
 import api.globals as g
-from api.config import config
+from api.globals import config
 from api.database import get_async_session_context
 from api.enums import ChatStatus, ChatModels
 from api.exceptions import InvalidParamsException, AuthorityDenyException

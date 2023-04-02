@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
-from api.config import config
+from api.globals import config
 from api.enums import ChatModels
 from utils.common import get_conversation_model
 
