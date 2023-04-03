@@ -5,6 +5,7 @@ from typing import List
 import httpx
 import requests
 from fastapi import APIRouter, Depends, WebSocket
+from websockets.exceptions import ConnectionClosed, ConnectionClosedOK
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
@@ -189,7 +190,6 @@ async def ask(websocket: WebSocket):
     其中：type 可以为 "waiting" / "message" / "title"
     """
 
-    start_time = time.time()
     await websocket.accept()
     user = await websocket_auth(websocket)
     logger.debug(f"{user.username} connected to websocket")
@@ -263,11 +263,21 @@ async def ask(websocket: WebSocket):
 
     websocket_code = 1001
     websocket_reason = "tips.terminated"
+
+    is_completed = False
+    # is_queueing = False
+    is_canceled = False
+    has_got_reply = False
+    queueing_time = 0
+    ask_time = 0
+
     try:
         # 标记用户为 queueing
         await change_user_chat_status(user.id, ChatStatus.queueing)
-
+        # is_queueing = True
+        queueing_start_time = time.time()
         async with api.chatgpt.chatgpt_manager.semaphore:
+            is_queueing = False
             await change_user_chat_status(user.id, ChatStatus.asking)
             await websocket.send_json({
                 "type": "waiting",
@@ -277,6 +287,7 @@ async def ask(websocket: WebSocket):
             try:
                 async for data in api.chatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,
                                                                   model_name):
+                    has_got_reply = True
                     reply = {
                         "type": "message",
                         "message": data["message"],
@@ -287,6 +298,37 @@ async def ask(websocket: WebSocket):
                     await websocket.send_json(reply)
                     if conversation_id is None:
                         conversation_id = data["conversation_id"]
+                is_completed = True
+            except ConnectionClosed as e:
+                # logger.debug("canceled by client")
+                if isinstance(e, ConnectionClosedOK):
+                    is_canceled = True
+                else:
+                    raise e
+            except requests.exceptions.Timeout:
+                await websocket.send_json({
+                    "type": "error",
+                    "tip": "errors.timeout"
+                })
+                websocket_code = 1001
+                websocket_reason = "errors.timout"
+            except revChatGPTError as e:
+                await websocket.send_json({
+                    "type": "error",
+                    "tip": "errors.chatgptResponseError",
+                    "message": f"{e.source} {e.code}: {e.message}"
+                })
+                websocket_code = 1001
+                websocket_reason = "errors.chatgptResponseError"
+            except HTTPError as e:
+                logger.error(str(e))
+                await websocket.send_json({
+                    "type": "error",
+                    "tip": "errors.httpError",
+                    "message": str(e)
+                })
+                websocket_code = 1014
+                websocket_reason = "errors.httpError"
             except Exception as e:
                 # 修复 message 为 None 时的错误
                 if str(e).startswith("Field missing"):
@@ -297,74 +339,77 @@ async def ask(websocket: WebSocket):
             finally:
                 ask_stop_time = time.time()
 
-                logger.debug(
-                    f"finish ask {conversation_id} ({model_name}), reply using : {ask_stop_time - ask_start_time}s")
+                queueing_time = ask_stop_time - queueing_start_time
+                queueing_time = round(queueing_time, 3)
+                if ask_start_time is not None:
+                    ask_time = ask_stop_time - ask_start_time
+                    ask_time = round(ask_time, 3)
+                else:
+                    ask_time = None
 
-            async with get_async_session_context() as session:
-                # 若新建了对话，则添加到数据库
-                if is_new_conv and conversation_id is not None:
-                    # 设置默认标题
-                    try:
-                        if new_title is not None:
-                            await api.chatgpt.chatgpt_manager.set_conversation_title(conversation_id, new_title)
-                    except Exception as e:
-                        logger.warning(e)
-                    finally:
-                        current_time = datetime.utcnow()
-                        conversation = Conversation(conversation_id=conversation_id, title=new_title, user_id=user.id,
-                                                    model_name=model_name, create_time=current_time,
-                                                    active_time=current_time)
+                if is_completed:
+                    logger.debug(
+                        f"finished ask {conversation_id} ({model_name}), user: {user.id}, "
+                        f"ask: {ask_time}s, queue: {queueing_time}s")
+                    websocket_code = 1000
+                    websocket_reason = "tips.finished"
+                elif is_canceled:
+                    if has_got_reply:
+                        logger.debug(
+                            f"canceled ask {conversation_id} ({model_name}) while replying, user: {user.id}, "
+                            f"ask: {ask_time}s, queue: {queueing_time}s")
+                    elif is_queueing:
+                        logger.debug(
+                            f"canceled ask {conversation_id} ({model_name}) while queueing, user: {user.id}, "
+                            f"queue: {queueing_time}s")
+                    else:
+                        logger.debug(
+                            f"canceled ask {conversation_id} ({model_name}) before replying, user: {user.id}, "
+                            f"queue: {queueing_time}s")
+                else:
+                    logger.debug(
+                        f"terminated ask {conversation_id} ({model_name}) because of error")
+
+            if has_got_reply:
+                async with get_async_session_context() as session:
+                    # 若新建了对话，则添加到数据库
+                    if is_new_conv and conversation_id is not None:
+                        # 设置默认标题
+                        try:
+                            if new_title is not None:
+                                await api.chatgpt.chatgpt_manager.set_conversation_title(conversation_id, new_title)
+                        except Exception as e:
+                            logger.warning(e)
+                        finally:
+                            current_time = datetime.utcnow()
+                            conversation = Conversation(conversation_id=conversation_id, title=new_title,
+                                                        user_id=user.id,
+                                                        model_name=model_name, create_time=current_time,
+                                                        active_time=current_time)
+                            session.add(conversation)
+                    # 更新 conversation
+                    if not is_new_conv:
+                        conversation = await session.get(Conversation, conversation.id)  # 此前的 conversation 属于另一个session
+                        conversation.active_time = datetime.utcnow()
+                        if conversation.model_name != model_name:
+                            conversation.model_name = model_name
                         session.add(conversation)
-                # 更新 conversation
-                if not is_new_conv:
-                    conversation = await session.get(Conversation, conversation.id)  # 此前的 conversation 属于另一个session
-                    conversation.active_time = datetime.utcnow()
-                    if conversation.model_name != model_name:
-                        conversation.model_name = model_name
-                    session.add(conversation)
 
-                # 扣除一次对话次数
-                # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
-                # 如果都有限制，则都要扣除一次
-                # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
-                if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
-                    user = await session.get(User, user.id)
-                    if user.available_ask_count != -1:
-                        assert user.available_ask_count > 0
-                        user.available_ask_count -= 1
-                    if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
-                        assert user.available_gpt4_ask_count > 0
-                        user.available_gpt4_ask_count -= 1
-                    session.add(user)
-                await session.commit()
+                    # 扣除一次对话次数
+                    # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
+                    # 如果都有限制，则都要扣除一次
+                    # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
+                    if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
+                        user = await session.get(User, user.id)
+                        if user.available_ask_count != -1:
+                            assert user.available_ask_count > 0
+                            user.available_ask_count -= 1
+                        if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
+                            assert user.available_gpt4_ask_count > 0
+                            user.available_gpt4_ask_count -= 1
+                        session.add(user)
+                    await session.commit()
 
-            websocket_code = 1000
-            websocket_reason = "tips.finished"
-
-    except requests.exceptions.Timeout:
-        await websocket.send_json({
-            "type": "error",
-            "tip": "errors.timeout"
-        })
-        websocket_code = 1001
-        websocket_reason = "errors.timout"
-    except revChatGPTError as e:
-        await websocket.send_json({
-            "type": "error",
-            "tip": "errors.chatgptResponseError",
-            "message": f"{e.source} {e.code}: {e.message}"
-        })
-        websocket_code = 1001
-        websocket_reason = "errors.chatgptResponseError"
-    except HTTPError as e:
-        logger.error(str(e))
-        await websocket.send_json({
-            "type": "error",
-            "tip": "errors.httpError",
-            "message": str(e)
-        })
-        websocket_code = 1014
-        websocket_reason = "errors.httpError"
     except Exception as e:
         logger.error(str(e))
         await websocket.send_json({
@@ -378,8 +423,8 @@ async def ask(websocket: WebSocket):
         await change_user_chat_status(user.id, ChatStatus.idling)
         api.chatgpt.chatgpt_manager.reset_chat()
         await websocket.close(websocket_code, websocket_reason)
-        stop_time = time.time()
 
         # 写入到 scope 中，供统计
-        g.ask_log_queue.enqueue(
-            (user.id, model_name.value, ask_stop_time - ask_start_time, stop_time - start_time))
+        if has_got_reply:
+            g.ask_log_queue.enqueue(
+                (user.id, model_name.value, ask_time, queueing_time))
