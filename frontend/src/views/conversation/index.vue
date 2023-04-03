@@ -48,8 +48,17 @@
         <!-- 下半部分 -->
         <div class="flex flex-col relative" :style="{ height: inputHeight }">
           <n-divider />
+          <!-- 暂停按钮 -->
+          <div class="flex w-full justify-center absolute -top-10">
+            <n-button @click="abortRequest" secondary strong type="error" size="small">
+              <template #icon>
+                <Stop />
+              </template>
+              {{ t("commons.abortRequest") }}
+            </n-button>
+          </div>
+          <!-- 回到底部按钮 -->
           <div class="right-4 -top-12 lg:-right-10 lg:-top-8 ml-1 absolute">
-            <!-- 回到底部按钮 -->
             <n-button @click="scrollToBottomSmooth" secondary circle size="small">
               <template #icon>
                 <ArrowDown />
@@ -130,7 +139,7 @@ import { askStreamApi } from '@/api/chat';
 
 import { useI18n } from 'vue-i18n';
 import { NButton, NEllipsis, NIcon, useThemeVars } from 'naive-ui';
-import { Add, ChatboxEllipses, LogoMarkdown, Print, Send, ArrowDown } from '@vicons/ionicons5';
+import { Add, ChatboxEllipses, LogoMarkdown, Print, Send, ArrowDown, Stop } from '@vicons/ionicons5';
 import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound } from '@vicons/material';
 import {
   dropdownRenderer,
@@ -350,10 +359,19 @@ const scrollToBottomSmooth = () => {
 const abortController = ref<AbortController | null>(null);
 const isAborted = ref(false);
 
+const abortRequest = () => {
+  if (!abortController) return;
+  abortController.value?.abort();
+  isAborted.value = true;
+}
+
 const sendMsg = async () => {
   if (sendDisabled.value || loadingBar.value) {
     return;
   }
+
+  isAborted.value = false;
+  abortController.value = new AbortController();
 
   LoadingBar.start();
   loadingBar.value = true;
@@ -439,8 +457,6 @@ const sendMsg = async () => {
       console.error(e, errorMessage);
     }
   };
-
-  abortController.value = new AbortController();
 
   console.log('Chat started');
 

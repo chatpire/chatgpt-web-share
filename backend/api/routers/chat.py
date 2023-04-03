@@ -12,6 +12,7 @@ from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.requests import Request
 
 import api.chatgpt
@@ -158,22 +159,6 @@ async def assign_conversation(username: str, conversation_id: str, _user: User =
     return response(200)
 
 
-async def change_user_chat_status(user_id: int, status: ChatStatus, session: AsyncSession = None):
-    async def do(ses):
-        user = await ses.get(User, user_id)
-        user.chat_status = status
-        ses.add(user)
-        await ses.commit()
-        await ses.refresh(user)
-        return user
-
-    if session is None:
-        async with get_async_session_context() as session:
-            return await do(session)
-    else:
-        return await do(session)
-
-
 @router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=ConversationSchema)
 async def generate_conversation_title(message_id: str,
                                       conversation: Conversation = Depends(get_conversation_by_uuid_depend)):
@@ -190,6 +175,16 @@ async def generate_conversation_title(message_id: str,
             raise InvalidParamsException(f"{result['message']}")
     result = jsonable_encoder(conversation)
     return result
+
+
+async def change_user_chat_status(user_id: int, status: ChatStatus):
+    async with get_async_session_context() as session:
+        user = await session.get(User, user_id)
+        user.chat_status = status
+        session.add(user)
+        await session.commit()
+        await session.refresh(user)
+    return user
 
 
 @router.post("/conv", tags=["conversation"], response_model=AskResponse)
@@ -240,100 +235,23 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
 
     logger.debug(f"User {user.username} start asking, model: {model_name}")
 
+    is_success = False
+    is_aborted = False
+    is_queueing = False
+    has_got_reply = False
+    queueing_start_time = None
+    ask_start_time = None
+
+    event = asyncio.Event()
+
     def ask_response(askResponse: AskResponse):
         return json.dumps((jsonable_encoder(askResponse))) + "\n"
 
-    async def streamer():
-        nonlocal user, conversation_id, parent_id, message, timeout, model_name, new_title, is_new_conv
+    async def post_process():
+        nonlocal user, conversation_id, new_title, is_new_conv
+        nonlocal is_success, is_aborted, has_got_reply
 
-        is_success = False
-        is_aborted = False
-        has_got_reply = False
-        queueing_start_time = time.time()
-
-        if api.chatgpt.chatgpt_manager.is_busy():
-            yield ask_response(AskResponse(type="waiting", tip="tips.queueing"))  # 通知用户正在排队
-
-        await change_user_chat_status(user.id, ChatStatus.queueing)
-
-        async with api.chatgpt.chatgpt_manager.semaphore:
-            is_queueing = False
-
-            await change_user_chat_status(user.id, ChatStatus.asking)
-
-            yield ask_response(AskResponse(type="waiting", tip="tips.waiting"))  # 通知用户正在等待回复
-
-            ask_start_time = time.time()
-
-            try:
-                async for data in api.chatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,
-                                                                  model_name):
-                    if conversation_id is None:
-                        conversation_id = data["conversation_id"]
-                    has_got_reply = True
-                    yield ask_response(AskResponse(
-                        type="message",
-                        message=data["message"],
-                        conversation_id=data["conversation_id"],
-                        parent_id=data["parent_id"],
-                        model_name=data["model"],
-                    ))
-                is_success = True
-            except asyncio.CancelledError:
-                is_aborted = True
-            except requests.exceptions.Timeout as e:
-                yield ask_response(AskResponse(
-                    type="error",
-                    tip="errors.chatgptResponseError",
-                    message=f"{e.source} {e.code}: {e.message}"
-                ))
-            except revChatGPTError as e:
-                yield ask_response(AskResponse(
-                    type="error",
-                    tip="errors.chatgptResponseError",
-                    message=f"{e.source} {e.code}: {e.message}"
-                ))
-            except HTTPError as e:
-                logger.error(str(e))
-                yield ask_response(AskResponse(
-                    type="error",
-                    tip="errors.httpError",
-                    message=str(e)
-                ))
-            except Exception as e:
-                # 修复 message 为 None 时的错误
-                if str(e).startswith("Field missing"):
-                    logger.warning(str(e))
-                else:
-                    logger.error(str(e))
-                    yield ask_response(AskResponse(
-                        type="error",
-                        tip="errors.unknownError",
-                        message=str(e)
-                    ))
-
-        stop_time = time.time()
-        queueing_duration = stop_time - queueing_start_time
-        if ask_start_time is not None:
-            ask_duration = stop_time - ask_start_time
-        else:
-            ask_duration = None
-
-        if is_success:
-            logger.debug(
-                f"finished ask {conversation_id} ({model_name}). "
-                f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
-        elif is_aborted:
-            if is_queueing:
-                logger.info(f"ask {conversation_id} ({model_name}) cancelled by user while queueing. "
-                            f"queueing: {queueing_duration:.2f}s")
-            else:
-                logger.info(f"ask {conversation_id} ({model_name}) cancelled by user. "
-                            f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
-        else:
-            logger.debug(
-                f"finished ask {conversation_id} ({model_name}), but reply failed. "
-                f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
+        user = await change_user_chat_status(user.id, ChatStatus.idling)
 
         try:
             if is_success or (is_aborted and has_got_reply):
@@ -356,7 +274,8 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
                             ses.add(conv)
                     # 更新 conversation
                     if not is_new_conv:
-                        conv = await get_conversation_by_uuid(conversation_id, ses)  # 此前的 conversation 属于另一个session
+                        conv = await get_conversation_by_uuid(conversation_id,
+                                                              ses)  # 此前的 conversation 属于另一个session
                         conv.active_time = datetime.utcnow()
                         if conv.model_name != model_name:
                             conv.model_name = model_name
@@ -375,21 +294,116 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
                             user.available_gpt4_ask_count -= 1
                         ses.add(user)
                     await ses.commit()
+        except Exception as e:
+            logger.error(str(e))
+            raise e
+            # if not is_aborted:
+            #     yield ask_response(AskResponse(
+            #         type="error",
+            #         tip="errors.unknownError",
+            #         message=str(e)
+            #     ))
 
+    async def streamer():
+        nonlocal user, conversation_id, parent_id, message, timeout, model_name, new_title, is_new_conv
+        nonlocal queueing_start_time, ask_start_time
+        nonlocal is_success, is_aborted, has_got_reply, is_queueing
+
+        try:
+            queueing_start_time = time.time()
+
+            if api.chatgpt.chatgpt_manager.is_busy():
+                is_queueing = True
+                yield ask_response(AskResponse(type="waiting", tip="tips.queueing"))  # 通知用户正在排队
+
+            await change_user_chat_status(user.id, ChatStatus.queueing)
+            async with api.chatgpt.chatgpt_manager.semaphore:
+                is_queueing = False
+                await change_user_chat_status(user.id, ChatStatus.asking)
+                yield ask_response(AskResponse(type="waiting", tip="tips.waiting"))  # 通知用户正在等待回复
+                ask_start_time = time.time()
+                try:
+                    async for data in api.chatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,
+                                                                      model_name):
+                        if conversation_id is None:
+                            conversation_id = data["conversation_id"]
+                        has_got_reply = True
+                        print("got reply")
+                        yield ask_response(AskResponse(
+                            type="message",
+                            message=data["message"],
+                            conversation_id=data["conversation_id"],
+                            parent_id=data["parent_id"],
+                            model_name=data["model"],
+                        ))
+                    is_success = True
+                except requests.exceptions.Timeout as e:
+                    yield ask_response(AskResponse(
+                        type="error",
+                        tip="errors.chatgptResponseError",
+                        message=f"{e.source} {e.code}: {e.message}"
+                    ))
+                except revChatGPTError as e:
+                    yield ask_response(AskResponse(
+                        type="error",
+                        tip="errors.chatgptResponseError",
+                        message=f"{e.source} {e.code}: {e.message}"
+                    ))
+                except HTTPError as e:
+                    logger.error(str(e))
+                    yield ask_response(AskResponse(
+                        type="error",
+                        tip="errors.httpError",
+                        message=str(e)
+                    ))
+                except Exception as e:
+                    # 修复 message 为 None 时的错误
+                    if str(e).startswith("Field missing"):
+                        logger.warning(str(e))
+                    else:
+                        logger.error(str(e))
+                        yield ask_response(AskResponse(
+                            type="error",
+                            tip="errors.unknownError",
+                            message=str(e)
+                        ))
+        except asyncio.CancelledError:
+            is_aborted = True
+        finally:
             stop_time = time.time()
+            queueing_duration = stop_time - queueing_start_time
+            if ask_start_time is not None:
+                ask_duration = stop_time - ask_start_time
+            else:
+                ask_duration = None
+
+            if is_success:
+                logger.debug(
+                    f"finished ask {conversation_id} ({model_name}). "
+                    f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
+            elif is_aborted:
+                if is_queueing:
+                    logger.info(f"ask {conversation_id} ({model_name}) cancelled by user while queueing. "
+                                f"queueing: {queueing_duration:.2f}s")
+                elif not has_got_reply:
+                    logger.info(f"ask {conversation_id} ({model_name}) cancelled by user while waiting for reply. "
+                                f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
+                else:
+                    logger.info(f"ask {conversation_id} ({model_name}) cancelled by user. "
+                                f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
+            else:
+                logger.debug(
+                    f"finished ask {conversation_id} ({model_name}), but reply failed. "
+                    f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
 
             # 写入到 scope 中，供统计
             g.ask_log_queue.enqueue(
                 (user.id, model_name.value, stop_time - ask_start_time, stop_time - start_time))
-        except Exception as e:
-            logger.error(str(e))
-            yield ask_response(AskResponse(
-                type="error",
-                tip="errors.unknownError",
-                message=str(e)
-            ))
-        finally:
-            await change_user_chat_status(user.id, ChatStatus.idling)
             api.chatgpt.chatgpt_manager.reset_chat()
+
+            if not is_aborted:
+                await post_process()
+            else:
+                asyncio.create_task(post_process())
 
     return StreamingResponse(streamer(), media_type="application/x-ndjson")
