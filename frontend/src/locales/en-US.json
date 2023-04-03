@@ -101,7 +101,8 @@
     "gpt4AskCount": "GPT-4 Model Ask Count",
     "askRequestsCount": "Ask Count",
     "sumOfGpt4AskDuration": "Total time spent on GPT-4 dialogue",
-    "sumOfNormalAskDuration": "The total time spent on ordinary conversations"
+    "sumOfNormalAskDuration": "The total time spent on ordinary conversations",
+    "abortRequest": "Abort Request"
   },
   "errors": {
     "403": "403 error: access denied",
