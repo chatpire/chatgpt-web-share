@@ -212,12 +212,6 @@ ul {
   padding-left: 16px;
 }
 
-.message-content p,
-li,
-td {
-  @apply whitespace-pre-line;
-}
-
 .message-content table {
   border: gray 1px solid;
   @apply min-w-1/2 text-center border-collapse;
