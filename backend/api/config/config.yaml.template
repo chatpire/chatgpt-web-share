@@ -32,3 +32,4 @@ console_log_level: INFO
 
 request_log_counter_time_window: 2592000  # 30 days
 request_log_counter_interval: 1800  # 30 minutes
+ask_log_time_window: 2592000  # 30 days
