@@ -1,5 +1,17 @@
 <template>
-  <n-card :title="t('commons.serverOverview')">
+  <n-card>
+    <template #header>
+      <div class="flex flex-row space-x-2">
+        <n-text>{{ t('commons.serverOverview') }}</n-text>
+        <n-button text @click="$emit('refresh')">
+          <template #icon>
+            <n-icon>
+              <RefreshFilled />
+            </n-icon>
+          </template>
+        </n-button>
+      </div>
+    </template>
     <div class="grid grid-cols-3 md:grid-cols-5 gap-4">
       <n-statistic v-for="item in statistics" :key="item.label" :label="item.label" :value="item.value">
         <template #prefix v-if="item.prefixIcon">
@@ -17,15 +29,19 @@
 
 
 <script setup lang="ts">
-import { getSystemInfoApi } from '@/api/system';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ServerStatusSchema, SystemInfo } from '@/types/schema';
+import { RefreshFilled } from '@vicons/material';
 const { t } = useI18n();
 
 const props = defineProps<{
   systemInfo?: SystemInfo;
   serverStatus?: ServerStatusSchema;
+}>();
+
+const emits = defineEmits<{
+  refresh: () => void;
 }>();
 
 function hoursSince(timestamp?: number) {

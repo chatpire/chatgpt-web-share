@@ -162,6 +162,15 @@ async def change_user_chat_status(user_id: int, status: ChatStatus):
     return user
 
 
+@router.delete("/conv", tags=["conversation"])
+async def delete_all_conversation(_user: User = Depends(current_super_user)):
+    await api.chatgpt.chatgpt_manager.clear_conversations()
+    async with get_async_session_context() as session:
+        await session.execute(delete(Conversation))
+        await session.commit()
+    return response(200)
+
+
 @router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=ConversationSchema)
 async def generate_conversation_title(message_id: str, conversation: Conversation = Depends(get_conversation_by_id)):
     if conversation.title is not None:

@@ -62,7 +62,7 @@
     "vanishOrphanConversations": "销毁所有无用户归属的会话",
     "empty": "无",
     "chooseUser": "选择用户",
-    "chooseUserToAssign": "分配当前对话给用户",
+    "chooseUserToAssign": "分配给用户",
     "withdrawMessage": "撤回消息",
     "status": "状态",
     "askingChatStatus": "回复中",
@@ -102,7 +102,9 @@
     "askRequestsCount": "对话次数",
     "sumOfNormalAskDuration": "普通对话总耗时",
     "sumOfGpt4AskDuration": "GPT-4对话总耗时",
-    "abortRequest": "停止请求"
+    "abortRequest": "停止请求",
+    "clearAllConversations": "清空所有对话",
+    "readyToClearAllConversations": "警告：你即将要清空所有对话，这将销毁所有对话数据。确定要清空所有对话吗？"
   },
   "errors": {
     "403": "403 错误：无访问权限",

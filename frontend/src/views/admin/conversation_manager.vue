@@ -1,31 +1,43 @@
 <template>
-  <div class="mb-4 mt-1 flex flex-row justify-between">
-    <n-button @click="handleVanishAllInvalidConversations"> {{ $t("commons.deleteInvalidConversations") }} </n-button>
-    <div class="space-x-2" v-show="checkedRowKeys.length !== 0">
-      <n-button type="warning" secondary @click="handleInvalidateConversations">
+  <div class="mb-4 mt-1 ml-1 flex flex-row justify-between space-x-2">
+    <div>
+      <n-button circle @click="refreshData">
         <template #icon>
           <n-icon>
-            <EmojiFlagsFilled />
+            <RefreshFilled />
           </n-icon>
         </template>
-        {{ $t("commons.invalidateConversation") }}
       </n-button>
-      <n-button type="error" secondary @click="handleVanishConversations">
-        <template #icon>
-          <n-icon>
-            <TrashOutline />
-          </n-icon>
-        </template>
-        {{ $t("commons.vanishConversation") }}
-      </n-button>
-      <n-button type="info" secondary @click="handleAssignConversations">
-        <template #icon>
-          <n-icon>
-            <PersonAddAlt1Filled />
-          </n-icon>
-        </template>
-        {{ $t("commons.chooseUserToAssign") }}
-      </n-button>
+      <div class="space-x-2" v-show="checkedRowKeys.length !== 0">
+        <n-button type="warning" secondary @click="handleInvalidateConversations">
+          <template #icon>
+            <n-icon>
+              <EmojiFlagsFilled />
+            </n-icon>
+          </template>
+          {{ $t("commons.invalidateConversation") }}
+        </n-button>
+        <n-button type="error" secondary @click="handleVanishConversations">
+          <template #icon>
+            <n-icon>
+              <TrashOutline />
+            </n-icon>
+          </template>
+          {{ $t("commons.vanishConversation") }}
+        </n-button>
+        <n-button type="info" secondary @click="handleAssignConversations">
+          <template #icon>
+            <n-icon>
+              <PersonAddAlt1Filled />
+            </n-icon>
+          </template>
+          {{ $t("commons.chooseUserToAssign") }}
+        </n-button>
+      </div>
+    </div>
+    <div class="space-x-2">
+      <n-button @click="handleVanishAllInvalidConversations"> {{ $t("commons.deleteInvalidConversations") }} </n-button>
+      <n-button @click="handleClearAllConversations" type="error"> {{ $t("commons.clearAllConversations") }} </n-button>
     </div>
   </div>
   <n-data-table size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
@@ -41,9 +53,9 @@ import { ConversationSchema } from '@/types/schema';
 import { useI18n } from 'vue-i18n';
 import { Dialog, Message } from '@/utils/tips';
 import { TrashOutline } from '@vicons/ionicons5';
-import { EmojiFlagsFilled, PersonAddAlt1Filled } from '@vicons/material';
+import { EmojiFlagsFilled, PersonAddAlt1Filled, RefreshFilled } from '@vicons/material';
 import UserSelector from './components/UserSelector.vue';
-import { assignConversationToUserApi, deleteConversationApi, getAllConversationsApi, vanishConversationApi } from '@/api/chat';
+import { assignConversationToUserApi, clearAllConversationApi, deleteConversationApi, getAllConversationsApi, vanishConversationApi } from '@/api/chat';
 import { getModelNameTrans, modelNameMap } from '@/utils/renders';
 
 const { t } = useI18n();
@@ -52,9 +64,13 @@ const data = ref<Array<ConversationSchema>>([]);
 const rowKey = (row: ConversationSchema) => row.conversation_id;
 const checkedRowKeys = ref<Array<string>>([]);
 
-getAllConversationsApi(true).then(res => {
-  data.value = res.data;
-})
+const refreshData = () => {
+  getAllConversationsApi(true).then(res => {
+    data.value = res.data;
+  })
+}
+
+refreshData();
 
 const columns: DataTableColumns<ConversationSchema> = [
   {
@@ -89,7 +105,7 @@ const columns: DataTableColumns<ConversationSchema> = [
         target: '_blank'
       }, {
         default: () => row.title ? row.title : t("commons.empty")
-    // }
+        // }
       })
     }
   },
@@ -155,9 +171,7 @@ const handleInvalidateConversations = () => {
         }
         action().then(() => {
           Message.success(t("tips.deleteConversationSuccess"))
-          getAllConversationsApi(true).then(res => {
-            data.value = res.data;
-          })
+          refreshData();
           resolve(true)
         }).catch((err) => {
           Message.error(t("tips.deleteConversationFailed") + ": " + err)
@@ -187,9 +201,7 @@ const handleVanishConversations = () => {
         }
         action().then(() => {
           Message.success(t("tips.success"))
-          getAllConversationsApi(true).then(res => {
-            data.value = res.data;
-          })
+          refreshData();
           checkedRowKeys.value = [];
           resolve(true)
         }).catch((err) => {
@@ -230,9 +242,7 @@ const handleAssignConversations = () => {
         }
         action().then(() => {
           Message.success(t("tips.success"))
-          getAllConversationsApi(true).then(res => {
-            data.value = res.data;
-          })
+          refreshData();
           checkedRowKeys.value = [];
           resolve(true)
         }).catch((err) => {
@@ -266,6 +276,32 @@ const handleVanishAllInvalidConversations = () => {
       return new Promise((resolve, reject) => {
         action().then(() => {
           Message.success(t("tips.deleteConversationSuccess"))
+          refreshData();
+          checkedRowKeys.value = [];
+          resolve(true)
+        }).catch((err) => {
+          Message.error(t("tips.deleteConversationFailed"))
+          reject()
+        }).finally(() => {
+          d.loading = false;
+        })
+      })
+    }
+  })
+}
+
+const handleClearAllConversations = () => {
+  const d = Dialog.error({
+    title: t("commons.clearAllConversations"),
+    content: t("commons.readyToClearAllConversations"),
+    positiveText: t("commons.confirm"),
+    negativeText: t("commons.cancel"),
+    onPositiveClick: () => {
+      d.loading = true
+      return new Promise((resolve, reject) => {
+        clearAllConversationApi().then(() => {
+          Message.success(t("tips.deleteConversationSuccess"))
+          refreshData();
           checkedRowKeys.value = [];
           resolve(true)
         }).catch((err) => {

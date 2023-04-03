@@ -85,7 +85,7 @@ function makeDataset(askRecords: AskRecord[]) {
   function calculateStats(records: AskRecord[]): StatRecord[] {
     const stats: StatRecord[] = [];
     let currentTimestamp = alignedEarliestTimestamp;
-    console.log('currentTimestamp', currentTimestamp, new Date(currentTimestamp).toLocaleString())
+    // console.log('currentTimestamp', currentTimestamp, new Date(currentTimestamp).toLocaleString())
     while (currentTimestamp < alignedLatestTimestamp) {
       const recordsInInterval = records.filter(record => record[1] * 1000 >= currentTimestamp && record[1] * 1000 < currentTimestamp + 1800 * 1000);
 
@@ -312,12 +312,12 @@ const option = computed(() => {
   }
 })
 
-watchEffect(() => {
+// watchEffect(() => {
   console.log('props', props.askRecords);
   // console.log('xAxis', xAxis.value);
   // console.log('totalRequestsCountData', totalRequestsCountData.value);
   // console.log('datasetSource', datasetSource.value);
   // console.log('users', props.users)
-  console.log('option', option.value);
-});
+//   console.log('option', option.value);
+// });
 </script>

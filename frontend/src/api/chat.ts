@@ -16,6 +16,10 @@ export function deleteConversationApi(conversation_id: string) {
   return axios.delete(ApiUrl.Conversation + "/" + conversation_id);
 }
 
+export function clearAllConversationApi() {
+  return axios.delete(ApiUrl.Conversation);
+}
+
 export function vanishConversationApi(conversation_id: string) {
   return axios.delete(ApiUrl.Conversation + "/" + conversation_id + "/vanish");
 }

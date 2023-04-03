@@ -62,7 +62,7 @@
     "vanishOrphanConversations": "Destroy all conversations without a user",
     "empty": "Empty",
     "chooseUser": "Choose user",
-    "chooseUserToAssign": "Assign current conversation to user",
+    "chooseUserToAssign": "Assign to user",
     "withdrawMessage": "Withdraw message",
     "askingChatStatus": "Asking",
     "queueingChatStatus": "Queuing",
@@ -102,7 +102,9 @@
     "askRequestsCount": "Ask Count",
     "sumOfGpt4AskDuration": "Total time spent on GPT-4 dialogue",
     "sumOfNormalAskDuration": "The total time spent on ordinary conversations",
-    "abortRequest": "Abort Request"
+    "abortRequest": "Abort Request",
+    "clearAllConversations": "Clear All Conversations",
+    "readyToClearAllConversations": "Are you sure you want to clear all conversations?"
   },
   "errors": {
     "403": "403 error: access denied",

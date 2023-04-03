@@ -1,13 +1,13 @@
 <template>
-  <div class="mb-4 flex flex-row space-x-2">
-    <n-button type="primary" @click="handleAddUser"> {{ $t("commons.addUser") }} </n-button>
-    <n-button text @click="refreshData"> 
+  <div class="mb-4 mt-1 ml-1 flex flex-row space-x-2 justify-between">
+    <n-button circle @click="refreshData"> 
       <template #icon>
         <n-icon>
           <RefreshFilled />
         </n-icon>
       </template>
     </n-button>
+    <n-button type="primary" @click="handleAddUser"> {{ $t("commons.addUser") }} </n-button>
   </div>
 
   <n-data-table :scroll-x="1400" size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
@@ -38,7 +38,7 @@ const data = ref<Array<UserRead>>([]);
 const refreshData = () => {
   getAllUserApi().then(res => {
     data.value = res.data;
-    Message.success(t("tips.refreshed"));
+    // Message.success(t("tips.refreshed"));
   })
 }
 
