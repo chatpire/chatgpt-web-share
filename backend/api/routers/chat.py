@@ -327,8 +327,9 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
                                                                       model_name):
                         if conversation_id is None:
                             conversation_id = data["conversation_id"]
+                        if not has_got_reply:
+                            print("got reply")
                         has_got_reply = True
-                        print("got reply")
                         yield ask_response(AskResponse(
                             type="message",
                             message=data["message"],
