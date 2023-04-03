@@ -25,6 +25,7 @@ def dump():
 def load():
     path = g.config.get("data_dir", g.config.get("log_dir", "."))
     path = os.path.join(path, "statistics.json")
+    logger.debug(f"loading statistics from {path}")
     try:
         with open(path, "r") as f:
             data = json.load(f)
