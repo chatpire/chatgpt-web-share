@@ -1,7 +1,8 @@
 print_sql: false
 host: "127.0.0.1"
 port: 8000
-database_url: "sqlite+aiosqlite:///database.db"
+data_dir: ./data
+database_url: "sqlite+aiosqlite:///data/database.db"
 run_migration: false
 jwt_secret: "SECRET"
 jwt_lifetime_seconds: 86400
