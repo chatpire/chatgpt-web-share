@@ -424,11 +424,11 @@ async def ask(websocket: WebSocket):
                 session.add(user)
             await session.commit()
 
-        await change_user_chat_status(user.id, ChatStatus.idling)
-        api.chatgpt.chatgpt_manager.reset_chat()
-        await websocket.close(websocket_code, websocket_reason)
+    await change_user_chat_status(user.id, ChatStatus.idling)
+    api.chatgpt.chatgpt_manager.reset_chat()
+    await websocket.close(websocket_code, websocket_reason)
 
-        # 写入到 scope 中，供统计
-        if has_got_reply:
-            g.ask_log_queue.enqueue(
-                (user.id, model_name.value, ask_time, queueing_time))
+    # 写入到 scope 中，供统计
+    if has_got_reply:
+        g.ask_log_queue.enqueue(
+            (user.id, model_name.value, ask_time, queueing_time))
