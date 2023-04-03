@@ -17,6 +17,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import api.globals as g
 import os
 import utils.store_statistics
+from utils.sync_conversations import sync_conversations
 
 config = g.config
 
@@ -97,16 +98,11 @@ async def validation_exception_handler(request, exc):
 
 @app.on_event("startup")
 async def on_startup():
-
     await create_db_and_tables()
     logger.info("database initialized")
     g.startup_time = time.time()
 
     utils.store_statistics.load()
-
-    @aiocron.crontab('*/5 * * * *', loop=asyncio.get_event_loop())
-    async def dump_stats():
-        utils.store_statistics.dump(print_log=False)
 
     if config.get("create_initial_admin_user", False):
         await create_user(config.get("initial_admin_username"),
@@ -140,64 +136,26 @@ async def on_startup():
         run_reverse_proxy()
         await asyncio.sleep(2)  # 等待 Proxy Server 启动
 
+    logger.info(f"Using {os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
+
     # 获取 ChatGPT 对话，并同步数据库
     if not config.get("sync_conversations_on_startup", True):
         logger.info("Sync conversations on startup disabled. Jumping...")
         return  # 跳过同步对话
-    try:
-        logger.debug(f"Using {os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
-        result = await api.chatgpt.chatgpt_manager.get_conversations()
-        logger.info(f"Fetched {len(result)} conversations")
-        openai_conversations_map = {conv['id']: conv for conv in result}
-        async with get_async_session_context() as session:
-            r = await session.execute(select(Conversation))
-            results = r.scalars().all()
+    else:
+        await sync_conversations()
 
-            for conv_db in results:
-                openai_conv = openai_conversations_map.get(conv_db.conversation_id, None)
-                if openai_conv:
-                    # 同步标题
-                    if openai_conv["title"] != conv_db.title:
-                        conv_db.title = openai_conv["title"]
-                        logger.info(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
-                        session.add(conv_db)
-                    # 同步时间
-                    create_time = dateutil.parser.isoparse(openai_conv["create_time"])
-                    if create_time != conv_db.create_time:
-                        conv_db.create_time = create_time
-                        logger.info(
-                            f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
-                        session.add(conv_db)
-                    openai_conversations_map.pop(conv_db.conversation_id)
-                else:
-                    if conv_db.is_valid:  # 若数据库中存在，但 ChatGPT 中不存在，则将数据库中的对话标记为无效
-                        conv_db.is_valid = False
-                        logger.info(
-                            f"Conversation [{conv_db.title}]({conv_db.conversation_id}) is not valid, marked as invalid")
-                        session.add(conv_db)
+    @aiocron.crontab('*/5 * * * *', loop=asyncio.get_event_loop())
+    async def dump_stats():
+        utils.store_statistics.dump(print_log=False)
 
-            # 新增对话
-            for openai_conv in openai_conversations_map.values():
-                new_conv = Conversation(
-                    conversation_id=openai_conv["id"],
-                    title=openai_conv["title"],
-                    is_valid=True,
-                    create_time=dateutil.parser.isoparse(openai_conv["create_time"])
-                )
-                session.add(new_conv)
-                logger.info(
-                    f"Conversation [{new_conv.title}]({new_conv.conversation_id}) not recorded, added to database")
+    if config.get("sync_conversations_regularly", True):
+        logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
 
-            await session.commit()
-    except revChatGPTError as e:
-        logger.error(f"Fetch conversation error (ChatGPTError): {e.source} {e.code}: {e.message}")
-        logger.warning("Sync conversations on startup failed!")
-    except HTTPError as e:
-        logger.error(f"Fetch conversation error (httpx.HTTPError): {str(e)}")
-        logger.warning("Sync conversations on startup failed!")
-    except Exception as e:
-        logger.error(f"Fetch conversation error (unknown): {str(e)}")
-        logger.warning("Sync conversations on startup failed!")
+        # 默认每隔 12 小时同步一次
+        @aiocron.crontab('0 */12 * * *', loop=asyncio.get_event_loop())
+        async def sync_conversations_regularly():
+            await sync_conversations()
 
 
 # 关闭时
