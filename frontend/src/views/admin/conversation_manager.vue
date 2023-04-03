@@ -181,7 +181,8 @@ const handleVanishConversations = () => {
       return new Promise((resolve, reject) => {
         const action = async () => {
           for (const conversation_id of checkedRowKeys.value) {
-            await vanishConversationApi(conversation_id)
+            await vanishConversationApi(conversation_id);
+            await new Promise(resolve => setTimeout(resolve, 200));
           }
         }
         action().then(() => {
@@ -257,6 +258,7 @@ const handleVanishAllInvalidConversations = () => {
         for (const conversation of data.value) {
           if (!conversation.is_valid) {
             await vanishConversationApi(conversation.conversation_id!)
+            await new Promise(resolve => setTimeout(resolve, 200))
           }
         }
         data.value = data.value.filter(conversation => conversation.is_valid)
