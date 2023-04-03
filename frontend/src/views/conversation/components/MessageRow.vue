@@ -14,13 +14,14 @@
       <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
       <div v-show="showRawContent" class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
-        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-3 right-3 md:bottom-1 md:right-1" @click="copyMessageContent">
+        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-3 right-3 md:bottom-1 md:right-1"
+          @click="copyMessageContent">
           <n-icon>
             <CopyOutline />
           </n-icon>
         </n-button>
-        <n-button text ghost size="tiny" :type="showRawContent ? 'success' : 'tertiary'" class="mt-2 -ml-2 absolute bottom-3 right-9 md:bottom-1 md:right-5"
-          @click="toggleShowRawContent">
+        <n-button text ghost size="tiny" :type="showRawContent ? 'success' : 'tertiary'"
+          class="mt-2 -ml-2 absolute bottom-3 right-9 md:bottom-1 md:right-5" @click="toggleShowRawContent">
           <n-icon>
             <CodeSlash />
           </n-icon>
@@ -211,6 +212,12 @@ ul {
   padding-left: 16px;
 }
 
+.message-content p,
+li,
+td {
+  @apply whitespace-pre-line;
+}
+
 .message-content table {
   border: gray 1px solid;
   @apply min-w-1/2 text-center border-collapse;
@@ -292,5 +299,4 @@ ul {
   white-space: nowrap;
   width: 1px;
   color: #2d2b57;
-}
-</style>
+}</style>
