@@ -195,6 +195,7 @@ async def on_startup():
 # 关闭时
 @app.on_event("shutdown")
 async def on_shutdown():
+    logger.info("On shutdown...")
     close_reverse_proxy()
     utils.store_statistics.dump()
 
