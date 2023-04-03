@@ -129,7 +129,8 @@
     "maxConversationCountReached": "会话数量已达上限",
     "cannotConnectMoreThanOneClient": "当前用户已有对话等待回复，不能再次请求",
     "noUserSelected": "未选择用户",
-    "httpError": "HTTP错误"
+    "httpError": "HTTP错误",
+    "invalidRequest": "请求无效"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
@@ -170,7 +171,8 @@
     "pleaseSelectConversation": "请先选择一个对话",
     "pressEscToExitFullscreen": "已进入全屏，单击Esc退出全屏",
     "refreshed": "已刷新",
-    "autoScrolling": "自动滚动"
+    "autoScrolling": "自动滚动",
+    "aborted": "已停止对话"
   },
   "labels": {
     "nickname": "昵称",

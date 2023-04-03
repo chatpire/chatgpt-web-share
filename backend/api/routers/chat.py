@@ -11,6 +11,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
 import api.chatgpt
@@ -33,10 +34,15 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 
-async def get_conversation_by_id(conversation_id: str, user: User = Depends(current_active_user)):
+async def get_conversation_by_uuid(conversation_id: str, session: AsyncSession):
+    r = await session.execute(select(Conversation).where(Conversation.conversation_id == conversation_id))
+    conversation = r.scalars().one_or_none()
+    return conversation
+
+
+async def get_conversation_by_uuid_depend(conversation_id: str, user: User = Depends(current_active_user)):
     async with get_async_session_context() as session:
-        r = await session.execute(select(Conversation).where(Conversation.conversation_id == conversation_id))
-        conversation = r.scalars().one_or_none()
+        conversation = await get_conversation_by_uuid(conversation_id, session)
         if conversation is None:
             raise InvalidParamsException("errors.conversationNotFound")
         if not user.is_superuser and conversation.user_id != user.id:
@@ -67,7 +73,7 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
 
 
 @router.get("/conv/{conversation_id}", tags=["conversation"])
-async def get_conversation_history(conversation: Conversation = Depends(get_conversation_by_id)):
+async def get_conversation_history(conversation: Conversation = Depends(get_conversation_by_uuid_depend)):
     result = await api.chatgpt.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
     # 当不知道模型名时，顺便从对话中获取
     if conversation.model_name is None:
@@ -82,7 +88,7 @@ async def get_conversation_history(conversation: Conversation = Depends(get_conv
 
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
-async def delete_conversation(conversation: Conversation = Depends(get_conversation_by_id)):
+async def delete_conversation(conversation: Conversation = Depends(get_conversation_by_uuid_depend)):
     """remove conversation from database and chatgpt server"""
     if not conversation.is_valid:
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
@@ -101,7 +107,7 @@ async def delete_conversation(conversation: Conversation = Depends(get_conversat
 
 
 @router.delete("/conv/{conversation_id}/vanish", tags=["conversation"])
-async def vanish_conversation(conversation: Conversation = Depends(get_conversation_by_id)):
+async def vanish_conversation(conversation: Conversation = Depends(get_conversation_by_uuid_depend)):
     # try:
     #     await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
     # except revChatGPTError as e:
@@ -124,7 +130,7 @@ async def vanish_conversation(conversation: Conversation = Depends(get_conversat
 
 
 @router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationSchema)
-async def change_conversation_title(title: str, conversation: Conversation = Depends(get_conversation_by_id)):
+async def change_conversation_title(title: str, conversation: Conversation = Depends(get_conversation_by_uuid_depend)):
     await api.chatgpt.chatgpt_manager.set_conversation_title(conversation.conversation_id,
                                                              title)
     async with get_async_session_context() as session:
@@ -143,9 +149,7 @@ async def assign_conversation(username: str, conversation_id: str, _user: User =
         user = user.scalars().one_or_none()
         if user is None:
             raise InvalidParamsException("errors.userNotFound")
-        conversation = await session.execute(
-            select(Conversation).where(Conversation.conversation_id == conversation_id))
-        conversation = conversation.scalars().one_or_none()
+        conversation = get_conversation_by_uuid(conversation_id, session)
         if conversation is None:
             raise InvalidParamsException("errors.conversationNotFound")
         conversation.user_id = user.id
@@ -154,18 +158,25 @@ async def assign_conversation(username: str, conversation_id: str, _user: User =
     return response(200)
 
 
-async def change_user_chat_status(user_id: int, status: ChatStatus):
-    async with get_async_session_context() as session:
-        user = await session.get(User, user_id)
+async def change_user_chat_status(user_id: int, status: ChatStatus, session: AsyncSession = None):
+    async def do(ses):
+        user = await ses.get(User, user_id)
         user.chat_status = status
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
-    return user
+        ses.add(user)
+        await ses.commit()
+        await ses.refresh(user)
+        return user
+
+    if session is None:
+        async with get_async_session_context() as session:
+            return await do(session)
+    else:
+        return await do(session)
 
 
 @router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=ConversationSchema)
-async def generate_conversation_title(message_id: str, conversation: Conversation = Depends(get_conversation_by_id)):
+async def generate_conversation_title(message_id: str,
+                                      conversation: Conversation = Depends(get_conversation_by_uuid_depend)):
     if conversation.title is not None:
         raise InvalidParamsException("errors.conversationTitleAlreadyGenerated")
     async with get_async_session_context() as session:
@@ -193,7 +204,9 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
 
     is_new_conv = askParams.conversation_id is None
     if not is_new_conv:
-        conversation = await get_conversation_by_id(askParams.conversation_id, user)
+        conversation = await get_conversation_by_uuid_depend(askParams.conversation_id, user)
+        if conversation is None:
+            raise api.exceptions.InvalidParamsException("errors.conversationNotFound")
         model_name = askParams.model_name or conversation.model_name
     else:
         model_name = askParams.model_name or ChatModels.default
@@ -220,25 +233,25 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
             raise api.exceptions.InvalidParamsException("errors.noAvailableGPT4AskCount")
 
     message = askParams.message
-    conversation_id = askParams.conversation_id
     parent_id = askParams.parent_id
     timeout = askParams.timeout
     new_title = askParams.new_title
+    conversation_id = askParams.conversation_id
+
+    logger.debug(f"User {user.username} start asking, model: {model_name}")
 
     def ask_response(askResponse: AskResponse):
         return json.dumps((jsonable_encoder(askResponse))) + "\n"
 
     async def streamer():
-        nonlocal user, conversation_id, parent_id, message, timeout, model_name, new_title
+        nonlocal user, conversation_id, parent_id, message, timeout, model_name, new_title, is_new_conv
 
         is_success = False
-        is_canceled = False
+        is_aborted = False
         has_got_reply = False
         queueing_start_time = time.time()
-        is_queueing = False
 
         if api.chatgpt.chatgpt_manager.is_busy():
-            is_queueing = True
             yield ask_response(AskResponse(type="waiting", tip="tips.queueing"))  # 通知用户正在排队
 
         await change_user_chat_status(user.id, ChatStatus.queueing)
@@ -267,7 +280,7 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
                     ))
                 is_success = True
             except asyncio.CancelledError:
-                is_canceled = True
+                is_aborted = True
             except requests.exceptions.Timeout as e:
                 yield ask_response(AskResponse(
                     type="error",
@@ -298,85 +311,85 @@ async def ask(askParams: AskParams, user: User = Depends(current_active_user)):
                         tip="errors.unknownError",
                         message=str(e)
                     ))
-                    raise e
-            finally:
-                stop_time = time.time()
 
-                api.chatgpt.chatgpt_manager.reset_chat()
+        stop_time = time.time()
+        queueing_duration = stop_time - queueing_start_time
+        if ask_start_time is not None:
+            ask_duration = stop_time - ask_start_time
+        else:
+            ask_duration = None
 
-                queueing_duration = stop_time - queueing_start_time
-                if ask_start_time is not None:
-                    ask_duration = stop_time - ask_start_time
-                else:
-                    ask_duration = None
+        if is_success:
+            logger.debug(
+                f"finished ask {conversation_id} ({model_name}). "
+                f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
+        elif is_aborted:
+            if is_queueing:
+                logger.info(f"ask {conversation_id} ({model_name}) cancelled by user while queueing. "
+                            f"queueing: {queueing_duration:.2f}s")
+            else:
+                logger.info(f"ask {conversation_id} ({model_name}) cancelled by user. "
+                            f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
+        else:
+            logger.debug(
+                f"finished ask {conversation_id} ({model_name}), but reply failed. "
+                f"ask: {ask_duration:.2f}s, queueing: {queueing_duration:.2f}s")
 
-                if is_success:
-                    logger.debug(
-                        f"finished ask {conversation_id} ({model_name}). "
-                        f"ask: {ask_duration}s, queueing: {queueing_duration}s")
-                elif is_canceled:
-                    if is_queueing:
-                        logger.info(f"ask {conversation_id} ({model_name}) cancelled by user while queueing. "
-                                    f"queueing: {queueing_duration}s")
-                    else:
-                        logger.info(f"ask {conversation_id} ({model_name}) cancelled by user. "
-                                    f"ask: {ask_duration}s, queueing: {queueing_duration}s")
-                else:
-                    logger.debug(
-                        f"finished ask {conversation_id} ({model_name}), but reply failed. "
-                        f"ask: {ask_duration}s, queueing: {queueing_duration}s")
+        try:
+            if is_success or (is_aborted and has_got_reply):
+                async with get_async_session_context() as ses:
+                    # 若新建了对话，则添加到数据库
+                    if is_new_conv and conversation_id is not None:
+                        # 设置默认标题
+                        try:
+                            if askParams.new_title is not None:
+                                await api.chatgpt.chatgpt_manager.set_conversation_title(conversation_id,
+                                                                                         askParams.new_title)
+                        except Exception as e:
+                            logger.warning(e)
+                        finally:
+                            current_time = datetime.utcnow()
+                            conv = Conversation(conversation_id=conversation_id, title=new_title,
+                                                user_id=user.id,
+                                                model_name=model_name, create_time=current_time,
+                                                active_time=current_time)
+                            ses.add(conv)
+                    # 更新 conversation
+                    if not is_new_conv:
+                        conv = await get_conversation_by_uuid(conversation_id, ses)  # 此前的 conversation 属于另一个session
+                        conv.active_time = datetime.utcnow()
+                        if conv.model_name != model_name:
+                            conv.model_name = model_name
+                        ses.add(conv)
+                    # 扣除一次对话次数
+                    # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
+                    # 如果都有限制，则都要扣除一次. TODO: 改成分开计数
+                    # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
+                    if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
+                        user = await ses.get(User, user.id)
+                        if user.available_ask_count != -1:
+                            assert user.available_ask_count > 0
+                            user.available_ask_count -= 1
+                        if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
+                            assert user.available_gpt4_ask_count > 0
+                            user.available_gpt4_ask_count -= 1
+                        ses.add(user)
+                    await ses.commit()
 
-                if is_success or (is_canceled and has_got_reply):
-                    async with get_async_session_context() as session:
-                        # 若新建了对话，则添加到数据库
-                        if is_new_conv and conversation_id is not None:
-                            # 设置默认标题
-                            try:
-                                if askParams.new_title is not None:
-                                    await api.chatgpt.chatgpt_manager.set_conversation_title(conversation_id,
-                                                                                             askParams.new_title)
-                            except Exception as e:
-                                logger.warning(e)
-                            finally:
-                                current_time = datetime.utcnow()
-                                conv = Conversation(conversation_id=conversation_id, title=new_title,
-                                                    user_id=user.id,
-                                                    model_name=model_name, create_time=current_time,
-                                                    active_time=current_time)
-                                session.add(conv)
-                        # 更新 conversation
-                        if not is_new_conv:
-                            conv = await session.get(Conversation, conv.id)  # 此前的 conversation 属于另一个session
-                            conv.active_time = datetime.utcnow()
-                            if conv.model_name != model_name:
-                                conv.model_name = model_name
-                            session.add(conv)
-                        # 扣除一次对话次数
-                        # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
-                        # 如果都有限制，则都要扣除一次. TODO: 改成分开计数
-                        # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
-                        if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
-                            user = await session.get(User, user.id)
-                            if user.available_ask_count != -1:
-                                assert user.available_ask_count > 0
-                                user.available_ask_count -= 1
-                            if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
-                                assert user.available_gpt4_ask_count > 0
-                                user.available_gpt4_ask_count -= 1
-                            session.add(user)
-                        await session.commit()
+            stop_time = time.time()
 
-                await change_user_chat_status(user.id, ChatStatus.idling)
+            # 写入到 scope 中，供统计
+            g.ask_log_queue.enqueue(
+                (user.id, model_name.value, stop_time - ask_start_time, stop_time - start_time))
+        except Exception as e:
+            logger.error(str(e))
+            yield ask_response(AskResponse(
+                type="error",
+                tip="errors.unknownError",
+                message=str(e)
+            ))
+        finally:
+            await change_user_chat_status(user.id, ChatStatus.idling)
+            api.chatgpt.chatgpt_manager.reset_chat()
 
-                stop_time = time.time()
-
-                # 写入到 scope 中，供统计
-                g.ask_log_queue.enqueue(
-                    (user.id, model_name.value, stop_time - ask_start_time, stop_time - start_time))
-
-    try:
-        # 标记用户为 queueing
-        return StreamingResponse(streamer(), media_type="application/text")
-    except Exception as e:
-        logger.error(str(e))
-        raise e
+    return StreamingResponse(streamer(), media_type="application/x-ndjson")

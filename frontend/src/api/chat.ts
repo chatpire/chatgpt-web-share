@@ -1,6 +1,7 @@
-import { ConversationSchema } from "@/types/schema";
+import { AskParams, AskResponse, ConversationSchema } from "@/types/schema";
 import axios from "axios";
 import ApiUrl from "./url";
+import { processNDJSON } from "./stream";
 
 export function getAllConversationsApi(fetch_all: boolean = false) {
   return axios.get<Array<ConversationSchema>>(ApiUrl.Conversation, {
@@ -46,29 +47,6 @@ export function generateConversationTitleApi(
   );
 }
 
-export type AskInfo = {
-  message: string;
-  new_title?: string;
-  conversation_id?: string;
-  parent_id?: string;
-  model_name?: string;
-  is_public?: boolean;
-  timeout?: number;
-};
-
-export function getAskWebsocketApiUrl() {
-  let protocol = "ws";
-  if (["ws", "wss"].includes(import.meta.env.VITE_API_WEBSOCKET_PROTOCOL)) {
-    protocol = import.meta.env.VITE_API_WEBSOCKET_PROTOCOL;
-  } else if (import.meta.env.VITE_API_WEBSOCKET_PROTOCOL === "auto") {
-    // 判断当前是否使用https，如果是则使用wss，否则使用ws
-    protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  }
-  const url = `${protocol}://${window.location.host}/api${ApiUrl.Conversation}`;
-  // console.log("getAskWebsocketApiUrl", url);
-  return url;
-}
-
 export function assignConversationToUserApi(
   conversation_id: string,
   username: string
@@ -76,4 +54,41 @@ export function assignConversationToUserApi(
   return axios.patch(
     `${ApiUrl.Conversation}/${conversation_id}/assign/${username}`
   );
+}
+
+export async function askStreamApi(
+  askParams: AskParams,
+  onDataReceived: (data: any) => void,
+  onError: (response: Response | null, error: Error) => Promise<void>,
+  abortController: AbortController
+) {
+  const requestOptions: RequestInit = {
+    method: "POST",
+    body: JSON.stringify(askParams),
+    signal: abortController.signal,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const response = await fetch(import.meta.env.VITE_API_BASE_URL + ApiUrl.Conversation, requestOptions);
+
+    if (response.ok) {
+      if (response.headers.get("content-type") === "application/x-ndjson") {
+        await processNDJSON<AskResponse>(
+          response,
+          onDataReceived,
+          onError,
+        );
+      } else {
+        await onError(response, new Error("Invalid content type"));
+      }
+    } else {
+      // 这里不需要处理大部分错误情况。在后端中，若 openai 返回非 200 请求，会封装在 response 中返回给前端
+      await onError(response, new Error(`Error ${response.status}: ${response.statusText}`));
+    }
+  } catch (error: any) {
+    await onError(null, error);
+  }
 }

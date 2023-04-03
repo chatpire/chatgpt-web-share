@@ -67,7 +67,7 @@
             <!-- 是否启用自动滚动 -->
             <n-tooltip>
               <template #trigger>
-                <n-switch  v-model:value="autoScrolling" size="small" class="absolute right-2 top-3">
+                <n-switch v-model:value="autoScrolling" size="small" class="absolute right-2 top-3">
                   <template #icon>
                     A
                   </template>
@@ -119,14 +119,14 @@
 
 <script setup lang="ts">
 import { useConversationStore, useUserStore } from '@/store';
-import { ConversationSchema } from '@/types/schema';
+import { ConversationSchema, AskParams, AskResponse } from '@/types/schema';
 import { computed, h, onMounted, ref, watch } from 'vue';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 
 import StatusCard from './components/StatusCard.vue';
 
 import { ChatConversationDetail, ChatMessage } from '@/types/custom';
-import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
+import { askStreamApi } from '@/api/chat';
 
 import { useI18n } from 'vue-i18n';
 import { NButton, NEllipsis, NIcon, useThemeVars } from 'naive-ui';
@@ -339,7 +339,6 @@ const shortcutSendMsg = (e: KeyboardEvent) => {
 
 const autoScrolling = ref<boolean>(true);
 
-
 const scrollToBottom = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
 }
@@ -347,6 +346,9 @@ const scrollToBottom = () => {
 const scrollToBottomSmooth = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
 }
+
+const abortController = ref<AbortController | null>(null);
+const isAborted = ref(false);
 
 const sendMsg = async () => {
   if (sendDisabled.value || loadingBar.value) {
@@ -358,20 +360,16 @@ const sendMsg = async () => {
   const message = inputValue.value;
   inputValue.value = '';
 
-  // // 新建对话
-  // const askInfo: AskInfo = { message };
-  // // 继续发送
-  // if (currentConversation.value?.conversation_id != null) {
-  //   askInfo.conversation_id = currentConversation.value.conversation_id;
-  //   askInfo.parent_id = currentNode.value!;
-  // }
-  const askInfo: AskInfo = { message };
+  let errorMessage: string | null = null;
+  let hasGotReply = false;
+
+  const askParams: AskParams = { message };
   if (newConversation.value) {
-    askInfo.new_title = newConversation.value.title;
-    askInfo.model_name = newConversation.value.model_name;
+    askParams.new_title = newConversation.value.title;
+    askParams.model_name = newConversation.value.model_name;
   } else {
-    askInfo.conversation_id = currentConversation.value!.conversation_id;
-    askInfo.parent_id = currentNode.value!;
+    askParams.conversation_id = currentConversation.value!.conversation_id;
+    askParams.parent_id = currentNode.value!;
   }
 
   // 使用临时的随机 id 保持当前更新的两个消息
@@ -392,29 +390,21 @@ const sendMsg = async () => {
     typing: true,
     model_slug: currentConversation.value?.model_name,
   }
-  const wsUrl = getAskWebsocketApiUrl();
-  let wsErrorMessage: string | null = null;
-  console.log('Connecting to', wsUrl, askInfo);
-  const webSocket = new WebSocket(wsUrl);
 
-  webSocket.onopen = (event: Event) => {
-    // console.log('WebSocket connection is open', askInfo);
-    webSocket.send(JSON.stringify(askInfo));
-  };
-
-  webSocket.onmessage = (event: MessageEvent) => {
-    const reply = JSON.parse(event.data);
-    // console.log('Received message from server:', reply);
+  const onmessage = (reply: AskResponse) => {
     if (!reply.type) return;
     if (reply.type === 'waiting') {
-      currentActiveMessageRecv.value!.message = t(reply.tip);
-      if (reply.waiting_count) {
-        currentActiveMessageRecv.value!.message += `(${reply.waiting_count})`;
-      }
+      currentActiveMessageRecv.value!.message = t(reply.tip || "tips.waiting");
+      // if (reply.waiting_count) {
+      //   currentActiveMessageRecv.value!.message += `(${reply.waiting_count})`;
+      // }
     } else if (reply.type === 'message') {
       // console.log(reply)
       currentActiveMessageRecv.value!.message = reply.message;
-      currentActiveMessageRecv.value!.id = reply.parent_id;
+      if (reply.parent_id) {
+        currentActiveMessageRecv.value!.id = reply.parent_id;
+        hasGotReply = true;
+      }
       currentActiveMessageRecv.value!.model_slug = reply.model_name;
       if (newConversation.value) {
         newConversation.value.conversation_id = reply.conversation_id;
@@ -423,69 +413,98 @@ const sendMsg = async () => {
         }
       }
     } else if (reply.type === 'error') {
-      currentActiveMessageRecv.value!.message = `${t(reply.tip)}: ${reply.message}}`;
+      // currentActiveMessageRecv.value!.message += `${t(reply.tip || "Error")}: ${reply.message}}`;
       console.error(reply.tip, reply.message);
+      errorMessage = t(reply.tip || "Error");
       if (reply.message) {
-        wsErrorMessage = reply.message;
+        errorMessage += `: ${reply.message}}`;
       }
     }
     if (autoScrolling.value)
       scrollToBottom();
   };
 
-  webSocket.onclose = async (event: CloseEvent) => {
-    currentActiveMessageRecv.value!.typing = false;
-    console.log('WebSocket connection is closed', event);
-    if (event.code === 1000) {  // 正常关闭        
-      // 对于新对话，重新请求对话列表
-      if (newConversation.value) {
-        await conversationStore.fetchAllConversations();
-        currentConversationId.value = newConversation.value.conversation_id!;
-        // 解析 ISO string 为 小数时间戳
-        const create_time = new Date(newConversation.value.create_time!).getTime() / 1000;
-        conversationStore.$patch({
-          conversationDetailMap: {
-            [currentConversationId.value]: {
-              id: currentConversationId.value,
-              title: newConversation.value!.title,
-              model_name: newConversation.value!.model_name,
-              create_time,
-              mapping: {},
-              current_node: null,
-            } as ChatConversationDetail,
-          },
-        });
+  const onerror = async (response: Response | null, err: Error) => {
+    console.log("onerror", response, err);
+    if (response == null) {
+      errorMessage = err.message;
+      return;
+    }
+    try {
+      const data = await response.json();
+      errorMessage = `${t(data.message) || "Error"}: ${t(data.result) || JSON.stringify(data)}`;
+      console.error(data, errorMessage);
+    } catch (e: any) {
+      errorMessage = e.message;
+      console.error(e, errorMessage);
+    }
+  };
+
+  abortController.value = new AbortController();
+
+  console.log('Chat started');
+
+  await askStreamApi(askParams, onmessage, onerror, abortController.value);
+
+  console.log('Chat finished');
+
+  currentActiveMessageRecv.value!.typing = false;
+  console.log('Chat finished');
+  if (hasGotReply) {
+    if (errorMessage) {
+      Message.warning(errorMessage);
+    }
+    // 对于新对话，重新请求对话列表
+    if (newConversation.value) {
+      await conversationStore.fetchAllConversations();
+      currentConversationId.value = newConversation.value.conversation_id!;
+      // 解析 ISO string 为 小数时间戳
+      const create_time = new Date(newConversation.value.create_time!).getTime() / 1000;
+      conversationStore.$patch({
+        conversationDetailMap: {
+          [currentConversationId.value]: {
+            id: currentConversationId.value,
+            title: newConversation.value!.title,
+            model_name: newConversation.value!.model_name,
+            create_time,
+            mapping: {},
+            current_node: null,
+          } as ChatConversationDetail,
+        },
+      });
+      conversationStore.addMessageToConversation(currentConversationId.value, currentActiveMessageSend.value!, currentActiveMessageRecv.value!);
+      newConversation.value = null;
+    } else {
+      if (!currentActiveMessageRecv.value!.id.startsWith('recv')) {
+        // TODO 其它属性
         conversationStore.addMessageToConversation(currentConversationId.value, currentActiveMessageSend.value!, currentActiveMessageRecv.value!);
-        newConversation.value = null;
-      } else {
-        // 将新消息存入 store
-        if (!currentActiveMessageRecv.value!.id.startsWith('recv')) {
-          // TODO 其它属性
-          conversationStore.addMessageToConversation(currentConversationId.value, currentActiveMessageSend.value!, currentActiveMessageRecv.value!);
-        }
       }
+    }
+    currentActiveMessageSend.value = null;
+    currentActiveMessageRecv.value = null;
+  } else {
+    if (isAborted.value) {
       currentActiveMessageSend.value = null;
       currentActiveMessageRecv.value = null;
+      Message.warning(t('tips.aborted'));
     } else {
       Dialog.error({
         title: t('errors.askError'),
-        content: wsErrorMessage != null ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}` : `[${event.code}] ${t(event.reason)}`,
+        content: errorMessage || t('errors.askError'),
         positiveText: t('commons.withdrawMessage'),
+        negativeText: t('commons.cancel'),
         onPositiveClick: () => {
           currentActiveMessageSend.value = null;
           currentActiveMessageRecv.value = null;
         },
       })
     }
-    await userStore.fetchUserInfo();
-    LoadingBar.finish();
-    loadingBar.value = false;
-  };
+  }
+  await userStore.fetchUserInfo();
+  LoadingBar.finish();
+  loadingBar.value = false;
+};
 
-  webSocket.onerror = (event: Event) => {
-    console.error('WebSocket error:', event);
-  };
-}
 
 const exportToMarkdownFile = () => {
   if (!currentConversation.value) {

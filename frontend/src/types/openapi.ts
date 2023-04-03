@@ -58,6 +58,8 @@ export interface paths {
      * 对于管理员，返回所有对话，并可以指定是否只返回有效会话
      */
     get: operations["get_all_conversations_conv_get"];
+    /** Ask */
+    post: operations["ask_conv_post"];
   };
   "/conv/{conversation_id}": {
     /** Get Conversation History */
@@ -111,6 +113,45 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** AskParams */
+    AskParams: {
+      /** Message */
+      message: string;
+      /** Conversation Id */
+      conversation_id?: string;
+      /** Parent Id */
+      parent_id?: string;
+      /**
+       * Use Paid 
+       * @default false
+       */
+      use_paid?: boolean;
+      /**
+       * Timeout 
+       * @default 600
+       */
+      timeout?: number;
+      /** New Title */
+      new_title?: string;
+      model_name?: components["schemas"]["ChatModels"];
+    };
+    /** AskResponse */
+    AskResponse: {
+      /** Type */
+      type: string;
+      /** Tip */
+      tip?: string;
+      /** Message */
+      message?: string;
+      /** Conversation Id */
+      conversation_id?: string;
+      /** Parent Id */
+      parent_id?: string;
+      /** Use Paid */
+      use_paid?: boolean;
+      /** Model Name */
+      model_name?: string;
+    };
     /** Body_auth_jwt_login_auth_login_post */
     Body_auth_jwt_login_auth_login_post: {
       /** Grant Type */
@@ -706,6 +747,28 @@ export interface operations {
     parameters?: {
       query?: {
         fetch_all?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  ask_conv_post: {
+    /** Ask */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AskParams"];
       };
     };
     responses: {

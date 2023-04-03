@@ -170,7 +170,8 @@
     "pleaseSelectConversation": "Please select a conversation first",
     "pressEscToExitFullscreen": "Full Screen | Press Esc To Exit",
     "refreshed": "Refreshed Successfully",
-    "autoScrolling": "auto scroll"
+    "autoScrolling": "auto scroll",
+    "aborted": "Conversation Aborted"
   },
   "labels": {
     "nickname": "Nickname",

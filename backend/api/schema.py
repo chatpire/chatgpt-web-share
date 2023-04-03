@@ -70,7 +70,7 @@ class ConversationSchema(BaseModel):
 class AskParams(BaseModel):
     message: str
     conversation_id: str | None
-    parent_id: int | None
+    parent_id: str | None
     use_paid: bool = False
     timeout: int = 600
     new_title: str | None = None
