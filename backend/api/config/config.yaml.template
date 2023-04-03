@@ -27,4 +27,7 @@ chatgpt_paid: false
 # reverse_proxy_puid: "_puid value from cookie"
 
 log_dir: ./logs
-console_log_level: TEST
+console_log_level: INFO
+
+request_log_counter_time_window: 2592000  # 30 days
+request_log_counter_interval: 1800  # 30 minutes

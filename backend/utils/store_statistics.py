@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 
 
 def dump():
-    path = g.config.get("statistics_store_path", ".")
+    path = g.config.get("log_dir", ".")
     path = os.path.join(path, "statistics.json")
     data = {
         "request_log_counter_interval": g.request_log_counter_interval,
@@ -23,7 +23,7 @@ def dump():
 
 
 def load():
-    path = g.config.get("statistics_store_path", ".")
+    path = g.config.get("log_dir", ".")
     path = os.path.join(path, "statistics.json")
     try:
         with open(path, "r") as f:
