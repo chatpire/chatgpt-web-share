@@ -8,7 +8,7 @@
 
 共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。支持使用 GPT-4！
 
-![screenshot](screenshot.jpeg)
+![screenshot](docs/screenshot.jpeg)
 
 通知/讨论 Channel：https://t.me/chatgptwebshare
 
@@ -55,4 +55,4 @@ ChatGPT Web Share (简称 CWS) 的目的是「共享」一个 ChatGPT Plus 账�
 
 ### 风险声明
 
-本项目仅供学习和研究使用，不鼓励用于商业用途。使用本项目可能会导致您的账号被 OpenAI 封禁。我们不对任何因使用本项目而导致的任何损失负责。
+本项目仅供学习和研究使用，不鼓励用于商业用途。我们不对任何因使用本项目而导致的任何损失负责。

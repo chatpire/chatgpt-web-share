@@ -1,3 +1,15 @@
+# ChatGPT Web Share
+
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/moeakwak/chatgpt-web-share?label=container&logo=docker)](https://github.com/moeakwak/chatgpt-web-share/pkgs/container/chatgpt-web-share)
+[![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/moeakwak/chatgpt-web-share/actions)
+[![License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)](https://github.com/moeakwak/chatgpt-web-share/blob/main/LICENSE)
+
+A web application that allows multiple users to share a ChatGPT account at the same time, developed using FastAPI and Vue3. It can be used for sharing or renting a ChatGPT account among friends. It supports ChatGPT Plus, setting conversation models, and user request limits.
+
+![screenshot](docs/screenshot.en.jpeg)
+
+This readme was translated by ChatGPT.
+
 ## About the project
 
 ChatGPT Web Share (CWS for short) is designed to share a ChatGPT Plus account with multiple users. CWS:
@@ -40,4 +52,4 @@ If you do not want to be tracked by Sentry, you can set the environment variable
 
 ### Risk Statement
 
-This project is for learning and research purposes only, and commercial use is not encouraged. Using this project may result in your account being blocked by OpenAI. We are not responsible for any losses caused by using this project.
+This project is for learning and research purposes only, and commercial use is not encouraged. We are not responsible for any losses caused by using this project.
