@@ -2,6 +2,8 @@ import asyncio
 import time
 from datetime import datetime
 
+import aiocron
+
 import api.chatgpt
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from httpx import HTTPError
@@ -13,9 +15,10 @@ from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import api.globals as g
-config = g.config
 import os
 import utils.store_statistics
+
+config = g.config
 
 if config.get("chatgpt_base_url"):
     os.environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url")
@@ -94,11 +97,16 @@ async def validation_exception_handler(request, exc):
 
 @app.on_event("startup")
 async def on_startup():
+
     await create_db_and_tables()
     logger.info("database initialized")
     g.startup_time = time.time()
 
     utils.store_statistics.load()
+
+    @aiocron.crontab('*/5 * * * *', loop=asyncio.get_event_loop())
+    async def dump_stats():
+        utils.store_statistics.dump(print_log=False)
 
     if config.get("create_initial_admin_user", False):
         await create_user(config.get("initial_admin_username"),

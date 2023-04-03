@@ -9,7 +9,7 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 
-def dump():
+def dump(print_log=True):
     path = g.config.get("data_dir", g.config.get("log_dir", "."))
     path = os.path.join(path, "statistics.json")
     data = {
@@ -19,7 +19,8 @@ def dump():
     }
     with open(path, "w") as f:
         json.dump(data, f)
-    logger.info(f"Requests statistics dumped to {path}.")
+    if print_log:
+        logger.info(f"Requests statistics dumped to {path}.")
 
 
 def load():
