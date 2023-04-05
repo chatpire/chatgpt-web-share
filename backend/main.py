@@ -19,12 +19,6 @@ import os
 import utils.store_statistics
 from utils.sync_conversations import sync_conversations
 
-config = g.config
-
-if config.get("chatgpt_base_url"):
-    os.environ["CHATGPT_BASE_URL"] = config.get("chatgpt_base_url")
-
-import api.globals as g
 from api.enums import ChatStatus
 from api.models import Conversation, User
 from api.response import CustomJSONResponse, PrettyJSONResponse, handle_exception_response
@@ -40,6 +34,8 @@ from utils.create_user import create_user
 
 import dateutil.parser
 from revChatGPT.typings import Error as revChatGPTError
+
+config = g.config
 
 setup_logger()
 

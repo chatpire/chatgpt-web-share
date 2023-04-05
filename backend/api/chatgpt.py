@@ -1,7 +1,12 @@
+import api.globals as g
+import os
+
+if g.config.get("chatgpt_base_url"):
+    os.environ["CHATGPT_BASE_URL"] = g.config.get("chatgpt_base_url")
+
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
-import api.globals as g
 from api.enums import ChatModels
 from utils.common import get_conversation_model
 
