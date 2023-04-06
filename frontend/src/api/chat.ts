@@ -61,15 +61,9 @@ export type AskInfo = {
 };
 
 export function getAskWebsocketApiUrl() {
-  let protocol = "ws";
-  if (["ws", "wss"].includes(import.meta.env.VITE_API_WEBSOCKET_PROTOCOL)) {
-    protocol = import.meta.env.VITE_API_WEBSOCKET_PROTOCOL;
-  } else if (import.meta.env.VITE_API_WEBSOCKET_PROTOCOL === "auto") {
-    // 判断当前是否使用https，如果是则使用wss，否则使用ws
-    protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  }
-  const url = `${protocol}://${window.location.host}/api${ApiUrl.Conversation}`;
-  // console.log("getAskWebsocketApiUrl", url);
+  let protocol = window.location.protocol === "https:" ? "wss" : "ws";
+  const url = `${protocol}://${window.location.host}${import.meta.env.VITE_API_BASE_URL}conv`;
+  console.log("getAskWebsocketApiUrl", url);
   return url;
 }
 
