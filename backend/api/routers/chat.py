@@ -9,13 +9,9 @@ from websockets.exceptions import ConnectionClosed, ConnectionClosedOK
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
-from starlette.requests import Request
-
 import api.chatgpt
 import api.globals as g
-import api.globals as g
 
-config = g.config
 from api.database import get_async_session_context
 from api.enums import ChatStatus, ChatModels
 from api.exceptions import InvalidParamsException, AuthorityDenyException
@@ -26,8 +22,8 @@ from revChatGPT.typings import Error as revChatGPTError
 from api.response import response
 from utils.logger import get_logger
 
+config = g.config
 logger = get_logger(__name__)
-
 router = APIRouter()
 
 
@@ -286,13 +282,14 @@ async def ask(websocket: WebSocket):
         queueing_start_time = time.time()
         async with api.chatgpt.chatgpt_manager.semaphore:
             is_queueing = False
-            await change_user_chat_status(user.id, ChatStatus.asking)
-            await websocket.send_json({
-                "type": "waiting",
-                "tip": "tips.waiting"
-            })
-            ask_start_time = time.time()
             try:
+                await change_user_chat_status(user.id, ChatStatus.asking)
+                await websocket.send_json({
+                    "type": "waiting",
+                    "tip": "tips.waiting"
+                })
+                ask_start_time = time.time()
+                api.chatgpt.chatgpt_manager.reset_chat()
                 async for data in api.chatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,
                                                                   model_name):
                     has_got_reply = True
@@ -313,6 +310,8 @@ async def ask(websocket: WebSocket):
                     logger.warning(str(e))
                 else:
                     raise e
+            finally:
+                api.chatgpt.chatgpt_manager.reset_chat()
 
     except ConnectionClosed as e:
         # print("websocket aborted", e.code)
@@ -350,85 +349,86 @@ async def ask(websocket: WebSocket):
         })
         websocket_code = 1011
         websocket_reason = "errors.unknownError"
-    finally:
-        ask_stop_time = time.time()
 
-        queueing_time = ask_stop_time - queueing_start_time
-        queueing_time = round(queueing_time, 3)
-        if ask_start_time is not None:
-            ask_time = ask_stop_time - ask_start_time
-            ask_time = round(ask_time, 3)
-        else:
-            ask_time = None
+    ask_stop_time = time.time()
 
-        if is_completed:
+    queueing_time = ask_stop_time - queueing_start_time
+    queueing_time = round(queueing_time, 3)
+    if ask_start_time is not None:
+        ask_time = ask_stop_time - ask_start_time
+        ask_time = round(ask_time, 3)
+    else:
+        ask_time = None
+
+    if is_completed:
+        logger.debug(
+            f"finished ask {conversation_id} ({model_name}), user: {user.id}, "
+            f"ask: {ask_time}s, total: {queueing_time}s")
+        websocket_code = 1000
+        websocket_reason = "tips.finished"
+    elif is_canceled:
+        if has_got_reply:
             logger.debug(
-                f"finished ask {conversation_id} ({model_name}), user: {user.id}, "
+                f"canceled ask {conversation_id} ({model_name}) while replying, user: {user.id}, "
                 f"ask: {ask_time}s, total: {queueing_time}s")
-            websocket_code = 1000
-            websocket_reason = "tips.finished"
-        elif is_canceled:
-            if has_got_reply:
-                logger.debug(
-                    f"canceled ask {conversation_id} ({model_name}) while replying, user: {user.id}, "
-                    f"ask: {ask_time}s, total: {queueing_time}s")
-            elif is_queueing:
-                logger.debug(
-                    f"canceled ask {conversation_id} ({model_name}) while queueing, user: {user.id}, "
-                    f"total: {queueing_time}s")
-            else:
-                logger.debug(
-                    f"canceled ask {conversation_id} ({model_name}) before replying, user: {user.id}, "
-                    f"total: {queueing_time}s")
+        elif is_queueing:
+            logger.debug(
+                f"canceled ask {conversation_id} ({model_name}) while queueing, user: {user.id}, "
+                f"total: {queueing_time}s")
         else:
             logger.debug(
-                f"terminated ask {conversation_id} ({model_name}) because of error")
+                f"canceled ask {conversation_id} ({model_name}) before replying, user: {user.id}, "
+                f"total: {queueing_time}s")
+    else:
+        logger.debug(
+            f"terminated ask {conversation_id} ({model_name}) because of error")
 
-    if has_got_reply:
-        async with get_async_session_context() as session:
-            # 若新建了对话，则添加到数据库
-            if is_new_conv and conversation_id is not None:
-                # 设置默认标题
-                try:
-                    if new_title is not None:
-                        await api.chatgpt.chatgpt_manager.set_conversation_title(conversation_id, new_title)
-                except Exception as e:
-                    logger.warning(e)
-                finally:
-                    current_time = datetime.utcnow()
-                    conversation = Conversation(conversation_id=conversation_id, title=new_title,
-                                                user_id=user.id,
-                                                model_name=model_name, create_time=current_time,
-                                                active_time=current_time)
+    try:
+        if has_got_reply:
+            async with get_async_session_context() as session:
+                # 若新建了对话，则添加到数据库
+                if is_new_conv and conversation_id is not None:
+                    # 设置默认标题
+                    try:
+                        if new_title is not None:
+                            await api.chatgpt.chatgpt_manager.set_conversation_title(conversation_id, new_title)
+                    except Exception as e:
+                        logger.warning(e)
+                    finally:
+                        current_time = datetime.utcnow()
+                        conversation = Conversation(conversation_id=conversation_id, title=new_title,
+                                                    user_id=user.id,
+                                                    model_name=model_name, create_time=current_time,
+                                                    active_time=current_time)
+                        session.add(conversation)
+                # 更新 conversation
+                if not is_new_conv:
+                    conversation = await session.get(Conversation, conversation.id)  # 此前的 conversation 属于另一个session
+                    conversation.active_time = datetime.utcnow()
+                    if conversation.model_name != model_name:
+                        conversation.model_name = model_name
                     session.add(conversation)
-            # 更新 conversation
-            if not is_new_conv:
-                conversation = await session.get(Conversation, conversation.id)  # 此前的 conversation 属于另一个session
-                conversation.active_time = datetime.utcnow()
-                if conversation.model_name != model_name:
-                    conversation.model_name = model_name
-                session.add(conversation)
 
-            # 扣除一次对话次数
-            # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
-            # 如果都有限制，则都要扣除一次
-            # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
-            if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
-                user = await session.get(User, user.id)
-                if user.available_ask_count != -1:
-                    assert user.available_ask_count > 0
-                    user.available_ask_count -= 1
-                if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
-                    assert user.available_gpt4_ask_count > 0
-                    user.available_gpt4_ask_count -= 1
-                session.add(user)
-            await session.commit()
+                # 扣除一次对话次数
+                # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
+                # 如果都有限制，则都要扣除一次
+                # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
+                if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
+                    user = await session.get(User, user.id)
+                    if user.available_ask_count != -1:
+                        assert user.available_ask_count > 0
+                        user.available_ask_count -= 1
+                    if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
+                        assert user.available_gpt4_ask_count > 0
+                        user.available_gpt4_ask_count -= 1
+                    session.add(user)
+                await session.commit()
 
-    await change_user_chat_status(user.id, ChatStatus.idling)
-    api.chatgpt.chatgpt_manager.reset_chat()
-    await websocket.close(websocket_code, websocket_reason)
-
-    # 写入到 scope 中，供统计
-    if has_got_reply:
-        g.ask_log_queue.enqueue(
-            (user.id, model_name.value, ask_time, queueing_time))
+                # 写入到 scope 中，供统计
+                g.ask_log_queue.enqueue(
+                    (user.id, model_name.value, ask_time, queueing_time))
+    except Exception as e:
+        raise e
+    finally:
+        await change_user_chat_status(user.id, ChatStatus.idling)
+        await websocket.close(websocket_code, websocket_reason)
