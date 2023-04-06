@@ -5,7 +5,7 @@
       <!-- 左栏 -->
       <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:h-full">
         <StatusCard />
-        <n-card class="h-full flex-col left-col" content-style="padding: 4px;">
+        <n-card class="flex-col left-col" content-style="padding: 4px;">
           <div class="flex box-content m-2" v-if="!newConversation">
             <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loadingBar">
               <template #icon>
@@ -16,7 +16,7 @@
               {{ $t("commons.newConversation") }}
             </n-button>
           </div>
-          <n-scrollbar class="max-h-30 md:max-h-max md:min-h-0 md:flex-grow md:overflow-y-auto">
+          <n-scrollbar class="max-h-30 md:max-h-122 md:overflow-y-auto">
             <n-menu :content-style="{ backgroundColor: 'red' }" ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18"
               v-model:value="currentConversationId"></n-menu>
           </n-scrollbar>
