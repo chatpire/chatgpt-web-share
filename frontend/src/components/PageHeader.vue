@@ -16,7 +16,7 @@
       </n-space>
     </template>
     <template #avatar>
-      <n-avatar src="/chatgpt-icon.svg" />
+      <n-avatar :src="chatgptIcon" />
     </template>
     <template #extra>
       <n-space>
@@ -60,6 +60,7 @@ import { ref, computed, h } from 'vue';
 import UserProfileCard from './UserProfileCard.vue';
 import { popupResetUserPasswordDialog } from '@/utils/renders';
 import { resetUserPasswordApi } from '@/api/user';
+import chatgptIcon from '/chatgpt-icon.svg';
 
 
 const { t } = useI18n();

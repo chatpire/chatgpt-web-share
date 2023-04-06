@@ -10,7 +10,7 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/",
+  base: process.env.VITE_BASE || "/",
   plugins: [
     vue(),
     UnoCSS({
@@ -33,5 +33,7 @@ export default defineConfig({
   define: {
     "import.meta.env.PACKAGE_VERSION": JSON.stringify(process.env.npm_package_version),
     "import.meta.env.VITE_ENABLE_SENTRY": process.env.VITE_ENABLE_SENTRY || "'no'",
+    "import.meta.env.VITE_ROUTER_BASE": process.env.VITE_ROUTER_BASE || "'/'",
+    "import.meta.env.VITE_API_BASE_URL": process.env.VITE_API_BASE_URL || "'/api/'"
   },
 });

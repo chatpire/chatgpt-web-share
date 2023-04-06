@@ -7,8 +7,8 @@
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <n-avatar v-else-if="isGpt4" size="small" src="/chatgpt-icon-black.svg" />
-      <n-avatar v-else size="small" src="/chatgpt-icon.svg" />
+      <n-avatar v-else-if="isGpt4" size="small" :src="chatgptIconBlack" />
+      <n-avatar v-else size="small" :src="chatgptIcon" />
     </div>
     <div class="mx-0 md:mx-4 w-full">
       <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
@@ -39,6 +39,8 @@ import { PersonFilled } from '@vicons/material';
 import { CopyOutline, CodeSlash } from '@vicons/ionicons5';
 import { Message } from '@/utils/tips';
 import { useI18n } from 'vue-i18n';
+import chatgptIcon from '/chatgpt-icon.svg';
+import chatgptIconBlack from '/chatgpt-icon-black.svg';
 // import md from "@/utils/markdown";
 let md: any;
 let mdLoaded = ref(false);

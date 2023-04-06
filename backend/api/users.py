@@ -8,7 +8,6 @@ from starlette.websockets import WebSocket
 import api.exceptions
 import api.globals as g
 
-config = g.config
 from typing import Optional
 
 from fastapi import Depends, Request, HTTPException
@@ -23,6 +22,7 @@ from sqlalchemy import select, Integer
 from fastapi_users.models import UP
 from utils.logger import get_logger
 
+config = g.config
 logger = get_logger(__name__)
 
 # 使用 cookie + JWT

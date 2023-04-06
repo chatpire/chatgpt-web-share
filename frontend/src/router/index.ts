@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 import createRouteGuard from "./guard";
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(
+    import.meta.env.VITE_ROUTER_BASE
+  ),
   routes: [
     {
       path: "/",

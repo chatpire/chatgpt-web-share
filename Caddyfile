@@ -8,3 +8,17 @@
 		try_files {path} /index.html
 	}
 }
+
+# example for subdirectory deploy:
+
+# :7777 {
+# 	handle_path /chat/api/* {
+# 		uri strip_prefix /chat
+# 		reverse_proxy :8000
+# 	}
+# 	handle_path /chat/* {
+# 		file_server
+# 		root * ./frontend/dist
+# 		try_files {path} /index.html
+# 	}
+# }

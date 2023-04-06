@@ -57,9 +57,9 @@ import { EmojiFlagsFilled, PersonAddAlt1Filled, RefreshFilled } from '@vicons/ma
 import UserSelector from './components/UserSelector.vue';
 import { assignConversationToUserApi, clearAllConversationApi, deleteConversationApi, getAllConversationsApi, vanishConversationApi } from '@/api/chat';
 import { getModelNameTrans, modelNameMap } from '@/utils/renders';
-
+import { useRouter } from 'vue-router';
 const { t } = useI18n();
-
+const router = useRouter();
 const data = ref<Array<ConversationSchema>>([]);
 const rowKey = (row: ConversationSchema) => row.conversation_id;
 const checkedRowKeys = ref<Array<string>>([]);
@@ -95,13 +95,14 @@ const columns: DataTableColumns<ConversationSchema> = [
     title: t("commons.title"),
     key: 'title',
     sorter: 'default',
-    // render: (row) => {
-    //   return 
     render: (row) => {
       return h(NButton, {
         text: true,
         tag: 'a',
-        href: `/conv/${row.conversation_id}`,
+        href: router.resolve({
+          name: "conversationHistory",
+          params: { conversation_id: row.conversation_id }
+        }).href,
         target: '_blank'
       }, {
         default: () => row.title ? row.title : t("commons.empty")

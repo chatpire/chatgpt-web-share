@@ -54,10 +54,10 @@ app.include_router(chat.router)
 app.include_router(system.router)
 app.include_router(status.router)
 
-origins = [
+origins = config.get("cors_allow_origins", [
     "http://localhost",
-    "http://localhost:4000",
-]
+    "http://127.0.0.1"
+])
 
 # 解决跨站问题
 app.add_middleware(
@@ -67,7 +67,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # 定义若干异常处理器
 
