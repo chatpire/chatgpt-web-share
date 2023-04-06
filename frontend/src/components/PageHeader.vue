@@ -139,7 +139,7 @@ const getOptions = (): Array<DropdownOption> => {
           onPositiveClick: async () => {
             await userStore.logout();
             Message.success(t('commons.logoutSuccess'));
-            await router.push({ path: '/' });
+            await router.push({ name: "login" });
           }
         })
       }
