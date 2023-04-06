@@ -46,9 +46,9 @@ Please see the WIKI: [English Guide](https://github.com/moeakwak/chatgpt-web-sha
 
 ### Information Collection and Privacy Statement
 
-Starting from version v0.2.16, this project uses Sentry to collect error information. By using this project, you agree to the Sentry privacy policy. Any anonymous information collected through Sentry will only be used for development and debugging purposes. We will never collect or store any of your private data, like username, password, access token, etc.
+<del>Starting from version v0.2.16, this project uses Sentry to collect error information. By using this project, you agree to the Sentry privacy policy. Any anonymous information collected through Sentry will only be used for development and debugging purposes. </del>We will never collect or store any of your private data, like username, password, access token, etc.
 
-If you do not want to be tracked by Sentry, you can set the environment variable `VITE_DISABLE_SENTRY` to "yes" before building the front-end.
+From v0.3.5, Sentry is not used anymore.
 
 ### Risk Statement
 
