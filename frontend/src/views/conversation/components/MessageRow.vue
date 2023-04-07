@@ -245,7 +245,7 @@ ul {
 
 .hljs-copy-button {
   position: absolute;
-  transform: translateX(calc(100% + 1.125em));
+  transform: translateX(calc(100% + 2em));
   top: 1em;
   right: 1.2em;
   width: 2rem;
