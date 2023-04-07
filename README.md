@@ -1,14 +1,20 @@
-# ChatGPT Web Share
+<h1 align="center">ChatGPT Web Share</h1>
+
+<div align="center">
 
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/moeakwak/chatgpt-web-share?label=container&logo=docker)](https://github.com/moeakwak/chatgpt-web-share/pkgs/container/chatgpt-web-share)
 [![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/moeakwak/chatgpt-web-share/actions)
 [![License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)](https://github.com/moeakwak/chatgpt-web-share/blob/main/LICENSE)
 
-[English Readme](README.en.md)
+**>>> [English Readme](README.en.md) <<<**
 
 共享一个 ChatGPT 账号给多用户同时使用的 web 应用，使用 FastAPI + Vue3 开发。可用于朋友之间共享或合租 ChatGPT 账号。支持 ChatGPT Plus / 设置对话模型 / 用户请求限制等功能。支持使用 GPT-4！
 
+</div>
+
 ![screenshot](docs/screenshot.jpeg)
+
+![screenshot_admin](docs/screenshot_admin.jpeg)
 
 通知/讨论 Channel：https://t.me/chatgptwebshare
 
@@ -16,17 +22,18 @@
 
 ChatGPT Web Share (简称 CWS) 的目的是「共享」一个 ChatGPT Plus 账号给多个用户。CWS 是：
 - 前后端分离的应用，因此你需要自行部署后端到一个稳定且 IP 可靠的服务器上
-- 用于共享 ChatGPT Plus 账号，而不是官方 API
-- 使用 unofficial ChatGPT API，优先支持 ChatGPT Plus 账号
+- 用于共享 ChatGPT 账号，而不是官方 API
+- 支持用户管理，并支持设置各用户的权限和对话次数
+- 优先支持 ChatGPT Plus 账号
 
 ## 特点
 
 - 美观简洁的 web 界面，使用 [naive-ui](https://www.naiveui.com/)
-  - 支持多语言
-  - 切换夜间模式
+  - 多语言（简体中文、英语）支持
+  - 适配夜间模式
   - 支持一键复制回复内容或代码内容
-  - 支持显示回复中的图像/表格/数学公式/语法高亮
-  - **支持导出对话为美观的 Markdown 或 PDF 文件**
+  - 支持显示回复中的图像/表格/数学公式/代码语法高亮
+  - 一键导出对话为美观的 Markdown 或 PDF 文件
   - 动态显示回复内容
   - 支持停止生成对话
 - 多用户共享管理
@@ -41,7 +48,7 @@ ChatGPT Web Share (简称 CWS) 的目的是「共享」一个 ChatGPT Plus 账�
   - 实时查看日志
   - 记录请求及对话统计信息
 
-## 使用指南
+## 部署指南
 
 参见 WIKI：[中文指南](https://github.com/moeakwak/chatgpt-web-share/wiki/%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97)
 
