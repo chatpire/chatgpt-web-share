@@ -505,6 +505,7 @@ const sendMsg = async () => {
         title: t('errors.askError'),
         content: wsErrorMessage != null ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}` : `[${event.code}] ${t(event.reason)}`,
         positiveText: t('commons.withdrawMessage'),
+        negativeText: t("commons.cancel"),
         onPositiveClick: () => {
           currentActiveMessageSend.value = null;
           currentActiveMessageRecv.value = null;

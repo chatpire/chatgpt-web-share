@@ -132,7 +132,9 @@
     "noAvailableGPT4AskCount": "No Available GPT-4 Ask Count!",
     "userNotAllowToUseGPT4Model": "Not allowed to use GPT-4 model",
     "noUserSelected": "No User Selected",
-    "httpError": "HTTP Error"
+    "httpError": "HTTP Error",
+    "internal": "Internal Error",
+    "invalidParams": "Invalid Params"
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
