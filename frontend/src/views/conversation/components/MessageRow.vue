@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col md:flex-row py-2 md:py-4 px-5 md:px-4 max-w-full relative" :style="{ backgroundColor: backgroundColor }">
-    <div class="w-10 ml-0 md:ml-2 mt-3">
+  <div class="flex <sm:flex-col flex-row <sm:py-2 py-4 <sm:px-5 px-4 max-w-full relative" :style="{ backgroundColor: backgroundColor }">
+    <div class="w-10 <sm:ml-0 ml-2 mt-3">
       <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
       <n-avatar v-if="props.message.author_role == 'user'" size="small">
         <n-icon>
@@ -10,18 +10,18 @@
       <n-avatar v-else-if="isGpt4" size="small" :src="chatgptIconBlack" />
       <n-avatar v-else size="small" :src="chatgptIcon" />
     </div>
-    <div class="mx-0 md:mx-4 w-full">
+    <div class="<sm:mx-0 mx-4 w-full">
       <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
       <div v-show="showRawContent" class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
-        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute bottom-3 right-3 md:bottom-1 md:right-1"
+        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute <sm:bottom-3 <sm:right-3 bottom-1 right-1"
           @click="copyMessageContent">
           <n-icon>
             <CopyOutline />
           </n-icon>
         </n-button>
         <n-button text ghost size="tiny" :type="showRawContent ? 'success' : 'tertiary'"
-          class="mt-2 -ml-2 absolute bottom-3 right-9 md:bottom-1 md:right-5" @click="toggleShowRawContent">
+          class="mt-2 -ml-2 absolute <sm:bottom-3 <sm:right-9 bottom-1 right-5" @click="toggleShowRawContent">
           <n-icon>
             <CodeSlash />
           </n-icon>
@@ -41,16 +41,16 @@ import { Message } from '@/utils/tips';
 import { useI18n } from 'vue-i18n';
 import chatgptIcon from '/chatgpt-icon.svg';
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
-// import md from "@/utils/markdown";
-let md: any;
-let mdLoaded = ref(false);
+import md from "@/utils/markdown";
+// let md: any;
+// let mdLoaded = ref(false);
 
-onMounted(() => {
-  import("@/utils/markdown").then((module) => {
-    md = module.default;
-    mdLoaded.value = true;
-  });
-});
+// onMounted(() => {
+//   import("@/utils/markdown").then((module) => {
+//     md = module.default;
+//     mdLoaded.value = true;
+//   });
+// });
 
 const { t } = useI18n();
 
@@ -82,9 +82,9 @@ const backgroundColor = computed(() => {
 })
 
 const renderedContent = computed(() => {
-  if (!mdLoaded.value) {
-    return '';
-  }
+  // if (!mdLoaded.value) {
+  //   return '';
+  // }
   const result = md.render(props.message.message || '');
   return addButtonsToPreTags(result);
 });
@@ -202,6 +202,7 @@ pre code {
 @media print {
   code {
     @apply max-w-160 !important
+    @apply whitespace-pre-line
   }
 }
 
