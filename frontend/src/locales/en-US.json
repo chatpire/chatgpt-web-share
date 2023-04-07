@@ -104,7 +104,9 @@
     "sumOfNormalAskDuration": "The total time spent on ordinary conversations",
     "abortRequest": "Abort Request",
     "clearAllConversations": "Clear All Conversations",
-    "readyToClearAllConversations": "Are you sure you want to clear all conversations?"
+    "readyToClearAllConversations": "Are you sure you want to clear all conversations?",
+    "sendKey": "Send Key",
+    "preferences": "Preference"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -148,7 +150,7 @@
     "changeConversationTitleSuccess": "Title changed successfully",
     "changeConversationTitleFailed": "Failed to change title",
     "rename": "Please enter new title",
-    "sendMessage": "Please enter message, press Shift+Enter to send",
+    "sendMessage": "Please enter message, press {0} to send. You can chang send key in preference settings.",
     "logoutConfirm": "Are you sure you want to log out?",
     "pleaseEnterNickname": "Please enter nickname",
     "pleaseEnterEmail": "Please enter email",

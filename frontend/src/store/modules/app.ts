@@ -10,12 +10,10 @@ const useAppStore = defineStore("app", {
   state: (): AppState => ({
     theme: useStorage("theme", osThemeRef.value),
     language: useStorage("language", "zh"),
+    sendKey: useStorage("sendKey", "Shift+Enter"),
   }),
   getters: {},
   actions: {
-    // setTheme(theme: string | null) {
-    //   this.theme = theme;
-    // },
     // 切换主题
     toggleTheme() {
       this.theme = this.theme === "dark" ? "light" : "dark";

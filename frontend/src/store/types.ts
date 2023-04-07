@@ -9,6 +9,7 @@ interface UserState {
 interface AppState {
   theme: any;
   language: any;
+  sendKey: any;
 }
 
 export type { UserState, AppState };

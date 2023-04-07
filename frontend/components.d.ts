@@ -46,6 +46,7 @@ declare module '@vue/runtime-core' {
     NText: typeof import('naive-ui')['NText']
     NTooltip: typeof import('naive-ui')['NTooltip']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']
+    PreferenceForm: typeof import('./src/components/PreferenceForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     UserProfileCard: typeof import('./src/components/UserProfileCard.vue')['default']
