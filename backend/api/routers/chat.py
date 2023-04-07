@@ -5,7 +5,7 @@ from typing import List
 import httpx
 import requests
 from fastapi import APIRouter, Depends, WebSocket
-from websockets.exceptions import ConnectionClosed, ConnectionClosedOK
+from websockets.exceptions import ConnectionClosed
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
@@ -14,7 +14,7 @@ import api.globals as g
 
 from api.database import get_async_session_context
 from api.enums import ChatStatus, ChatModels
-from api.exceptions import InvalidParamsException, AuthorityDenyException
+from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
 from api.models import User, Conversation
 from api.schema import ConversationSchema
 from api.users import current_active_user, websocket_auth, current_super_user
@@ -62,7 +62,12 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
 
 @router.get("/conv/{conversation_id}", tags=["conversation"])
 async def get_conversation_history(conversation: Conversation = Depends(get_conversation_by_id)):
-    result = await api.chatgpt.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
+    try:
+        result = await api.chatgpt.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            raise InvalidParamsException("errors.conversationNotFound")
+        raise InternalException()
     # 当不知道模型名时，顺便从对话中获取
     if conversation.model_name is None:
         model_name = result.get("model_name")
@@ -275,6 +280,11 @@ async def ask(websocket: WebSocket):
     ask_start_time = None
     queueing_start_time = None
 
+    def check_message(msg: str):
+        url = config.get("chatgpt_base_url")
+        if url and url in msg:
+            return msg.replace(url, "<chatgpt_base_url>")
+
     try:
         # 标记用户为 queueing
         await change_user_chat_status(user.id, ChatStatus.queueing)
@@ -313,10 +323,11 @@ async def ask(websocket: WebSocket):
             finally:
                 api.chatgpt.chatgpt_manager.reset_chat()
 
-    except ConnectionClosed as e:
+    except ConnectionClosed:
         # print("websocket aborted", e.code)
         is_canceled = True
     except requests.exceptions.Timeout:
+        logger.warning(str(e))
         await websocket.send_json({
             "type": "error",
             "tip": "errors.timeout"
@@ -324,28 +335,32 @@ async def ask(websocket: WebSocket):
         websocket_code = 1001
         websocket_reason = "errors.timout"
     except revChatGPTError as e:
+        logger.error(str(e))
+        message = check_message(f"{e.source} {e.code}: {e.message}")
         await websocket.send_json({
             "type": "error",
             "tip": "errors.chatgptResponseError",
-            "message": f"{e.source} {e.code}: {e.message}"
+            "message": message
         })
         websocket_code = 1001
         websocket_reason = "errors.chatgptResponseError"
     except HTTPError as e:
         logger.error(str(e))
+        message = check_message(str(e))
         await websocket.send_json({
             "type": "error",
             "tip": "errors.httpError",
-            "message": str(e)
+            "message": message
         })
         websocket_code = 1014
         websocket_reason = "errors.httpError"
     except Exception as e:
         logger.error(str(e))
+        message = check_message(str(e))
         await websocket.send_json({
             "type": "error",
             "tip": "errors.unknownError",
-            "message": str(e)
+            "message": message
         })
         websocket_code = 1011
         websocket_reason = "errors.unknownError"

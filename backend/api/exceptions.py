@@ -30,3 +30,8 @@ class ResourceNotFoundException(SelfDefinedException):
 class InvalidRequestException(SelfDefinedException):
     def __init__(self, message: str = ""):
         super().__init__("errors.invalidRequest", message)
+
+
+class InternalException(SelfDefinedException):
+    def __init__(self, message: str = ""):
+        super().__init__("errors.internal", message)
