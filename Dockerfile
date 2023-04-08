@@ -9,12 +9,12 @@ RUN CGO_ENABLED=0 go build -a -installsuffix cgo .
 FROM python:3.10-alpine
 
 ARG PIP_CACHE_DIR=/pip_cache
-ARG BUILDARCH
+ARG TARGETARCH
 
 RUN mkdir -p /app/backend
 
 RUN apk add --update caddy
-RUN if [ "${BUILDARCH}" = "arm64" ] ; then \
+RUN if [ "${TARGETARCH}" = "arm64" ] ; then \
         apk add --no-cache gcc musl-dev libffi-dev \
     ; fi
 
