@@ -4,6 +4,11 @@ on:
   push:
     tags: ["v*"]
     branches: ["test-workflow"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag for the Docker image (semver)"
+        required: true
 
 env:
   REGISTRY: ghcr.io
@@ -80,9 +85,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-      
+            type=semver,pattern={{version}}${{ github.event_name == 'workflow_dispatch' && format(',value={0}', github.event.inputs.version) || '' }}
+            type=semver,pattern={{major}}.{{minor}}${{ github.event_name == 'workflow_dispatch' && format(',value={0}', github.event.inputs.version) || '' }}
+
       # - name: Create Sentry release
       #   uses: getsentry/action-release@v1
       #   env:
