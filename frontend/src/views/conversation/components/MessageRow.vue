@@ -42,6 +42,7 @@ import { useI18n } from 'vue-i18n';
 import chatgptIcon from '/chatgpt-icon.svg';
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import md from "@/utils/markdown";
+import * as clipboard from "clipboard-polyfill"
 // let md: any;
 // let mdLoaded = ref(false);
 
@@ -143,8 +144,7 @@ const bindOnclick = () => {
   for (const preElement of (preElements as any)) {
     for (const button of preElement.querySelectorAll('button')) {
       (button as HTMLButtonElement).onclick = () => {
-        if (!navigator.clipboard) return;
-        navigator.clipboard
+        clipboard
           .writeText(button.parentElement!.textContent || "")
           .then(function () {
             button.innerHTML = "Copied!";
@@ -176,6 +176,7 @@ const bindOnclick = () => {
 };
 
 const copyMessageContent = () => {
+  /* debugger
   if (!navigator.clipboard) return;
   navigator.clipboard
     .writeText(props.message.message || "")
@@ -183,7 +184,13 @@ const copyMessageContent = () => {
       // console.log('copied', props.message.message);
       Message.success(t('commons.copiedToClipboard'))
     }
-    ).then();
+    ).then(); */
+  const messageContent = props.message.message || '';
+  clipboard.writeText(messageContent).then(() => {
+    Message.success(t('commons.copiedToClipboard'));
+  }).catch(() => {
+    console.error('Failed to copy message content to clipboard.');
+  });
 }
 </script>
 
