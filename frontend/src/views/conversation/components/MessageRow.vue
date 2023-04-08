@@ -11,8 +11,10 @@
       <n-avatar v-else size="small" :src="chatgptIcon" />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
-      <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
-      <div v-show="showRawContent" class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
+      <div v-show="!showRawContent && props.message.author_role != 'user'" ref="contentRef" class="message-content w-full"
+        v-html="renderedContent"></div>
+      <div v-show="showRawContent || props.message.author_role == 'user'"
+        class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
         <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-1 right-1"
           @click="copyMessageContent">
@@ -42,6 +44,7 @@ import { useI18n } from 'vue-i18n';
 import chatgptIcon from '/chatgpt-icon.svg';
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import md from "@/utils/markdown";
+import * as clipboard from "clipboard-polyfill"
 // let md: any;
 // let mdLoaded = ref(false);
 
@@ -143,8 +146,7 @@ const bindOnclick = () => {
   for (const preElement of (preElements as any)) {
     for (const button of preElement.querySelectorAll('button')) {
       (button as HTMLButtonElement).onclick = () => {
-        if (!navigator.clipboard) return;
-        navigator.clipboard
+        clipboard
           .writeText(button.parentElement!.textContent || "")
           .then(function () {
             button.innerHTML = "Copied!";
@@ -176,6 +178,7 @@ const bindOnclick = () => {
 };
 
 const copyMessageContent = () => {
+  /* debugger
   if (!navigator.clipboard) return;
   navigator.clipboard
     .writeText(props.message.message || "")
@@ -183,7 +186,13 @@ const copyMessageContent = () => {
       // console.log('copied', props.message.message);
       Message.success(t('commons.copiedToClipboard'))
     }
-    ).then();
+    ).then(); */
+  const messageContent = props.message.message || '';
+  clipboard.writeText(messageContent).then(() => {
+    Message.success(t('commons.copiedToClipboard'));
+  }).catch(() => {
+    console.error('Failed to copy message content to clipboard.');
+  });
 }
 </script>
 

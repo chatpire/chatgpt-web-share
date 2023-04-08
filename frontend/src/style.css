@@ -3,3 +3,7 @@
     visibility: hidden !important;
   }
 }
+
+::-webkit-scrollbar {
+  display: none;
+}

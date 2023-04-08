@@ -57,7 +57,7 @@
               {{ t("commons.abortRequest") }}
             </n-button>
           </div>
-          <div class="right-4 -top-12 lg:-right-10 lg:-top-8 ml-1 absolute">
+          <div class="right-4 -top-12 ml-1 absolute">
             <!-- 回到底部按钮 -->
             <n-button @click="scrollToBottomSmooth" secondary circle size="small">
               <template #icon>

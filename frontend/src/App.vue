@@ -1,7 +1,7 @@
 <template>
   <n-config-provider :theme="theme">
     <n-global-style />
-    <div class="w-full lg:w-screen-lg mx-auto h-screen flex flex-col">
+    <div class="w-full mx-auto h-screen flex flex-col">
       <div class="my-4">
         <PageHeader class="mx-2 lg:mx-0" />
       </div>
