@@ -30,21 +30,20 @@ async def sync_conversations():
                     if openai_conv["title"] != conv_db.title:
                         conv_db.title = openai_conv["title"]
                         logger.info(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
-                        session.add(conv_db)
                     # 同步时间
                     create_time = dateutil.parser.isoparse(openai_conv["create_time"])
                     if create_time != conv_db.create_time:
                         conv_db.create_time = create_time
                         logger.info(
                             f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
-                        session.add(conv_db)
+                    session.add(conv_db)
                     openai_conversations_map.pop(conv_db.conversation_id)
                 else:
-                    if conv_db.is_valid:  # 若数据库中存在，但 ChatGPT 中不存在，则将数据库中的对话标记为无效
-                        conv_db.is_valid = False
-                        logger.info(
-                            f"Conversation [{conv_db.title}]({conv_db.conversation_id}) is not valid, marked as invalid")
-                        session.add(conv_db)
+                    if conv_db.is_valid:  # 数据库中存在，但 ChatGPT 中（可能）不存在
+                        # conv_db.is_valid = False
+                        logger.warning(
+                            f"Cannot fetch conversation [{conv_db.title}]({conv_db.conversation_id})")
+                        # session.add(conv_db)
 
             # 新增对话
             for openai_conv in openai_conversations_map.values():
