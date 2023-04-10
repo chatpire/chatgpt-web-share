@@ -1,6 +1,6 @@
 <template>
   <div class="mb-4 mt-1 ml-1 flex flex-row justify-between space-x-2">
-    <div>
+    <div class="flex flex-row space-x-4">
       <n-button circle @click="refreshData">
         <template #icon>
           <n-icon>
