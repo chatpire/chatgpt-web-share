@@ -105,8 +105,10 @@
     "abortRequest": "停止请求",
     "clearAllConversations": "清空所有对话",
     "readyToClearAllConversations": "警告：你即将要清空所有对话，这将销毁所有对话数据。确定要清空所有对话吗？",
-    "sendKey": "发送键",
-    "preferences": "偏好设置"
+    "sendKey": "发送快捷键",
+    "preferences": "偏好设置",
+    "renderUserMessageInMd": "渲染用户回复为Markdown",
+    "codeAutoWrap": "代码自动换行"
   },
   "errors": {
     "403": "403 错误：无访问权限",

@@ -107,7 +107,7 @@
             </n-button>
           </div>
           <!-- 输入框 -->
-          <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage', [appStore.sendKey])"
+          <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage', [appStore.preference.sendKey])"
             @keydown="shortcutSendMsg" />
           <div class="m-2 flex flex-row justify-between">
             <n-text depth="3" class="hidden sm:block">
@@ -343,7 +343,7 @@ const makeNewConversation = () => {
 }
 
 const shortcutSendMsg = (e: KeyboardEvent) => {
-  const sendKey = appStore.sendKey; // "Shift+Enter" or "Ctrl+Enter" or "Enter"
+  const sendKey = appStore.preference.sendKey; // "Shift+Enter" or "Ctrl+Enter" or "Enter"
   if (sendKey === "Enter" && e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
     e.preventDefault();
     sendMsg();

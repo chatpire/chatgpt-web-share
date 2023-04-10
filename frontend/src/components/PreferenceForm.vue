@@ -1,35 +1,37 @@
 <template>
   <!-- A n-form: a n-select to switch sendKey in ["Shift+Enter", "Enter", "Ctrl+Enter"] -->
-  <n-form v-model:value="model">
+  <n-form v-model:value="model" label-placement="left"
+    label-width="auto">
     <n-form-item :label="t('commons.sendKey')" prop="sendKey">
       <n-select v-model:value="model.sendKey" :options="sendKeyOptions" />
+    </n-form-item>
+    <!-- n-switch for renderUserMessageInMd and codeAutoWrap -->
+    <n-form-item :label="t('commons.renderUserMessageInMd')" prop="renderUserMessageInMd">
+      <n-switch v-model:value="model.renderUserMessageInMd" />
+    </n-form-item>
+    <n-form-item :label="t('commons.codeAutoWrap')" prop="codeAutoWrap">
+      <n-switch v-model:value="model.codeAutoWrap" />
     </n-form-item>
   </n-form>
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from '@/store';
 import { ref, watch } from 'vue';
 import { i18n } from '@/i18n';
+import { Preference } from '@/types/custom';
 
 const t = i18n.global.t as any;
 
-const appStore = useAppStore();
-
-type Model = {
-  sendKey: string
-};
-
 const props = defineProps<{
-  value: Model
+  value: Preference
 }>()
 
-const model = ref<Model>(props.value);
+const model = ref<Preference>(props.value);
 
 const sendKeyOptions = [
   { label: 'Shift+Enter', value: 'Shift+Enter' },
-  { label: 'Enter', value: 'Enter' },
   { label: 'Ctrl+Enter', value: 'Ctrl+Enter' },
+  { label: 'Enter', value: 'Enter' },
 ]
 
 const emit = defineEmits(['update:value']);

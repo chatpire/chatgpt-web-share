@@ -105,7 +105,7 @@
     "abortRequest": "Abort Request",
     "clearAllConversations": "Clear All Conversations",
     "readyToClearAllConversations": "Are you sure you want to clear all conversations?",
-    "sendKey": "Send Key",
+    "sendKey": "Send Short Key",
     "preferences": "Preference"
   },
   "errors": {

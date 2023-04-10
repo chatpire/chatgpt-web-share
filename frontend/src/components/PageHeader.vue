@@ -62,6 +62,7 @@ import { popupResetUserPasswordDialog } from '@/utils/renders';
 import { resetUserPasswordApi } from '@/api/user';
 import chatgptIcon from '/chatgpt-icon.svg';
 import PreferenceForm from './PreferenceForm.vue';
+import { Preference } from '@/types/custom';
 
 const { t } = useI18n();
 const userStore = useUserStore();
@@ -133,8 +134,8 @@ const getOptions = (): Array<DropdownOption> => {
       key: 'preference',
       props: {
         onClick: () => {
-          let preference = {
-            sendKey: appStore.sendKey,
+          let preference: Preference = {
+            ...appStore.preference
           }
           Dialog.info({
             title: t("commons.preferences"),
@@ -148,7 +149,9 @@ const getOptions = (): Array<DropdownOption> => {
                 value: preference
               }),
             onPositiveClick() {
-              appStore.$patch(preference);
+              appStore.$patch({
+                preference: preference
+              });
               Message.success(t("tips.success"));
             },
           });

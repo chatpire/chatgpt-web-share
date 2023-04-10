@@ -5,12 +5,17 @@ const osThemeRef = useOsTheme();
 import { useStorage } from "@vueuse/core";
 import { setLocale } from "@/i18n";
 import { themeRef } from "@/utils/tips";
+import { Preference } from "@/types/custom";
 
 const useAppStore = defineStore("app", {
   state: (): AppState => ({
     theme: useStorage("theme", osThemeRef.value),
     language: useStorage("language", "zh"),
-    sendKey: useStorage("sendKey", "Shift+Enter"),
+    preference: useStorage<Preference>("preference", {
+      sendKey: "Shift+Enter",
+      renderUserMessageInMd: false,
+      codeAutoWrap: false,
+    }),
   }),
   getters: {},
   actions: {

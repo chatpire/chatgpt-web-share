@@ -16,3 +16,9 @@ export type ChatConversationDetail = {
   mapping: Record<string, ChatMessage>;
   model_name: string | null;
 };
+
+export type Preference = {
+  sendKey: "Shift+Enter" | "Enter" | "Ctrl+Enter";
+  renderUserMessageInMd: boolean;
+  codeAutoWrap: boolean;
+};

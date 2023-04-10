@@ -11,8 +11,8 @@
       <n-avatar v-else size="small" :src="chatgptIcon" />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
-      <div v-show="!showRawContent" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
-      <div v-show="showRawContent" class="my-3 w-full whitespace-pre-line text-gray-500">{{ props.message.message }}</div>
+      <div v-show="!showRawContent" ref="contentRef" :class="['message-content w-full', renderPureText ? 'whitespace-pre-wrap py-4' : '']" v-html="renderedContent"></div>
+      <div v-show="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
         <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-1 right-1"
           @click="copyMessageContent">
@@ -32,13 +32,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { ChatMessage } from '@/types/custom';
 import { useThemeVars } from "naive-ui"
 import { PersonFilled } from '@vicons/material';
 import { CopyOutline, CodeSlash } from '@vicons/ionicons5';
 import { Message } from '@/utils/tips';
 import { useI18n } from 'vue-i18n';
+import {useAppStore} from "@/store";
 import chatgptIcon from '/chatgpt-icon.svg';
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import md from "@/utils/markdown";
@@ -54,6 +55,7 @@ import * as clipboard from "clipboard-polyfill"
 // });
 
 const { t } = useI18n();
+const appStore = useAppStore();
 
 const themeVars = useThemeVars();
 
@@ -61,6 +63,10 @@ let observer = null;
 
 const contentRef = ref<HTMLDivElement>();
 const showRawContent = ref(false);
+
+const renderPureText = computed(() => {
+  return appStore.preference.renderUserMessageInMd === false && props.message.author_role == 'user';
+})
 
 const toggleShowRawContent = () => {
   showRawContent.value = !showRawContent.value;
@@ -86,6 +92,9 @@ const renderedContent = computed(() => {
   // if (!mdLoaded.value) {
   //   return '';
   // }
+  if (renderPureText.value) {
+    return props.message.message;
+  }
   const result = md.render(props.message.message || '');
   return addButtonsToPreTags(result);
 });
@@ -114,6 +123,10 @@ function addButtonsToPreTags(htmlString: string): string {
       "--hljs-theme-background",
       window.getComputedStyle(preTag).backgroundColor
     );
+
+    if (appStore.preference.codeAutoWrap) {
+      preTag.style.cssText += "white-space: pre-wrap; word-wrap: break-word; word-break: break-all;";
+    }
 
     preTag.appendChild(button);
   }
