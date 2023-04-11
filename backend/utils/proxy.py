@@ -22,11 +22,14 @@ def run_reverse_proxy():
 
     puid = config.get("reverse_proxy_puid")
     env_vars = {"PORT": str(config.get("reverse_proxy_port", 6060))}
+    http_proxy = config.get("reverse_proxy_http_proxy")
     if puid:
         env_vars["PUID"] = puid
     if config.get("auto_refresh_reverse_proxy_puid"):
         env_vars["ACCESS_TOKEN"] = config.get("chatgpt_access_token")
-
+    if http_proxy:
+        env_vars["http_proxy"] = http_proxy
+        logger.info(f"Reverse proxy Using http proxy: {http_proxy}")
     g.reverse_proxy_log_file = open(os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"), "w",
                                     encoding="utf-8")
     logger.debug(f"Reverse proxy binary path: {proxy_path}")
