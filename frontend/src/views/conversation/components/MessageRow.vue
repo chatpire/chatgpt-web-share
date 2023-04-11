@@ -156,9 +156,23 @@ const bindOnclick = () => {
   if (!preElements) return;
   for (const preElement of (preElements as any)) {
     for (const button of preElement.querySelectorAll('button')) {
-      (button as HTMLButtonElement).onclick = () => {
+      (button as HTMLButtonElement).onmousedown = () => {
+        // 如果按钮的内容为 "Copied!"，则跳过复制操作
+        if (button.innerHTML === "Copied!") {
+          return;
+        }
+
+        const preContent = button.parentElement!.cloneNode(true) as HTMLElement;
+        preContent.removeChild(preContent.querySelector("button")!);
+
+        // Remove the alert element if it exists in preContent
+        const alertElement = preContent.querySelector(".hljs-copy-alert");
+        if (alertElement) {
+          preContent.removeChild(alertElement);
+        }
+
         clipboard
-          .writeText(button.parentElement!.textContent || "")
+          .writeText(preContent.textContent || "")
           .then(function () {
             button.innerHTML = "Copied!";
             button.dataset.copied = "true";

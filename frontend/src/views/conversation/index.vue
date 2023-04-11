@@ -25,7 +25,7 @@
       <!-- 右栏 -->
       <n-card class="md:w-3/4 h-full" :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;">
         <!-- 上半部分 -->
-        <n-scrollbar class="h-140 sm:h-0 flex-grow" ref="historyRef" :content-style="{ height: '100%' }" v-if="currentConversationId">
+        <n-scrollbar class="h-140 sm:h-0 flex-grow" ref="historyRef" v-if="currentConversationId">
           <!-- 消息记录内容（用于全屏展示） -->
           <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :fullscreen="false"
             :model-name="currentConversation?.model_name || ''" :show-tips="showFullscreenTips" :loading="loadingHistory" />
