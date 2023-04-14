@@ -49,7 +49,7 @@ class ChatGPTManager:
         await self.chatbot.clear_conversations()
 
     def ask(self, message, conversation_id: str = None, parent_id: str = None,
-            timeout=360, model_name: ChatModels = None, state: list = None):
+            timeout=360, model_name: ChatModels = None, _: Conversation = None):
         if model_name is not None and model_name != ChatModels.unknown:
             self.chatbot.config["model"] = model_name.value
         return self.chatbot.ask(message, conversation_id, parent_id, timeout)
