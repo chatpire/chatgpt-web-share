@@ -2,12 +2,14 @@ from typing import List, Optional
 
 from fastapi_users_db_sqlalchemy import Integer, GUID, UUID_ID
 from sqlalchemy import String, DateTime, Enum, Boolean, Float, ForeignKey
+from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
 
 from api.enums import ChatStatus, ChatModels
 
+import json
 
 # declarative base class
 class Base(DeclarativeBase):
@@ -40,7 +42,7 @@ class User(Base):
 
     hashed_password: Mapped[str] = mapped_column(String(1024))
     conversations: Mapped[List["Conversation"]] = relationship("Conversation", back_populates="user")
-
+    user_apis: Mapped[List["UserApi"]] = relationship("UserApi", back_populates="user")
 
 class Conversation(Base):
     """
@@ -60,3 +62,41 @@ class Conversation(Base):
         Enum(ChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None), default=None, comment="使用的模型")
     create_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="创建时间")
     active_time: Mapped[Optional[DateTime]] = mapped_column(DateTime, default=None, comment="最后活跃时间")
+    state: Mapped[Optional[list]] = mapped_column(JSON, comment="完整对话dict")
+
+
+class Api(Base):
+    __tablename__ = "api"
+    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type: Mapped[str] = mapped_column(comment="api类型")
+    key: Mapped[str] = mapped_column(comment="api key")
+    endpoint: Mapped[Optional[str]] = mapped_column(comment="api key")
+    models: Mapped[Optional[dict]] = mapped_column(JSON, comment="支持的models")
+    users = relationship("UserApi", back_populates="api")
+    
+    def _get_model_list(self):
+        if self.models:
+            return json.loads(self.models)
+        return []
+
+    def _get_deployment(self, model: ChatModels):
+        if self.type == "azure":
+            assert model in [ChatModels.gpt35, ChatModels.gpt4, ChatModels.gpt4_32k]
+            for m in self._get_model_list():
+                if m['name'] == model.value:
+                    return m["deployment"]
+            return None
+        else:
+            return None
+
+class UserApi(Base):
+    __tablename__ = "user_api"
+    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
+    user: Mapped["User"] = relationship(back_populates="user_apis")
+    api_id: Mapped[Optional[int]] = mapped_column(ForeignKey("api.id"), comment="api id")
+    api: Mapped["Api"] = relationship(back_populates="users")
+    models: Mapped[Optional[dict]] = mapped_column(JSON, comment="支持的models")
+

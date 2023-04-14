@@ -24,7 +24,7 @@ from api.models import Conversation, User
 from api.response import CustomJSONResponse, PrettyJSONResponse, handle_exception_response
 from api.database import create_db_and_tables, get_async_session_context
 from api.exceptions import SelfDefinedException
-from api.routers import users, chat, system, status
+from api.routers import users, chat, system, status, api
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -53,6 +53,7 @@ app.include_router(users.router)
 app.include_router(chat.router)
 app.include_router(system.router)
 app.include_router(status.router)
+app.include_router(api.router)
 
 origins = config.get("cors_allow_origins", [
     "http://localhost",

@@ -77,6 +77,7 @@
     "availableGPT4AskCount": "Available GPT-4 Ask Count",
     "canUseGPT4Model": "Allow GPT-4",
     "logViewer": "Log Viewer",
+    "apiManagement": "API Management",
     "serverLogs": "Server Logs",
     "proxyLogs": "Reverse Proxy Logs",
     "updateInterval": "Refresh Interval",

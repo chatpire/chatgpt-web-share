@@ -76,6 +76,11 @@ const router = createRouter({
           name: "logViewer",
           component: () => import("@/views/admin/log_viewer.vue"),
         },
+        {
+          path: "api",
+          name: "apiManagement",
+          component: () => import("@/views/admin/api_manager.vue"),
+        },
       ],
     },
     {

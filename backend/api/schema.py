@@ -97,3 +97,26 @@ class LogFilterOptions(BaseModel):
         if v <= 0:
             raise ValueError("max_lines must be positive")
         return v
+
+class ApiRead(BaseModel):
+    id: int
+    type: str
+    key: str
+    endpoint: str
+    models: str
+    
+class ApiCreate(BaseModel):
+    type: str
+    key: str
+    endpoint: str
+    
+class ApiUpdate(BaseModel):
+    type: str
+    key: str
+    endpoint: str
+    models: str
+
+class UserApiCreate(BaseModel):
+    user_id: int
+    api_id: int
+    models: list[str]

@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { InformationCircle, ChatbubbleEllipses, FileTrayFull } from '@vicons/ionicons5';
+import { InformationCircle, ChatbubbleEllipses, FileTrayFull, Apps } from '@vicons/ionicons5';
 import { SupervisedUserCircleRound } from '@vicons/material';
 
 import { ref, computed, watch, h } from 'vue';
@@ -59,6 +59,11 @@ const menuOptions = [
     label: t('commons.logViewer'),
     key: 'logViewer',
     icon: renderIcon(FileTrayFull),
+  },
+  {
+    label: t('commons.apiManagement'),
+    key: 'apiManagement',
+    icon: renderIcon(Apps),
   },
 ];
 

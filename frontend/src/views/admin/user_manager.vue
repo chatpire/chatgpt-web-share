@@ -19,14 +19,16 @@
 import { ref, reactive, computed, h } from 'vue';
 import { useUserStore } from '@/store';
 import { DataTableColumns, NButton, NIcon } from 'naive-ui'
-import { LimitSchema, UserCreate, UserRead, chatStatusMap } from '@/types/schema';
+import { ApiRead, LimitSchema, UserCreate, UserRead, chatStatusMap } from '@/types/schema';
 import { useI18n } from 'vue-i18n';
 import { getAllUserApi, registerApi, deleteUserApi, resetUserPasswordApi, updateUserLimitApi } from '@/api/user';
+import { getAllApi, getUserApi } from '@/api/api';
 import { Dialog, Message } from '@/utils/tips';
 import { TrashOutline, Pencil } from '@vicons/ionicons5';
 import { PasswordRound, RefreshFilled } from '@vicons/material';
 import EditUserForm from './components/EditUserForm.vue';
 import EditLimitForm from './components/EditLimitForm.vue';
+import EditUserApiForm from './components/EditUserApiForm.vue';
 import { getCountTrans, popupResetUserPasswordDialog } from '@/utils/renders';
 
 const { t } = useI18n();
@@ -34,6 +36,7 @@ const { t } = useI18n();
 const userStore = useUserStore();
 
 const data = ref<Array<UserRead>>([]);
+const apiList = ref<Array<ApiRead>>([]);
 
 const refreshData = () => {
   getAllUserApi().then(res => {
@@ -44,6 +47,10 @@ const refreshData = () => {
 
 getAllUserApi().then(res => {
   data.value = res.data;
+})
+
+getAllApi().then(res => {
+  apiList.value = res.data;
 })
 
 const columns: DataTableColumns<UserRead> = [
@@ -197,6 +204,17 @@ const columns: DataTableColumns<UserRead> = [
           icon: () => h(NIcon, null, {
             default: () => h(Pencil)
           })
+        }),
+        h(NButton, {
+          size: "small",
+          type: "primary",
+          circle: true,
+          secondary: true,
+          onClick: handleEditUserApi(row)
+        }, {
+          icon: () => h(NIcon, null, {
+            default: () => h(Pencil)
+          })
         })
 
       ])
@@ -279,4 +297,23 @@ const handleSetUserLimit = (user: UserRead) => () => {
   })
 }
 
+const handleEditUserApi = (user: UserRead) => () => {
+  getUserApi(user.id).then(res => {
+    const userApi = res.data
+    const d = Dialog.info({
+      title: t("commons.editUserApi"),
+      style: "weight：800px",
+      content: () => h(EditUserApiForm, {
+        data: userApi,
+        apiList: apiList.value,
+        userId: user.id,
+      }, { default: () => "" }),
+      positiveText: t("commons.confirm"),
+      negativeText: t("commons.cancel"),
+      onPositiveClick: () => {
+        
+      }
+    })
+  })
+}
 </script>

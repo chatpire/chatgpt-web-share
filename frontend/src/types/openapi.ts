@@ -369,6 +369,49 @@ export interface components {
       /** Error Type */
       type: string;
     };
+    ApiRead: {
+      /** id */
+      id: number,
+      /** type */
+      type: string,
+      /** key */
+      key: string,
+      /** endpoint*/
+      endpoint: string,
+      /** models */
+      models: JSON,
+    }
+    /** ApiCreate */
+    ApiCreate: {
+      /** type */
+      type: string,
+      /** key */
+      key: string,
+      /** endpoint
+       * @default ""
+       */
+      endpoint?: string
+    }
+    UserApiCreate: {
+      /** user_id */
+      user_id: number,
+      /** api_id */
+      api_id: number,
+      /** models */
+      models: string[],
+    }
+    UserApiRead: {
+      /** id */
+      id: number,
+      /** user_id */
+      user_id: number,
+      /** api_id */
+      api_id: number,
+      /** models */
+      models: string[],
+      /** api */
+      api: components["schemas"]["ApiRead"],
+    }
   };
   responses: never;
   parameters: never;

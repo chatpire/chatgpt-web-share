@@ -9,13 +9,17 @@ from websockets.exceptions import ConnectionClosed
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from sqlalchemy import select, or_, and_, delete, func
+from sqlalchemy.orm import joinedload
+import uuid
+
 import api.chatgpt
+
 import api.globals as g
 
 from api.database import get_async_session_context
 from api.enums import ChatStatus, ChatModels
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
-from api.models import User, Conversation
+from api.models import User, Conversation, Api, UserApi
 from api.schema import ConversationSchema
 from api.users import current_active_user, websocket_auth, current_super_user
 from revChatGPT.typings import Error as revChatGPTError
@@ -63,7 +67,59 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
 @router.get("/conv/{conversation_id}", tags=["conversation"])
 async def get_conversation_history(conversation: Conversation = Depends(get_conversation_by_id)):
     try:
-        result = await api.chatgpt.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
+        if conversation.model_name.is_api():
+            mapping = {}
+            root_id = str(uuid.uuid4())
+            mapping[root_id] = {
+                "id": root_id,
+                "children": []
+            }
+            state = conversation.state
+            state.insert(0,
+                         {"role":"system", "content": ""})
+            current_id = root_id
+            for i, conv in enumerate(conversation.state):
+                message_id = str(uuid.uuid4())
+                author_role = conv["role"]
+                create_time = time.time()
+                content = conv["content"]
+                new_mapping = {
+                    "id": message_id,
+                    "message": {
+                        "id": message_id,
+                        "author": {
+                            "role": author_role,
+                            "metadata": {}
+                        },
+                        "create_time": create_time,
+                        "content": {
+                            "content_type": "text",
+                            "parts": [content]
+                        },
+                        "weight": 1.0,
+                        "metadata": {},
+                        "recipient": "all"
+                    },
+                    "parent": current_id,
+                    "children": []
+                }
+                mapping[message_id] = new_mapping
+                mapping[current_id]["children"].append(message_id)
+                current_id = message_id
+                if author_role == "assistant":
+                    mapping[current_id]["message"]["end_turn"] = True
+            return response(200, result={
+                "create_time": conversation.create_time,
+                "current_node": current_id,
+                "mapping": mapping,
+                "model_name": conversation.model_name,
+                "modreation_results": [],
+                "title": conversation.title,
+                "update_time": conversation.active_time,
+                
+            })
+        else:   
+            result = await api.chatgpt.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 404:
             raise InvalidParamsException("errors.conversationNotFound")
@@ -86,7 +142,8 @@ async def delete_conversation(conversation: Conversation = Depends(get_conversat
     if not conversation.is_valid:
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
     try:
-        await api.chatgpt.chatgpt_manager.delete_conversation(conversation.conversation_id)
+        if not conversation.model_name.is_api():
+            await api.chatgpt.chatgpt_manager.delete_conversation(conversation.conversation_id)
     except revChatGPTError as e:
         logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
     except httpx.HTTPStatusError as e:
@@ -188,6 +245,8 @@ async def generate_conversation_title(message_id: str, conversation: Conversatio
     result = jsonable_encoder(conversation)
     return result
 
+def _check_if_api(model_name):
+    return model_name.startswith("openai") or model_name.startswith("azure")
 
 @router.websocket("/conv")
 async def ask(websocket: WebSocket):
@@ -237,9 +296,33 @@ async def ask(websocket: WebSocket):
         model_name = model_name or conversation.model_name
     else:
         model_name = model_name or ChatModels.default
-
+        
+    api_type = None
     if isinstance(model_name, str):
         model_name = ChatModels(model_name)
+    if model_name.is_api():
+        splits = model_name.value.split("-")
+        api_type = splits[0]
+        _model_name = "-".join(splits[1:])
+        async with get_async_session_context() as session:
+            r = await session.execute(select(UserApi)
+                                      .filter(and_(user.id == UserApi.user_id,
+                                                   UserApi.models.contains(_model_name)))
+                                      .join(Api)
+                                      .filter(Api.type == api_type)
+                                      .options(joinedload(UserApi.api))
+                                      )
+            apis = r.scalars().all()
+            
+            import random
+            choosed = random.choice(apis)
+            if api_type == "azure":
+                endpoint = choosed.api.endpoint + "/openai/deployments/{}/chat/completions?api-version=2023-03-15-preview".format(choosed.api.models[_model_name])
+            else:
+                endpoint = "" 
+            manager = api.chatgpt.ChatGptApiManager(api_type, choosed.api.key, endpoint)
+    else:
+        manager = api.chatgpt.chatgpt_manager
     if model_name == ChatModels.paid and not user.can_use_paid:
         await websocket.close(1007, "errors.userNotAllowToUsePaidModel")
         return
@@ -284,13 +367,16 @@ async def ask(websocket: WebSocket):
         url = config.get("chatgpt_base_url")
         if url and url in msg:
             return msg.replace(url, "<chatgpt_base_url>")
-
+                    
+    to_reply = ""
+    to_ask = message
+    
     try:
         # 标记用户为 queueing
         await change_user_chat_status(user.id, ChatStatus.queueing)
         # is_queueing = True
         queueing_start_time = time.time()
-        async with api.chatgpt.chatgpt_manager.semaphore:
+        async with manager.semaphore:
             is_queueing = False
             try:
                 await change_user_chat_status(user.id, ChatStatus.asking)
@@ -299,9 +385,9 @@ async def ask(websocket: WebSocket):
                     "tip": "tips.waiting"
                 })
                 ask_start_time = time.time()
-                api.chatgpt.chatgpt_manager.reset_chat()
-                async for data in api.chatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,
-                                                                  model_name):
+                manager.reset_chat()
+                async for data in manager.ask(message, conversation_id, parent_id, timeout,
+                                                                  model_name, conversation):
                     has_got_reply = True
                     reply = {
                         "type": "message",
@@ -310,6 +396,7 @@ async def ask(websocket: WebSocket):
                         "parent_id": data["parent_id"],
                         "model_name": data["model"],
                     }
+                    to_reply = data["message"]
                     await websocket.send_json(reply)
                     if conversation_id is None:
                         conversation_id = data["conversation_id"]
@@ -321,7 +408,7 @@ async def ask(websocket: WebSocket):
                 else:
                     raise e
             finally:
-                api.chatgpt.chatgpt_manager.reset_chat()
+                manager.reset_chat()
 
     except ConnectionClosed:
         # print("websocket aborted", e.code)
@@ -400,13 +487,17 @@ async def ask(websocket: WebSocket):
 
     try:
         if has_got_reply:
+            state = [
+                {"role": "user", "content": to_ask},
+                {"role": "assistant", "content": to_reply},
+            ]
             async with get_async_session_context() as session:
                 # 若新建了对话，则添加到数据库
                 if is_new_conv and conversation_id is not None:
                     # 设置默认标题
                     try:
-                        if new_title is not None:
-                            await api.chatgpt.chatgpt_manager.set_conversation_title(conversation_id, new_title)
+                        if new_title is not None and not model_name.is_api():
+                            await manager.set_conversation_title(conversation_id, new_title)
                     except Exception as e:
                         logger.warning(e)
                     finally:
@@ -414,7 +505,8 @@ async def ask(websocket: WebSocket):
                         conversation = Conversation(conversation_id=conversation_id, title=new_title,
                                                     user_id=user.id,
                                                     model_name=model_name, create_time=current_time,
-                                                    active_time=current_time)
+                                                    active_time=current_time, state=state
+                                                )
                         session.add(conversation)
                 # 更新 conversation
                 if not is_new_conv:
@@ -422,6 +514,7 @@ async def ask(websocket: WebSocket):
                     conversation.active_time = datetime.utcnow()
                     if conversation.model_name != model_name:
                         conversation.model_name = model_name
+                    conversation.state = conversation.state + state
                     session.add(conversation)
 
                 # 扣除一次对话次数

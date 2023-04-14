@@ -13,7 +13,7 @@ import { ConversationSchema, ChatModels } from "@/types/schema";
 import { Dialog } from "@/utils/tips";
 import useUserStore from "@/store/modules/user";
 import { ChatConversationDetail } from "@/types/custom";
-
+import { getMyModels } from "@/api/api";
 const t = i18n.global.t as any;
 
 const modelNameMap = {
@@ -123,6 +123,16 @@ const getAvailableModelOptions = (): SelectOption[] => {
     });
   if (userStore.user?.can_use_gpt4)
     options.push({ label: t("commons.gpt4Model"), value: "gpt-4" });
+    
+  getMyModels().then(res=>{
+    res.data.map(key => {
+      options.push({
+        label: key,
+        value: key,
+      })
+    })
+  })
+
   return options;
 };
 

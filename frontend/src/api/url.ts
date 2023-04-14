@@ -6,6 +6,9 @@ enum ApiUrl {
 
   Conversation = "/conv",
   UserList = "/user",
+  ApiList = "/system/api",
+  UserApi = "/system/user/api/",
+  MyModels = "/api/user/models/",
 
   ServerStatus = "/status",
   SystemInfo = "/system/info",
