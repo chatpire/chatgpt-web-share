@@ -75,20 +75,6 @@ class Api(Base):
     models: Mapped[Optional[dict]] = mapped_column(JSON, comment="支持的models")
     users = relationship("UserApi", back_populates="api")
     
-    def _get_model_list(self):
-        if self.models:
-            return json.loads(self.models)
-        return []
-
-    def _get_deployment(self, model: ChatModels):
-        if self.type == "azure":
-            assert model in [ChatModels.gpt35, ChatModels.gpt4, ChatModels.gpt4_32k]
-            for m in self._get_model_list():
-                if m['name'] == model.value:
-                    return m["deployment"]
-            return None
-        else:
-            return None
 
 class UserApi(Base):
     __tablename__ = "user_api"
