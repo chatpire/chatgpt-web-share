@@ -68,4 +68,4 @@ ChatGPT Web Share (简称 CWS) 的目的是「共享」一个 ChatGPT Plus 账�
 
 如果觉得本项目对您有帮助，欢迎通过扫描下方赞赏码捐助项目 :)
 
-<img src="docs/donate.png" alt="donate" style="zoom:40%;" />
+<img src="docs/donate.png" alt="donate" width="200" height="200" />
