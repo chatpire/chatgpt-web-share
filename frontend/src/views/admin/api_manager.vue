@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, h } from 'vue';
 import { DataTableColumns, NButton, NIcon, NTag } from 'naive-ui'
-import { ApiCreate, ApiRead, Model } from '@/types/schema';
+import { ApiCreate, ApiRead } from '@/types/schema';
 import { useI18n } from 'vue-i18n';
 import { getAllApi, createApi, deleteApi } from '@/api/api';
 import { Dialog, Message } from '@/utils/tips';

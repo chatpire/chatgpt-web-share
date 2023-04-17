@@ -379,7 +379,7 @@ export interface components {
       /** endpoint*/
       endpoint: string,
       /** models */
-      models: JSON,
+      models: any,
     }
     /** ApiCreate */
     ApiCreate: {
@@ -410,7 +410,7 @@ export interface components {
       /** models */
       models: string[],
       /** api */
-      api: components["schemas"]["ApiRead"],
+      api: any,
     }
   };
   responses: never;

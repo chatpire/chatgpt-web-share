@@ -24,7 +24,7 @@ export function getUserApi(user_id: number) {
 }
 
 export function createUserApi(new_user_api: UserApiCreate) {
-    return axios.post<UserApiCreate>(ApiUrl.UserApi, new_user_api);
+    return axios.post<UserApiRead>(ApiUrl.UserApi, new_user_api);
 }
 
 export function deleteUserApi(user_api_id: number) {
