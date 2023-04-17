@@ -46,6 +46,7 @@ const columns: DataTableColumns<UserApiRead> = [
       return h(NSelect, {
         value: row.api_id === -1 ? null: row.api_id,
         options,
+        placeholder: t("commons.selectApi"),
         onUpdateValue(v) {
           const obj = data.value[index]
           const newUserApi = ref<UserApiCreate>({
@@ -56,16 +57,16 @@ const columns: DataTableColumns<UserApiRead> = [
           if (row.id !== -1){
             updateUserApi(row.id, newUserApi.value).then(res => {
               data.value[index] = {...res.data, api:getApi(v)}
-              Message.success(t("commons.updateSuccess"));
+              Message.success(t("tips.requestSuccess"));
             }).catch(err => {
-              Message.error(t("commons.updateFailed"));
+              Message.error(t("tips.requestFailed"));
             })
           } else {
             createUserApi(newUserApi.value).then(res => {
               data.value[index] = {...res.data, api:getApi(v)}
-              Message.success(t("commons.createSuccess"));
+              Message.success(t("tips.requestSuccess"));
             }).catch(err => {
-              Message.error(t("commons.createFailed"));
+              Message.error(t("tips.requestFailed"));
             })
           }
         }
@@ -86,6 +87,7 @@ const columns: DataTableColumns<UserApiRead> = [
         value: row.models,
         options,
         multiple: true,
+        placeholder: t("commons.selectModel"),
         onUpdateValue(v) {
           const obj = data.value[index]
           const newUserApi = ref<UserApiCreate>({
@@ -95,9 +97,9 @@ const columns: DataTableColumns<UserApiRead> = [
           })
           updateUserApi(row.id, newUserApi.value).then(res => {
             data.value[index].models = v
-            Message.success(t("commons.updateSuccess"));
+            Message.success(t("tips.requestSuccess"));
           }).catch(err => {
-            Message.error(t("commons.updateFailed"));
+            Message.error(t("tips.requestFailed"));
           })
         }
       })
@@ -124,18 +126,25 @@ const columns: DataTableColumns<UserApiRead> = [
               negativeText: t("commons.cancel"),
               onPositiveClick: () => {
                 d.loading = true;
-                return new Promise((resolve, reject) => {
-                  deleteUserApi(row.id).then(res => {
-                    Message.success(t("tips.deleteSuccess"));
-                    data.value = data.value.filter(item => item.id !== row.id)
-                    resolve(true);
-                  }).catch(err => {
-                    Message.error(t("tips.deleteFailed") + ": " + err);
-                    reject(err);
-                  }).finally(() => {
-                    d.loading = false;
+                if (row.id === -1) {
+                  data.value = data.value.filter(item => item.id !== row.id)
+                  d.loading = false;
+                  return
+                }
+                else{
+                  return new Promise((resolve, reject) => {
+                    deleteUserApi(row.id).then(res => {
+                      Message.success(t("tips.requestSuccess"));
+                      data.value = data.value.filter(item => item.id !== row.id)
+                      resolve(true);
+                    }).catch(err => {
+                      Message.error(t("tips.requestFailed") + ": " + err);
+                      reject(err);
+                    }).finally(() => {
+                      d.loading = false;
+                    })
                   })
-                })
+                }
               }
             })
           }

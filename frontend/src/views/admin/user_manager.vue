@@ -25,7 +25,7 @@ import { getAllUserApi, registerApi, deleteUserApi, resetUserPasswordApi, update
 import { getAllApi, getUserApi } from '@/api/api';
 import { Dialog, Message } from '@/utils/tips';
 import { TrashOutline, Pencil } from '@vicons/ionicons5';
-import { PasswordRound, RefreshFilled } from '@vicons/material';
+import { ApiOutlined, PasswordRound, RefreshFilled } from '@vicons/material';
 import EditUserForm from './components/EditUserForm.vue';
 import EditLimitForm from './components/EditLimitForm.vue';
 import EditUserApiForm from './components/EditUserApiForm.vue';
@@ -207,13 +207,13 @@ const columns: DataTableColumns<UserRead> = [
         }),
         h(NButton, {
           size: "small",
-          type: "primary",
+          type: "warning",
           circle: true,
           secondary: true,
           onClick: handleEditUserApi(row)
         }, {
           icon: () => h(NIcon, null, {
-            default: () => h(Pencil)
+            default: () => h(ApiOutlined)
           })
         })
 
@@ -302,7 +302,7 @@ const handleEditUserApi = (user: UserRead) => () => {
     const userApi = res.data
     const d = Dialog.info({
       title: t("commons.editUserApi"),
-      style: "weight：800px",
+      style: "width: 800px",
       content: () => h(EditUserApiForm, {
         data: userApi,
         apiList: apiList.value,

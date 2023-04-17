@@ -27,6 +27,7 @@
     "addUserSuccess": "添加用户成功",
     "addUserFailed": "添加用户失败",
     "addApi": "添加API",
+    "editUserApi": "编辑用户API权限",
     "addApiSuccess": "添加API成功",
     "addApiFailed": "添加API失败",
     "apiType": "类别",
@@ -116,7 +117,9 @@
     "sendKey": "发送快捷键",
     "preferences": "偏好设置",
     "renderUserMessageInMd": "渲染用户回复为Markdown",
-    "codeAutoWrap": "代码自动换行"
+    "codeAutoWrap": "代码自动换行",
+    "selectApi": "选择API",
+    "selectModel": "选择模型"
   },
   "errors": {
     "403": "403 错误：无访问权限",
