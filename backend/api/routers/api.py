@@ -32,20 +32,25 @@ async def create_api(apiInfo: ApiCreate, _user: User = Depends(current_super_use
             return response(400, "errors.apiNameAlreadyExist")
         api = Api(**apiInfo.dict())
         if apiInfo.type == "openai":
-            openai.api_key = apiInfo.key
-            try:
-                models = openai.Model.list()
-            except openai.error.AuthenticationError:
+            endpoint = apiInfo.endpoint or "https://api.openai.com"
+            headers = {
+                'Authorization': f"Bearer {apiInfo.key}"
+            }
+            res = requests.request("GET", endpoint + "/v1/models", headers=headers).json()
+            if "data" not in res:
                 return response(400, "errors.apiKeyInvalid")
-            model_info = {vo['id']: vo['id']  for vo in models.data if 'gpt' in vo['id']}
+            
+            model_info = {vo['id']: vo['id']  for vo in res['data'] if 'gpt' in vo['id']}
         elif apiInfo.type == "azure":
             url = f"{api.endpoint}/openai/deployments?api-version=2023-03-15-preview"
             headers = {
                 'api-key': apiInfo.key
             }
 
-            res = requests.request("GET", url, headers=headers)
-            model_info = {vo['model']: vo['id'] for vo in res.json()['data']}
+            res = requests.request("GET", url, headers=headers).json()
+            if "data" not in res:
+                return response(400, "errors.apiKeyInvalid")
+            model_info = {vo['model']: vo['id'] for vo in res['data']}
 
 
         api.models = model_info
