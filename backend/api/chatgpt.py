@@ -12,6 +12,7 @@ class ChatGPTManager:
         self.chatbot = AsyncChatbot({
             "access_token": g.config.get("chatgpt_access_token"),
             "paid": g.config.get("chatgpt_paid"),
+            "model": "text-davinci-002-render-sha", # default model
         }, base_url=g.config.get("chatgpt_base_url", None))
         self.semaphore = asyncio.Semaphore(1)
 
@@ -35,9 +36,11 @@ class ChatGPTManager:
 
     def ask(self, message, conversation_id: str = None, parent_id: str = None,
             timeout=360, model_name: ChatModels = None):
+        model = None
         if model_name is not None and model_name != ChatModels.unknown:
-            self.chatbot.config["model"] = model_name.value
-        return self.chatbot.ask(message, conversation_id, parent_id, timeout)
+            model = model_name.value
+        return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id, model=model,
+                                timeout=timeout)
 
     async def delete_conversation(self, conversation_id: str):
         await self.chatbot.delete_conversation(conversation_id)
@@ -52,8 +55,6 @@ class ChatGPTManager:
 
     def reset_chat(self):
         self.chatbot.reset_chat()
-        if self.chatbot.config.get("model"):
-            self.chatbot.config["model"] = None
 
 
 chatgpt_manager = ChatGPTManager()
