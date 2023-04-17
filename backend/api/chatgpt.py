@@ -1,9 +1,5 @@
 import api.globals as g
 import os
-
-if g.config.get("chatgpt_base_url"):
-    os.environ["CHATGPT_BASE_URL"] = g.config.get("chatgpt_base_url")
-
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
@@ -16,14 +12,14 @@ class ChatGPTManager:
         self.chatbot = AsyncChatbot({
             "access_token": g.config.get("chatgpt_access_token"),
             "paid": g.config.get("chatgpt_paid"),
-        })
+        }, base_url=g.config.get("chatgpt_base_url", None))
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):
         return self.semaphore.locked()
 
     async def get_conversations(self):
-        conversations = await self.chatbot.get_conversations()
+        conversations = await self.chatbot.get_conversations(limit=80)
         return conversations
 
     async def get_conversation_messages(self, conversation_id: str):
@@ -49,23 +45,10 @@ class ChatGPTManager:
     async def set_conversation_title(self, conversation_id: str, title: str):
         """Hack change_title to set title in utf-8"""
         await self.chatbot.change_title(conversation_id, title)
-        # url = BASE_URL + f"api/conversation/{conversation_id}"
-        # data = json.dumps({"title": title}, ensure_ascii=False).encode("utf-8")
-        # response = self.chatbot.session.patch(url, data=data)
-        # chatbot_check_response(response)
 
     async def generate_conversation_title(self, conversation_id: str, message_id: str):
         """Hack gen_title to get title"""
         await self.chatbot.gen_title(conversation_id, message_id)
-        # url = BASE_URL + f"api/conversation/gen_title/{conversation_id}"
-        # response = self.chatbot.session.post(
-        #     url,
-        #     data=json.dumps(
-        #         {"message_id": message_id, "model": "text-davinci-002-render"},
-        #     ),
-        # )
-        # chatbot_check_response(response)
-        # return response.json()
 
     def reset_chat(self):
         self.chatbot.reset_chat()

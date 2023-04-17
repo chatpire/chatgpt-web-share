@@ -131,7 +131,7 @@ async def on_startup():
         run_reverse_proxy()
         await asyncio.sleep(2)  # 等待 Proxy Server 启动
 
-    logger.info(f"Using {os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
+    logger.info(f"Using {g.config.get('chatgpt_base_url', '<default_bypass>')} as ChatGPT base url")
 
     # 获取 ChatGPT 对话，并同步数据库
     if not config.get("sync_conversations_on_startup", True):
