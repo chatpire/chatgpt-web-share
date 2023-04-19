@@ -1,5 +1,5 @@
 <template>
-  <div class="flex lt-sm:flex-col flex-row lt-sm:py-2 py-4 lt-sm:px-5 px-4 max-w-full relative" :style="{ backgroundColor: backgroundColor }">
+  <div class="flex lt-sm:flex-col flex-row lt-sm:py-2 py-4 lt-sm:px-5 px-4 box-content max-w-full relative" :style="{ backgroundColor: backgroundColor }">
     <div class="w-10 lt-sm:ml-0 ml-2 mt-3">
       <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
       <n-avatar v-if="props.message.author_role == 'user'" size="small">

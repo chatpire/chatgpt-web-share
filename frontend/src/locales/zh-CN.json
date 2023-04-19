@@ -152,7 +152,7 @@
     "changeConversationTitleSuccess": "更改标题成功",
     "changeConversationTitleFailed": "更改标题失败",
     "rename": "请输入新标题",
-    "sendMessage": "请输入内容，使用 {0} 发送（你可以在偏好设置中修改发送键）",
+    "sendMessage": "请输入内容，使用 {0} 发送",
     "logoutConfirm": "确定要退出登录吗？",
     "pleaseEnterNickname": "请输入昵称",
     "pleaseEnterEmail": "请输入邮箱",

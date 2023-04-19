@@ -150,7 +150,7 @@
     "changeConversationTitleSuccess": "Title changed successfully",
     "changeConversationTitleFailed": "Failed to change title",
     "rename": "Please enter new title",
-    "sendMessage": "Please enter message, press {0} to send. You can chang send key in preference settings.",
+    "sendMessage": "Please enter message, press {0} to send",
     "logoutConfirm": "Are you sure you want to log out?",
     "pleaseEnterNickname": "Please enter nickname",
     "pleaseEnterEmail": "Please enter email",

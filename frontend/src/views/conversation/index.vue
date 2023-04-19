@@ -1,13 +1,13 @@
 <template>
-  <div class="flex-grow mb-4" ref="rootRef">
-    <!-- 类似聊天室，左边栏是对话列表，右边栏是聊天窗口，使用naive-ui -->
-    <div class="h-full flex flex-col md:flex-row md:space-x-4">
+  <div class="flex-grow flex flex-col" ref="rootRef">
+    <!-- 上半部分 -->
+    <div class="flex-grow flex flex-col md:flex-row">
       <!-- 左栏 -->
-      <div class="md:w-1/4 md:min-w-1/4 w-full flex flex-col space-y-4 md:h-full">
+      <div class="md:w-1/5 md:min-w-50 w-full px-4 box-border mb-4 h-56 md:flex-grow overflow-hidden flex flex-col space-y-4">
         <StatusCard />
-        <n-card class="flex-col left-col" content-style="padding: 4px;">
-          <div class="flex box-content m-2" v-if="!newConversation">
-            <n-button secondary strong type="primary" class="flex-1" @click="makeNewConversation" :disabled="loadingBar">
+        <div class="flex-grow flex flex-col">
+          <!-- <div class="flex box-content" v-if="!newConversation"> -->
+            <n-button secondary strong type="primary" @click="makeNewConversation" :disabled="loadingBar">
               <template #icon>
                 <n-icon class="">
                   <Add />
@@ -15,17 +15,18 @@
               </template>
               {{ $t("commons.newConversation") }}
             </n-button>
-          </div>
-          <n-scrollbar class="max-h-30 md:max-h-122 md:overflow-y-auto">
+          <!-- </div> -->
+          <n-scrollbar class="h-0 flex-grow mt-4">
             <n-menu :content-style="{ backgroundColor: 'red' }" ref="menuRef" :disabled="loadingBar" :options="menuOptions" :root-indent="18"
               v-model:value="currentConversationId"></n-menu>
           </n-scrollbar>
-        </n-card>
+        </div>
       </div>
       <!-- 右栏 -->
-      <n-card class="md:w-3/4 h-full" :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;">
+      <n-card class="md:mr-4 flex-grow md:mb-4" :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;">
         <!-- 上半部分 -->
-        <n-scrollbar class="h-140 sm:h-0 flex-grow" ref="historyRef" v-if="currentConversationId" :content-style="loadingHistory ? { height: '100%' } : {}">
+        <n-scrollbar class="h-0 flex-grow" ref="historyRef" v-if="currentConversationId"
+          :content-style="loadingHistory ? { height: '100%' } : {}">
           <!-- 消息记录内容（用于全屏展示） -->
           <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :fullscreen="false"
             :model-name="currentConversation?.model_name || ''" :show-tips="showFullscreenTips" :loading="loadingHistory" />
@@ -45,83 +46,95 @@
             </template>
           </n-empty>
         </div>
-        <!-- 下半部分 -->
-        <div class="flex flex-col relative" :style="{ height: inputHeight }">
-          <n-divider />
-          <!-- 暂停按钮 -->
-          <div class="flex w-full justify-center absolute -top-10">
-            <n-button v-show="canAbort" @click="abortRequest" secondary strong type="error" size="small">
+      </n-card>
+    </div>
+    <!-- 下半部分（回复区域） -->
+    <div class="flex-shrink-0 flex flex-col align-middle relative z-10" :style="{ background: themeVars.baseColor }">
+      <n-divider />
+      <!-- 暂停按钮 -->
+      <div class="flex w-full justify-center absolute -top-10">
+        <n-button v-show="canAbort" @click="abortRequest" secondary strong type="error" size="small">
+          <template #icon>
+            <Stop />
+          </template>
+          {{ t("commons.abortRequest") }}
+        </n-button>
+      </div>
+      <div class="right-2 -top-20 absolute">
+        <!-- 回到底部按钮 -->
+        <n-button @click="scrollToBottomSmooth" secondary circle size="small">
+          <template #icon>
+            <ArrowDown />
+          </template>
+        </n-button>
+      </div>
+      <!-- 工具栏 -->
+      <div class="mx-2 flex flex-row space-x-2 py-2 justify-center relative">
+        <!-- 展开/收起按钮 -->
+        <n-button class="absolute left-0 top-2" @click="toggleInputExpanded" quaternary circle size="small">
+          <template #icon>
+            <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
+          </template>
+        </n-button>
+        <!-- 是否启用自动滚动 -->
+        <n-tooltip>
+          <template #trigger>
+            <n-switch v-model:value="autoScrolling" size="small" class="absolute right-2 top-3">
               <template #icon>
-                <Stop />
+                A
               </template>
-              {{ t("commons.abortRequest") }}
-            </n-button>
-          </div>
-          <div class="right-4 -top-12 lg:-right-10 lg:-top-8 ml-1 absolute">
-            <!-- 回到底部按钮 -->
-            <n-button @click="scrollToBottomSmooth" secondary circle size="small">
-              <template #icon>
-                <ArrowDown />
-              </template>
-            </n-button>
-          </div>
-          <!-- 工具栏 -->
-          <div class="flex flex-row space-x-2 py-2 justify-center relative">
-            <!-- 展开/收起按钮 -->
-            <n-button @click="toggleInputExpanded" quaternary circle size="small" class="absolute left-1">
-              <template #icon>
-                <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound"></n-icon>
-              </template>
-            </n-button>
-            <!-- 是否启用自动滚动 -->
-            <n-tooltip>
-              <template #trigger>
-                <n-switch v-model:value="autoScrolling" size="small" class="absolute right-2 top-3">
-                  <template #icon>
-                    A
-                  </template>
-                </n-switch>
-              </template>
-              {{ $t("tips.autoScrolling") }}
-            </n-tooltip>
-            <n-button secondary type="info" size="small" @click="showFullscreenHistory">
-              <template #icon>
-                <n-icon :size="22">
-                  <FullscreenRound />
-                </n-icon>
-              </template>
-            </n-button>
-            <n-button secondary type="primary" size="small" @click="exportToMarkdownFile">
-              <template #icon>
-                <n-icon>
-                  <LogoMarkdown />
-                </n-icon>
-              </template>
-            </n-button>
-            <n-button secondary type="warning" size="small" @click="exportToPdfFile">
-              <template #icon>
-                <n-icon>
-                  <Print />
-                </n-icon>
-              </template>
-            </n-button>
-          </div>
-          <!-- 输入框 -->
-          <n-input v-model:value="inputValue" class="flex-1" type="textarea" :bordered="false" :placeholder="$t('tips.sendMessage', [appStore.preference.sendKey])"
-            @keydown="shortcutSendMsg" />
-          <div class="m-2 flex flex-row justify-between">
-            <n-text depth="3" class="hidden sm:block">
-              {{ currentAvaliableAskCountsTip }}
-            </n-text>
-            <n-button :disabled="sendDisabled" @click="sendMsg" class="" type="primary" size="small">
-              {{ $t("commons.send") }}
+            </n-switch>
+          </template>
+          {{ $t("tips.autoScrolling") }}
+        </n-tooltip>
+        <n-button secondary type="info" size="small" @click="showFullscreenHistory">
+          <template #icon>
+            <n-icon :size="22">
+              <FullscreenRound />
+            </n-icon>
+          </template>
+        </n-button>
+        <n-button secondary type="primary" size="small" @click="exportToMarkdownFile">
+          <template #icon>
+            <n-icon>
+              <LogoMarkdown />
+            </n-icon>
+          </template>
+        </n-button>
+        <n-button secondary type="warning" size="small" @click="exportToPdfFile">
+          <template #icon>
+            <n-icon>
+              <Print />
+            </n-icon>
+          </template>
+        </n-button>
+      </div>
+      <!-- 输入框 -->
+      <div class="mx-4 mb-4 flex flex-row space-x-2">
+        <n-input ref="inputRef" v-model:value="inputValue" class="flex-1" type="textarea" :bordered="true"
+          :placeholder="$t('tips.sendMessage', [appStore.preference.sendKey])" @keydown="shortcutSendMsg" :autosize="{ minRows: 1 }"
+          :style="{ height: inputHeight }">
+          <template #suffix>
+            <n-button :disabled="sendDisabled" text @click="sendMsg" class="" type="primary" size="small">
               <template #icon><n-icon>
                   <Send />
                 </n-icon></template>
             </n-button>
-          </div>
-        </div>
-      </n-card>
+          </template>
+        </n-input>
+        <!-- <n-dropdown trigger="hover" placement="bottom-start" :options="options" @select="handleSelect">
+          <n-button class="" type="tertiary" size="small">
+            <template #icon><n-icon>
+                <Send />
+              </n-icon></template>
+          </n-button>
+        </n-dropdown> -->
+      </div>
+      <!-- <div class="mb-1 mx-auto">
+        <n-text depth="3" class="text-size-[0.6rem]">
+          {{ currentAvaliableAskCountsTip }}
+        </n-text>
+      </div> -->
     </div>
   </div>
 </template>
@@ -158,13 +171,16 @@ const appStore = useAppStore();
 const { t } = useI18n();
 
 const rootRef = ref();
-const menuRef = ref(null);
+const menuRef = ref();
 const historyRef = ref();
 const userStore = useUserStore();
 const conversationStore = useConversationStore();
 
 const inputExpanded = ref<boolean>(false);
-const inputHeight = computed(() => inputExpanded.value ? '50vh' : '24vh');
+const inputHeight = computed(() => {
+  if (!inputExpanded.value) return 'auto';
+  return '30vh';
+});
 const toggleInputExpanded = () => {
   inputExpanded.value = !inputExpanded.value;
 };
@@ -618,7 +634,7 @@ span.n-menu-item-content-header__extra {
 }
 
 .left-col .n-card__content {
-  @apply flex flex-col @apply overflow-auto !important
+  @apply flex flex-col overflow-auto !important
 }
 
 @media print {
