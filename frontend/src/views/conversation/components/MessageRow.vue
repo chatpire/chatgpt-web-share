@@ -11,8 +11,9 @@
       <n-avatar v-else size="small" :src="chatgptIcon" />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
-      <div v-show="!showRawContent" ref="contentRef" :class="['message-content w-full', renderPureText ? 'whitespace-pre-wrap py-4' : '']" v-html="renderedContent"></div>
-      <div v-show="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">{{ props.message.message }}</div>
+      <div v-if="!showRawContent && !renderPureText" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
+      <div v-else-if="!showRawContent && renderPureText" ref="contentRef" class="message-content w-full whitespace-pre-wrap py-4">{{ renderedContent }}</div>
+      <div v-else-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
         <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-1 right-1"
           @click="copyMessageContent">
