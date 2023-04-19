@@ -15,14 +15,14 @@
       <div v-else-if="!showRawContent && renderPureText" ref="contentRef" class="message-content w-full whitespace-pre-wrap py-4">{{ renderedContent }}</div>
       <div v-else-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">{{ props.message.message }}</div>
       <div class="hide-in-print">
-        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-1 right-1"
+        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-2 right-2"
           @click="copyMessageContent">
           <n-icon>
             <CopyOutline />
           </n-icon>
         </n-button>
         <n-button text ghost size="tiny" :type="showRawContent ? 'success' : 'tertiary'"
-          class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-1 right-5" @click="toggleShowRawContent">
+          class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-2 right-6" @click="toggleShowRawContent">
           <n-icon>
             <CodeSlash />
           </n-icon>
