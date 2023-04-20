@@ -21,4 +21,5 @@ export type Preference = {
   sendKey: 'Shift+Enter' | 'Enter' | 'Ctrl+Enter';
   renderUserMessageInMd: boolean;
   codeAutoWrap: boolean;
+  widerConversationPage: boolean;
 };

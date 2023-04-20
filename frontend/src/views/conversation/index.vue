@@ -1,25 +1,33 @@
 <template>
   <div
     ref="rootRef"
-    class="flex-grow flex flex-col md:flex-row"
+    :class="['flex-grow flex flex-col md:flex-row', !appStore.preference.widerConversationPage ? 'lg:w-screen-lg lg:mx-auto' : '']"
   >
     <!-- 左栏 -->
     <LeftBar
       v-model:value="currentConversationId"
-      class="md:w-1/5 md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-40 md:flex-grow overflow-hidden flex flex-col space-y-4"
+      :class="[
+        'md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-40 md:flex-grow overflow-hidden flex flex-col space-y-4',
+        appStore.preference.widerConversationPage ? 'md:w-1/5' : 'md:w-1/4',
+      ]"
       :loading="loadingBar"
       :new-conv="newConversation"
       @new-conversation="makeNewConversation"
     />
     <!-- 右栏 -->
-    <div class="flex-grow flex flex-col md:w-4/5 md:mr-4">
+    <div
+      :class="[
+        'flex-grow flex flex-col md:mr-4',
+        appStore.preference.widerConversationPage ? 'md:w-4/5' : 'md:w-3/4',
+      ]"
+    >
       <n-card
         class="flex-grow md:mb-4 relative"
         :bordered="true"
         content-style="padding: 0; display: flex; flex-direction: column; "
       >
         <!-- 回到底部按钮 -->
-        <div class="right-2 bottom-20 absolute">
+        <div class="right-2 bottom-30 absolute">
           <n-button
             secondary
             circle
@@ -93,7 +101,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
-import { useConversationStore, useUserStore } from '@/store';
+import { useAppStore, useConversationStore, useUserStore } from '@/store';
 import { ChatConversationDetail, ChatMessage } from '@/types/custom';
 import { ConversationSchema } from '@/types/schema';
 import { getConvMessageListFromId } from '@/utils/conversation';
@@ -112,6 +120,7 @@ const { t } = useI18n();
 const rootRef = ref();
 const historyRef = ref();
 const userStore = useUserStore();
+const appStore = useAppStore();
 const conversationStore = useConversationStore();
 
 const loadingBar = ref(false);

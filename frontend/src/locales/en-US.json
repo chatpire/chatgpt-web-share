@@ -106,7 +106,8 @@
     "clearAllConversations": "Clear All Conversations",
     "readyToClearAllConversations": "Are you sure you want to clear all conversations?",
     "sendKey": "Send Short Key",
-    "preferences": "Preference"
+    "preferences": "Preference",
+    "widerConversationPage": "Make conversation page wider"
   },
   "errors": {
     "403": "403 error: access denied",

@@ -17,6 +17,7 @@ const useAppStore = defineStore('app', {
       sendKey: 'Enter',
       renderUserMessageInMd: false,
       codeAutoWrap: false,
+      widerConversationPage: true,
     }),
   }),
   getters: {},

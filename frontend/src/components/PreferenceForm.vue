@@ -27,6 +27,12 @@
     >
       <n-switch v-model:value="model.codeAutoWrap" />
     </n-form-item>
+    <n-form-item
+      :label="t('commons.widerConversationPage')"
+      prop="widerConversationPage"
+    >
+      <n-switch v-model:value="model.widerConversationPage" />
+    </n-form-item>
   </n-form>
 </template>
 
@@ -45,9 +51,9 @@ const props = defineProps<{
 const model = ref<Preference>(props.value);
 
 const sendKeyOptions = [
+  { label: 'Enter', value: 'Enter' },
   { label: 'Shift+Enter', value: 'Shift+Enter' },
   { label: 'Ctrl+Enter', value: 'Ctrl+Enter' },
-  { label: 'Enter', value: 'Enter' },
 ];
 
 const emit = defineEmits(['update:value']);

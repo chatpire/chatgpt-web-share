@@ -108,7 +108,8 @@
     "sendKey": "发送快捷键",
     "preferences": "偏好设置",
     "renderUserMessageInMd": "渲染用户回复为Markdown",
-    "codeAutoWrap": "代码自动换行"
+    "codeAutoWrap": "代码自动换行",
+    "widerConversationPage": "对话界面宽屏展示"
   },
   "errors": {
     "403": "403 错误：无访问权限",
