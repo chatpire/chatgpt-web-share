@@ -1,4 +1,8 @@
+from fastapi_users.exceptions import UserAlreadyExists, InvalidPasswordException
+from fastapi_users.router import ErrorCode
 from sqlalchemy.future import select
+from starlette import status
+from starlette.requests import Request
 
 from api.database import get_async_session_context, get_user_db_context
 from api.exceptions import AuthorityDenyException, InvalidParamsException
@@ -7,7 +11,7 @@ from api.response import response
 from api.schema import UserRead, UserUpdate, UserCreate, LimitSchema
 from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 
@@ -21,11 +25,40 @@ router.include_router(
     tags=["auth"],
 )
 
-router.include_router(
-    fastapi_users.get_register_router(UserRead, UserCreate),
-    prefix="/auth",
-    tags=["auth"],
-)
+
+# router.include_router(
+#     fastapi_users.get_register_router(UserRead, UserCreate),
+#     prefix="/auth",
+#     tags=["auth"],
+# )
+@router.post("/auth/register", tags=["auth"])
+async def register(
+        request: Request,
+        user_create: UserCreate,
+        _user: User = Depends(current_super_user),
+):
+    try:
+        async with get_async_session_context() as session:
+            async with get_user_db_context(session) as user_db:
+                async with get_user_manager_context(user_db) as user_manager:
+                    created_user = await user_manager.create(
+                        user_create, safe=True, request=request
+                    )
+    except UserAlreadyExists:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorCode.REGISTER_USER_ALREADY_EXISTS,
+        )
+    except InvalidPasswordException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "code": ErrorCode.REGISTER_INVALID_PASSWORD,
+                "reason": e.reason,
+            },
+        )
+
+    return UserRead.from_orm(created_user)
 
 
 @router.get("/user", tags=["user"])
