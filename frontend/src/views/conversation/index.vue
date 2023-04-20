@@ -7,7 +7,7 @@
     <LeftBar
       v-model:value="currentConversationId"
       :class="[
-        'md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-40 md:flex-grow overflow-hidden flex flex-col space-y-4',
+        'md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-56 md:flex-grow overflow-hidden flex flex-col space-y-4',
         appStore.preference.widerConversationPage ? 'md:w-1/5' : 'md:w-1/4',
       ]"
       :loading="loadingBar"
@@ -35,7 +35,7 @@
             @click="scrollToBottomSmooth"
           >
             <template #icon>
-              <ArrowDown />
+              <n-icon :component="ArrowDown" />
             </template>
           </n-button>
         </div>

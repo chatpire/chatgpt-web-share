@@ -43,6 +43,8 @@ import { ConversationSchema } from '@/types/schema';
 import { dropdownRenderer, popupChangeConversationTitleDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 
+import StatusCard from './StatusCard.vue';
+
 const { t } = useI18n();
 
 const conversationStore = useConversationStore();
