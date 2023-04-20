@@ -1,31 +1,37 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-60" :option="option" :loading="props.loading" />
+    <v-chart
+      class="h-60"
+      :option="option"
+      :loading="props.loading"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { use } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { BarChart } from "echarts/charts";
+import { BarSeriesOption } from 'echarts';
+import { BarChart } from 'echarts/charts';
 import {
-  TitleComponent,
-  GridComponent,
-  TooltipComponent,
-  LegendComponent,
+  BrushComponent,
   DatasetComponent,
   DataZoomComponent,
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
   ToolboxComponent,
-  BrushComponent,
-} from "echarts/components";
-import VChart, { THEME_KEY } from "vue-echarts";
+  TooltipComponent,
+} from 'echarts/components';
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { computed, ref } from 'vue';
+import VChart from 'vue-echarts';
+import { useI18n } from 'vue-i18n';
+
+import { useAppStore } from '@/store';
 import { ToolTipFormatterParams } from '@/types/echarts';
-import { ref, watchEffect, computed } from "vue";
-import { BarSeriesOption, LineSeriesOption } from 'echarts';
-import { useAppStore } from "@/store";
-import { useI18n } from "vue-i18n";
-import { UserRead } from "@/types/schema";
-import { timeFormatter } from "./helpers"
+import { UserRead } from '@/types/schema';
+
+import { timeFormatter } from './helpers';
 const { t } = useI18n();
 const appStore = useAppStore();
 
@@ -39,7 +45,7 @@ use([
   DatasetComponent,
   DataZoomComponent,
   ToolboxComponent,
-  BrushComponent
+  BrushComponent,
 ]);
 
 type AskRecord = [[number, string, number, number], number];
@@ -73,7 +79,7 @@ function makeDataset(askRecords: AskRecord[]) {
   const otherRecords: AskRecord[] = [];
   const gpt4Records: AskRecord[] = [];
 
-  askRecords.forEach(record => {
+  askRecords.forEach((record) => {
     if (record[0][1] === 'gpt-4') {
       gpt4Records.push(record);
     } else {
@@ -87,10 +93,10 @@ function makeDataset(askRecords: AskRecord[]) {
     let currentTimestamp = alignedEarliestTimestamp;
     // console.log('currentTimestamp', currentTimestamp, new Date(currentTimestamp).toLocaleString())
     while (currentTimestamp < alignedLatestTimestamp) {
-      const recordsInInterval = records.filter(record => record[1] * 1000 >= currentTimestamp && record[1] * 1000 < currentTimestamp + 1800 * 1000);
+      const recordsInInterval = records.filter((record) => record[1] * 1000 >= currentTimestamp && record[1] * 1000 < currentTimestamp + 1800 * 1000);
 
       if (recordsInInterval.length > 0) {
-        const userIds = new Set(recordsInInterval.map(record => record[0][0]));
+        const userIds = new Set(recordsInInterval.map((record) => record[0][0]));
         const stat: StatRecord = {
           timestamp: currentTimestamp,
           count: recordsInInterval.length,
@@ -137,12 +143,7 @@ const findUsername = (user_id: number) => {
 
 const isDark = computed(() => appStore.theme === 'dark');
 
-const generateSeries = (
-  name: string,
-  lineColor: string,
-  itemBorderColor: string,
-  datasetIndex: number,
-): BarSeriesOption => {
+const generateSeries = (name: string, lineColor: string, itemBorderColor: string, datasetIndex: number): BarSeriesOption => {
   return {
     type: 'bar',
     name,
@@ -150,7 +151,7 @@ const generateSeries = (
     yAxisIndex: 0,
     encode: {
       x: 'timestamp',
-      y: 'count'
+      y: 'count',
     },
     stack: 'total',
     itemStyle: {
@@ -167,28 +168,29 @@ const generateSeries = (
   };
 };
 
-
 const showDataZoom = ref(false);
 const dataZoomOption = computed(() => {
-  return showDataZoom.value ? [
-    {
-      type: 'slider',
-      show: showDataZoom.value,
-      xAxisIndex: 0,
-      start: 0,
-      end: 100,
-      filterMode: 'filter'
-    }
-  ] : [];
-})
+  return showDataZoom.value
+    ? [
+      {
+        type: 'slider',
+        show: showDataZoom.value,
+        xAxisIndex: 0,
+        start: 0,
+        end: 100,
+        filterMode: 'filter',
+      },
+    ]
+    : [];
+});
 const gridBottom = computed(() => {
   return showDataZoom.value ? '25%' : '5%';
-})
+});
 
 const option = computed(() => {
   return {
     title: {
-      text: t("commons.askRequestsCount"),
+      text: t('commons.askRequestsCount'),
       left: 'center',
       top: '2.6%',
       textStyle: {
@@ -202,7 +204,7 @@ const option = computed(() => {
       right: '4',
       top: '40',
       bottom: gridBottom.value,
-      containLabel: true
+      containLabel: true,
     },
     dataset: dataset.value,
     xAxis: {
@@ -210,7 +212,7 @@ const option = computed(() => {
       axisLabel: {
         color: '#4E5969',
         formatter: (val: any) => timeFormatter(val, false),
-        hideOverlap: true
+        hideOverlap: true,
       },
       axisLine: {
         show: false,
@@ -257,7 +259,7 @@ const option = computed(() => {
             color: isDark.value ? '#2E2E30' : '#E5E8EF',
           },
         },
-      }
+      },
     ],
     tooltip: {
       trigger: 'axis',
@@ -270,54 +272,44 @@ const option = computed(() => {
                   <br />
                   <span>${el0.seriesName}: ${data0.count}</span> <br />
                   <span>${el1.seriesName}: ${data1.count}</span> <br />
-                  <span>${t("commons.normalAskUsers")}: ${data0.userIds.map((id: number) => findUsername(id))}</span> <br />
-                  <span>${t("commons.gpt4AskUsers")}: ${data1.userIds.map((id: number) => findUsername(id))}</span> <br />
-                  <span>${t("commons.sumOfNormalAskDuration")}: ${data0.sumAskDuration.toFixed(2)} s</span> <br />
-                  <span>${t("commons.sumOfGpt4AskDuration")}: ${data1.sumAskDuration.toFixed(2)} s</span> <br />
+                  <span>${t('commons.normalAskUsers')}: ${data0.userIds.map((id: number) => findUsername(id))}</span> <br />
+                  <span>${t('commons.gpt4AskUsers')}: ${data1.userIds.map((id: number) => findUsername(id))}</span> <br />
+                  <span>${t('commons.sumOfNormalAskDuration')}: ${data0.sumAskDuration.toFixed(2)} s</span> <br />
+                  <span>${t('commons.sumOfGpt4AskDuration')}: ${data1.sumAskDuration.toFixed(2)} s</span> <br />
                 </div>`;
       },
       className: 'echarts-tooltip-diy',
     },
 
     series: [
-      generateSeries(
-        t("commons.normalAskCount"),
-        '#9ce6aa',
-        '#E8FFFB',
-        0
-      ),
-      generateSeries(
-        t("commons.gpt4AskCount"),
-        '#F77234',
-        '#FFE4BA',
-        1
-      ),
+      generateSeries(t('commons.normalAskCount'), '#9ce6aa', '#E8FFFB', 0),
+      generateSeries(t('commons.gpt4AskCount'), '#F77234', '#FFE4BA', 1),
     ],
 
     toolbox: {
       feature: {
         myDataZoom: {
           show: true,
-          title: "DataZoom",
+          title: 'DataZoom',
           icon: 'path://M0,0H12V2H0V0ZM0,14H12V16H0V14ZM0,6H12V8H0V6ZM0,10H12V12H0V10Z',
           onclick: () => {
             showDataZoom.value = !showDataZoom.value;
-          }
+          },
         },
         restore: {},
-        saveAsImage: {}
-      }
+        saveAsImage: {},
+      },
     },
     dataZoom: dataZoomOption.value,
-  }
-})
+  };
+});
 
 // watchEffect(() => {
-  console.log('props', props.askRecords);
-  // console.log('xAxis', xAxis.value);
-  // console.log('totalRequestsCountData', totalRequestsCountData.value);
-  // console.log('datasetSource', datasetSource.value);
-  // console.log('users', props.users)
+console.log('props', props.askRecords);
+// console.log('xAxis', xAxis.value);
+// console.log('totalRequestsCountData', totalRequestsCountData.value);
+// console.log('datasetSource', datasetSource.value);
+// console.log('users', props.users)
 //   console.log('option', option.value);
 // });
 </script>

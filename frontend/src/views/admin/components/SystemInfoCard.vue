@@ -3,7 +3,10 @@
     <template #header>
       <div class="flex flex-row space-x-2">
         <n-text>{{ t('commons.serverOverview') }}</n-text>
-        <n-button text @click="$emit('refresh')">
+        <n-button
+          text
+          @click="emits('refresh')"
+        >
           <template #icon>
             <n-icon>
               <RefreshFilled />
@@ -13,9 +16,17 @@
       </div>
     </template>
     <div class="grid grid-cols-3 md:grid-cols-5 gap-4">
-      <n-statistic v-for="item in statistics" :key="item.label" :label="item.label" :value="item.value">
-        <template #prefix v-if="item.prefixIcon">
-          <n-icon :component="item.prefixIcon"></n-icon>
+      <n-statistic
+        v-for="item in statistics"
+        :key="item.label"
+        :label="item.label"
+        :value="item.value"
+      >
+        <template
+          v-if="item.prefixIcon"
+          #prefix
+        >
+          <n-icon :component="item.prefixIcon" />
         </template>
         <template #suffix>
           <n-text>
@@ -27,12 +38,12 @@
   </n-card>
 </template>
 
-
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { ServerStatusSchema, SystemInfo } from '@/types/schema';
 import { RefreshFilled } from '@vicons/material';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { ServerStatusSchema, SystemInfo } from '@/types/schema';
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -41,19 +52,18 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  refresh: () => void;
+  (e: 'refresh'): void;
 }>();
 
 function hoursSince(timestamp?: number) {
   if (!timestamp) {
-    return 'N/A'
+    return 'N/A';
   }
-  const now = new Date()
-  const diff = now.getTime() - timestamp * 1000 // 将 Unix 时间戳转换为毫秒
-  const hours = diff / 1000 / 3600 // 将毫秒转换为小时
-  return hours.toFixed(1) // 保留一位小数
+  const now = new Date();
+  const diff = now.getTime() - timestamp * 1000; // 将 Unix 时间戳转换为毫秒
+  const hours = diff / 1000 / 3600; // 将毫秒转换为小时
+  return hours.toFixed(1); // 保留一位小数
 }
-
 
 const statistics = computed(() => {
   return [
@@ -83,9 +93,8 @@ const statistics = computed(() => {
       label: t('commons.startUpDuration'),
       value: hoursSince(props.systemInfo?.startup_time),
       prefixIcon: null,
-      suffix: ' h'
+      suffix: ' h',
     },
   ];
-})
-
+});
 </script>

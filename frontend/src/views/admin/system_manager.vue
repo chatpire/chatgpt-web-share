@@ -1,20 +1,28 @@
 <template>
   <div class="mb-4 mt-2 flex flex-col space-y-4">
-    <SystemInfoCard :system-info="systemInfo" :server-status="serverStatus" @refresh="refreshData" />
-    <StatisticsCard :request-statistics="requestStatistics" :users="users" />
+    <SystemInfoCard
+      :system-info="systemInfo"
+      :server-status="serverStatus"
+      @refresh="refreshData"
+    />
+    <StatisticsCard
+      :request-statistics="requestStatistics"
+      :users="users"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { getServerStatusApi } from '@/api/status';
-import { getSystemInfoApi, getRequestStatisticsApi } from '@/api/system';
-import { getAllUserApi } from '@/api/user';
-import { ServerStatusSchema, SystemInfo, RequestStatistics, UserRead } from '@/types/schema';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { getServerStatusApi } from '@/api/status';
+import { getRequestStatisticsApi, getSystemInfoApi } from '@/api/system';
+import { getAllUserApi } from '@/api/user';
+import { RequestStatistics, ServerStatusSchema, SystemInfo, UserRead } from '@/types/schema';
+
 import StatisticsCard from './components/StatisticsCard.vue';
 import SystemInfoCard from './components/SystemInfoCard.vue';
-import { Message } from '@/utils/tips';
 const { t } = useI18n();
 
 const systemInfo = ref<SystemInfo | undefined>();
@@ -34,12 +42,11 @@ const refreshData = () => {
   getRequestStatisticsApi().then((res) => {
     requestStatistics.value = res.data;
   });
-}
+};
 
 refreshData();
 
 getAllUserApi().then((res) => {
   users.value = res.data;
-})
+});
 </script>
-

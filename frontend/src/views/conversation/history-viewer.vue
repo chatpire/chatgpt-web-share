@@ -1,13 +1,21 @@
 <template>
-    <HistoryContent :messages="messages" :fullscreen="false" :show-tips="false" :append-messages="[]" :loading="loading" />
+  <HistoryContent
+    :messages="messages"
+    :fullscreen="false"
+    :show-tips="false"
+    :append-messages="[]"
+    :loading="loading"
+  />
 </template>
 
 <script setup lang="ts">
-import HistoryContent from './components/HistoryContent.vue';
+import { computed,ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getConvMessageListFromId } from "@/utils/conversation";
-import { useConversationStore } from "@/store";
-import { ref, computed } from 'vue';
+
+import { useConversationStore } from '@/store';
+import { getConvMessageListFromId } from '@/utils/conversation';
+
+import HistoryContent from './components/HistoryContent.vue';
 
 const conversationStore = useConversationStore();
 
@@ -17,17 +25,20 @@ const conversationId = route.params.conversation_id as string;
 
 const loading = ref(true);
 
-conversationStore.fetchConversationHistory(conversationId).then(() => {
+conversationStore
+  .fetchConversationHistory(conversationId)
+  .then(() => {
     // console.log(conversationStore.conversationDetailMap);
-}).catch((err: any) => {
+  })
+  .catch((err: any) => {
     console.log(err);
     router.push({ name: '404' }).then();
-}).finally(() => {
+  })
+  .finally(() => {
     loading.value = false;
-});
+  });
 
 const messages = computed(() => {
-    return getConvMessageListFromId(conversationId);
-})
-
+  return getConvMessageListFromId(conversationId);
+});
 </script>

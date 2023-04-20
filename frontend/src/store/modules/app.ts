@@ -1,18 +1,20 @@
-import { defineStore } from "pinia";
-import { AppState } from "../types";
-import { useOsTheme } from "naive-ui";
-const osThemeRef = useOsTheme();
-import { useStorage } from "@vueuse/core";
-import { setLocale } from "@/i18n";
-import { themeRef } from "@/utils/tips";
-import { Preference } from "@/types/custom";
+import { useOsTheme } from 'naive-ui';
+import { defineStore } from 'pinia';
 
-const useAppStore = defineStore("app", {
+import { AppState } from '../types';
+const osThemeRef = useOsTheme();
+import { useStorage } from '@vueuse/core';
+
+import { setLocale } from '@/i18n';
+import { Preference } from '@/types/custom';
+import { themeRef } from '@/utils/tips';
+
+const useAppStore = defineStore('app', {
   state: (): AppState => ({
-    theme: useStorage("theme", osThemeRef.value),
-    language: useStorage("language", "zh"),
-    preference: useStorage<Preference>("preference", {
-      sendKey: "Enter",
+    theme: useStorage('theme', osThemeRef.value),
+    language: useStorage('language', 'zh'),
+    preference: useStorage<Preference>('preference', {
+      sendKey: 'Enter',
       renderUserMessageInMd: false,
       codeAutoWrap: false,
     }),
@@ -21,7 +23,7 @@ const useAppStore = defineStore("app", {
   actions: {
     // 切换主题
     toggleTheme() {
-      this.theme = this.theme === "dark" ? "light" : "dark";
+      this.theme = this.theme === 'dark' ? 'light' : 'dark';
       themeRef.value = this.theme;
     },
     setLanguage(lang: string) {

@@ -1,6 +1,8 @@
-import { LimitSchema, UserCreate, UserRead, UserUpdate } from "@/types/schema";
-import axios from "axios";
-import ApiUrl from "./url";
+import axios from 'axios';
+
+import { LimitSchema, UserCreate, UserRead } from '@/types/schema';
+
+import ApiUrl from './url';
 
 export interface LoginData {
   username: string;
@@ -9,11 +11,11 @@ export interface LoginData {
 
 export function loginApi(data: LoginData) {
   const formData = new FormData();
-  formData.set("username", data.username);
-  formData.set("password", data.password);
+  formData.set('username', data.username);
+  formData.set('password', data.password);
   return axios.post<any>(ApiUrl.Login, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   });
 }

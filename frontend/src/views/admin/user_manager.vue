@@ -1,33 +1,51 @@
 <template>
-  <div class="mb-4 mt-1 ml-1 flex flex-row space-x-2 justify-between">
-    <n-button circle @click="refreshData"> 
-      <template #icon>
-        <n-icon>
-          <RefreshFilled />
-        </n-icon>
-      </template>
-    </n-button>
-    <n-button type="primary" @click="handleAddUser"> {{ $t("commons.addUser") }} </n-button>
+  <div>
+    <div class="mb-4 mt-1 ml-1 flex flex-row space-x-2 justify-between">
+      <n-button
+        circle
+        @click="refreshData"
+      >
+        <template #icon>
+          <n-icon>
+            <RefreshFilled />
+          </n-icon>
+        </template>
+      </n-button>
+      <n-button
+        type="primary"
+        @click="handleAddUser"
+      >
+        {{ $t('commons.addUser') }}
+      </n-button>
+    </div>
+    <n-data-table
+      :scroll-x="1400"
+      size="small"
+      :columns="columns"
+      :data="data"
+      :bordered="true"
+      :pagination="{
+        pageSize: 20,
+      }"
+    />
   </div>
-
-  <n-data-table :scroll-x="1400" size="small" :columns="columns" :data="data" :bordered="true" :pagination="{
-    pageSize: 20
-  }" />
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, h } from 'vue';
-import { useUserStore } from '@/store';
-import { DataTableColumns, NButton, NIcon } from 'naive-ui'
-import { LimitSchema, UserCreate, UserRead, chatStatusMap } from '@/types/schema';
-import { useI18n } from 'vue-i18n';
-import { getAllUserApi, registerApi, deleteUserApi, resetUserPasswordApi, updateUserLimitApi } from '@/api/user';
-import { Dialog, Message } from '@/utils/tips';
-import { TrashOutline, Pencil } from '@vicons/ionicons5';
+import { Pencil, TrashOutline } from '@vicons/ionicons5';
 import { PasswordRound, RefreshFilled } from '@vicons/material';
-import EditUserForm from './components/EditUserForm.vue';
-import EditLimitForm from './components/EditLimitForm.vue';
+import { DataTableColumns, NButton, NIcon } from 'naive-ui';
+import { h, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { deleteUserApi, getAllUserApi, registerApi, resetUserPasswordApi, updateUserLimitApi } from '@/api/user';
+import { useUserStore } from '@/store';
+import { chatStatusMap,LimitSchema, UserCreate, UserRead } from '@/types/schema';
 import { getCountTrans, popupResetUserPasswordDialog } from '@/utils/renders';
+import { Dialog, Message } from '@/utils/tips';
+
+import EditLimitForm from './components/EditLimitForm.vue';
+import EditUserForm from './components/EditUserForm.vue';
 
 const { t } = useI18n();
 
@@ -36,173 +54,198 @@ const userStore = useUserStore();
 const data = ref<Array<UserRead>>([]);
 
 const refreshData = () => {
-  getAllUserApi().then(res => {
+  getAllUserApi().then((res) => {
     data.value = res.data;
     // Message.success(t("tips.refreshed"));
-  })
-}
+  });
+};
 
-getAllUserApi().then(res => {
+getAllUserApi().then((res) => {
   data.value = res.data;
-})
+});
 
 const columns: DataTableColumns<UserRead> = [
   {
-    title: "#",
-    key: 'id'
+    title: '#',
+    key: 'id',
   },
   {
-    title: t("commons.username"),
-    key: 'username'
+    title: t('commons.username'),
+    key: 'username',
   },
   {
-    title: t("commons.nickname"),
-    key: 'nickname'
+    title: t('commons.nickname'),
+    key: 'nickname',
   },
   {
     title: t('commons.status'),
     key: 'chat_status',
     render(row) {
-      return row.chat_status ? t(chatStatusMap[row.chat_status as keyof typeof chatStatusMap]) : ''
+      return row.chat_status ? t(chatStatusMap[row.chat_status as keyof typeof chatStatusMap]) : '';
     },
-    sorter: 'default'
+    sorter: 'default',
   },
   {
-    title: t("commons.activeTime"),
+    title: t('commons.activeTime'),
     key: 'active_time',
     render(row) {
-      return row.active_time ? new Date(row.active_time + 'Z').toLocaleString() : t("commons.neverActive")
+      return row.active_time ? new Date(row.active_time + 'Z').toLocaleString() : t('commons.neverActive');
     },
     sorter: (a, b) => {
       if (!a.active_time || !b.active_time) return 0;
-      return new Date(a.active_time!).getTime() - new Date(b.active_time!).getTime()
+      return new Date(a.active_time!).getTime() - new Date(b.active_time!).getTime();
     },
   },
   {
-    title: t("commons.maxConversationCount"),
+    title: t('commons.maxConversationCount'),
     key: 'max_conv_count',
     render(row) {
       return getCountTrans(row.max_conv_count!);
-    }
+    },
   },
   {
-    title: t("commons.availableAskCount"),
+    title: t('commons.availableAskCount'),
     key: 'available_ask_count',
     render(row) {
       return getCountTrans(row.available_ask_count!);
     },
   },
   {
-    title: t("commons.availableGPT4AskCount"),
+    title: t('commons.availableGPT4AskCount'),
     key: 'available_gpt4_ask_count',
     render(row) {
       return getCountTrans(row.available_gpt4_ask_count!);
-    }
+    },
   },
   {
-    title: t("commons.canUsePaidModel"),
+    title: t('commons.canUsePaidModel'),
     key: 'can_use_paid',
     render(row) {
-      return row.can_use_paid ? t("commons.yes") : t("commons.no")
-    }
+      return row.can_use_paid ? t('commons.yes') : t('commons.no');
+    },
   },
   {
-    title: t("commons.canUseGPT4Model"),
+    title: t('commons.canUseGPT4Model'),
     key: 'can_use_gpt4',
     render(row) {
-      return row.can_use_gpt4 ? t("commons.yes") : t("commons.no")
-    }
+      return row.can_use_gpt4 ? t('commons.yes') : t('commons.no');
+    },
   },
   {
-    title: t("commons.email"),
-    key: 'email'
+    title: t('commons.email'),
+    key: 'email',
   },
   {
-    title: t("commons.isSuperuser"),
+    title: t('commons.isSuperuser'),
     key: 'is_superuser',
     render(row) {
-      return row.is_superuser ? t("commons.yes") : t("commons.no")
-    }
+      return row.is_superuser ? t('commons.yes') : t('commons.no');
+    },
   },
   {
-    title: t("commons.actions"),
+    title: t('commons.actions'),
     key: 'actions',
     fixed: 'right',
     render(row) {
       // TODO: 删除、修改密码，两个按钮
-      return h("div", {
-        class: "flex justify-start space-x-2"
-      }, [
-        h(NButton, {
-          size: "small",
-          type: "error",
-          circle: true,
-          secondary: true,
-          onClick: () => {
-            const d = Dialog.warning({
-              title: t("commons.deleteUser"),
-              content: t("tips.deleteUserConfirm"),
-              positiveText: t("commons.confirm"),
-              negativeText: t("commons.cancel"),
-              onPositiveClick: () => {
-                d.loading = true;
-                return new Promise((resolve, reject) => {
-                  deleteUserApi(row.id).then(res => {
-                    Message.success(t("tips.deleteUserSuccess"));
-                    getAllUserApi().then(res => {
-                      data.value = res.data;
-                    })
-                    resolve(true);
-                  }).catch(err => {
-                    Message.error(t("tips.deleteUserFailed") + ": " + err);
-                    reject(err);
-                  }).finally(() => {
-                    d.loading = false;
-                  })
-                })
-              }
-            })
-          }
-        }, {
-          icon: () => h(NIcon, null, {
-            default: () => h(TrashOutline)
-          })
-        }),
-        h(NButton, {
-          size: "small",
-          type: "info",
-          circle: true,
-          secondary: true,
-          onClick: () => {
-            popupResetUserPasswordDialog(
-              async (password: string) => {
-                await resetUserPasswordApi(row.id, password);
+      return h(
+        'div',
+        {
+          class: 'flex justify-start space-x-2',
+        },
+        [
+          h(
+            NButton,
+            {
+              size: 'small',
+              type: 'error',
+              circle: true,
+              secondary: true,
+              onClick: () => {
+                const d = Dialog.warning({
+                  title: t('commons.deleteUser'),
+                  content: t('tips.deleteUserConfirm'),
+                  positiveText: t('commons.confirm'),
+                  negativeText: t('commons.cancel'),
+                  onPositiveClick: () => {
+                    d.loading = true;
+                    return new Promise((resolve, reject) => {
+                      deleteUserApi(row.id)
+                        .then((res) => {
+                          Message.success(t('tips.deleteUserSuccess'));
+                          getAllUserApi().then((res) => {
+                            data.value = res.data;
+                          });
+                          resolve(true);
+                        })
+                        .catch((err) => {
+                          Message.error(t('tips.deleteUserFailed') + ': ' + err);
+                          reject(err);
+                        })
+                        .finally(() => {
+                          d.loading = false;
+                        });
+                    });
+                  },
+                });
               },
-              () => { Message.info(t("tips.resetUserPasswordSuccess")) },
-              () => { Message.error(t("tips.resetUserPasswordFailed")) }
-            )
-          }
-        }, {
-          icon: () => h(NIcon, null, {
-            default: () => h(PasswordRound)
-          })
-        }),
-        h(NButton, {
-          size: "small",
-          type: "primary",
-          circle: true,
-          secondary: true,
-          onClick: handleSetUserLimit(row)
-        }, {
-          icon: () => h(NIcon, null, {
-            default: () => h(Pencil)
-          })
-        })
-
-      ])
-    }
-  }
-]
+            },
+            {
+              icon: () =>
+                h(NIcon, null, {
+                  default: () => h(TrashOutline),
+                }),
+            }
+          ),
+          h(
+            NButton,
+            {
+              size: 'small',
+              type: 'info',
+              circle: true,
+              secondary: true,
+              onClick: () => {
+                popupResetUserPasswordDialog(
+                  async (password: string) => {
+                    await resetUserPasswordApi(row.id, password);
+                  },
+                  () => {
+                    Message.info(t('tips.resetUserPasswordSuccess'));
+                  },
+                  () => {
+                    Message.error(t('tips.resetUserPasswordFailed'));
+                  }
+                );
+              },
+            },
+            {
+              icon: () =>
+                h(NIcon, null, {
+                  default: () => h(PasswordRound),
+                }),
+            }
+          ),
+          h(
+            NButton,
+            {
+              size: 'small',
+              type: 'primary',
+              circle: true,
+              secondary: true,
+              onClick: handleSetUserLimit(row),
+            },
+            {
+              icon: () =>
+                h(NIcon, null, {
+                  default: () => h(Pencil),
+                }),
+            }
+          ),
+        ]
+      );
+    },
+  },
+];
 
 const handleAddUser = () => {
   const user = ref<UserCreate>({
@@ -210,37 +253,45 @@ const handleAddUser = () => {
     nickname: '',
     email: '',
     password: '',
-    is_superuser: false
-  })
+    is_superuser: false,
+  });
   const d = Dialog.info({
-    title: t("commons.addUser"),
-    content: () => h(EditUserForm, {
-      user: user.value,
-      'onUpdate:user': (newUser: UserCreate) => {
-        user.value = newUser;
-      }
-    }, { default: () => "" }),
-    positiveText: t("commons.confirm"),
-    negativeText: t("commons.cancel"),
+    title: t('commons.addUser'),
+    content: () =>
+      h(
+        EditUserForm,
+        {
+          user: user.value,
+          'onUpdate:user': (newUser: UserCreate) => {
+            user.value = newUser;
+          },
+        },
+        { default: () => '' }
+      ),
+    positiveText: t('commons.confirm'),
+    negativeText: t('commons.cancel'),
     onPositiveClick: () => {
       d.loading = true;
       return new Promise((resolve, reject) => {
-        registerApi(user.value).then(res => {
-          Message.success(t("commons.addUserSuccess"));
-          getAllUserApi().then(res => {
-            data.value = res.data;
+        registerApi(user.value)
+          .then((res) => {
+            Message.success(t('commons.addUserSuccess'));
+            getAllUserApi().then((res) => {
+              data.value = res.data;
+            });
+            resolve(true);
           })
-          resolve(true);
-        }).catch(err => {
-          Message.error(t("commons.addUserFailed") + ": " + err);
-          reject(err);
-        }).finally(() => {
-          d.loading = false;
-        })
-      })
-    }
-  })
-}
+          .catch((err) => {
+            Message.error(t('commons.addUserFailed') + ': ' + err);
+            reject(err);
+          })
+          .finally(() => {
+            d.loading = false;
+          });
+      });
+    },
+  });
+};
 
 const handleSetUserLimit = (user: UserRead) => () => {
   const limit = ref<LimitSchema>({
@@ -248,35 +299,42 @@ const handleSetUserLimit = (user: UserRead) => () => {
     available_ask_count: user.available_ask_count,
     can_use_paid: user.can_use_paid,
     can_use_gpt4: user.can_use_gpt4,
-    available_gpt4_ask_count: user.available_gpt4_ask_count
-  })
+    available_gpt4_ask_count: user.available_gpt4_ask_count,
+  });
   const d = Dialog.info({
-    title: t("commons.setUserLimit"),
-    content: () => h(EditLimitForm, {
-      limit: limit.value,
-      'onUpdate:limit': (newLimit: LimitSchema) => {
-        limit.value = newLimit;
-      }
-    }, { default: () => "" }),
-    positiveText: t("commons.confirm"),
-    negativeText: t("commons.cancel"),
+    title: t('commons.setUserLimit'),
+    content: () =>
+      h(
+        EditLimitForm,
+        {
+          limit: limit.value,
+          'onUpdate:limit': (newLimit: LimitSchema) => {
+            limit.value = newLimit;
+          },
+        },
+        { default: () => '' }
+      ),
+    positiveText: t('commons.confirm'),
+    negativeText: t('commons.cancel'),
     onPositiveClick: () => {
       d.loading = true;
       return new Promise((resolve, reject) => {
-        updateUserLimitApi(user.id, limit.value).then(res => {
-          Message.success(t("commons.setUserLimitSuccess"));
-          getAllUserApi().then(res => {
-            data.value = res.data;
+        updateUserLimitApi(user.id, limit.value)
+          .then((res) => {
+            Message.success(t('commons.setUserLimitSuccess'));
+            getAllUserApi().then((res) => {
+              data.value = res.data;
+            });
+            resolve(true);
           })
-          resolve(true);
-        }).catch(err => {
-          reject(err);
-        }).finally(() => {
-          d.loading = false;
-        })
-      })
-    }
-  })
-}
-
+          .catch((err) => {
+            reject(err);
+          })
+          .finally(() => {
+            d.loading = false;
+          });
+      });
+    },
+  });
+};
 </script>

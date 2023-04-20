@@ -1,32 +1,38 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-35" :option="option" :loading="props.loading" />
+    <v-chart
+      class="h-35"
+      :option="option"
+      :loading="props.loading"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { use } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { LineChart } from "echarts/charts";
+import { LineSeriesOption } from 'echarts';
+import { LineChart } from 'echarts/charts';
 import {
-  TitleComponent,
-  GridComponent,
-  // GraphicComponent,
-  TooltipComponent,
-  LegendComponent,
+  BrushComponent,
   DatasetComponent,
   DataZoomComponent,
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
   ToolboxComponent,
-  BrushComponent,
-} from "echarts/components";
-import VChart, { THEME_KEY } from "vue-echarts";
+  // GraphicComponent,
+  TooltipComponent,
+} from 'echarts/components';
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { computed, ref, watchEffect } from 'vue';
+import VChart from 'vue-echarts';
+import { useI18n } from 'vue-i18n';
+
+import { useAppStore } from '@/store';
 import { ToolTipFormatterParams } from '@/types/echarts';
-import { ref, watchEffect, computed } from "vue";
-import { LineSeriesOption } from 'echarts';
-import { useAppStore } from "@/store";
-import { useI18n } from "vue-i18n";
-import { UserRead } from "@/types/schema";
-import { timeFormatter } from "./helpers"
+import { UserRead } from '@/types/schema';
+
+import { timeFormatter } from './helpers';
 const { t } = useI18n();
 const appStore = useAppStore();
 
@@ -41,7 +47,7 @@ use([
   DatasetComponent,
   DataZoomComponent,
   ToolboxComponent,
-  BrushComponent
+  BrushComponent,
 ]);
 
 // provide(THEME_KEY, appStore.theme);
@@ -61,31 +67,29 @@ const findUsername = (user_id: number) => {
 const isDark = computed(() => appStore.theme === 'dark');
 
 const datasetSource = computed(() => {
-  const data = props.requestCounts ? Object.keys(props.requestCounts).map((key) => {
-    const timestamp = parseInt(key) * 1000 * props.requestCountsInterval!;
-    const count = props.requestCounts![key][0];
-    const userIds = props.requestCounts![key][1] as number[];
-    // const userString = userIds.map((i) => `${i}`).join(', ');
-    return {
-      timestamp,
-      count,
-      userIds
-    }
-  }) : [];
+  const data = props.requestCounts
+    ? Object.keys(props.requestCounts).map((key) => {
+      const timestamp = parseInt(key) * 1000 * props.requestCountsInterval!;
+      const count = props.requestCounts![key][0];
+      const userIds = props.requestCounts![key][1] as number[];
+      // const userString = userIds.map((i) => `${i}`).join(', ');
+      return {
+        timestamp,
+        count,
+        userIds,
+      };
+    })
+    : [];
   return data;
 });
 
-const generateSeries = (
-  name: string,
-  lineColor: string,
-  itemBorderColor: string,
-): LineSeriesOption => {
+const generateSeries = (name: string, lineColor: string, itemBorderColor: string): LineSeriesOption => {
   return {
     type: 'line',
     name,
     encode: {
       x: 'timestamp',
-      y: 'count'
+      y: 'count',
     },
     stack: 'Total',
     smooth: true,
@@ -116,25 +120,27 @@ const generateSeries = (
 
 const showDataZoom = ref(false);
 const dataZoomOption = computed(() => {
-  return showDataZoom.value ? [
+  return showDataZoom.value
+    ? [
       {
         type: 'slider',
         show: showDataZoom.value,
         xAxisIndex: 0,
         start: 0,
         end: 100,
-        filterMode: 'filter'
-      }
-    ] : [];
-})
+        filterMode: 'filter',
+      },
+    ]
+    : [];
+});
 const gridBottom = computed(() => {
   return showDataZoom.value ? '35%' : '5%';
-})
+});
 
 const option = computed(() => {
   return {
     title: {
-      text: t("commons.totalRequestsCount"),
+      text: t('commons.totalRequestsCount'),
       left: 'center',
       top: '2.6%',
       textStyle: {
@@ -148,7 +154,7 @@ const option = computed(() => {
       right: '4',
       top: '30',
       bottom: gridBottom.value,
-      containLabel: true
+      containLabel: true,
     },
     dataset: {
       source: datasetSource.value,
@@ -158,7 +164,7 @@ const option = computed(() => {
       axisLabel: {
         color: '#4E5969',
         formatter: (val: any) => timeFormatter(val, false),
-        hideOverlap: true
+        hideOverlap: true,
       },
       axisLine: {
         show: false,
@@ -213,33 +219,27 @@ const option = computed(() => {
                   <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(data.timestamp + props.requestCountsInterval! * 1000, true)}</span>
                   <br />
                   <span>${el.seriesName}: ${data.count}</span> <br />
-                  <span>${t("commons.requestUsers")}: ${data.userIds.map((id: number) => findUsername(id))}</span>
+                  <span>${t('commons.requestUsers')}: ${data.userIds.map((id: number) => findUsername(id))}</span>
                 </div>`;
       },
       className: 'echarts-tooltip-diy',
     },
 
-    series: [
-      generateSeries(
-        t("commons.totalRequestsCount"),
-        '#3469FF',
-        '#E8F3FF'
-      ),
-    ],
+    series: [generateSeries(t('commons.totalRequestsCount'), '#3469FF', '#E8F3FF')],
 
     toolbox: {
       feature: {
         myDataZoom: {
           show: true,
-          title: "DataZoom",
+          title: 'DataZoom',
           icon: 'path://M0,0H12V2H0V0ZM0,14H12V16H0V14ZM0,6H12V8H0V6ZM0,10H12V12H0V10Z',
-          onclick: () =>  {
+          onclick: () => {
             showDataZoom.value = !showDataZoom.value;
-          }
+          },
         },
         restore: {},
-        saveAsImage: {}
-      }
+        saveAsImage: {},
+      },
     },
     dataZoom: dataZoomOption.value,
     // brush: {
@@ -252,8 +252,8 @@ const option = computed(() => {
     //     colorAlpha: 0.1
     //   },
     // },
-  }
-})
+  };
+});
 
 watchEffect(() => {
   // console.log('props', props.requestCounts);

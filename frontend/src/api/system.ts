@@ -1,6 +1,8 @@
-import { LogFilterOptions } from "@/types/schema";
-import axios from "axios";
-import ApiUrl from "./url";
+import axios from 'axios';
+
+import { LogFilterOptions } from '@/types/schema';
+
+import ApiUrl from './url';
 
 export function getSystemInfoApi() {
   return axios.get(ApiUrl.SystemInfo);

@@ -6,21 +6,24 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+
 import { useUserStore } from '@/store';
 
 const router = useRouter();
 const userStore = useUserStore();
 
-let target = "";
+let target = '';
 if (!userStore.user) {
-  target = "login";
+  target = 'login';
 } else {
-  target = "conversation";
+  target = 'conversation';
 }
 
-router.push({
-  name: target,
-}).then(() => {
-  window.location.reload();
-})
+router
+  .push({
+    name: target,
+  })
+  .then(() => {
+    window.location.reload();
+  });
 </script>

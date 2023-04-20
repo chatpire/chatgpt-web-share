@@ -1,28 +1,70 @@
 <template>
-  <div class="flex lt-sm:flex-col flex-row lt-sm:py-2 py-4 lt-sm:px-5 px-4 box-content max-w-full relative" :style="{ backgroundColor: backgroundColor }">
+  <div
+    class="flex lt-sm:flex-col flex-row lt-sm:py-2 py-4 lt-sm:px-5 px-4 box-content max-w-full relative"
+    :style="{ backgroundColor: backgroundColor }"
+  >
     <div class="w-10 lt-sm:ml-0 ml-2 mt-3">
       <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
-      <n-avatar v-if="props.message.author_role == 'user'" size="small">
+      <n-avatar
+        v-if="props.message.author_role == 'user'"
+        size="small"
+      >
         <n-icon>
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <n-avatar v-else-if="isGpt4" size="small" :src="chatgptIconBlack" />
-      <n-avatar v-else size="small" :src="chatgptIcon" />
+      <n-avatar
+        v-else-if="isGpt4"
+        size="small"
+        :src="chatgptIconBlack"
+      />
+      <n-avatar
+        v-else
+        size="small"
+        :src="chatgptIcon"
+      />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
-      <div v-if="!showRawContent && !renderPureText" ref="contentRef" class="message-content w-full" v-html="renderedContent"></div>
-      <div v-else-if="!showRawContent && renderPureText" ref="contentRef" class="message-content w-full whitespace-pre-wrap py-4">{{ renderedContent }}</div>
-      <div v-else-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">{{ props.message.message }}</div>
+      <div
+        v-if="!showRawContent && !renderPureText"
+        ref="contentRef"
+        class="message-content w-full"
+        v-html="renderedContent"
+      />
+      <div
+        v-else-if="!showRawContent && renderPureText"
+        ref="contentRef"
+        class="message-content w-full whitespace-pre-wrap py-4"
+      >
+        {{ renderedContent }}
+      </div>
+      <div
+        v-else-if="showRawContent"
+        class="my-3 w-full whitespace-pre-wrap text-gray-500"
+      >
+        {{ props.message.message }}
+      </div>
       <div class="hide-in-print">
-        <n-button text ghost type="tertiary" size="tiny" class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-2 right-2"
-          @click="copyMessageContent">
+        <n-button
+          text
+          ghost
+          type="tertiary"
+          size="tiny"
+          class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-2 right-2"
+          @click="copyMessageContent"
+        >
           <n-icon>
             <CopyOutline />
           </n-icon>
         </n-button>
-        <n-button text ghost size="tiny" :type="showRawContent ? 'success' : 'tertiary'"
-          class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-2 right-6" @click="toggleShowRawContent">
+        <n-button
+          text
+          ghost
+          size="tiny"
+          :type="showRawContent ? 'success' : 'tertiary'"
+          class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-2 right-6"
+          @click="toggleShowRawContent"
+        >
           <n-icon>
             <CodeSlash />
           </n-icon>
@@ -33,18 +75,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue';
-import { ChatMessage } from '@/types/custom';
-import { useThemeVars } from "naive-ui"
+import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
 import { PersonFilled } from '@vicons/material';
-import { CopyOutline, CodeSlash } from '@vicons/ionicons5';
-import { Message } from '@/utils/tips';
+import * as clipboard from 'clipboard-polyfill';
+import { useThemeVars } from 'naive-ui';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import {useAppStore} from "@/store";
+
 import chatgptIcon from '/chatgpt-icon.svg';
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
-import md from "@/utils/markdown";
-import * as clipboard from "clipboard-polyfill"
+import { useAppStore } from '@/store';
+import { ChatMessage } from '@/types/custom';
+import md from '@/utils/markdown';
+import { Message } from '@/utils/tips';
 // let md: any;
 // let mdLoaded = ref(false);
 
@@ -67,27 +110,27 @@ const showRawContent = ref(false);
 
 const renderPureText = computed(() => {
   return appStore.preference.renderUserMessageInMd === false && props.message.author_role == 'user';
-})
+});
 
 const toggleShowRawContent = () => {
   showRawContent.value = !showRawContent.value;
-}
+};
 
 const props = defineProps<{
   message: ChatMessage;
-}>()
+}>();
 
 const isGpt4 = computed(() => {
   return props.message.model_slug == 'gpt-4';
-})
+});
 
 const backgroundColor = computed(() => {
   if (props.message.author_role == 'user') {
-    return themeVars.value.bodyColor
+    return themeVars.value.bodyColor;
   } else {
-    return themeVars.value.actionColor
+    return themeVars.value.actionColor;
   }
-})
+});
 
 const renderedContent = computed(() => {
   // if (!mdLoaded.value) {
@@ -112,21 +155,18 @@ function addButtonsToPreTags(htmlString: string): string {
   for (let i = 0; i < preTags.length; i++) {
     const preTag = preTags[i];
 
-    const button = Object.assign(document.createElement("button"), {
-      innerHTML: "",
-      className: "hljs-copy-button hide-in-print",
+    const button = Object.assign(document.createElement('button'), {
+      innerHTML: '',
+      className: 'hljs-copy-button hide-in-print',
     });
-    button.dataset.copied = "false";
-    preTag.classList.add("hljs-copy-wrapper");
+    button.dataset.copied = 'false';
+    preTag.classList.add('hljs-copy-wrapper');
 
     // Add a custom proprety to the code block so that the copy button can reference and match its background-color value.
-    preTag.style.setProperty(
-      "--hljs-theme-background",
-      window.getComputedStyle(preTag).backgroundColor
-    );
+    preTag.style.setProperty('--hljs-theme-background', window.getComputedStyle(preTag).backgroundColor);
 
     if (appStore.preference.codeAutoWrap) {
-      preTag.style.cssText += "white-space: pre-wrap; word-wrap: break-word; word-break: break-all;";
+      preTag.style.cssText += 'white-space: pre-wrap; word-wrap: break-word; word-break: break-all;';
     }
 
     preTag.appendChild(button);
@@ -139,6 +179,7 @@ function addButtonsToPreTags(htmlString: string): string {
 
 onMounted(() => {
   if (!contentRef.value) return;
+  // eslint-disable-next-line no-undef
   const callback: MutationCallback = (mutations: MutationRecord[], observer: MutationObserver) => {
     for (const mutation of mutations) {
       if (mutation.type === 'childList') {
@@ -149,49 +190,46 @@ onMounted(() => {
   observer = new MutationObserver(callback);
   observer.observe(contentRef.value, { subtree: true, childList: true });
   bindOnclick();
-})
+});
 
 const bindOnclick = () => {
   // 获取模板引用中的所有 pre 元素和其子元素中的 button 元素
   const preElements = contentRef.value?.querySelectorAll('pre');
   if (!preElements) return;
-  for (const preElement of (preElements as any)) {
+  for (const preElement of preElements as any) {
     for (const button of preElement.querySelectorAll('button')) {
       (button as HTMLButtonElement).onmousedown = () => {
         // 如果按钮的内容为 "Copied!"，则跳过复制操作
-        if (button.innerHTML === "Copied!") {
+        if (button.innerHTML === 'Copied!') {
           return;
         }
 
         const preContent = button.parentElement!.cloneNode(true) as HTMLElement;
-        preContent.removeChild(preContent.querySelector("button")!);
+        preContent.removeChild(preContent.querySelector('button')!);
 
         // Remove the alert element if it exists in preContent
-        const alertElement = preContent.querySelector(".hljs-copy-alert");
+        const alertElement = preContent.querySelector('.hljs-copy-alert');
         if (alertElement) {
           preContent.removeChild(alertElement);
         }
 
         clipboard
-          .writeText(preContent.textContent || "")
+          .writeText(preContent.textContent || '')
           .then(function () {
-            button.innerHTML = "Copied!";
-            button.dataset.copied = "true";
+            button.innerHTML = 'Copied!';
+            button.dataset.copied = 'true';
 
-            let alert: HTMLDivElement | null = Object.assign(
-              document.createElement("div"),
-              {
-                role: "status",
-                className: "hljs-copy-alert",
-                innerHTML: "Copied to clipboard",
-              }
-            );
+            let alert: HTMLDivElement | null = Object.assign(document.createElement('div'), {
+              role: 'status',
+              className: 'hljs-copy-alert',
+              innerHTML: 'Copied to clipboard',
+            });
             button.parentElement!.appendChild(alert);
 
             setTimeout(() => {
               if (alert) {
-                button.innerHTML = "Copy";
-                button.dataset.copied = "false";
+                button.innerHTML = 'Copy';
+                button.dataset.copied = 'false';
                 button.parentElement!.removeChild(alert);
                 alert = null;
               }
@@ -214,12 +252,15 @@ const copyMessageContent = () => {
     }
     ).then(); */
   const messageContent = props.message.message || '';
-  clipboard.writeText(messageContent).then(() => {
-    Message.success(t('commons.copiedToClipboard'));
-  }).catch(() => {
-    console.error('Failed to copy message content to clipboard.');
-  });
-}
+  clipboard
+    .writeText(messageContent)
+    .then(() => {
+      Message.success(t('commons.copiedToClipboard'));
+    })
+    .catch(() => {
+      console.error('Failed to copy message content to clipboard.');
+    });
+};
 </script>
 
 <style>
@@ -237,7 +278,7 @@ pre code {
 @media print {
   code {
     @apply max-w-160 !important
-    @apply whitespace-pre-line
+    @apply whitespace-pre-line;
   }
 }
 
@@ -261,7 +302,7 @@ ul {
 
 .message-content th {
   border: gray 1px solid;
-  @apply bg-gray-400
+  @apply bg-gray-400;
 }
 
 .message-content td {
@@ -308,7 +349,7 @@ ul {
   border-color: #49494966;
 }
 
-.hljs-copy-button[data-copied="true"] {
+.hljs-copy-button[data-copied='true'] {
   text-indent: 0px;
   /* Shows the inner text */
   width: auto;
@@ -331,4 +372,5 @@ ul {
   white-space: nowrap;
   width: 1px;
   color: #2d2b57;
-}</style>
+}
+</style>

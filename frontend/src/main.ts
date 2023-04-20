@@ -1,17 +1,17 @@
-import Vue from "vue";
-import pinia from "./store";
-import { createApp } from "vue";
-import "./style.css";
-import App from "./App.vue";
-import "uno.css";
-import "@/api/interceptor";
-import router from "./router";
+import './style.css';
+// eslint-disable-next-line import/no-unresolved
+import 'uno.css';
+import '@/api/interceptor';
+import 'highlight.js/styles/atom-one-dark.css';
+import 'highlight.js/lib/common';
+import 'katex/dist/katex.css';
 
-import { i18n } from "./i18n";
-import "highlight.js/styles/atom-one-dark.css";
-import "highlight.js/lib/common";
+import Vue, { createApp } from 'vue';
 
-import "katex/dist/katex.css";
+import App from './App.vue';
+import { i18n } from './i18n';
+import router from './router';
+import pinia from './store';
 
 // import * as Sentry from "@sentry/vue";
 // import { BrowserTracing } from "@sentry/tracing";
@@ -38,7 +38,7 @@ app.use(pinia);
 app.use(i18n);
 // app.use(hljs.vuePlugin);
 
-app.mount("#app");
+app.mount('#app');
 
 declare global {
   interface Window {

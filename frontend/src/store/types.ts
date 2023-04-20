@@ -1,6 +1,7 @@
-import { Preference } from "@/types/custom";
-import { UserRead, ConversationSchema } from "@/types/schema";
-import { RemovableRef, UseStorageOptions } from "@vueuse/core";
+import { RemovableRef, UseStorageOptions } from '@vueuse/core';
+
+import { Preference } from '@/types/custom';
+import { ConversationSchema,UserRead } from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;
@@ -11,7 +12,7 @@ interface UserState {
 interface AppState {
   theme: any;
   language: any;
-  preference: RemovableRef<Preference>
+  preference: RemovableRef<Preference>;
 }
 
-export type { UserState, AppState };
+export type { AppState,UserState };

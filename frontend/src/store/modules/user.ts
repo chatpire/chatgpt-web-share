@@ -1,10 +1,12 @@
-import { getUserInfoApi, loginApi, LoginData, logoutApi } from "@/api/user";
-import { UserRead } from "@/types/schema";
-import { clearCookie } from "@/utils/auth";
-import { defineStore } from "pinia";
-import { UserState } from "../types";
+import { defineStore } from 'pinia';
 
-const useUserStore = defineStore("user", {
+import { getUserInfoApi, loginApi, LoginData, logoutApi } from '@/api/user';
+import { UserRead } from '@/types/schema';
+import { clearCookie } from '@/utils/auth';
+
+import { UserState } from '../types';
+
+const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
     savedUsername: null,

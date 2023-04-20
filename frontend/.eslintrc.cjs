@@ -32,6 +32,12 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': ['off'],
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+      },
+    ],
   },
   settings: {
     'import/parsers': {

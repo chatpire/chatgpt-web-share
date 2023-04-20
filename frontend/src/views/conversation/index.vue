@@ -1,27 +1,62 @@
 <template>
-  <div class="flex-grow flex flex-col" ref="rootRef">
+  <div
+    ref="rootRef"
+    class="flex-grow flex flex-col"
+  >
     <!-- 上半部分 -->
     <div class="flex-grow flex flex-col md:flex-row">
       <!-- 左栏 -->
-      <LeftBar :loading="loadingBar" v-model:value="currentConversationId" :new-conv="newConversation" @new-conversation="makeNewConversation" />
+      <LeftBar
+        v-model:value="currentConversationId"
+        :loading="loadingBar"
+        :new-conv="newConversation"
+        @new-conversation="makeNewConversation"
+      />
       <!-- 右栏 -->
-      <n-card class="md:mr-4 flex-grow md:mb-4 relative" :bordered="true" content-style="padding: 0; display: flex; flex-direction: column;">
+      <n-card
+        class="md:mr-4 flex-grow md:mb-4 relative"
+        :bordered="true"
+        content-style="padding: 0; display: flex; flex-direction: column;"
+      >
         <div class="right-2 bottom-20 absolute">
           <!-- 回到底部按钮 -->
-          <n-button @click="scrollToBottomSmooth" secondary circle size="small">
+          <n-button
+            secondary
+            circle
+            size="small"
+            @click="scrollToBottomSmooth"
+          >
             <template #icon>
               <ArrowDown />
             </template>
           </n-button>
         </div>
-        <n-scrollbar class="h-0 flex-grow" ref="historyRef" v-if="currentConversationId" :content-style="loadingHistory ? { height: '100%' } : {}">
+        <n-scrollbar
+          v-if="currentConversationId"
+          ref="historyRef"
+          class="h-0 flex-grow"
+          :content-style="loadingHistory ? { height: '100%' } : {}"
+        >
           <!-- 消息记录内容（用于全屏展示） -->
-          <HistoryContent ref="historyContentRef" :messages="currentMessageListDisplay" :fullscreen="false"
-            :model-name="currentConversation?.model_name || ''" :show-tips="showFullscreenTips" :loading="loadingHistory" />
+          <HistoryContent
+            ref="historyContentRef"
+            :messages="currentMessageListDisplay"
+            :fullscreen="false"
+            :model-name="currentConversation?.model_name || ''"
+            :show-tips="showFullscreenTips"
+            :loading="loadingHistory"
+          />
         </n-scrollbar>
         <!-- 未选中对话（空界面） -->
-        <div class="flex-grow flex flex-col justify-center" :style="{ backgroundColor: themeVars.cardColor }" v-else-if="!currentConversationId">
-          <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
+        <div
+          v-else-if="!currentConversationId"
+          class="flex-grow flex flex-col justify-center"
+          :style="{ backgroundColor: themeVars.cardColor }"
+        >
+          <n-empty
+            v-if="!currentConversation"
+            :description="$t('tips.loadConversation')"
+          >
             <template #icon>
               <n-icon>
                 <ChatboxEllipses />
@@ -29,7 +64,7 @@
             </template>
             <template #extra>
               <n-button @click="makeNewConversation">
-                {{ $t("tips.newConversation") }}
+                {{ $t('tips.newConversation') }}
               </n-button>
             </template>
           </n-empty>
@@ -37,41 +72,44 @@
       </n-card>
     </div>
     <!-- 下半部分（回复区域） -->
-    <InputRegion :can-abort="canAbort" :send-disabled="sendDisabled" v-model:input-value="inputValue" v-model:auto-scrolling="autoScrolling"
-      @abort-request="abortRequest" @export-to-markdown-file="exportToMarkdownFile" @export-to-pdf-file="exportToPdfFile" @send-msg="sendMsg"
-      @show-fullscreen-history="showFullscreenHistory" />
+    <InputRegion
+      v-model:input-value="inputValue"
+      v-model:auto-scrolling="autoScrolling"
+      :can-abort="canAbort"
+      :send-disabled="sendDisabled"
+      @abort-request="abortRequest"
+      @export-to-markdown-file="exportToMarkdownFile"
+      @export-to-pdf-file="exportToPdfFile"
+      @send-msg="sendMsg"
+      @show-fullscreen-history="showFullscreenHistory"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAppStore, useConversationStore, useUserStore } from '@/store';
-import { ConversationSchema } from '@/types/schema';
-import { computed, h, ref, watch } from 'vue';
-import { Dialog, LoadingBar, Message } from '@/utils/tips';
-
-import { ChatConversationDetail, ChatMessage } from '@/types/custom';
-import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
-
-import { useI18n } from 'vue-i18n';
-import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { ArrowDown, ChatboxEllipses } from '@vicons/ionicons5';
-import {
-  getCountTrans,
-  popupNewConversationDialog
-} from '@/utils/renders';
-import HistoryContent from "@/views/conversation/components/HistoryContent.vue";
-import { getConvMessageListFromId } from "@/utils/conversation"
-import InputRegion from "@/views/conversation/components/InputRegion.vue";
-import LeftBar from "@/views/conversation/components/LeftBar.vue";
-import { saveAsMarkdown } from "./utils/export";
+import { NButton, NIcon, useThemeVars } from 'naive-ui';
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const themeVars = useThemeVars()
+import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
+import { useConversationStore, useUserStore } from '@/store';
+import { ChatConversationDetail, ChatMessage } from '@/types/custom';
+import { ConversationSchema } from '@/types/schema';
+import { getConvMessageListFromId } from '@/utils/conversation';
+import { popupNewConversationDialog } from '@/utils/renders';
+import { Dialog, LoadingBar, Message } from '@/utils/tips';
+import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
+import InputRegion from '@/views/conversation/components/InputRegion.vue';
+import LeftBar from '@/views/conversation/components/LeftBar.vue';
 
-const appStore = useAppStore();
+import { saveAsMarkdown } from './utils/export';
+
+const themeVars = useThemeVars();
+
 const { t } = useI18n();
 
 const rootRef = ref();
-const menuRef = ref();
 const historyRef = ref();
 const userStore = useUserStore();
 const conversationStore = useConversationStore();
@@ -84,13 +122,14 @@ const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
 let aborter: (() => void) | null = null;
 
-const currentAvaliableAskCountsTip = computed(() => {
-  let result = '';
-  if (userStore.user?.available_ask_count != -1)
-    result += `${t('commons.availableAskCount')}: ${getCountTrans(userStore.user?.available_ask_count!)}   `;
-  if (currentConversation.value && currentConversation.value.model_name === 'gpt-4' && userStore.user?.available_gpt4_ask_count != -1) result += `${t('commons.availableGPT4AskCount')}: ${getCountTrans(userStore.user?.available_gpt4_ask_count!)}`;
-  return result;
-});
+// const currentAvaliableAskCountsTip = computed(() => {
+//   let result = '';
+//   if (userStore.user?.available_ask_count != -1)
+//     result += `${t('commons.availableAskCount')}: ${getCountTrans(userStore.user?.available_ask_count!)}   `;
+//   if (currentConversation.value && currentConversation.value.model_name === 'gpt-4' && userStore.user?.available_gpt4_ask_count != -1)
+//     result += `${t('commons.availableGPT4AskCount')}: ${getCountTrans(userStore.user?.available_gpt4_ask_count!)}`;
+//   return result;
+// });
 
 const newConversation = ref<ConversationSchema | null>(null);
 const currentConversationId = ref<string | null>(null);
@@ -116,13 +155,12 @@ const currentMessageListDisplay = computed(() => {
   return result;
 });
 
-
 // 从 store 中获取当前对话最新消息的 id
 const currentNode = computed<string | undefined>(() => {
   if (currentConversation.value?.conversation_id)
     return conversationStore.conversationDetailMap[currentConversation.value?.conversation_id]?.current_node;
   else return undefined;
-})
+});
 
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<ChatMessage>>(() => {
@@ -134,10 +172,9 @@ const currentActiveMessages = computed<Array<ChatMessage>>(() => {
   return result;
 });
 
-
-watch(currentConversationId, (newVal, oldVal) => {
-  if (newVal != "new_conversation") {
-    handleChangeConversation(newVal)
+watch(currentConversationId, (newVal, _oldVal) => {
+  if (newVal != 'new_conversation') {
+    handleChangeConversation(newVal);
   }
 });
 
@@ -147,15 +184,19 @@ const handleChangeConversation = (key: string | null) => {
   loadingBar.value = true;
   loadingHistory.value = true;
   LoadingBar.start();
-  conversationStore.fetchConversationHistory(key).then(() => {
-    // console.log(conversationStore.conversationDetailMap);
-  }).catch((err: any) => {
-    console.log(err);
-  }).finally(() => {
-    loadingBar.value = false;
-    loadingHistory.value = false;
-    LoadingBar.finish();
-  })
+  conversationStore
+    .fetchConversationHistory(key)
+    .then(() => {
+      // console.log(conversationStore.conversationDetailMap);
+    })
+    .catch((err: any) => {
+      console.log(err);
+    })
+    .finally(() => {
+      loadingBar.value = false;
+      loadingHistory.value = false;
+      LoadingBar.finish();
+    });
 };
 
 const sendDisabled = computed(() => {
@@ -164,39 +205,36 @@ const sendDisabled = computed(() => {
 
 const makeNewConversation = () => {
   if (newConversation.value) return;
-  popupNewConversationDialog(
-    async (title: string, model_name: any) => {
-      // console.log(title, model_name);
-      newConversation.value = {
-        conversation_id: "new_conversation",
-        // 默认标题格式：MMDD - username
-        title: title || `New Chat ${new Date().toLocaleString()} - ${userStore.user?.username}`,
-        model_name: model_name || 'text-davinci-002-render-sha',
-        create_time: new Date().toISOString(),  // 仅用于当前排序到顶部
-      };
-      currentConversationId.value = "new_conversation";
-    },
-  )
-}
+  popupNewConversationDialog(async (title: string, model_name: any) => {
+    // console.log(title, model_name);
+    newConversation.value = {
+      conversation_id: 'new_conversation',
+      // 默认标题格式：MMDD - username
+      title: title || `New Chat ${new Date().toLocaleString()} - ${userStore.user?.username}`,
+      model_name: model_name || 'text-davinci-002-render-sha',
+      create_time: new Date().toISOString(), // 仅用于当前排序到顶部
+    };
+    currentConversationId.value = 'new_conversation';
+  });
+};
 
 const abortRequest = () => {
-  if (aborter == null || !canAbort.value)
-    return;
+  if (aborter == null || !canAbort.value) return;
   aborter();
   aborter = null;
-}
+};
 
 const scrollToBottom = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
-}
+};
 
 const scrollToBottomSmooth = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
-}
+};
 
 const sendMsg = async () => {
   if (sendDisabled.value || loadingBar.value) {
-    Message.error(t("tips.pleaseSelectConversation"));
+    Message.error(t('tips.pleaseSelectConversation'));
     return;
   }
 
@@ -235,13 +273,13 @@ const sendMsg = async () => {
     children: [],
     typing: true,
     model_slug: currentConversation.value?.model_name,
-  }
+  };
   const wsUrl = getAskWebsocketApiUrl();
   let wsErrorMessage: string | null = null;
   console.log('Connecting to', wsUrl, askInfo);
   const webSocket = new WebSocket(wsUrl);
 
-  webSocket.onopen = (event: Event) => {
+  webSocket.onopen = (_event: Event) => {
     // console.log('WebSocket connection is open', askInfo);
     webSocket.send(JSON.stringify(askInfo));
   };
@@ -250,10 +288,12 @@ const sendMsg = async () => {
     const reply = JSON.parse(event.data);
     // console.log('Received message from server:', reply);
     if (!reply.type) return;
-    if (reply.type === 'waiting') { // 等待回复
+    if (reply.type === 'waiting') {
+      // 等待回复
       canAbort.value = false;
       currentActiveMessageRecv.value!.message = t(reply.tip);
-    } else if (reply.type === 'queueing') { // 正在排队
+    } else if (reply.type === 'queueing') {
+      // 正在排队
       canAbort.value = true;
       currentActiveMessageRecv.value!.message = t(reply.tip);
       // if (reply.waiting_count) {
@@ -267,8 +307,7 @@ const sendMsg = async () => {
       currentActiveMessageRecv.value!.model_slug = reply.model_name;
       if (newConversation.value) {
         newConversation.value.model_name = reply.model_name;
-        if (newConversation.value.conversation_id !== reply.conversation_id)
-          newConversation.value.conversation_id = reply.conversation_id;
+        if (newConversation.value.conversation_id !== reply.conversation_id) newConversation.value.conversation_id = reply.conversation_id;
         if (currentConversationId.value !== newConversation.value.conversation_id) {
           currentConversationId.value = newConversation.value.conversation_id!;
         }
@@ -281,8 +320,7 @@ const sendMsg = async () => {
         wsErrorMessage = reply.message;
       }
     }
-    if (autoScrolling.value)
-      scrollToBottom();
+    if (autoScrolling.value) scrollToBottom();
   };
 
   webSocket.onclose = async (event: CloseEvent) => {
@@ -290,7 +328,8 @@ const sendMsg = async () => {
     canAbort.value = false;
     currentActiveMessageRecv.value!.typing = false;
     console.log('WebSocket connection is closed', event, isAborted.value);
-    if (isAborted.value || event.code === 1000) {  // 正常关闭        
+    if (isAborted.value || event.code === 1000) {
+      // 正常关闭
       if (hasGotReply) {
         if (newConversation.value) {
           // 解析 ISO string 为 小数时间戳
@@ -316,7 +355,7 @@ const sendMsg = async () => {
           currentConversationId.value = newConversation.value.conversation_id!; // 这里将会导致 currentConversation 切换
           await conversationStore.fetchAllConversations();
           newConversation.value = null;
-          console.log("done", newConvDetail, msgSend, msgRecv, currentConversationId.value)
+          console.log('done', newConvDetail, msgSend, msgRecv, currentConversationId.value);
         } else {
           // 将新消息存入 store
           if (!currentActiveMessageRecv.value!.id.startsWith('recv')) {
@@ -332,12 +371,12 @@ const sendMsg = async () => {
         title: t('errors.askError'),
         content: wsErrorMessage != null ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}` : `[${event.code}] ${t(event.reason)}`,
         positiveText: t('commons.withdrawMessage'),
-        negativeText: t("commons.cancel"),
+        negativeText: t('commons.cancel'),
         onPositiveClick: () => {
           currentActiveMessageSend.value = null;
           currentActiveMessageRecv.value = null;
         },
-      })
+      });
     }
     await userStore.fetchUserInfo();
     LoadingBar.finish();
@@ -353,7 +392,7 @@ const sendMsg = async () => {
     isAborted.value = true;
     webSocket.close();
   };
-}
+};
 
 const exportToMarkdownFile = () => {
   if (!currentConversation.value) {
@@ -361,7 +400,7 @@ const exportToMarkdownFile = () => {
     return;
   }
   saveAsMarkdown(currentConversation.value, currentMessageListDisplay.value);
-}
+};
 
 const historyContentRef = ref();
 const showFullscreenTips = ref(false);
@@ -374,7 +413,7 @@ const showFullscreenHistory = () => {
   // focus historyContentRef
   historyContentRef.value.focus();
   historyContentRef.value.toggleFullscreenHistory(true);
-}
+};
 
 const exportToPdfFile = () => {
   if (!currentConversation.value) {
@@ -384,13 +423,10 @@ const exportToPdfFile = () => {
   historyContentRef.value.toggleFullscreenHistory(false);
   window.print();
   historyContentRef.value.toggleFullscreenHistory(false);
-}
+};
 
 // 加载对话列表
-conversationStore.fetchAllConversations().then(() => {
-})
-
-
+conversationStore.fetchAllConversations().then();
 </script>
 
 <style>
@@ -408,7 +444,7 @@ span.n-menu-item-content-header__extra {
 }
 
 .left-col .n-card__content {
-  @apply flex flex-col overflow-auto !important
+  @apply flex flex-col overflow-auto !important;
 }
 
 @media print {

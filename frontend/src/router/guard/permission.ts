@@ -1,7 +1,8 @@
-import type { LocationQueryRaw, Router } from "vue-router";
-import { useUserStore } from "@/store";
-import { Message } from "@/utils/tips";
-import { i18n } from "@/i18n";
+import type { LocationQueryRaw, Router } from 'vue-router';
+
+import { i18n } from '@/i18n';
+import { useUserStore } from '@/store';
+import { Message } from '@/utils/tips';
 const t = i18n.global.t as any;
 
 // 在 userLoginInfo 之后，此时要么登录成功，要么未登录
@@ -11,9 +12,9 @@ export default function setupPermissionGuard(router: Router) {
     if (!to.meta.requiresAuth) next();
     else {
       if (userStore.user === null) {
-        Message.error(t("errors.userNotLogin"));
+        Message.error(t('errors.userNotLogin'));
         next({
-          name: "login",
+          name: 'login',
           query: {
             redirect: to.name,
             ...to.query,
@@ -24,9 +25,9 @@ export default function setupPermissionGuard(router: Router) {
         //   if (userStore.user.is_superuser) next();
         //   else next({ name: "403" });
         // } else next();
-        const role = userStore.user.is_superuser ? "superuser" : "user";
+        const role = userStore.user.is_superuser ? 'superuser' : 'user';
         if (to.meta.roles.find((r) => r === role) === undefined) {
-          next({ name: "403" });
+          next({ name: '403' });
         } else next();
       }
     }

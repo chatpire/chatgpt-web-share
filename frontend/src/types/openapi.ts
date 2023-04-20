@@ -3,107 +3,106 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/auth/login": {
+  '/auth/login': {
     /** Auth:Jwt.Login */
-    post: operations["auth_jwt_login_auth_login_post"];
+    post: operations['auth_jwt_login_auth_login_post'];
   };
-  "/auth/logout": {
+  '/auth/logout': {
     /** Auth:Jwt.Logout */
-    post: operations["auth_jwt_logout_auth_logout_post"];
+    post: operations['auth_jwt_logout_auth_logout_post'];
   };
-  "/auth/forgot-password": {
+  '/auth/forgot-password': {
     /** Reset:Forgot Password */
-    post: operations["reset_forgot_password_auth_forgot_password_post"];
+    post: operations['reset_forgot_password_auth_forgot_password_post'];
   };
-  "/auth/reset-password": {
+  '/auth/reset-password': {
     /** Reset:Reset Password */
-    post: operations["reset_reset_password_auth_reset_password_post"];
+    post: operations['reset_reset_password_auth_reset_password_post'];
   };
-  "/auth/register": {
+  '/auth/register': {
     /** Register:Register */
-    post: operations["register_register_auth_register_post"];
+    post: operations['register_register_auth_register_post'];
   };
-  "/user": {
+  '/user': {
     /** Get All Users */
-    get: operations["get_all_users_user_get"];
+    get: operations['get_all_users_user_get'];
   };
-  "/user/{user_id}/reset-password": {
+  '/user/{user_id}/reset-password': {
     /** Reset Password */
-    patch: operations["reset_password_user__user_id__reset_password_patch"];
+    patch: operations['reset_password_user__user_id__reset_password_patch'];
   };
-  "/user/{user_id}/limit": {
+  '/user/{user_id}/limit': {
     /** Update Limit */
-    post: operations["update_limit_user__user_id__limit_post"];
+    post: operations['update_limit_user__user_id__limit_post'];
   };
-  "/user/me": {
+  '/user/me': {
     /** Users:Current User */
-    get: operations["users_current_user_user_me_get"];
+    get: operations['users_current_user_user_me_get'];
     /** Users:Patch Current User */
-    patch: operations["users_patch_current_user_user_me_patch"];
+    patch: operations['users_patch_current_user_user_me_patch'];
   };
-  "/user/{id}": {
+  '/user/{id}': {
     /** Users:User */
-    get: operations["users_user_user__id__get"];
+    get: operations['users_user_user__id__get'];
     /** Users:Delete User */
-    delete: operations["users_delete_user_user__id__delete"];
+    delete: operations['users_delete_user_user__id__delete'];
     /** Users:Patch User */
-    patch: operations["users_patch_user_user__id__patch"];
+    patch: operations['users_patch_user_user__id__patch'];
   };
-  "/conv": {
+  '/conv': {
     /**
-     * Get All Conversations 
+     * Get All Conversations
      * @description 返回自己的有效会话
      * 对于管理员，返回所有对话，并可以指定是否只返回有效会话
      */
-    get: operations["get_all_conversations_conv_get"];
+    get: operations['get_all_conversations_conv_get'];
   };
-  "/conv/{conversation_id}": {
+  '/conv/{conversation_id}': {
     /** Get Conversation History */
-    get: operations["get_conversation_history_conv__conversation_id__get"];
+    get: operations['get_conversation_history_conv__conversation_id__get'];
     /**
-     * Delete Conversation 
+     * Delete Conversation
      * @description remove conversation from database and chatgpt server
      */
-    delete: operations["delete_conversation_conv__conversation_id__delete"];
+    delete: operations['delete_conversation_conv__conversation_id__delete'];
     /** Change Conversation Title */
-    patch: operations["change_conversation_title_conv__conversation_id__patch"];
+    patch: operations['change_conversation_title_conv__conversation_id__patch'];
   };
-  "/conv/{conversation_id}/vanish": {
+  '/conv/{conversation_id}/vanish': {
     /** Vanish Conversation */
-    delete: operations["vanish_conversation_conv__conversation_id__vanish_delete"];
+    delete: operations['vanish_conversation_conv__conversation_id__vanish_delete'];
   };
-  "/conv/{conversation_id}/assign/{username}": {
+  '/conv/{conversation_id}/assign/{username}': {
     /** Assign Conversation */
-    patch: operations["assign_conversation_conv__conversation_id__assign__username__patch"];
+    patch: operations['assign_conversation_conv__conversation_id__assign__username__patch'];
   };
-  "/conv/{conversation_id}/gen_title": {
+  '/conv/{conversation_id}/gen_title': {
     /** Generate Conversation Title */
-    patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
+    patch: operations['generate_conversation_title_conv__conversation_id__gen_title_patch'];
   };
-  "/system/info": {
+  '/system/info': {
     /** Get System Info */
-    get: operations["get_system_info_system_info_get"];
+    get: operations['get_system_info_system_info_get'];
   };
-  "/system/request_statistics": {
+  '/system/request_statistics': {
     /** Get Request Statistics */
-    get: operations["get_request_statistics_system_request_statistics_get"];
+    get: operations['get_request_statistics_system_request_statistics_get'];
   };
-  "/system/proxy_logs": {
+  '/system/proxy_logs': {
     /** Get Proxy Logs */
-    post: operations["get_proxy_logs_system_proxy_logs_post"];
+    post: operations['get_proxy_logs_system_proxy_logs_post'];
   };
-  "/system/server_logs": {
+  '/system/server_logs': {
     /** Get Server Logs */
-    post: operations["get_server_logs_system_server_logs_post"];
+    post: operations['get_server_logs_system_server_logs_post'];
   };
-  "/status": {
+  '/status': {
     /**
-     * Get Server Status 
+     * Get Server Status
      * @description 普通用户获取服务器状态
      */
-    get: operations["get_server_status_status_get"];
+    get: operations['get_server_status_status_get'];
   };
 }
 
@@ -120,7 +119,7 @@ export interface components {
       /** Password */
       password: string;
       /**
-       * Scope 
+       * Scope
        * @default
        */
       scope?: string;
@@ -132,7 +131,7 @@ export interface components {
     /** Body_reset_forgot_password_auth_forgot_password_post */
     Body_reset_forgot_password_auth_forgot_password_post: {
       /**
-       * Email 
+       * Email
        * Format: email
        */
       email: string;
@@ -145,26 +144,26 @@ export interface components {
       password: string;
     };
     /**
-     * ChatModels 
-     * @description An enumeration. 
+     * ChatModels
+     * @description An enumeration.
      * @enum {unknown}
      */
-    ChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid" | "";
+    ChatModels: 'gpt-4' | 'text-davinci-002-render-sha' | 'text-davinci-002-render-paid' | '';
     /**
-     * ChatStatus 
-     * @description An enumeration. 
+     * ChatStatus
+     * @description An enumeration.
      * @enum {unknown}
      */
-    ChatStatus: "asking" | "queueing" | "idling";
+    ChatStatus: 'asking' | 'queueing' | 'idling';
     /** ConversationSchema */
     ConversationSchema: {
       /**
-       * Id 
+       * Id
        * @default -1
        */
       id?: number;
       /**
-       * Conversation Id 
+       * Conversation Id
        * Format: uuid
        */
       conversation_id?: string;
@@ -174,14 +173,14 @@ export interface components {
       user_id?: number;
       /** Is Valid */
       is_valid?: boolean;
-      model_name?: components["schemas"]["ChatModels"];
+      model_name?: components['schemas']['ChatModels'];
       /**
-       * Create Time 
+       * Create Time
        * Format: date-time
        */
       create_time?: string;
       /**
-       * Active Time 
+       * Active Time
        * Format: date-time
        */
       active_time?: string;
@@ -189,14 +188,16 @@ export interface components {
     /** ErrorModel */
     ErrorModel: {
       /** Detail */
-      detail: string | ({
-        [key: string]: string | undefined;
-      });
+      detail:
+        | string
+        | {
+            [key: string]: string | undefined;
+          };
     };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
-      detail?: (components["schemas"]["ValidationError"])[];
+      detail?: components['schemas']['ValidationError'][];
     };
     /** LimitSchema */
     LimitSchema: {
@@ -214,12 +215,12 @@ export interface components {
     /** LogFilterOptions */
     LogFilterOptions: {
       /**
-       * Max Lines 
+       * Max Lines
        * @default 100
        */
       max_lines?: number;
       /** Exclude Keywords */
-      exclude_keywords?: (string)[];
+      exclude_keywords?: string[];
     };
     /** RequestStatistics */
     RequestStatistics: {
@@ -227,10 +228,10 @@ export interface components {
       request_counts_interval: number;
       /** Request Counts */
       request_counts: {
-        [key: string]: (Record<string, never>)[] | undefined;
+        [key: string]: Record<string, never>[] | undefined;
       };
       /** Ask Records */
-      ask_records: (Record<string, never>)[];
+      ask_records: Record<string, never>[];
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {
@@ -263,17 +264,17 @@ export interface components {
       /** Password */
       password: string;
       /**
-       * Is Active 
+       * Is Active
        * @default true
        */
       is_active?: boolean;
       /**
-       * Is Superuser 
+       * Is Superuser
        * @default false
        */
       is_superuser?: boolean;
       /**
-       * Is Verified 
+       * Is Verified
        * @default false
        */
       is_verified?: boolean;
@@ -282,23 +283,23 @@ export interface components {
       /** Nickname */
       nickname: string;
       /**
-       * Can Use Paid 
+       * Can Use Paid
        * @default false
        */
       can_use_paid?: boolean;
       /**
-       * Max Conv Count 
+       * Max Conv Count
        * @default -1
        */
       max_conv_count?: number;
       /**
-       * Available Ask Count 
+       * Available Ask Count
        * @default -1
        */
       available_ask_count?: number;
     };
     /**
-     * UserRead 
+     * UserRead
      * @description Base User model.
      */
     UserRead: {
@@ -317,11 +318,11 @@ export interface components {
       /** Nickname */
       nickname: string;
       /**
-       * Active Time 
+       * Active Time
        * Format: date-time
        */
       active_time?: string;
-      chat_status: components["schemas"]["ChatStatus"];
+      chat_status: components['schemas']['ChatStatus'];
       /** Can Use Paid */
       can_use_paid: boolean;
       /** Can Use Gpt4 */
@@ -334,7 +335,7 @@ export interface components {
       available_gpt4_ask_count?: number;
     };
     /**
-     * UserUpdate 
+     * UserUpdate
      * @description Base User model.
      */
     UserUpdate: {
@@ -343,17 +344,17 @@ export interface components {
       /** Email */
       email?: string;
       /**
-       * Is Active 
+       * Is Active
        * @default true
        */
       is_active?: boolean;
       /**
-       * Is Superuser 
+       * Is Superuser
        * @default false
        */
       is_superuser?: boolean;
       /**
-       * Is Verified 
+       * Is Verified
        * @default false
        */
       is_verified?: boolean;
@@ -380,31 +381,30 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
-
   auth_jwt_login_auth_login_post: {
     /** Auth:Jwt.Login */
     requestBody: {
       content: {
-        "application/x-www-form-urlencoded": components["schemas"]["Body_auth_jwt_login_auth_login_post"];
+        'application/x-www-form-urlencoded': components['schemas']['Body_auth_jwt_login_auth_login_post'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Bad Request */
       400: {
         content: {
-          "application/json": components["schemas"]["ErrorModel"];
+          'application/json': components['schemas']['ErrorModel'];
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -415,7 +415,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Missing token or inactive user. */
@@ -426,20 +426,20 @@ export interface operations {
     /** Reset:Forgot Password */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Body_reset_forgot_password_auth_forgot_password_post"];
+        'application/json': components['schemas']['Body_reset_forgot_password_auth_forgot_password_post'];
       };
     };
     responses: {
       /** @description Successful Response */
       202: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -448,26 +448,26 @@ export interface operations {
     /** Reset:Reset Password */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Body_reset_reset_password_auth_reset_password_post"];
+        'application/json': components['schemas']['Body_reset_reset_password_auth_reset_password_post'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Bad Request */
       400: {
         content: {
-          "application/json": components["schemas"]["ErrorModel"];
+          'application/json': components['schemas']['ErrorModel'];
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -476,26 +476,26 @@ export interface operations {
     /** Register:Register */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserCreate"];
+        'application/json': components['schemas']['UserCreate'];
       };
     };
     responses: {
       /** @description Successful Response */
       201: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Bad Request */
       400: {
         content: {
-          "application/json": components["schemas"]["ErrorModel"];
+          'application/json': components['schemas']['ErrorModel'];
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -506,7 +506,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -525,13 +525,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -545,20 +545,20 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["LimitSchema"];
+        'application/json': components['schemas']['LimitSchema'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -569,7 +569,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Missing token or inactive user. */
@@ -580,20 +580,20 @@ export interface operations {
     /** Users:Patch Current User */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserUpdate"];
+        'application/json': components['schemas']['UserUpdate'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Bad Request */
       400: {
         content: {
-          "application/json": components["schemas"]["ErrorModel"];
+          'application/json': components['schemas']['ErrorModel'];
         };
       };
       /** @description Missing token or inactive user. */
@@ -601,7 +601,7 @@ export interface operations {
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -617,7 +617,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Missing token or inactive user. */
@@ -629,7 +629,7 @@ export interface operations {
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -653,7 +653,7 @@ export interface operations {
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -667,20 +667,20 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserUpdate"];
+        'application/json': components['schemas']['UserUpdate'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Bad Request */
       400: {
         content: {
-          "application/json": components["schemas"]["ErrorModel"];
+          'application/json': components['schemas']['ErrorModel'];
         };
       };
       /** @description Missing token or inactive user. */
@@ -692,14 +692,14 @@ export interface operations {
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
   };
   get_all_conversations_conv_get: {
     /**
-     * Get All Conversations 
+     * Get All Conversations
      * @description 返回自己的有效会话
      * 对于管理员，返回所有对话，并可以指定是否只返回有效会话
      */
@@ -712,13 +712,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -734,20 +734,20 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
   };
   delete_conversation_conv__conversation_id__delete: {
     /**
-     * Delete Conversation 
+     * Delete Conversation
      * @description remove conversation from database and chatgpt server
      */
     parameters: {
@@ -759,13 +759,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -784,13 +784,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -806,13 +806,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -829,13 +829,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -854,13 +854,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -871,7 +871,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -882,7 +882,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -891,20 +891,20 @@ export interface operations {
     /** Get Proxy Logs */
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["LogFilterOptions"];
+        'application/json': components['schemas']['LogFilterOptions'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -913,34 +913,34 @@ export interface operations {
     /** Get Server Logs */
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["LogFilterOptions"];
+        'application/json': components['schemas']['LogFilterOptions'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
   };
   get_server_status_status_get: {
     /**
-     * Get Server Status 
+     * Get Server Status
      * @description 普通用户获取服务器状态
      */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };

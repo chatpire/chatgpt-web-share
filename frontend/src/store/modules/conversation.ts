@@ -1,14 +1,10 @@
-import { defineStore } from "pinia";
-import { ChatConversationDetail, ChatMessage } from "@/types/custom";
-import {
-  deleteConversationApi,
-  getAllConversationsApi,
-  getConversationHistoryApi,
-  setConversationTitleApi,
-} from "@/api/chat";
-import { ConversationSchema } from "@/types/schema";
+import { defineStore } from 'pinia';
 
-const useConversationStore = defineStore("conversation", {
+import { deleteConversationApi, getAllConversationsApi, getConversationHistoryApi, setConversationTitleApi } from '@/api/chat';
+import { ChatConversationDetail, ChatMessage } from '@/types/custom';
+import { ConversationSchema } from '@/types/schema';
+
+const useConversationStore = defineStore('conversation', {
   state: (): any => ({
     conversations: [] as Array<ConversationSchema>,
     conversationDetailMap: {} as Record<string, ChatConversationDetail>, // conv_id => ChatConversationDetail
@@ -22,7 +18,7 @@ const useConversationStore = defineStore("conversation", {
 
     async fetchConversationHistory(conversation_id: string) {
       // 解析历史记录
-      if (this.conversationDetailMap.hasOwnProperty(conversation_id)) {
+      if (this.conversationDetailMap[conversation_id]) {
         return this.conversationDetailMap[conversation_id];
       }
 
@@ -45,7 +41,7 @@ const useConversationStore = defineStore("conversation", {
           children: current_msg.children,
           author_role: current_msg.message?.author?.role,
           model_slug: current_msg.message?.metadata?.model_slug,
-          message: current_msg.message?.content?.parts.join("\n\n"),
+          message: current_msg.message?.content?.parts.join('\n\n'),
         } as ChatMessage;
       }
 
@@ -63,26 +59,20 @@ const useConversationStore = defineStore("conversation", {
     async deleteConversation(conversation_id: string) {
       await deleteConversationApi(conversation_id);
       delete this.conversationDetailMap[conversation_id];
-      this.conversations = this.conversations.filter(
-        (conv: any) => conv.conversation_id !== conversation_id
-      );
+      this.conversations = this.conversations.filter((conv: any) => conv.conversation_id !== conversation_id);
     },
 
     async changeConversationTitle(conversation_id: string, title: string) {
       await setConversationTitleApi(conversation_id, title);
       await this.fetchAllConversations();
-      if (this.conversationDetailMap.hasOwnProperty(conversation_id)) {
+      if (this.conversationDetailMap[conversation_id]) {
         this.conversationDetailMap[conversation_id].title = title;
       }
     },
 
     // 仅当收到新信息时调用，为了避免重复获取整个对话历史
-    addMessageToConversation(
-      conversation_id: string,
-      sendMessage: ChatMessage,
-      recvMessage: ChatMessage
-    ) {
-      if (!this.conversationDetailMap.hasOwnProperty(conversation_id)) {
+    addMessageToConversation(conversation_id: string, sendMessage: ChatMessage, recvMessage: ChatMessage) {
+      if (!this.conversationDetailMap[conversation_id]) {
         return;
       }
 

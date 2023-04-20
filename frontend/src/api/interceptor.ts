@@ -1,12 +1,13 @@
-import axios from "axios";
-import type { InternalAxiosRequestConfig, AxiosResponse } from "axios";
-import { useUserStore } from "@/store";
-import { Message, Dialog } from "@/utils/tips";
-// import { isLogin } from '@/utils/auth';
-import ApiUrl from "./url";
-import router from "@/router";
+import type { AxiosResponse,InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
-import { i18n } from "@/i18n";
+import { i18n } from '@/i18n';
+import router from '@/router';
+import { useUserStore } from '@/store';
+import { Dialog,Message } from '@/utils/tips';
+
+// import { isLogin } from '@/utils/auth';
+import ApiUrl from './url';
 const t = i18n.global.t as any;
 
 export interface HttpResponse<T = unknown> {
@@ -45,7 +46,7 @@ axios.interceptors.response.use(
     }
     const res = response.data;
     if (!successCode.includes(res.code)) {
-      console.warn("Error: ", res);
+      console.warn('Error: ', res);
       let msg = `${res.code}`;
       if (res.message) {
         msg += ` ${t(res.message)}`;
@@ -56,21 +57,16 @@ axios.interceptors.response.use(
       Message.error(msg, {
         duration: 5 * 1000,
       });
-      if (
-        [401].includes(res.code) &&
-        !([ApiUrl.Login, ApiUrl.Logout] as Array<string>).includes(
-          response.config.url || ""
-        )
-      ) {
+      if ([401].includes(res.code) && !([ApiUrl.Login, ApiUrl.Logout] as Array<string>).includes(response.config.url || '')) {
         Dialog.error({
-          title: t("errors.loginExpired") as string,
-          content: t("tips.loginExpired"),
-          positiveText: t("commons.confirm"),
-          negativeText: t("commons.stayInCurrentPage"),
+          title: t('errors.loginExpired') as string,
+          content: t('tips.loginExpired'),
+          positiveText: t('commons.confirm'),
+          negativeText: t('commons.stayInCurrentPage'),
           onPositiveClick() {
             const userStore = useUserStore();
             userStore.logout().then(() => {
-              router.push({ name: "login" });
+              router.push({ name: 'login' });
             });
             window.location.reload();
           },
@@ -82,10 +78,10 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
-    Message.error((error.msg && t(error.msg)) || `Request Error`, {
+    Message.error((error.msg && t(error.msg)) || 'Request Error', {
       duration: 5 * 1000,
     });
-    console.error("Request Error", error);
+    console.error('Request Error', error);
     return Promise.reject(error);
   }
 );

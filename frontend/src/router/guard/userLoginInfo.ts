@@ -1,8 +1,8 @@
-import type { Router, LocationQueryRaw } from "vue-router";
-import { LoadingBar } from "@/utils/tips";
+import type { LocationQueryRaw,Router } from 'vue-router';
 
-import { useUserStore } from "@/store";
-import { hasLoginCookie } from "@/utils/auth";
+import { useUserStore } from '@/store';
+import { hasLoginCookie } from '@/utils/auth';
+import { LoadingBar } from '@/utils/tips';
 
 // 确保保持登录状态，并及时更新用户信息
 export default function setupUserLoginInfoGuard(router: Router) {
@@ -18,9 +18,9 @@ export default function setupUserLoginInfoGuard(router: Router) {
         } catch (error) {
           console.error(error);
           await userStore.logout();
-          if (to.name !== "login") {
+          if (to.name !== 'login') {
             next({
-              name: "login",
+              name: 'login',
               query: {
                 redirect: to.name,
                 ...to.query,

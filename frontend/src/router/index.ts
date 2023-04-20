@@ -1,123 +1,122 @@
-import { createRouter, createWebHistory } from "vue-router";
-import createRouteGuard from "./guard";
+import { createRouter, createWebHistory } from 'vue-router';
+
+import createRouteGuard from './guard';
 
 const router = createRouter({
-  history: createWebHistory(
-    import.meta.env.VITE_ROUTER_BASE
-  ),
+  history: createWebHistory(import.meta.env.VITE_ROUTER_BASE),
   routes: [
     {
-      path: "/",
-      redirect: "home",
+      path: '/',
+      redirect: 'home',
     },
     {
-      path: "/home",
-      name: "home",
-      component: () => import("@/views/home.vue"),
+      path: '/home',
+      name: 'home',
+      component: () => import('@/views/home.vue'),
       meta: {
         requiresAuth: false,
-        roles: ["superuser", "user"],
+        roles: ['superuser', 'user'],
       },
     },
     {
-      path: "/login",
-      name: "login",
-      component: () => import("@/views/login/index.vue"),
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/login/index.vue'),
       meta: {
         requiresAuth: false,
-        roles: ["superuser", "user"],
+        roles: ['superuser', 'user'],
       },
     },
     {
-      path: "/conversation",
-      name: "conversation",
-      component: () => import("@/views/conversation/index.vue"),
+      path: '/conversation',
+      name: 'conversation',
+      component: () => import('@/views/conversation/index.vue'),
       meta: {
         requiresAuth: true,
-        roles: ["superuser", "user"],
+        roles: ['superuser', 'user'],
       },
     },
     {
-      path: "/conv/:conversation_id",
-      name: "conversationHistory",
-      component: () => import("@/views/conversation/history-viewer.vue"),
+      path: '/conv/:conversation_id',
+      name: 'conversationHistory',
+      component: () => import('@/views/conversation/history-viewer.vue'),
       meta: {
         requiresAuth: true,
-        roles: ["superuser", "user"],
+        roles: ['superuser', 'user'],
       },
     },
     {
-      path: "/admin",
-      name: "admin",
-      redirect: "/admin/system",
-      component: () => import("@/views/admin/index.vue"),
+      path: '/admin',
+      name: 'admin',
+      redirect: '/admin/system',
+      component: () => import('@/views/admin/index.vue'),
       meta: {
         requiresAuth: true,
-        roles: ["superuser"],
+        roles: ['superuser'],
       },
       children: [
         {
-          path: "system",
-          name: "systemManagement",
-          component: () => import("@/views/admin/system_manager.vue"),
+          path: 'system',
+          name: 'systemManagement',
+          component: () => import('@/views/admin/system_manager.vue'),
         },
         {
-          path: "user",
-          name: "userManagement",
-          component: () => import("@/views/admin/user_manager.vue"),
+          path: 'user',
+          name: 'userManagement',
+          component: () => import('@/views/admin/user_manager.vue'),
         },
         {
-          path: "conversation",
-          name: "conversationManagement",
-          component: () => import("@/views/admin/conversation_manager.vue"),
+          path: 'conversation',
+          name: 'conversationManagement',
+          component: () => import('@/views/admin/conversation_manager.vue'),
         },
         {
-          path: "log",
-          name: "logViewer",
-          component: () => import("@/views/admin/log_viewer.vue"),
+          path: 'log',
+          name: 'logViewer',
+          component: () => import('@/views/admin/log_viewer.vue'),
         },
       ],
     },
     {
-      path: "/redirect",
-      name: "redirectWrapper",
+      path: '/redirect',
+      name: 'redirectWrapper',
       children: [
         {
-          path: "/redirect/:path",
-          name: "Redirect",
-          component: () => import("@/views/redirect/index.vue"),
+          path: '/redirect/:path',
+          name: 'Redirect',
+          component: () => import('@/views/redirect/index.vue'),
           meta: {
             requiresAuth: false,
-            roles: ["superuser", "user"],
+            roles: ['superuser', 'user'],
           },
         },
       ],
     },
     {
-      path: "/error",
-      name: "errorPageWrapper",
+      path: '/error',
+      name: 'errorPageWrapper',
       children: [
         {
-          path: "/error/403",
-          name: "403",
-          component: () => import("@/views/error/403.vue"),
+          path: '/error/403',
+          name: '403',
+          component: () => import('@/views/error/403.vue'),
           meta: {
             requiresAuth: false,
-            roles: ["superuser", "user"],
+            roles: ['superuser', 'user'],
           },
         },
         {
-          path: "/error/404",
-          name: "404",
-          component: () => import("@/views/error/404.vue"),
+          path: '/error/404',
+          name: '404',
+          component: () => import('@/views/error/404.vue'),
           meta: {
             requiresAuth: false,
-            roles: ["superuser", "user"],
+            roles: ['superuser', 'user'],
           },
         },
       ],
     },
-    { path: "/:pathMatch(.*)*", name: "NotFound", redirect: "/error/404" },
+    { path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/error/404' },
   ],
   scrollBehavior() {
     return { top: 0 };

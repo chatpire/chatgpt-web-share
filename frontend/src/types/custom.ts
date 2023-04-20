@@ -1,6 +1,6 @@
 export type ChatMessage = {
   id: string;
-  author_role: "user" | "assistant" | string;
+  author_role: 'user' | 'assistant' | string;
   model_slug?: string;
   message?: string;
   parent?: string | null;
@@ -18,7 +18,7 @@ export type ChatConversationDetail = {
 };
 
 export type Preference = {
-  sendKey: "Shift+Enter" | "Enter" | "Ctrl+Enter";
+  sendKey: 'Shift+Enter' | 'Enter' | 'Ctrl+Enter';
   renderUserMessageInMd: boolean;
   codeAutoWrap: boolean;
 };
