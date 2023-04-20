@@ -1,7 +1,7 @@
 <template>
   <n-space
     vertical
-    class="-ml-2 h-full"
+    class="-ml-2 h-full px-2"
   >
     <n-layout
       has-sider
@@ -88,7 +88,7 @@ const menuOptions = [
 
 watch(
   async () => activeKey.value,
-  (newName: any) => {
+  (_newName: any) => {
     router.push({ name: activeKey.value });
   }
 );
