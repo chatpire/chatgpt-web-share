@@ -3,7 +3,7 @@
     <!-- 上半部分 -->
     <div class="flex-grow flex flex-col md:flex-row">
       <!-- 左栏 -->
-      <div class="md:w-1/5 md:min-w-50 w-full px-4 box-border mb-4 h-56 md:flex-grow overflow-hidden flex flex-col space-y-4">
+      <div class="md:w-1/5 md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-56 md:flex-grow overflow-hidden flex flex-col space-y-4">
         <StatusCard />
         <div class="flex-grow flex flex-col">
           <!-- <div class="flex box-content" v-if="!newConversation"> -->
@@ -113,7 +113,7 @@
       <div class="mx-4 mb-4 flex flex-row space-x-2">
         <n-input ref="inputRef" v-model:value="inputValue" class="flex-1" type="textarea" :bordered="true"
           :placeholder="$t('tips.sendMessage', [appStore.preference.sendKey])" @keydown="shortcutSendMsg" :autosize="{ minRows: 1 }"
-          :style="{ height: inputHeight }">
+          :style="inputStyle">
           <template #suffix>
             <n-button :disabled="sendDisabled" text @click="sendMsg" class="" type="primary" size="small">
               <template #icon><n-icon>
@@ -177,9 +177,14 @@ const userStore = useUserStore();
 const conversationStore = useConversationStore();
 
 const inputExpanded = ref<boolean>(false);
-const inputHeight = computed(() => {
-  if (!inputExpanded.value) return 'auto';
-  return '30vh';
+const inputStyle = computed(() => {
+  if (!inputExpanded.value) return {
+    height: "auto",
+    maxHeight: "16vh"
+  };
+  return {
+    height: "30vh",
+  };
 });
 const toggleInputExpanded = () => {
   inputExpanded.value = !inputExpanded.value;
