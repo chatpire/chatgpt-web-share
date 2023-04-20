@@ -1,25 +1,25 @@
 <template>
   <div
     ref="rootRef"
-    class="flex-grow flex flex-col"
+    class="flex-grow flex flex-col md:flex-row"
   >
-    <!-- 上半部分 -->
-    <div class="flex-grow flex flex-col md:flex-row">
-      <!-- 左栏 -->
-      <LeftBar
-        v-model:value="currentConversationId"
-        :loading="loadingBar"
-        :new-conv="newConversation"
-        @new-conversation="makeNewConversation"
-      />
-      <!-- 右栏 -->
+    <!-- 左栏 -->
+    <LeftBar
+      v-model:value="currentConversationId"
+      class="md:w-1/5 md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-40 md:flex-grow overflow-hidden flex flex-col space-y-4"
+      :loading="loadingBar"
+      :new-conv="newConversation"
+      @new-conversation="makeNewConversation"
+    />
+    <!-- 右栏 -->
+    <div class="flex-grow flex flex-col md:w-4/5 md:mr-4">
       <n-card
-        class="md:mr-4 flex-grow md:mb-4 relative"
+        class="flex-grow md:mb-4 relative"
         :bordered="true"
-        content-style="padding: 0; display: flex; flex-direction: column;"
+        content-style="padding: 0; display: flex; flex-direction: column; "
       >
+        <!-- 回到底部按钮 -->
         <div class="right-2 bottom-20 absolute">
-          <!-- 回到底部按钮 -->
           <n-button
             secondary
             circle
@@ -35,7 +35,7 @@
           v-if="currentConversationId"
           ref="historyRef"
           class="h-0 flex-grow"
-          :content-style="loadingHistory ? { height: '100%' } : {}"
+          :content-style="loadingHistory ? { height: '100%' } : { }"
         >
           <!-- 消息记录内容（用于全屏展示） -->
           <HistoryContent
@@ -69,20 +69,20 @@
             </template>
           </n-empty>
         </div>
+        <!-- 下半部分（回复区域） -->
+        <InputRegion
+          v-model:input-value="inputValue"
+          v-model:auto-scrolling="autoScrolling"
+          :can-abort="canAbort"
+          :send-disabled="sendDisabled"
+          @abort-request="abortRequest"
+          @export-to-markdown-file="exportToMarkdownFile"
+          @export-to-pdf-file="exportToPdfFile"
+          @send-msg="sendMsg"
+          @show-fullscreen-history="showFullscreenHistory"
+        />
       </n-card>
     </div>
-    <!-- 下半部分（回复区域） -->
-    <InputRegion
-      v-model:input-value="inputValue"
-      v-model:auto-scrolling="autoScrolling"
-      :can-abort="canAbort"
-      :send-disabled="sendDisabled"
-      @abort-request="abortRequest"
-      @export-to-markdown-file="exportToMarkdownFile"
-      @export-to-pdf-file="exportToPdfFile"
-      @send-msg="sendMsg"
-      @show-fullscreen-history="showFullscreenHistory"
-    />
   </div>
 </template>
 

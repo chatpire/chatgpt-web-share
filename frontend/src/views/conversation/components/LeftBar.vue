@@ -1,5 +1,5 @@
 <template>
-  <div class="md:w-1/5 md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-40 md:flex-grow overflow-hidden flex flex-col space-y-4">
+  <div>
     <StatusCard />
     <div class="flex-grow flex flex-col">
       <!-- <div class="flex box-content" v-if="!newConversation"> -->
