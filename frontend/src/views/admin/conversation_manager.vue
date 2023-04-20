@@ -1,68 +1,70 @@
 <template>
-  <div class="mb-4 mt-1 ml-1 flex flex-row justify-between space-x-2">
-    <div class="flex flex-row space-x-4">
-      <n-button
-        circle
-        @click="refreshData"
-      >
-        <template #icon>
-          <n-icon>
-            <RefreshFilled />
-          </n-icon>
-        </template>
-      </n-button>
-      <div
-        v-show="checkedRowKeys.length !== 0"
-        class="space-x-2"
-      >
+  <div>
+    <div class="mb-4 mt-1 ml-1 flex flex-row justify-between space-x-2">
+      <div class="flex flex-row space-x-4">
         <n-button
-          type="warning"
-          secondary
-          @click="handleInvalidateConversations"
+          circle
+          @click="refreshData"
         >
           <template #icon>
             <n-icon>
-              <EmojiFlagsFilled />
+              <RefreshFilled />
             </n-icon>
           </template>
-          {{ $t('commons.invalidateConversation') }}
+        </n-button>
+        <div
+          v-show="checkedRowKeys.length !== 0"
+          class="space-x-2"
+        >
+          <n-button
+            type="warning"
+            secondary
+            @click="handleInvalidateConversations"
+          >
+            <template #icon>
+              <n-icon>
+                <EmojiFlagsFilled />
+              </n-icon>
+            </template>
+            {{ $t('commons.invalidateConversation') }}
+          </n-button>
+          <n-button
+            type="error"
+            secondary
+            @click="handleVanishConversations"
+          >
+            <template #icon>
+              <n-icon>
+                <TrashOutline />
+              </n-icon>
+            </template>
+            {{ $t('commons.vanishConversation') }}
+          </n-button>
+          <n-button
+            type="info"
+            secondary
+            @click="handleAssignConversations"
+          >
+            <template #icon>
+              <n-icon>
+                <PersonAddAlt1Filled />
+              </n-icon>
+            </template>
+            {{ $t('commons.chooseUserToAssign') }}
+          </n-button>
+        </div>
+      </div>
+      <div class="space-x-2">
+        <n-button @click="handleVanishAllInvalidConversations">
+          {{ $t('commons.deleteInvalidConversations') }}
         </n-button>
         <n-button
           type="error"
-          secondary
-          @click="handleVanishConversations"
+          @click="handleClearAllConversations"
         >
-          <template #icon>
-            <n-icon>
-              <TrashOutline />
-            </n-icon>
-          </template>
-          {{ $t('commons.vanishConversation') }}
-        </n-button>
-        <n-button
-          type="info"
-          secondary
-          @click="handleAssignConversations"
-        >
-          <template #icon>
-            <n-icon>
-              <PersonAddAlt1Filled />
-            </n-icon>
-          </template>
-          {{ $t('commons.chooseUserToAssign') }}
+          {{ $t('commons.clearAllConversations') }}
         </n-button>
       </div>
-    </div>
-    <div class="space-x-2">
-      <n-button @click="handleVanishAllInvalidConversations">
-        {{ $t('commons.deleteInvalidConversations') }}
-      </n-button>
-      <n-button
-        type="error"
-        @click="handleClearAllConversations"
-      >
-        {{ $t('commons.clearAllConversations') }}
-      </n-button>
     </div>
     <n-data-table
       v-model:checked-row-keys="checkedRowKeys"

@@ -24,23 +24,17 @@
           :options="menuOptions"
         />
       </n-layout-sider>
-      <n-layout class="ml-4">
-        <transition
-          name="fade"
-          mode="out-in"
-          appear
-        >
-          <n-scrollbar>
-            <router-view v-slot="{ Component, route }">
-              <keep-alive>
-                <component
-                  :is="Component"
-                  :key="route.fullPath"
-                />
-              </keep-alive>
-            </router-view>
-          </n-scrollbar>
-        </transition>
+      <n-layout class="ml-4 mr-2">
+        <n-scrollbar>
+          <router-view v-slot="{ Component, route }">
+            <keep-alive>
+              <component
+                :is="Component"
+                :key="route.fullPath"
+              />
+            </keep-alive>
+          </router-view>
+        </n-scrollbar>
       </n-layout>
     </n-layout>
   </n-space>
