@@ -7,9 +7,9 @@
       <n-tab name="server">
         {{ t('commons.serverLogs') }}
       </n-tab>
-      <n-tab name="proxy">
+      <!-- <n-tab name="proxy">
         {{ t('commons.proxyLogs') }}
-      </n-tab>
+      </n-tab> -->
     </n-tabs>
     <!-- 设置 -->
     <div class="flex flex-row mt-3 justify-between">
@@ -64,17 +64,12 @@
       class="mt-3 flex-grow h-full"
       :content-style="{ height: '100%' }"
     >
-      <!-- <n-scrollbar ref="scrollRef" class="h-160 relative"> -->
-      <!-- <div class="whitespace-pre-line font-mono text-[0.2em]">
-          {{ filteredLogsContent }}
-        </div> -->
       <n-log
         ref="logInstRef"
         :font-size="10"
         :rows="40"
         :lines="logsContent"
       />
-      <!-- </n-scrollbar> -->
     </n-card>
   </div>
 </template>
