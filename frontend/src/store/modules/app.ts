@@ -12,7 +12,7 @@ const useAppStore = defineStore("app", {
     theme: useStorage("theme", osThemeRef.value),
     language: useStorage("language", "zh"),
     preference: useStorage<Preference>("preference", {
-      sendKey: "Shift+Enter",
+      sendKey: "Enter",
       renderUserMessageInMd: false,
       codeAutoWrap: false,
     }),
