@@ -27,7 +27,7 @@
         content-style="padding: 0; display: flex; flex-direction: column; "
       >
         <!-- 回到底部按钮 -->
-        <div class="right-2 bottom-30 absolute">
+        <div class="right-2 bottom-30 absolute z-20">
           <n-button
             secondary
             circle
