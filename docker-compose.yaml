@@ -35,3 +35,4 @@ services:
     container_name: chatgpt-proxy-server
     image: linweiyuan/chatgpt-proxy-server
     restart: unless-stopped
+    privileged: true
