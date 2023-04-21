@@ -5,9 +5,10 @@
   >
     <!-- 左栏 -->
     <LeftBar
+      v-show="!foldLeftBar"
       v-model:value="currentConversationId"
       :class="[
-        'md:min-w-50 w-full px-4 box-border mb-4 lt-md:h-56 md:flex-grow overflow-hidden flex flex-col space-y-4',
+        'md:min-w-50 w-full pl-4 lt-md:pr-4 box-border mb-4 lt-md:h-56 md:flex-grow overflow-hidden flex flex-col space-y-4',
         appStore.preference.widerConversationPage ? 'md:w-1/5' : 'md:w-1/4',
       ]"
       :loading="loadingBar"
@@ -17,8 +18,8 @@
     <!-- 右栏 -->
     <div
       :class="[
-        'flex-grow flex flex-col md:mr-4',
-        appStore.preference.widerConversationPage ? 'md:w-4/5' : 'md:w-3/4',
+        'flex-grow flex flex-col md:px-4',
+        appStore.preference.widerConversationPage ? 'md:min-w-4/5' : 'md:min-w-3/4',
       ]"
     >
       <n-card
@@ -26,6 +27,20 @@
         :bordered="true"
         content-style="padding: 0; display: flex; flex-direction: column; "
       >
+        <!-- 展开/收起左栏 -->
+        <div class="left-3 top-3 absolute z-20">
+          <n-button
+            strong
+            secondary
+            :type="foldLeftBar ? 'default' : 'primary'"
+            size="small"
+            @click="foldLeftBar = !foldLeftBar"
+          >
+            <template #icon>
+              <n-icon :component="MenuRound" />
+            </template>
+          </n-button>
+        </div>
         <!-- 回到底部按钮 -->
         <div class="right-2 bottom-30 absolute z-20">
           <n-button
@@ -96,6 +111,8 @@
 
 <script setup lang="ts">
 import { ArrowDown, ChatboxEllipses } from '@vicons/ionicons5';
+import { MenuRound } from '@vicons/material';
+import { RemovableRef, useStorage } from '@vueuse/core';
 import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -129,6 +146,7 @@ const autoScrolling = ref<boolean>(true);
 
 const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
+const foldLeftBar = ref<RemovableRef<boolean>>(useStorage('foldLeftBar', false));
 let aborter: (() => void) | null = null;
 
 // const currentAvaliableAskCountsTip = computed(() => {

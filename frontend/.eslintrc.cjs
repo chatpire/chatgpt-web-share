@@ -28,6 +28,7 @@ module.exports = {
     quotes: ['warn', 'single'],
     semi: ['warn', 'always'],
     'vue/no-v-model-argument': ['off'],
+    'vue/no-multiple-template-root': ['off'],
     'vue/multi-word-component-names': ['off'],
     '@typescript-eslint/no-explicit-any': ['off'],
     'simple-import-sort/imports': 'error',

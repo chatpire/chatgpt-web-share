@@ -22,6 +22,7 @@
         <n-menu
           ref="menuRef"
           v-model:value="convId"
+          class="-mx-2"
           :content-style="{ backgroundColor: 'red' }"
           :disabled="props.loading"
           :options="menuOptions"
