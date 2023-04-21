@@ -4,7 +4,7 @@ import dateutil.parser
 from httpx import HTTPError
 from sqlalchemy import select
 
-import api.chatgpt
+import api.revchatgpt
 from api.database import get_async_session_context
 from api.models import Conversation
 from utils.logger import get_logger
@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 async def sync_conversations():
     try:
         logger.info("Syncing conversations...")
-        result = await api.chatgpt.chatgpt_manager.get_conversations()
+        result = await api.revchatgpt.chatgpt_manager.get_conversations()
         logger.info(f"Fetched {len(result)} conversations from ChatGPT account.")
         openai_conversations_map = {conv['id']: conv for conv in result}
         async with get_async_session_context() as session:

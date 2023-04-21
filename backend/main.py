@@ -4,7 +4,7 @@ from datetime import datetime
 
 import aiocron
 
-import api.chatgpt
+import api.revchatgpt
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from httpx import HTTPError
 import uvicorn

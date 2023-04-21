@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter
 
-import api.chatgpt
+import api.revchatgpt
 from api import globals as g
 from api.models import User
 from api.routers.system import check_users
@@ -19,7 +19,7 @@ async def get_server_status(_user: User = Depends(current_active_user)):
         active_user_in_5m=active_user_in_5m,
         active_user_in_1h=active_user_in_1h,
         active_user_in_1d=active_user_in_1d,
-        is_chatbot_busy=api.chatgpt.chatgpt_manager.is_busy(),
+        is_chatbot_busy=api.revchatgpt.chatgpt_manager.is_busy(),
         chatbot_waiting_count=queueing_count
     )
     return result

@@ -1,5 +1,4 @@
 import api.globals as g
-import os
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
