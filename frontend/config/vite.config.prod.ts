@@ -1,17 +1,18 @@
-import { mergeConfig } from "vite";
-import baseConfig from "./vite.config.base";
+import { mergeConfig } from 'vite';
+
+import baseConfig from './vite.config.base';
 
 export default mergeConfig(
   {
-    mode: "production",
+    mode: 'production',
     plugins: [],
     build: {
       sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks: {
-            naive_ui: ["naive-ui"],
-            vue: ["vue", "vue-router", "pinia", "vue-i18n"],
+            naive_ui: ['naive-ui'],
+            vue: ['vue', 'vue-router', 'pinia', 'vue-i18n'],
           },
         },
       },
