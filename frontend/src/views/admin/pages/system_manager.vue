@@ -21,8 +21,8 @@ import { getRequestStatisticsApi, getSystemInfoApi } from '@/api/system';
 import { getAllUserApi } from '@/api/user';
 import { RequestStatistics, ServerStatusSchema, SystemInfo, UserRead } from '@/types/schema';
 
-import StatisticsCard from './components/StatisticsCard.vue';
-import SystemInfoCard from './components/SystemInfoCard.vue';
+import StatisticsCard from '../components/StatisticsCard.vue';
+import SystemInfoCard from '../components/SystemInfoCard.vue';
 const { t } = useI18n();
 
 const systemInfo = ref<SystemInfo | undefined>();

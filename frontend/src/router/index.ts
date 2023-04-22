@@ -58,22 +58,22 @@ const router = createRouter({
         {
           path: 'system',
           name: 'systemManagement',
-          component: () => import('@/views/admin/system_manager.vue'),
+          component: () => import('@/views/admin/pages/system_manager.vue'),
         },
         {
           path: 'user',
           name: 'userManagement',
-          component: () => import('@/views/admin/user_manager.vue'),
+          component: () => import('@/views/admin/pages/user_manager.vue'),
         },
         {
           path: 'conversation',
           name: 'conversationManagement',
-          component: () => import('@/views/admin/conversation_manager.vue'),
+          component: () => import('@/views/admin/pages/conversation_manager.vue'),
         },
         {
           path: 'log',
           name: 'logViewer',
-          component: () => import('@/views/admin/log_viewer.vue'),
+          component: () => import('@/views/admin/pages/log_viewer.vue'),
         },
       ],
     },

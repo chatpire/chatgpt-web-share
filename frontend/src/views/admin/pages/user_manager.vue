@@ -44,8 +44,8 @@ import { chatStatusMap,LimitSchema, UserCreate, UserRead } from '@/types/schema'
 import { getCountTrans, popupResetUserPasswordDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 
-import EditLimitForm from './components/EditLimitForm.vue';
-import EditUserForm from './components/EditUserForm.vue';
+import EditLimitForm from '../components/EditLimitForm.vue';
+import EditUserForm from '../components/EditUserForm.vue';
 
 const { t } = useI18n();
 

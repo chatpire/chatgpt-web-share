@@ -95,12 +95,12 @@ import {
   deleteConversationApi,
   getAllConversationsApi,
   vanishConversationApi,
-} from '@/api/chat';
+} from '@/api/conv';
 import { ConversationSchema } from '@/types/schema';
 import { getModelNameTrans } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 
-import UserSelector from './components/UserSelector.vue';
+import UserSelector from '../components/UserSelector.vue';
 const { t } = useI18n();
 const router = useRouter();
 const data = ref<Array<ConversationSchema>>([]);
