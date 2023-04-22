@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 
 import requests
+from fastapi import APIRouter
 from httpx import HTTPError
 from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, func, and_
@@ -14,8 +15,12 @@ from api.conf import Config
 from api.database import get_async_session_context
 from api.enums import ChatStatus, ChatModels
 from api.models import Conversation, User
-from api.routers.conv import router, logger, _get_conversation_by_id
+from api.routers.conv import _get_conversation_by_id
 from api.users import websocket_auth
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
+router = APIRouter()
 
 
 async def change_user_chat_status(user_id: int, status: ChatStatus):
@@ -28,7 +33,7 @@ async def change_user_chat_status(user_id: int, status: ChatStatus):
     return user
 
 
-@router.websocket("/conv")
+@router.websocket("/chat")
 async def ask(websocket: WebSocket):
     """
     利用 WebSocket 实时更新 ChatGPT 回复.
