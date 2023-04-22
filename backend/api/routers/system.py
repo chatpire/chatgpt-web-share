@@ -7,9 +7,7 @@ from sqlalchemy import select
 
 import api.enums
 import api.globals as g
-import api.globals as g
-
-config = g.config
+from api.conf import Config
 from api.database import get_async_session_context
 from api.enums import ChatStatus
 from api.models import User, Conversation
@@ -18,6 +16,7 @@ from api.users import current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+config = Config().get_config()
 
 router = APIRouter()
 
@@ -115,7 +114,7 @@ def make_fake_ask_records(total=100, days=2):
 @router.get("/system/request_statistics", tags=["system"], response_model=RequestStatistics)
 async def get_request_statistics(_user: User = Depends(current_super_user)):
     result = RequestStatistics(
-        request_counts_interval=g.request_log_counter_interval,
+        request_counts_interval=config.stats.request_counts_interval,
         request_counts=dict(g.request_log_counter.counter),
         # request_counts=make_fake_requests_count(20, 500),
         ask_records=list(g.ask_log_queue.queue)
@@ -145,7 +144,7 @@ def read_last_n_lines(file_path, n, exclude_key_words=None):
 @router.post("/system/proxy_logs", tags=["system"])
 async def get_proxy_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
     lines = read_last_n_lines(
-        os.path.join(config.get("log_dir", "logs"), "reverse_proxy.log"),
+        os.path.join(config.log.log_dir, "reverse_proxy.log"),
         options.max_lines,
         options.exclude_keywords
     )

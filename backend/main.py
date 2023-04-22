@@ -25,6 +25,7 @@ from api.response import CustomJSONResponse, PrettyJSONResponse, handle_exceptio
 from api.database import create_db_and_tables, get_async_session_context
 from api.exceptions import SelfDefinedException
 from api.routers import users, chat, system, status
+from api.conf import Config
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -35,7 +36,7 @@ from utils.create_user import create_user
 import dateutil.parser
 from revChatGPT.typings import Error as revChatGPTError
 
-config = g.config
+_config = Config().get_config()
 
 setup_logger()
 
@@ -54,15 +55,10 @@ app.include_router(chat.router)
 app.include_router(system.router)
 app.include_router(status.router)
 
-origins = config.get("cors_allow_origins", [
-    "http://localhost",
-    "http://127.0.0.1"
-])
-
 # 解决跨站问题
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=_config.http.cors_allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -90,7 +86,6 @@ async def validation_exception_handler(request, exc):
 async def validation_exception_handler(request, exc):
     return handle_exception_response(exc)
 
-
 @app.on_event("startup")
 async def on_startup():
     await create_db_and_tables()
@@ -99,21 +94,14 @@ async def on_startup():
 
     utils.store_statistics.load()
 
-    if config.get("create_initial_admin_user", False):
-        await create_user(config.get("initial_admin_username"),
+    if _config.common.create_initial_admin_user:
+        await create_user(_config.common.initial_admin_user_username,
                           "admin",
                           "admin@admin.com",
-                          config.get("initial_admin_password"),
+                          _config.common.initial_admin_user_password,
                           is_superuser=True)
 
-    if config.get("create_initial_user", False):
-        await create_user(config.get("initial_user_username"),
-                          "user",
-                          "user@user.com",
-                          config.get("initial_user_password"),
-                          is_superuser=False)
-
-    if not config.get("sync_conversations_on_startup", True):
+    if not _config.common.sync_conversations_on_startup:
         return
 
     # 重置所有用户chat_status
@@ -126,15 +114,15 @@ async def on_startup():
         await session.commit()
 
     # 运行 Proxy Server
-    if config.get("run_reverse_proxy", False):
-        from utils.proxy import run_reverse_proxy
-        run_reverse_proxy()
-        await asyncio.sleep(2)  # 等待 Proxy Server 启动
+    # if config.common.run_reverse_proxy:
+    #     from utils.proxy import run_reverse_proxy
+    #     run_reverse_proxy()
+    #     await asyncio.sleep(2)  # 等待 Proxy Server 启动
 
-    logger.info(f"Using {g.config.get('chatgpt_base_url', 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>'))} as ChatGPT base url")
+    logger.info(f"Using {_config.chatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
 
     # 获取 ChatGPT 对话，并同步数据库
-    if not config.get("sync_conversations_on_startup", True):
+    if not _config.common.sync_conversations_on_startup:
         logger.info("Sync conversations on startup disabled. Jumping...")
         return  # 跳过同步对话
     else:
@@ -144,7 +132,7 @@ async def on_startup():
     async def dump_stats():
         utils.store_statistics.dump(print_log=False)
 
-    if config.get("sync_conversations_regularly", True):
+    if _config.common.sync_conversations_regularly:
         logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
 
         # 默认每隔 12 小时同步一次
@@ -157,8 +145,9 @@ async def on_startup():
 @app.on_event("shutdown")
 async def on_shutdown():
     logger.info("On shutdown...")
-    close_reverse_proxy()
+    # close_reverse_proxy()
     utils.store_statistics.dump()
+
 
 
 # @api.get("/routes")
@@ -169,8 +158,8 @@ async def on_shutdown():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=config.get("host"),
-                port=config.get("port"),
+    uvicorn.run(app, host=_config.http.host,
+                port=_config.http.port,
                 proxy_headers=True,
                 forwarded_allow_ips='*',
                 log_config=get_log_config(),

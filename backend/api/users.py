@@ -21,15 +21,16 @@ from api.models import User
 from sqlalchemy import select, Integer
 from fastapi_users.models import UP
 from utils.logger import get_logger
+from api.conf import Config
 
-config = g.config
 logger = get_logger(__name__)
+config = Config().get_config()
 
 # 使用 cookie + JWT
 # 参考 https://fastapi-users.github.io/fastapi-users/10.2/configuration/full-example/
 
 cookie_transport = CookieTransport(
-    cookie_max_age=config.get("cookie_max_age", 86400),
+    cookie_max_age=config.auth.cookie_max_age,
     cookie_name="user_auth",
     cookie_httponly=False,
     cookie_secure=False,
@@ -39,7 +40,7 @@ cookie_transport = CookieTransport(
 # auth backend
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=config.get("jwt_secret"), lifetime_seconds=config.get("jwt_lifetime_seconds", 86400))
+    return JWTStrategy(secret=config.auth.jwt_secret, lifetime_seconds=config.auth.jwt_lifetime_seconds)
 
 
 auth_backend = AuthenticationBackend(
@@ -50,7 +51,7 @@ auth_backend = AuthenticationBackend(
 
 # UserManager
 
-SECRET = config.get("user_secret")
+SECRET = config.auth.user_secret
 
 
 async def get_by_username(username: str) -> Optional[UP]:
@@ -125,7 +126,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
 async def websocket_auth(websocket: WebSocket) -> User | None:
     user = None
     try:
-        cookie = websocket._cookies[config.get("cookie_name", "user_auth")]
+        cookie = websocket._cookies[config.auth.cookie_name]
         async with get_async_session_context() as session:
             async with get_user_db_context(session) as user_db:
                 async with get_user_manager_context(user_db) as user_manager:

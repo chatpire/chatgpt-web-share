@@ -3,16 +3,18 @@ from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
 from api.enums import ChatModels
+from api.conf import Config
 from utils.common import get_conversation_model
 
+_config = Config().get_config()
 
 class ChatGPTManager:
     def __init__(self):
         self.chatbot = AsyncChatbot({
-            "access_token": g.config.get("chatgpt_access_token"),
-            "paid": g.config.get("chatgpt_paid"),
+            "access_token": _config.credentials.chatgpt_account_access_token,
+            "paid": _config.chatgpt.is_plus_account,
             "model": "text-davinci-002-render-sha", # default model
-        }, base_url=g.config.get("chatgpt_base_url", None))
+        }, base_url=_config.chatgpt.chatgpt_base_url)
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):

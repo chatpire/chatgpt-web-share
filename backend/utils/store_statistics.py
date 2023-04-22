@@ -1,17 +1,17 @@
 from collections import OrderedDict, deque
 
 import api.globals as g
+from api.conf import Config
 import json
 import os
 
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
-
+config = Config().get_config()
 
 def dump(print_log=True):
-    path = g.config.get("data_dir", g.config.get("log_dir", "."))
-    path = os.path.join(path, "statistics.json")
+    path = os.path.join(config.data.data_dir, "statistics.json")
     data = {
         "request_log_counter_interval": g.request_log_counter_interval,
         "request_log_counter": g.request_log_counter.counter,
@@ -24,14 +24,13 @@ def dump(print_log=True):
 
 
 def load():
-    path = g.config.get("data_dir", g.config.get("log_dir", "."))
-    path = os.path.join(path, "statistics.json")
+    path = os.path.join(config.data.data_dir, "statistics.json")
     logger.debug(f"loading statistics from {path}")
     try:
         with open(path, "r") as f:
             data = json.load(f)
 
-            if g.request_log_counter_interval != data["request_log_counter_interval"]:
+            if config.stats.request_counts_interval != data["request_log_counter_interval"]:
                 logger.warning("request_log_counter_interval is different from the saved one, counter cleared.")
                 return
 

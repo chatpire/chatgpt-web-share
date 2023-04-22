@@ -21,8 +21,8 @@ from api.users import current_active_user, websocket_auth, current_super_user
 from revChatGPT.typings import Error as revChatGPTError
 from api.response import response
 from utils.logger import get_logger
+from api.conf import Config
 
-config = g.config
 logger = get_logger(__name__)
 router = APIRouter()
 
@@ -220,7 +220,7 @@ async def ask(websocket: WebSocket):
     parent_id = params.get("parent_id", None)
     model_name = params.get("model_name")
     # timeout = params.get("timeout", 30)  # default 30s
-    timeout = config.get("ask_timeout", 300)
+    timeout = Config().get_config().chatgpt.ask_timeout
     new_title = params.get("new_title", None)
 
     if message is None:
@@ -246,7 +246,7 @@ async def ask(websocket: WebSocket):
     if model_name == ChatModels.gpt4 and not user.can_use_gpt4:
         await websocket.close(1007, "errors.userNotAllowToUseGPT4Model")
         return
-    if model_name in [ChatModels.gpt4, ChatModels.paid] and not config.get("chatgpt_paid", False):
+    if model_name in [ChatModels.gpt4, ChatModels.paid] and not Config().get_config().chatgpt.is_plus_account:
         await websocket.close(1007, "errors.paidModelNotAvailable")
         return
 
@@ -281,7 +281,7 @@ async def ask(websocket: WebSocket):
     queueing_start_time = None
 
     def check_message(msg: str):
-        url = config.get("chatgpt_base_url")
+        url = Config().get_config().chatgpt.chatgpt_base_url
         if url and url in msg:
             return msg.replace(url, "<chatgpt_base_url>")
 

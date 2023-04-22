@@ -8,22 +8,23 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 
-from alembic.config import Config
+from alembic.config import Config as AlembicConfig
 from alembic import command
 
 import api.globals as g
-config = g.config
+from api.conf import Config
 from api.models import Base, User
 
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+config = Config().get_config()
 
-database_url = config.get("database_url")
-engine = create_async_engine(database_url, echo=config.get("print_sql", False))
+database_url = config.data.database_url
+engine = create_async_engine(database_url, echo=config.common.print_sql)
 async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 metadata = sqlalchemy.MetaData()
-alembic_cfg = Config("alembic.ini")
+alembic_cfg = AlembicConfig("alembic.ini")
 alembic_cfg.set_main_option("sqlalchemy.url", database_url)
 
 
@@ -63,7 +64,7 @@ async def create_db_and_tables():
         else:
             await conn.run_sync(run_ensure_version, alembic_cfg)
 
-        if config.get("run_migration", False):
+        if config.data.run_migration:
             try:
                 logger.info("try to migrate database...")
                 await conn.run_sync(run_upgrade, alembic_cfg)
