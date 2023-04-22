@@ -4,7 +4,7 @@ from revChatGPT.V1 import AsyncChatbot
 import asyncio
 from api.enums import ChatModels
 from api.conf import Config
-from utils.common import get_conversation_model
+from utils.chat import get_model_name_from_conv
 
 _config = Config().get_config()
 
@@ -28,7 +28,7 @@ class ChatGPTManager:
         # TODO: 使用 redis 缓存
         messages = await self.chatbot.get_msg_history(conversation_id)
         messages = jsonable_encoder(messages)
-        model_name = get_conversation_model(messages)
+        model_name = get_model_name_from_conv(messages)
         messages["model_name"] = model_name or ChatModels.unknown.value
         return messages
 

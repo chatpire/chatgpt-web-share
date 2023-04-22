@@ -1,5 +1,5 @@
 from api.conf import Config
-from utils.data_types import RequestCounter, TimeQueue
+from utils.stats import RequestCounter, TimeQueue
 _config = Config().get_config()
 
 

@@ -13,6 +13,20 @@ from revChatGPT.typings import Error as revChatGPTError
 logger = get_logger(__name__)
 
 
+def get_model_name_from_conv(conversation) -> str:
+    result = None
+    try:
+        current_node = conversation["current_node"]
+        while current_node:
+            node = conversation["mapping"][current_node]
+            result = node["message"]["metadata"]["model_slug"]
+            if result:
+                break
+            current_node = node["parent"]
+    finally:
+        return result
+
+
 async def sync_conversations():
     try:
         logger.info("Syncing conversations...")

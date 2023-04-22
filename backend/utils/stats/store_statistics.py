@@ -10,10 +10,11 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 config = Config().get_config()
 
-def dump(print_log=True):
+
+def dump_stats(print_log=True):
     path = os.path.join(config.data.data_dir, "statistics.json")
     data = {
-        "request_log_counter_interval": g.request_log_counter_interval,
+        "request_log_counter_interval": config.stats.request_counts_interval,
         "request_log_counter": g.request_log_counter.counter,
         "ask_log_queue": list(g.ask_log_queue.queue)
     }
@@ -23,7 +24,7 @@ def dump(print_log=True):
         logger.info(f"Requests statistics dumped to {path}.")
 
 
-def load():
+def load_stats():
     path = os.path.join(config.data.data_dir, "statistics.json")
     logger.debug(f"loading statistics from {path}")
     try:

@@ -16,8 +16,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import api.globals as g
 import os
-import utils.store_statistics
-from utils.sync_conversations import sync_conversations
+from utils.stats import dump_stats, load_stats
+from utils.chat import sync_conversations
 
 from api.enums import ChatStatus
 from api.models import Conversation, User
@@ -31,7 +31,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from utils.logger import setup_logger, get_log_config, get_logger
 from utils.proxy import close_reverse_proxy
-from utils.create_user import create_user
+from utils.admin import create_user
 
 import dateutil.parser
 from revChatGPT.typings import Error as revChatGPTError
@@ -92,7 +92,7 @@ async def on_startup():
     logger.info("database initialized")
     g.startup_time = time.time()
 
-    utils.store_statistics.load()
+    utils.store_statistics.load_stats()
 
     if _config.common.create_initial_admin_user:
         await create_user(_config.common.initial_admin_user_username,
@@ -130,7 +130,7 @@ async def on_startup():
 
     @aiocron.crontab('*/5 * * * *', loop=asyncio.get_event_loop())
     async def dump_stats():
-        utils.store_statistics.dump(print_log=False)
+        dump_stats(print_log=False)
 
     if _config.common.sync_conversations_regularly:
         logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
@@ -146,7 +146,7 @@ async def on_startup():
 async def on_shutdown():
     logger.info("On shutdown...")
     # close_reverse_proxy()
-    utils.store_statistics.dump()
+    dump_stats()
 
 
 
