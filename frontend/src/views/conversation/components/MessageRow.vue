@@ -82,7 +82,9 @@ import { useThemeVars } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+// eslint-disable-next-line import/no-unresolved
 import chatgptIcon from '/chatgpt-icon.svg';
+// eslint-disable-next-line import/no-unresolved
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import { useAppStore } from '@/store';
 import { ChatMessage } from '@/types/custom';
