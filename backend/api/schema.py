@@ -5,6 +5,7 @@ from typing import List
 from fastapi_users import schemas
 from pydantic import Field, BaseModel, validator
 
+from api.conf.config_model import ChatGPTSetting, Credentials
 from api.enums import ChatStatus, ChatModels
 
 
@@ -97,3 +98,13 @@ class LogFilterOptions(BaseModel):
         if v <= 0:
             raise ValueError("max_lines must be positive")
         return v
+
+
+class ConfigRead(BaseModel):
+    chatgpt: ChatGPTSetting
+    credentials_exist: dict[str, bool]
+
+
+class ConfigUpdate(BaseModel):
+    chatgpt: ChatGPTSetting
+    credentials: Credentials

@@ -2,16 +2,17 @@ import os
 import random
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy import select
 
 import api.enums
 import api.globals as g
 from api.conf import Config
+from api.conf.config_model import ChatGPTSetting
 from api.database import get_async_session_context
 from api.enums import ChatStatus
 from api.models import User, Conversation
-from api.schema import ServerStatusSchema, LogFilterOptions, SystemInfo, RequestStatistics
+from api.schema import LogFilterOptions, SystemInfo, RequestStatistics, ConfigRead, ConfigUpdate
 from api.users import current_super_user
 from utils.logger import get_logger
 
@@ -86,7 +87,7 @@ START_TIMESTAMP = 1672502400  # 2023-01-01 00:00:00
 
 def make_fake_requests_count(total=100, max=500):
     result = {}
-    start_stage = START_TIMESTAMP // g.request_log_counter_interval
+    start_stage = START_TIMESTAMP // config.stats.request_counts_interval
     for i in range(total):
         result[start_stage + i] = [random.randint(0, max), [1]]
     return result
@@ -159,3 +160,26 @@ async def get_server_logs(_user: User = Depends(current_super_user), options: Lo
         options.exclude_keywords
     )
     return lines
+
+
+@router.get("/system/config", tags=["system"], response_model=ConfigRead)
+async def get_config(_user: User = Depends(current_super_user)):
+    result = ConfigRead(
+        chatgpt=config.chatgpt.copy(),
+        credentials_exist={}
+    )
+    for key, value in config.credentials:
+        result.credentials_exist[key] = value is not None
+    return result
+
+
+@router.patch("/system/config", tags=["system"], response_model=ConfigRead)
+async def update_config(config_update: ConfigUpdate, _user: User = Depends(current_super_user)):
+    chatgpt_update = config_update.chatgpt.dict(exclude_unset=True)
+    credentials_update = config_update.credentials.dict(exclude_unset=True)
+    if chatgpt_update:
+        config.chatgpt = config.chatgpt.copy(update=chatgpt_update)
+    if credentials_update:
+        config.credentials = config.credentials.copy(update=credentials_update)
+    Config().save_config(config)
+    return await get_config(_user)
