@@ -8,7 +8,7 @@
       v-show="!foldLeftBar"
       v-model:value="currentConversationId"
       :class="[
-        'md:min-w-50 w-full pl-4 lt-md:pr-4 box-border mb-4 lt-md:h-56 md:flex-grow overflow-hidden flex flex-col space-y-4',
+        'md:min-w-50 pl-4 lt-md:pr-4 box-border mb-4 lt-md:h-56 md:flex-grow overflow-hidden flex flex-col space-y-4',
         appStore.preference.widerConversationPage ? 'md:w-1/5' : 'md:w-1/4',
       ]"
       :loading="loadingBar"
@@ -19,7 +19,7 @@
     <div
       :class="[
         'flex-grow flex flex-col md:px-4',
-        appStore.preference.widerConversationPage ? 'md:min-w-4/5' : 'md:min-w-3/4',
+        appStore.preference.widerConversationPage ? 'md:w-4/5' : 'md:w-3/4',
       ]"
     >
       <n-card
@@ -54,13 +54,13 @@
             </template>
           </n-button>
         </div>
+        <!-- 消息记录内容（用于全屏展示） -->
         <n-scrollbar
           v-if="currentConversationId"
           ref="historyRef"
           class="h-0 flex-grow"
           :content-style="loadingHistory ? { height: '100%' } : { }"
         >
-          <!-- 消息记录内容（用于全屏展示） -->
           <HistoryContent
             ref="historyContentRef"
             :messages="currentMessageListDisplay"
