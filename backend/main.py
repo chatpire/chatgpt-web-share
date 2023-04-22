@@ -1,42 +1,32 @@
 import asyncio
 import time
 from datetime import datetime
-
 import aiocron
-
-import api.revchatgpt
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
-from httpx import HTTPError
 import uvicorn
-
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
-
 import api.globals as g
 import os
-from utils.stats import dump_stats, load_stats
-from utils.chat import sync_conversations
 
+from api.schema import UserCreate
+from utils.stats import dump_stats, load_stats
+from utils.admin import sync_conversations, create_user
 from api.enums import ChatStatus
-from api.models import Conversation, User
-from api.response import CustomJSONResponse, PrettyJSONResponse, handle_exception_response
+from api.models import User
+from api.response import CustomJSONResponse, handle_exception_response
 from api.database import create_db_and_tables, get_async_session_context
-from api.exceptions import SelfDefinedException
-from api.routers import users, chat, system, status
+from api.exceptions import SelfDefinedException, UserAlreadyExists
+from api.routers import users, conv, chat, system, status
 from api.conf import Config
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
-
 from utils.logger import setup_logger, get_log_config, get_logger
-from utils.proxy import close_reverse_proxy
-from utils.admin import create_user
-
-import dateutil.parser
 from revChatGPT.typings import Error as revChatGPTError
 
-_config = Config().get_config()
+config = Config().get_config()
 
 setup_logger()
 
@@ -51,6 +41,7 @@ app = FastAPI(
 )
 
 app.include_router(users.router)
+app.include_router(conv.router)
 app.include_router(chat.router)
 app.include_router(system.router)
 app.include_router(status.router)
@@ -58,13 +49,11 @@ app.include_router(status.router)
 # 解决跨站问题
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_config.http.cors_allow_origins,
+    allow_origins=config.http.cors_allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# 定义若干异常处理器
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -86,22 +75,32 @@ async def validation_exception_handler(request, exc):
 async def validation_exception_handler(request, exc):
     return handle_exception_response(exc)
 
+
 @app.on_event("startup")
 async def on_startup():
     await create_db_and_tables()
     logger.info("database initialized")
     g.startup_time = time.time()
 
-    utils.store_statistics.load_stats()
+    load_stats()
 
-    if _config.common.create_initial_admin_user:
-        await create_user(_config.common.initial_admin_user_username,
-                          "admin",
-                          "admin@admin.com",
-                          _config.common.initial_admin_user_password,
-                          is_superuser=True)
+    if config.common.create_initial_admin_user:
+        try:
+            await create_user(UserCreate(
+                username=config.common.initial_admin_user_username,
+                nickname="admin",
+                email="admin@admin.com",
+                can_use_paid=True,
+                password=config.common.initial_admin_user_password,
+                is_active=True,
+                is_superuser=True,
+            ))
+        except UserAlreadyExists:
+            logger.info(f"admin already exists, skip creating admin user")
+        except Exception as e:
+            raise e
 
-    if not _config.common.sync_conversations_on_startup:
+    if not config.common.sync_conversations_on_startup:
         return
 
     # 重置所有用户chat_status
@@ -119,10 +118,11 @@ async def on_startup():
     #     run_reverse_proxy()
     #     await asyncio.sleep(2)  # 等待 Proxy Server 启动
 
-    logger.info(f"Using {_config.chatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
+    logger.info(
+        f"Using {config.chatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
 
     # 获取 ChatGPT 对话，并同步数据库
-    if not _config.common.sync_conversations_on_startup:
+    if not config.common.sync_conversations_on_startup:
         logger.info("Sync conversations on startup disabled. Jumping...")
         return  # 跳过同步对话
     else:
@@ -132,7 +132,7 @@ async def on_startup():
     async def dump_stats():
         dump_stats(print_log=False)
 
-    if _config.common.sync_conversations_regularly:
+    if config.common.sync_conversations_regularly:
         logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
 
         # 默认每隔 12 小时同步一次
@@ -149,7 +149,6 @@ async def on_shutdown():
     dump_stats()
 
 
-
 # @api.get("/routes")
 # async def root():
 #     url_list = [{"name": route.name, "path": route.path, "path_regex": str(route.path_regex)}
@@ -158,8 +157,8 @@ async def on_shutdown():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=_config.http.host,
-                port=_config.http.port,
+    uvicorn.run(app, host=config.http.host,
+                port=config.http.port,
                 proxy_headers=True,
                 forwarded_allow_ips='*',
                 log_config=get_log_config(),

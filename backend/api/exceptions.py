@@ -17,6 +17,11 @@ class UserNotExistException(SelfDefinedException):
         super().__init__("errors.userNotExist", message)
 
 
+class UserAlreadyExists(SelfDefinedException):
+    def __init__(self, message: str = ""):
+        super().__init__("errors.userAlreadyExists", message)
+
+
 class InvalidParamsException(SelfDefinedException):
     def __init__(self, message: str = ""):
         super().__init__("errors.invalidParams", message)

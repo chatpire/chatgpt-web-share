@@ -43,8 +43,8 @@ class UserUpdate(schemas.BaseUser[int]):
 
 class UserCreate(schemas.BaseUserCreate):
     username: str
-    nickname: str
     email: str
+    nickname: str
     can_use_paid: bool = False
     max_conv_count: int = -1
     available_ask_count: int = -1
