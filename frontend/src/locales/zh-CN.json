@@ -109,7 +109,14 @@
     "preferences": "偏好设置",
     "renderUserMessageInMd": "渲染用户回复为Markdown",
     "codeAutoWrap": "代码自动换行",
-    "widerConversationPage": "对话界面宽屏展示"
+    "widerConversationPage": "对话界面宽屏展示",
+    "configManager": "系统配置",
+    "chatgptSetting": "ChatGPT 设置",
+    "credentials": "验证凭据",
+    "alreadySet": "已设置",
+    "save": "保存",
+    "confirmSaveConfig": "保存配置",
+    "seconds": "秒"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -180,7 +187,10 @@
     "pleaseSelectConversation": "请先选择一个对话",
     "pressEscToExitFullscreen": "已进入全屏，单击Esc退出全屏",
     "refreshed": "已刷新",
-    "autoScrolling": "自动滚动"
+    "autoScrolling": "自动滚动",
+    "alreadySet": "该项已设置，留空则不修改",
+    "saveSuccess": "保存成功",
+    "confirmSaveConfig": "确定要更新配置吗？更新后可能需要重新启动服务才能生效。"
   },
   "labels": {
     "nickname": "昵称",
@@ -191,6 +201,8 @@
     "can_use_gpt4": "是否可用GPT-4模型",
     "max_conv_count": "最大对话数量",
     "available_ask_count": "剩余可询问次数",
-    "available_gpt4_ask_count": "剩余GPT-4可询问次数"
+    "available_gpt4_ask_count": "剩余GPT-4可询问次数",
+    "is_plus_account": "是否为Plus账号",
+    "ask_timeout": "对话超时时间"
   }
 }

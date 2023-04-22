@@ -14,6 +14,9 @@ export type RequestStatistics = components['schemas']['RequestStatistics'];
 
 export type LogFilterOptions = components['schemas']['LogFilterOptions'];
 
+export type ConfigRead = components['schemas']['ConfigRead'];
+export type ConfigUpdate = components['schemas']['ConfigUpdate'];
+
 export const chatStatusMap = {
   asking: 'commons.askingChatStatus',
   queueing: 'commons.queueingChatStatus',

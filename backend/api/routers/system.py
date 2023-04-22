@@ -169,7 +169,7 @@ async def get_config(_user: User = Depends(current_super_user)):
         credentials_exist={}
     )
     for key, value in config.credentials:
-        result.credentials_exist[key] = value is not None
+        result.credentials_exist[key] = value is not None and value != ""
     return result
 
 
@@ -177,9 +177,15 @@ async def get_config(_user: User = Depends(current_super_user)):
 async def update_config(config_update: ConfigUpdate, _user: User = Depends(current_super_user)):
     chatgpt_update = config_update.chatgpt.dict(exclude_unset=True)
     credentials_update = config_update.credentials.dict(exclude_unset=True)
-    if chatgpt_update:
-        config.chatgpt = config.chatgpt.copy(update=chatgpt_update)
-    if credentials_update:
-        config.credentials = config.credentials.copy(update=credentials_update)
+    for key, value in chatgpt_update.items():
+        if isinstance(value, str) and value != "" and value.strip() == "":
+            setattr(config.chatgpt, key, None)
+        elif value is not None and value != "":
+            setattr(config.chatgpt, key, value)
+    for key, value in credentials_update.items():
+        if isinstance(value, str) and value != "" and value.strip() == "":
+            setattr(config.credentials, key, None)
+        elif value is not None and value != "":
+            setattr(config.credentials, key, value)
     Config().save_config(config)
     return await get_config(_user)

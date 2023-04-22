@@ -75,6 +75,11 @@ const router = createRouter({
           name: 'logViewer',
           component: () => import('@/views/admin/pages/log_viewer.vue'),
         },
+        {
+          path: 'config',
+          name: 'configManagement',
+          component: () => import('@/views/admin/pages/config_manager.vue'),
+        },
       ],
     },
     {

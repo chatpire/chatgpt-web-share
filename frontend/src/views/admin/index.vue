@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { ChatbubbleEllipses, FileTrayFull, InformationCircle } from '@vicons/ionicons5';
-import { SupervisedUserCircleRound } from '@vicons/material';
+import { SettingsRound, SupervisedUserCircleRound } from '@vicons/material';
 import { NIcon } from 'naive-ui';
 import { h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -77,6 +77,11 @@ const menuOptions = [
     label: t('commons.logViewer'),
     key: 'logViewer',
     icon: renderIcon(FileTrayFull),
+  },
+  {
+    label: t('commons.configManager'),
+    key: 'configManagement',
+    icon: renderIcon(SettingsRound),
   },
 ];
 

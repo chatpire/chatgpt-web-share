@@ -107,7 +107,16 @@
     "readyToClearAllConversations": "Are you sure you want to clear all conversations?",
     "sendKey": "Send Short Key",
     "preferences": "Preference",
-    "widerConversationPage": "Make conversation page wider"
+    "widerConversationPage": "Make conversation page wider",
+    "configManager": "System Config",
+    "chatgptSetting": "ChatGPT Setting",
+    "seconds": "seconds",
+    "alreadySet": "Has been set",
+    "confirmSaveConfig": "Save Config",
+    "codeAutoWrap": "code wrapping",
+    "credentials": "Credentials",
+    "renderUserMessageInMd": "Render user messages as Markdown",
+    "save": "save"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -178,7 +187,10 @@
     "pleaseSelectConversation": "Please select a conversation first",
     "pressEscToExitFullscreen": "Full Screen | Press Esc To Exit",
     "refreshed": "Refreshed Successfully",
-    "autoScrolling": "auto scroll"
+    "autoScrolling": "auto scroll",
+    "alreadySet": "This item has been set, if it is left blank, it will not be modified",
+    "confirmSaveConfig": "Are you sure you want to update the configuration? \nA service restart may be required after the update to take effect.",
+    "saveSuccess": "Saved successfully"
   },
   "labels": {
     "nickname": "Nickname",
@@ -189,6 +201,8 @@
     "can_use_gpt4": "Allow to use GPT-4 model",
     "max_conv_count": "Max number of conversations",
     "available_ask_count": "Available ask count",
-    "available_gpt4_ask_count": "Available GPT-4 ask count"
+    "available_gpt4_ask_count": "Available GPT-4 ask count",
+    "is_plus_account": "is_plus_account",
+    "ask_timeout": "ask_timeout"
   }
 }

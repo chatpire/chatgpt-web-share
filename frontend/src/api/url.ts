@@ -12,6 +12,8 @@ enum ApiUrl {
   SystemRequestStatistics = '/system/request_statistics',
   ProxyLogs = '/system/proxy_logs',
   ServerLogs = '/system/server_logs',
+
+  SystemConfig = '/system/config',
 }
 
 export default ApiUrl;
