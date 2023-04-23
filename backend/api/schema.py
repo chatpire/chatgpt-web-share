@@ -7,7 +7,7 @@ from pydantic import Field, BaseModel, validator, EmailStr
 
 from api.conf.config_model import ChatGPTSetting, Credentials
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels
-from api.models.json_models import RevChatGPTAskLimits, RevChatGPTTimeLimits
+from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
 
 
 class UserSettingSchema(BaseModel):
@@ -15,8 +15,8 @@ class UserSettingSchema(BaseModel):
     user_id: int | None
     can_use_revchatgpt: bool = True
     revchatgpt_available_models: list[str] = [RevChatModels.default.value, RevChatModels.gpt4.value]
-    revchatgpt_ask_limits: RevChatGPTAskLimits = RevChatGPTAskLimits()
-    revchatgpt_time_limits: RevChatGPTTimeLimits = RevChatGPTTimeLimits()
+    revchatgpt_ask_limits: RevChatAskLimits = RevChatAskLimits()
+    revchatgpt_time_limits: RevChatTimeLimits = RevChatTimeLimits()
     can_use_openai_api: bool = True
     openai_api_credits: float = 0.0
     openai_api_available_models: list[str] = [ApiChatModels.gpt3]
@@ -28,8 +28,8 @@ class UserSettingSchema(BaseModel):
         return UserSettingSchema(
             can_use_revchatgpt=True,
             revchatgpt_available_models=[m.value for m in RevChatModels],
-            revchatgpt_ask_limits=RevChatGPTAskLimits.unlimited(),
-            revchatgpt_time_limits=RevChatGPTTimeLimits.unlimited(),
+            revchatgpt_ask_limits=RevChatAskLimits.unlimited(),
+            revchatgpt_time_limits=RevChatTimeLimits.unlimited(),
             can_use_openai_api=True,
             openai_api_credits=-1,
             openai_api_available_models=[m.value for m in ApiChatModels],

@@ -11,7 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import api.globals as g
 import os
 
-from api.models.json_models import RevChatGPTAskLimits
+from api.models.json_models import RevChatAskLimits
 from api.schema import UserCreate, UserSettingSchema
 from utils.stats import dump_stats, load_stats
 from utils.admin import sync_conversations, create_user

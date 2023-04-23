@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from api.enums import RevChatModels
 
 
-class RevChatGPTAskLimits(BaseModel):
+class RevChatAskLimits(BaseModel):
     max_conv_count: int = 1
     total_count: int = -1
     per_model_count: dict[str, int] = {
@@ -15,13 +15,13 @@ class RevChatGPTAskLimits(BaseModel):
 
     @staticmethod
     def unlimited():
-        return RevChatGPTAskLimits(total_count=-1, per_model_count={
+        return RevChatAskLimits(total_count=-1, per_model_count={
             RevChatModels.default.value: -1,
             RevChatModels.gpt4.value: -1,
         })
 
 
-class RevChatGPTTimeLimits(BaseModel):
+class RevChatTimeLimits(BaseModel):
     time_window_limits: dict[str, list[list[int]]] = {  # list of [seconds, count]
         RevChatModels.default.value: [],
         RevChatModels.gpt4.value: [],
@@ -33,7 +33,7 @@ class RevChatGPTTimeLimits(BaseModel):
 
     @staticmethod
     def unlimited():
-        return RevChatGPTTimeLimits(time_window_limits={
+        return RevChatTimeLimits(time_window_limits={
             RevChatModels.default.value: [],
             RevChatModels.gpt4.value: [],
         }, available_time_range_in_day={
