@@ -6,6 +6,7 @@ from api.enums import RevChatModels
 
 
 class RevChatGPTAskLimits(BaseModel):
+    max_conv_count: int = 1
     total_count: int = -1
     per_model_count: dict[str, int] = {
         RevChatModels.default.value: 0,

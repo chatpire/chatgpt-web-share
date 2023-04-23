@@ -34,7 +34,7 @@ async def change_user_chat_status(user_id: int, status: RevChatStatus):
 
 
 @router.websocket("/chat")
-async def ask(websocket: WebSocket):
+async def ask_revchatgpt(websocket: WebSocket):
     """
     利用 WebSocket 实时更新 ChatGPT 回复.
 
@@ -63,7 +63,6 @@ async def ask(websocket: WebSocket):
     conversation_id = params.get("conversation_id", None)
     parent_id = params.get("parent_id", None)
     model_name = params.get("model_name")
-    # timeout = params.get("timeout", 30)  # default 30s
     timeout = Config().get_config().chatgpt.ask_timeout
     new_title = params.get("new_title", None)
 
@@ -84,29 +83,28 @@ async def ask(websocket: WebSocket):
 
     if isinstance(model_name, str):
         model_name = RevChatModels(model_name)
-    if model_name == RevChatModels.paid and not user.can_use_paid:
-        await websocket.close(1007, "errors.userNotAllowToUsePaidModel")
-        return
-    if model_name == RevChatModels.gpt4 and not user.can_use_gpt4:
-        await websocket.close(1007, "errors.userNotAllowToUseGPT4Model")
-        return
-    if model_name in [RevChatModels.gpt4, RevChatModels.paid] and not Config().get_config().chatgpt.is_plus_account:
-        await websocket.close(1007, "errors.paidModelNotAvailable")
+
+    # 判断是否能使用该模型
+    if model_name.value not in user.setting.revchatgpt_available_models:
+        await websocket.close(1007, "errors.userNotAllowToUseModel")
         return
 
     # 判断是否能新建对话，以及是否能继续提问
     async with get_async_session_context() as session:
         user_conversations_count = await session.execute(
-            select(func.count(RevConversation.id)).filter(and_(RevConversation.user_id == user.id, RevConversation.is_valid)))
-        user_conversations_count = user_conversations_count.scalar()
-        if is_new_conv and user.max_conv_count != -1 and user_conversations_count >= user.max_conv_count:
+            select(func.count(RevConversation.id)).filter(and_(RevConversation.user_id == user.id, RevConversation.is_valid))).scalar()
+        
+        max_conv_count = user.setting.revchatgpt_ask_limits.max_conv_count
+        total_ask_count = user.setting.revchatgpt_ask_limits.total_count
+        model_ask_count = user.setting.revchatgpt_ask_limits.per_model_count.get(model_name.value, -1)
+        if is_new_conv and max_conv_count != -1 and user_conversations_count >= max_conv_count:
             await websocket.close(1008, "errors.maxConversationCountReached")
             return
-        if user.available_ask_count != -1 and user.available_ask_count <= 0:
-            await websocket.close(1008, "errors.noAvailableAskCount")
+        if total_ask_count != -1 and total_ask_count <= 0:
+            await websocket.close(1008, "errors.noAvailableTotalAskCount")
             return
-        if user.available_gpt4_ask_count != -1 and user.available_gpt4_ask_count <= 0 and model_name == RevChatModels.gpt4:
-            await websocket.close(1008, "errors.noAvailableGPT4AskCount")
+        if model_ask_count != -1 and model_ask_count <= 0:
+            await websocket.close(1008, "errors.noAvailableModelAskCount")
             return
 
     if api.revchatgpt.chatgpt_manager.is_busy():
@@ -132,7 +130,6 @@ async def ask(websocket: WebSocket):
     try:
         # 标记用户为 queueing
         await change_user_chat_status(user.id, RevChatStatus.queueing)
-        # is_queueing = True
         queueing_start_time = time.time()
         async with api.revchatgpt.chatgpt_manager.semaphore:
             is_queueing = False
@@ -144,8 +141,8 @@ async def ask(websocket: WebSocket):
                 })
                 ask_start_time = time.time()
                 api.revchatgpt.chatgpt_manager.reset_chat()
-                async for data in api.revchatgpt.chatgpt_manager.ask(message, conversation_id, parent_id, timeout,
-                                                                     model_name):
+                async for data in api.revchatgpt.chatgpt_manager.ask_revchatgpt(message, conversation_id, parent_id, timeout,
+                                                                                model_name):
                     has_got_reply = True
                     reply = {
                         "type": "message",
@@ -268,19 +265,18 @@ async def ask(websocket: WebSocket):
                         conversation.model_name = model_name
                     session.add(conversation)
 
-                # 扣除一次对话次数
-                # 这里的逻辑是：available_ask_count 是总的对话次数，available_gpt4_ask_count 是 GPT4 的对话次数
-                # 如果都有限制，则都要扣除一次
-                # 如果 available_ask_count 不限但是 available_gpt4_ask_count 限制，则只扣除 available_gpt4_ask_count
-                if user.available_ask_count != -1 or user.available_gpt4_ask_count != -1:
+                # 扣除对话次数
+                # total_ask_count = user.setting.revchatgpt_ask_limits.total_count
+                # model_ask_count = user.setting.revchatgpt_ask_limits.per_model_count.get(model_name.value, -1)
+                if total_ask_count != -1 or model_ask_count != -1:
                     user = await session.get(User, user.id)
-                    if user.available_ask_count != -1:
-                        assert user.available_ask_count > 0
-                        user.available_ask_count -= 1
-                    if model_name == RevChatModels.gpt4 and user.available_gpt4_ask_count != -1:
-                        assert user.available_gpt4_ask_count > 0
-                        user.available_gpt4_ask_count -= 1
-                    session.add(user)
+                    if total_ask_count != -1:
+                        assert total_ask_count > 0
+                        user.setting.revchatgpt_ask_limits.total_count -= 1
+                    if model_ask_count != -1:
+                        assert model_ask_count > 0
+                        user.setting.revchatgpt_ask_limits.per_model_count[model_name.value] -= 1
+                    session.add(user.setting)
                 await session.commit()
 
                 # 写入到 scope 中，供统计
