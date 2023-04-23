@@ -1,11 +1,11 @@
 from sqlalchemy.future import select
 from starlette.requests import Request
-
+from pydantic import BaseModel
 from api.database import get_async_session_context, get_user_db_context
 from api.exceptions import AuthorityDenyException, InvalidParamsException
 from api.models import User
 from api.response import response
-from api.schema import UserRead, UserUpdate, UserCreate, LimitSchema
+from api.schema import UserRead, UserUpdate, UserCreate
 from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
 from utils.admin import create_user
 from fastapi import APIRouter, Depends, HTTPException
@@ -66,6 +66,14 @@ async def reset_password(user_id: int = None, new_password: str = None, _user: U
                 session.add(target_user)
                 await session.commit()
                 return response(200)
+
+
+class LimitSchema(BaseModel):
+    can_use_paid: bool | None = None
+    can_use_gpt4: bool | None = None
+    max_conv_count: int | None = None
+    available_ask_count: int | None = None
+    available_gpt4_ask_count: int | None = None
 
 
 @router.post("/user/{user_id}/limit", tags=["user"])

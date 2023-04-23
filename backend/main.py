@@ -86,15 +86,15 @@ async def on_startup():
 
     if config.common.create_initial_admin_user:
         try:
-            await create_user(UserCreate(
+            user = await create_user(UserCreate(
                 username=config.common.initial_admin_user_username,
                 nickname="admin",
                 email="admin@admin.com",
-                can_use_paid=True,
                 password=config.common.initial_admin_user_password,
                 is_active=True,
                 is_superuser=True,
             ))
+            print(user)
         except UserAlreadyExists:
             logger.info(f"admin already exists, skip creating admin user")
         except Exception as e:
@@ -129,7 +129,7 @@ async def on_startup():
         await sync_conversations()
 
     @aiocron.crontab('*/5 * * * *', loop=asyncio.get_event_loop())
-    async def dump_stats():
+    async def cron_dump_stats():
         dump_stats(print_log=False)
 
     if config.common.sync_conversations_regularly:

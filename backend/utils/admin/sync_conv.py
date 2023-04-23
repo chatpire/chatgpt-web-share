@@ -49,7 +49,7 @@ async def sync_conversations():
                     conversation_id=openai_conv["id"],
                     title=openai_conv["title"],
                     is_valid=True,
-                    create_time=dateutil.parser.isoparse(openai_conv["create_time"])
+                    created_time=dateutil.parser.isoparse(openai_conv["create_time"])
                 )
                 session.add(new_conv)
                 logger.info(

@@ -10,7 +10,7 @@ from api.database import get_async_session_context
 from api.enums import ChatModels
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
 from api.models import User, RevConversation
-from api.schema import ConversationSchema
+from api.schema import RevConversationSchema
 from api.users import current_active_user, current_super_user
 from revChatGPT.typings import Error as revChatGPTError
 from api.response import response
@@ -31,7 +31,7 @@ async def _get_conversation_by_id(conversation_id: str, user: User = Depends(cur
         return conversation
 
 
-@router.get("/conv", tags=["conversation"], response_model=List[ConversationSchema])
+@router.get("/conv", tags=["conversation"], response_model=List[RevConversationSchema])
 async def get_all_conversations(user: User = Depends(current_active_user), fetch_all: bool = False):
     """
     返回自己的有效会话
@@ -115,7 +115,7 @@ async def vanish_conversation(conversation: RevConversation = Depends(_get_conve
     return response(200)
 
 
-@router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationSchema)
+@router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=RevConversationSchema)
 async def update_conversation_title(title: str, conversation: RevConversation = Depends(_get_conversation_by_id)):
     await api.revchatgpt.chatgpt_manager.set_conversation_title(conversation.conversation_id,
                                                                 title)
@@ -155,7 +155,7 @@ async def delete_all_conversation(_user: User = Depends(current_super_user)):
     return response(200)
 
 
-@router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=ConversationSchema)
+@router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=RevConversationSchema)
 async def generate_conversation_title(message_id: str, conversation: RevConversation = Depends(_get_conversation_by_id)):
     if conversation.title is not None:
         raise InvalidParamsException("errors.conversationTitleAlreadyGenerated")
