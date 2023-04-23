@@ -45,7 +45,7 @@ class UserRead(schemas.BaseUser[int]):
     username: str
     nickname: str
     email: EmailStr
-    chat_status: RevChatStatus
+    rev_chat_status: RevChatStatus
     active_time: datetime.datetime | None
     created_time: datetime.datetime
     avatar: str | None
@@ -68,7 +68,6 @@ class UserUpdate(schemas.BaseUserUpdate):
 class UserUpdateAdmin(UserUpdate):
     username: str | None
     remark: str | None
-    setting: Optional["UserSettingSchema"]
 
 
 class UserCreate(schemas.BaseUserCreate):

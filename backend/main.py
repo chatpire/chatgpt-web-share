@@ -111,7 +111,7 @@ async def on_startup():
         r = await session.execute(select(User))
         results = r.scalars().all()
         for user in results:
-            user.chat_status = RevChatStatus.idling
+            user.rev_chat_status = RevChatStatus.idling
             session.add(user)
         await session.commit()
 

@@ -26,7 +26,7 @@ router = APIRouter()
 async def change_user_chat_status(user_id: int, status: RevChatStatus):
     async with get_async_session_context() as session:
         user = await session.get(User, user_id)
-        user.chat_status = status
+        user.rev_chat_status = status
         session.add(user)
         await session.commit()
         await session.refresh(user)
@@ -53,7 +53,7 @@ async def ask(websocket: WebSocket):
         await websocket.close(1008, "errors.unauthorized")
         return
 
-    if user.chat_status != RevChatStatus.idling:
+    if user.rev_chat_status != RevChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
         return
 

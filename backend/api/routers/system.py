@@ -51,7 +51,7 @@ async def check_users(refresh_cache: bool = False):
     for user in users:
         if not user.active_time:
             continue
-        if user.chat_status == RevChatStatus.queueing:
+        if user.rev_chat_status == RevChatStatus.queueing:
             queueing_count += 1
         if user.is_superuser:  # 管理员不计入在线人数
             continue
@@ -82,12 +82,12 @@ async def get_system_info(_user: User = Depends(current_super_user)):
     return result
 
 
-START_TIMESTAMP = 1672502400  # 2023-01-01 00:00:00
+FAKE_REQ_START_TIMESTAMP = 1672502400  # 2023-01-01 00:00:00
 
 
 def make_fake_requests_count(total=100, max=500):
     result = {}
-    start_stage = START_TIMESTAMP // config.stats.request_counts_interval
+    start_stage = FAKE_REQ_START_TIMESTAMP // config.stats.request_counts_interval
     for i in range(total):
         result[start_stage + i] = [random.randint(0, max), [1]]
     return result
@@ -107,7 +107,7 @@ def make_fake_ask_records(total=100, days=2):
                 ask_time,
                 total_time
             ],
-            START_TIMESTAMP + random.random() * 60 * 60 * 24 * days,  # ask_time
+            FAKE_REQ_START_TIMESTAMP + random.random() * 60 * 60 * 24 * days,  # ask_time
         ])
     return result
 
@@ -142,14 +142,14 @@ def read_last_n_lines(file_path, n, exclude_key_words=None):
     return last_n_lines[::-1]
 
 
-@router.post("/system/proxy_logs", tags=["system"])
-async def get_proxy_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
-    lines = read_last_n_lines(
-        os.path.join(config.log.log_dir, "reverse_proxy.log"),
-        options.max_lines,
-        options.exclude_keywords
-    )
-    return lines
+# @router.post("/system/proxy_logs", tags=["system"])
+# async def get_proxy_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
+#     lines = read_last_n_lines(
+#         os.path.join(config.log.log_dir, "reverse_proxy.log"),
+#         options.max_lines,
+#         options.exclude_keywords
+#     )
+#     return lines
 
 
 @router.post("/system/server_logs", tags=["system"])

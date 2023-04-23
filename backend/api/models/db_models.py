@@ -23,8 +23,8 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(32), unique=True, index=True, comment="用户名")
     nickname: Mapped[str] = mapped_column(String(64), comment="昵称")
     email: Mapped[str]
-    chat_status: Mapped[RevChatStatus] = mapped_column(Enum(RevChatStatus), default=RevChatStatus.idling,
-                                                       comment="对话状态")
+    rev_chat_status: Mapped[RevChatStatus] = mapped_column(Enum(RevChatStatus), default=RevChatStatus.idling,
+                                                           comment="对话状态")
     active_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="最后活跃时间")
     created_time: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                    server_default=func.now(), comment="创建时间")
