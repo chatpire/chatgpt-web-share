@@ -1,14 +1,17 @@
+from typing import Union
+
 from sqlalchemy.future import select
 from starlette.requests import Request
 from pydantic import BaseModel
 from api.database import get_async_session_context, get_user_db_context
-from api.exceptions import AuthorityDenyException, InvalidParamsException
-from api.models import User
+from api.exceptions import AuthorityDenyException, InvalidParamsException, UserNotExistException
+from api.models import User, UserSetting
 from api.response import response
-from api.schema import UserRead, UserUpdate, UserCreate
+from api.schema import UserRead, UserUpdate, UserCreate, UserUpdateAdmin, UserReadAdmin, UserSettingSchema
 from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
 from utils.admin import create_user
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_users import exceptions
 
 router = APIRouter()
 
@@ -16,18 +19,13 @@ router.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth", tags=["auth"]
 )
 
-router.include_router(
-    fastapi_users.get_reset_password_router(),
-    prefix="/auth",
-    tags=["auth"],
-)
-
 
 # router.include_router(
-#     fastapi_users.get_register_router(UserRead, UserCreate),
+#     fastapi_users.get_reset_password_router(),
 #     prefix="/auth",
 #     tags=["auth"],
 # )
+
 @router.post("/auth/register", tags=["auth"])
 async def register(
         request: Request,
@@ -49,52 +47,77 @@ async def get_all_users(_user: User = Depends(current_super_user)):
         return results
 
 
-@router.patch("/user/{user_id}/reset-password", tags=["user"])
-async def reset_password(user_id: int = None, new_password: str = None, _user: User = Depends(current_active_user)):
-    if not new_password:
-        raise InvalidParamsException("errors.newPasswordRequired")
-    if _user.id != user_id and not _user.is_superuser:
-        raise AuthorityDenyException("errors.noPermission")
+# router.include_router(
+#     fastapi_users.get_users_router(UserRead, UserUpdate),
+#     prefix="/user",
+#     tags=["user"],
+# )
+
+
+@router.get("/user/me", response_model=UserRead, tags=["user"])
+async def get_me(user: User = Depends(current_active_user)):
+    return UserRead.from_orm(user)
+
+
+@router.patch("/user/me", response_model=UserRead, tags=["user"])
+async def update_me(
+        request: Request,
+        user_update: UserUpdate,  # type: ignore
+        user: User = Depends(current_active_user),
+):
     async with get_async_session_context() as session:
-        async with get_user_db_context(session) as db:
-            async with get_user_manager_context(db) as user_manager:
-                result = await session.get(User, user_id)
-                target_user = result
-                if target_user is None:
-                    raise InvalidParamsException("errors.userNotExist")
-                target_user.hashed_password = user_manager.password_helper.hash(new_password)
-                session.add(target_user)
-                await session.commit()
-                return response(200)
+        async with get_user_db_context(session) as user_db:
+            async with get_user_manager_context(user_db) as user_manager:
+                user = await user_manager.update(
+                    user_update, user, safe=True, request=request
+                )
+                return UserRead.from_orm(user)
 
 
-class LimitSchema(BaseModel):
-    can_use_paid: bool | None = None
-    can_use_gpt4: bool | None = None
-    max_conv_count: int | None = None
-    available_ask_count: int | None = None
-    available_gpt4_ask_count: int | None = None
-
-
-@router.post("/user/{user_id}/limit", tags=["user"])
-async def update_limit(limit: LimitSchema, user_id: int = None, _user: User = Depends(current_super_user)):
+async def get_user_or_404(user_id: int) -> User:
     async with get_async_session_context() as session:
-        target_user: User = await session.get(User, user_id)
-        if target_user is None:
-            raise InvalidParamsException("errors.userNotExist")
+        user = await session.get(User, user_id)
+        if user is None:
+            raise UserNotExistException()
+        return user
 
-        for attr, value in limit.dict(exclude_unset=True).items():
-            if value is not None:
-                setattr(target_user, attr, value)
 
-        # 使用**kargs类似的写法，但是跳过None值
-        session.add(target_user)
+@router.get("/user/{user_id}", response_model=Union[UserRead, UserReadAdmin], tags=["user"])
+async def admin_get_user(user: User = Depends(get_user_or_404), _user: User = Depends(current_super_user)):
+    result = UserReadAdmin.from_orm(user)
+    return result
+
+
+@router.patch("/user/{user_id}", tags=["user"])
+async def admin_update_user(user_update_admin: UserUpdateAdmin, request: Request,
+                            user: User = Depends(get_user_or_404), _user: User = Depends(current_super_user)):
+    async with get_async_session_context() as session:
+        async with get_user_db_context(session) as user_db:
+            async with get_user_manager_context(user_db) as user_manager:
+                user = await user_manager.update(
+                    user_update_admin, user, safe=False, request=request
+                )
+                return UserReadAdmin.from_orm(user)
+
+
+@router.delete("/user/{user_id}", tags=["user"])
+async def admin_delete_user(user: User = Depends(get_user_or_404), _user: User = Depends(current_super_user)):
+    async with get_async_session_context() as session:
+        async with get_user_db_context(session) as user_db:
+            async with get_user_manager_context(user_db) as user_manager:
+                await user_manager.delete(user)
+                return None
+
+
+@router.patch("/user/{user_id}/setting", response_model=UserReadAdmin, tags=["user"])
+async def admin_update_user_setting(user_id: int, user_setting: UserSettingSchema,
+                                    _user: User = Depends(current_super_user)):
+    async with get_async_session_context() as session:
+        user = await session.get(User, user_id)
+        if user is None:
+            raise UserNotExistException()
+        for key, value in user_setting.dict(exclude_unset=True, exclude={'id', 'user_id'}).items():
+            setattr(user.setting, key, value)
         await session.commit()
-        return response(200)
-
-
-router.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdate),
-    prefix="/user",
-    tags=["user"],
-)
+        await session.refresh(user)
+        return UserReadAdmin.from_orm(user)

@@ -61,13 +61,26 @@ async def get_by_username(username: str) -> Optional[UP]:
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
-    async def create(self, user_create: schemas.UC, safe: bool = False, request: Optional[Request] = None) -> models.UP:
+
+    async def _check_unique(self, username=None):
         # 检查用户名、手机、邮箱是否已经存在
         async with get_async_session_context() as session:
-            if (await session.execute(select(User).filter(User.username == user_create.username))).scalar_one_or_none():
+            if username and (
+                    await session.execute(select(User).filter(User.username == username))).scalar_one_or_none():
                 raise api.exceptions.UserAlreadyExists("Username already exists")
-            if (await session.execute(select(User).filter(User.email == user_create.email))).scalar_one_or_none():
-                raise api.exceptions.UserAlreadyExists("Email already exists")
+            # fastapi_users 会检查 email 是否已经存在
+            # if email and (await session.execute(select(User).filter(User.email == email))).scalar_one_or_none():
+            #     raise api.exceptions.UserAlreadyExists("Email already exists")
+
+    async def update(self, user_update: schemas.UU, user: models.UP, safe: bool = False,
+                     request: Optional[Request] = None) -> models.UP:
+        # if user_update has username attribute
+        if hasattr(user_update, "username"):
+            await self._check_unique(username=user_update.username)
+        return await super().update(user_update, user, safe, request)
+
+    async def create(self, user_create: schemas.UC, safe: bool = False, request: Optional[Request] = None) -> models.UP:
+        await self._check_unique(username=user_create.username)
         return await super().create(user_create, safe, request)
 
     reset_password_token_secret = SECRET
@@ -108,19 +121,19 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
 
         return user
 
-    async def on_after_register(self, user: User, request: Optional[Request] = None):
-        print(f"User {user.id} has registered.")
-
-    async def on_after_forgot_password(
-            self, user: User, token: str, request: Optional[Request] = None
-    ):
-        print(f"User {user.id} has forgot their password. Reset token: {token}")
-
-    async def on_after_request_verify(
-            self, user: User, token: str, request: Optional[Request] = None
-    ):
-        print(
-            f"Verification requested for user {user.id}. Verification token: {token}")
+    # async def on_after_register(self, user: User, request: Optional[Request] = None):
+    #     print(f"User {user.id} has registered.")
+    #
+    # async def on_after_forgot_password(
+    #         self, user: User, token: str, request: Optional[Request] = None
+    # ):
+    #     print(f"User {user.id} has forgot their password. Reset token: {token}")
+    #
+    # async def on_after_request_verify(
+    #         self, user: User, token: str, request: Optional[Request] = None
+    # ):
+    #     print(
+    #         f"Verification requested for user {user.id}. Verification token: {token}")
 
 
 async def websocket_auth(websocket: WebSocket) -> User | None:
