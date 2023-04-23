@@ -95,7 +95,7 @@ def make_fake_requests_count(total=100, max=500):
 
 def make_fake_ask_records(total=100, days=2):
     result = []
-    model_names = list(api.enums.ChatModels.__members__.keys())
+    model_names = list(api.enums.RevChatModels.__members__.keys())
     for i in range(total):
         ask_time = random.random() * 60 + 1
         total_time = ask_time + random.random() * 30

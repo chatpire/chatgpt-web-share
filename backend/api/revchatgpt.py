@@ -2,7 +2,7 @@ import api.globals as g
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 import asyncio
-from api.enums import ChatModels
+from api.enums import RevChatModels
 from api.conf import Config
 from utils.conv import get_model_name_from_conv
 
@@ -30,16 +30,16 @@ class ChatGPTManager:
         messages = await self.chatbot.get_msg_history(conversation_id)
         messages = jsonable_encoder(messages)
         model_name = get_model_name_from_conv(messages)
-        messages["model_name"] = model_name or ChatModels.unknown.value
+        messages["model_name"] = model_name or RevChatModels.unknown.value
         return messages
 
     async def clear_conversations(self):
         await self.chatbot.clear_conversations()
 
     def ask(self, message, conversation_id: str = None, parent_id: str = None,
-            timeout=360, model_name: ChatModels = None):
+            timeout=360, model_name: RevChatModels = None):
         model = None
-        if model_name is not None and model_name != ChatModels.unknown:
+        if model_name is not None and model_name != RevChatModels.unknown:
             model = model_name.value
         return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id, model=model,
                                 timeout=timeout)

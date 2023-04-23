@@ -11,7 +11,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import api.globals as g
 import os
 
-from api.schema import UserCreate
+from api.models.json_models import RevChatGPTAskLimits
+from api.schema import UserCreate, UserSettingSchema
 from utils.stats import dump_stats, load_stats
 from utils.admin import sync_conversations, create_user
 from api.enums import RevChatStatus
@@ -92,8 +93,10 @@ async def on_startup():
                 email="admin@admin.com",
                 password=config.common.initial_admin_user_password,
                 is_active=True,
+                is_verified=True,
                 is_superuser=True,
-            ))
+                setting=UserSettingSchema.unlimited()
+            ), safe=False)
             print(user)
         except UserAlreadyExists:
             logger.info(f"admin already exists, skip creating admin user")

@@ -13,7 +13,7 @@ import api.revchatgpt
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import RevChatStatus, ChatModels
+from api.enums import RevChatStatus, RevChatModels
 from api.models import RevConversation, User
 from api.routers.conv import _get_conversation_by_id
 from api.users import websocket_auth
@@ -80,17 +80,17 @@ async def ask(websocket: WebSocket):
         conversation = await _get_conversation_by_id(conversation_id, user)
         model_name = model_name or conversation.model_name
     else:
-        model_name = model_name or ChatModels.default
+        model_name = model_name or RevChatModels.default
 
     if isinstance(model_name, str):
-        model_name = ChatModels(model_name)
-    if model_name == ChatModels.paid and not user.can_use_paid:
+        model_name = RevChatModels(model_name)
+    if model_name == RevChatModels.paid and not user.can_use_paid:
         await websocket.close(1007, "errors.userNotAllowToUsePaidModel")
         return
-    if model_name == ChatModels.gpt4 and not user.can_use_gpt4:
+    if model_name == RevChatModels.gpt4 and not user.can_use_gpt4:
         await websocket.close(1007, "errors.userNotAllowToUseGPT4Model")
         return
-    if model_name in [ChatModels.gpt4, ChatModels.paid] and not Config().get_config().chatgpt.is_plus_account:
+    if model_name in [RevChatModels.gpt4, RevChatModels.paid] and not Config().get_config().chatgpt.is_plus_account:
         await websocket.close(1007, "errors.paidModelNotAvailable")
         return
 
@@ -105,7 +105,7 @@ async def ask(websocket: WebSocket):
         if user.available_ask_count != -1 and user.available_ask_count <= 0:
             await websocket.close(1008, "errors.noAvailableAskCount")
             return
-        if user.available_gpt4_ask_count != -1 and user.available_gpt4_ask_count <= 0 and model_name == ChatModels.gpt4:
+        if user.available_gpt4_ask_count != -1 and user.available_gpt4_ask_count <= 0 and model_name == RevChatModels.gpt4:
             await websocket.close(1008, "errors.noAvailableGPT4AskCount")
             return
 
@@ -277,7 +277,7 @@ async def ask(websocket: WebSocket):
                     if user.available_ask_count != -1:
                         assert user.available_ask_count > 0
                         user.available_ask_count -= 1
-                    if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
+                    if model_name == RevChatModels.gpt4 and user.available_gpt4_ask_count != -1:
                         assert user.available_gpt4_ask_count > 0
                         user.available_gpt4_ask_count -= 1
                     session.add(user)

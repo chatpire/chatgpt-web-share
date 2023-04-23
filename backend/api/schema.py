@@ -6,22 +6,35 @@ from fastapi_users import schemas
 from pydantic import Field, BaseModel, validator, EmailStr
 
 from api.conf.config_model import ChatGPTSetting, Credentials
-from api.enums import RevChatStatus, ChatModels
+from api.enums import RevChatStatus, RevChatModels, ApiChatModels
 from api.models.json_models import RevChatGPTAskLimits, RevChatGPTTimeLimits
 
 
 class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
-    can_use_revchatgpt: bool | None
-    revchatgpt_available_models: list[str] | None
-    revchatgpt_ask_limits: RevChatGPTAskLimits | None
-    revchatgpt_time_limits: RevChatGPTTimeLimits | None
-    can_use_openai_api: bool | None
-    openai_api_credits: float | None
-    openai_api_available_models: list[str] | None
-    can_use_custom_openai_api: bool | None
+    can_use_revchatgpt: bool = True
+    revchatgpt_available_models: list[str] = [RevChatModels.default.value, RevChatModels.gpt4.value]
+    revchatgpt_ask_limits: RevChatGPTAskLimits = RevChatGPTAskLimits()
+    revchatgpt_time_limits: RevChatGPTTimeLimits = RevChatGPTTimeLimits()
+    can_use_openai_api: bool = True
+    openai_api_credits: float = 0.0
+    openai_api_available_models: list[str] = [ApiChatModels.gpt3]
+    can_use_custom_openai_api: bool = True
     custom_openai_api_key: str | None
+
+    @staticmethod
+    def unlimited():
+        return UserSettingSchema(
+            can_use_revchatgpt=True,
+            revchatgpt_available_models=[m.value for m in RevChatModels],
+            revchatgpt_ask_limits=RevChatGPTAskLimits.unlimited(),
+            revchatgpt_time_limits=RevChatGPTTimeLimits.unlimited(),
+            can_use_openai_api=True,
+            openai_api_credits=-1,
+            openai_api_available_models=[m.value for m in ApiChatModels],
+            can_use_custom_openai_api=True,
+        )
 
     class Config:
         orm_mode = True
@@ -63,8 +76,8 @@ class UserCreate(schemas.BaseUserCreate):
     nickname: str
     email: EmailStr
     avatar: str | None
-    setting: UserSettingSchema = UserSettingSchema()
     remark: str | None
+    setting: UserSettingSchema = UserSettingSchema()
 
 
 class RevConversationSchema(BaseModel):
@@ -73,7 +86,7 @@ class RevConversationSchema(BaseModel):
     title: str | None
     user_id: int | None
     is_valid: bool | None
-    model_name: ChatModels | None
+    model_name: RevChatModels | None
     created_time: datetime.datetime | None
     active_time: datetime.datetime | None
 

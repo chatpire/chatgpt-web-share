@@ -7,7 +7,7 @@ from sqlalchemy import select, and_, delete
 import api.revchatgpt
 
 from api.database import get_async_session_context
-from api.enums import ChatModels
+from api.enums import RevChatModels
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
 from api.models import User, RevConversation
 from api.schema import RevConversationSchema
@@ -64,7 +64,7 @@ async def get_conversation_history(conversation: RevConversation = Depends(_get_
     # 当不知道模型名时，顺便从对话中获取
     if conversation.model_name is None:
         model_name = result.get("model_name")
-        if model_name is not None and not ChatModels.unknown.value:
+        if model_name is not None and not RevChatModels.unknown.value:
             async with get_async_session_context() as session:
                 conversation = await session.get(RevConversation, conversation.id)
                 conversation.model_name = model_name
