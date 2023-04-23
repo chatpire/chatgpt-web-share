@@ -14,7 +14,7 @@ import os
 from api.schema import UserCreate
 from utils.stats import dump_stats, load_stats
 from utils.admin import sync_conversations, create_user
-from api.enums import ChatStatus
+from api.enums import RevChatStatus
 from api.models import User
 from api.response import CustomJSONResponse, handle_exception_response
 from api.database import create_db_and_tables, get_async_session_context
@@ -108,7 +108,7 @@ async def on_startup():
         r = await session.execute(select(User))
         results = r.scalars().all()
         for user in results:
-            user.chat_status = ChatStatus.idling
+            user.chat_status = RevChatStatus.idling
             session.add(user)
         await session.commit()
 

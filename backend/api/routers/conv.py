@@ -9,7 +9,7 @@ import api.revchatgpt
 from api.database import get_async_session_context
 from api.enums import ChatModels
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
-from api.models import User, Conversation
+from api.models import User, RevConversation
 from api.schema import ConversationSchema
 from api.users import current_active_user, current_super_user
 from revChatGPT.typings import Error as revChatGPTError
@@ -22,7 +22,7 @@ router = APIRouter()
 
 async def _get_conversation_by_id(conversation_id: str, user: User = Depends(current_active_user)):
     async with get_async_session_context() as session:
-        r = await session.execute(select(Conversation).where(Conversation.conversation_id == conversation_id))
+        r = await session.execute(select(RevConversation).where(RevConversation.conversation_id == conversation_id))
         conversation = r.scalars().one_or_none()
         if conversation is None:
             raise InvalidParamsException("errors.conversationNotFound")
@@ -40,21 +40,21 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
     if fetch_all and not user.is_superuser:
         raise AuthorityDenyException()
 
-    stat = and_(Conversation.user_id == user.id, Conversation.is_valid)
+    stat = and_(RevConversation.user_id == user.id, RevConversation.is_valid)
     if fetch_all:
         stat = None
     async with get_async_session_context() as session:
         if stat is not None:
-            r = await session.execute(select(Conversation).where(stat))
+            r = await session.execute(select(RevConversation).where(stat))
         else:
-            r = await session.execute(select(Conversation))
+            r = await session.execute(select(RevConversation))
         results = r.scalars().all()
         results = jsonable_encoder(results)
         return results
 
 
 @router.get("/conv/{conversation_id}", tags=["conversation"])
-async def get_conversation_history(conversation: Conversation = Depends(_get_conversation_by_id)):
+async def get_conversation_history(conversation: RevConversation = Depends(_get_conversation_by_id)):
     try:
         result = await api.revchatgpt.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
     except httpx.HTTPStatusError as e:
@@ -66,7 +66,7 @@ async def get_conversation_history(conversation: Conversation = Depends(_get_con
         model_name = result.get("model_name")
         if model_name is not None and not ChatModels.unknown.value:
             async with get_async_session_context() as session:
-                conversation = await session.get(Conversation, conversation.id)
+                conversation = await session.get(RevConversation, conversation.id)
                 conversation.model_name = model_name
                 session.add(conversation)
                 await session.commit()
@@ -74,7 +74,7 @@ async def get_conversation_history(conversation: Conversation = Depends(_get_con
 
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
-async def delete_conversation(conversation: Conversation = Depends(_get_conversation_by_id)):
+async def delete_conversation(conversation: RevConversation = Depends(_get_conversation_by_id)):
     """remove conversation from database and chatgpt server"""
     if not conversation.is_valid:
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
@@ -93,7 +93,7 @@ async def delete_conversation(conversation: Conversation = Depends(_get_conversa
 
 
 @router.delete("/conv/{conversation_id}/vanish", tags=["conversation"])
-async def vanish_conversation(conversation: Conversation = Depends(_get_conversation_by_id)):
+async def vanish_conversation(conversation: RevConversation = Depends(_get_conversation_by_id)):
     # try:
     #     await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
     # except revChatGPTError as e:
@@ -110,13 +110,13 @@ async def vanish_conversation(conversation: Conversation = Depends(_get_conversa
             if e.response.status_code != 404:
                 raise e
     async with get_async_session_context() as session:
-        await session.execute(delete(Conversation).where(Conversation.conversation_id == conversation.conversation_id))
+        await session.execute(delete(RevConversation).where(RevConversation.conversation_id == conversation.conversation_id))
         await session.commit()
     return response(200)
 
 
 @router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationSchema)
-async def update_conversation_title(title: str, conversation: Conversation = Depends(_get_conversation_by_id)):
+async def update_conversation_title(title: str, conversation: RevConversation = Depends(_get_conversation_by_id)):
     await api.revchatgpt.chatgpt_manager.set_conversation_title(conversation.conversation_id,
                                                                 title)
     async with get_async_session_context() as session:
@@ -136,7 +136,7 @@ async def assign_conversation(username: str, conversation_id: str, _user: User =
         if user is None:
             raise InvalidParamsException("errors.userNotFound")
         conversation = await session.execute(
-            select(Conversation).where(Conversation.conversation_id == conversation_id))
+            select(RevConversation).where(RevConversation.conversation_id == conversation_id))
         conversation = conversation.scalars().one_or_none()
         if conversation is None:
             raise InvalidParamsException("errors.conversationNotFound")
@@ -150,13 +150,13 @@ async def assign_conversation(username: str, conversation_id: str, _user: User =
 async def delete_all_conversation(_user: User = Depends(current_super_user)):
     await api.revchatgpt.chatgpt_manager.clear_conversations()
     async with get_async_session_context() as session:
-        await session.execute(delete(Conversation))
+        await session.execute(delete(RevConversation))
         await session.commit()
     return response(200)
 
 
 @router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=ConversationSchema)
-async def generate_conversation_title(message_id: str, conversation: Conversation = Depends(_get_conversation_by_id)):
+async def generate_conversation_title(message_id: str, conversation: RevConversation = Depends(_get_conversation_by_id)):
     if conversation.title is not None:
         raise InvalidParamsException("errors.conversationTitleAlreadyGenerated")
     async with get_async_session_context() as session:

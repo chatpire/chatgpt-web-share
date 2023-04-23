@@ -1,7 +1,7 @@
 import enum
 
 
-class ChatStatus(enum.Enum):
+class RevChatStatus(enum.Enum):
     asking = "asking"
     queueing = "queueing"
     idling = "idling"

@@ -17,11 +17,22 @@ from api.models import Base, User
 
 from utils.logger import get_logger
 
+import json
+import pydantic.json
+
+
+def _custom_json_serializer(*args, **kwargs) -> str:
+    """
+    Encodes json in the same way that pydantic does.
+    """
+    return json.dumps(*args, default=pydantic.json.pydantic_encoder, **kwargs)
+
+
 logger = get_logger(__name__)
 config = Config().get_config()
 
 database_url = config.data.database_url
-engine = create_async_engine(database_url, echo=config.common.print_sql)
+engine = create_async_engine(database_url, echo=config.common.print_sql, json_serializer=_custom_json_serializer)
 async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 metadata = sqlalchemy.MetaData()
 alembic_cfg = AlembicConfig("alembic.ini")

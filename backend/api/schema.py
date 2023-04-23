@@ -6,7 +6,7 @@ from fastapi_users import schemas
 from pydantic import Field, BaseModel, validator
 
 from api.conf.config_model import ChatGPTSetting, Credentials
-from api.enums import ChatStatus, ChatModels
+from api.enums import RevChatStatus, ChatModels
 
 
 class UserRead(schemas.BaseUser[int]):
@@ -16,7 +16,7 @@ class UserRead(schemas.BaseUser[int]):
     email: str
     active_time: datetime.datetime | None
 
-    chat_status: ChatStatus
+    chat_status: RevChatStatus
 
     can_use_paid: bool
     can_use_gpt4: bool

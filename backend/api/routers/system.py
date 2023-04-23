@@ -10,8 +10,8 @@ import api.globals as g
 from api.conf import Config
 from api.conf.config_model import ChatGPTSetting
 from api.database import get_async_session_context
-from api.enums import ChatStatus
-from api.models import User, Conversation
+from api.enums import RevChatStatus
+from api.models import User, RevConversation
 from api.schema import LogFilterOptions, SystemInfo, RequestStatistics, ConfigRead, ConfigUpdate
 from api.users import current_super_user
 from utils.logger import get_logger
@@ -51,7 +51,7 @@ async def check_users(refresh_cache: bool = False):
     for user in users:
         if not user.active_time:
             continue
-        if user.chat_status == ChatStatus.queueing:
+        if user.chat_status == RevChatStatus.queueing:
             queueing_count += 1
         if user.is_superuser:  # 管理员不计入在线人数
             continue
@@ -71,7 +71,7 @@ async def get_system_info(_user: User = Depends(current_super_user)):
     active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, users = await check_users(
         refresh_cache=True)
     async with get_async_session_context() as session:
-        conversations = await session.execute(select(Conversation))
+        conversations = await session.execute(select(RevConversation))
         conversations = conversations.scalars().all()
     result = SystemInfo(
         startup_time=g.startup_time,

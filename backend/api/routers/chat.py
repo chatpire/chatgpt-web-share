@@ -13,8 +13,8 @@ import api.revchatgpt
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import ChatStatus, ChatModels
-from api.models import Conversation, User
+from api.enums import RevChatStatus, ChatModels
+from api.models import RevConversation, User
 from api.routers.conv import _get_conversation_by_id
 from api.users import websocket_auth
 from utils.logger import get_logger
@@ -23,7 +23,7 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 
-async def change_user_chat_status(user_id: int, status: ChatStatus):
+async def change_user_chat_status(user_id: int, status: RevChatStatus):
     async with get_async_session_context() as session:
         user = await session.get(User, user_id)
         user.chat_status = status
@@ -53,7 +53,7 @@ async def ask(websocket: WebSocket):
         await websocket.close(1008, "errors.unauthorized")
         return
 
-    if user.chat_status != ChatStatus.idling:
+    if user.chat_status != RevChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
         return
 
@@ -97,7 +97,7 @@ async def ask(websocket: WebSocket):
     # 判断是否能新建对话，以及是否能继续提问
     async with get_async_session_context() as session:
         user_conversations_count = await session.execute(
-            select(func.count(Conversation.id)).filter(and_(Conversation.user_id == user.id, Conversation.is_valid)))
+            select(func.count(RevConversation.id)).filter(and_(RevConversation.user_id == user.id, RevConversation.is_valid)))
         user_conversations_count = user_conversations_count.scalar()
         if is_new_conv and user.max_conv_count != -1 and user_conversations_count >= user.max_conv_count:
             await websocket.close(1008, "errors.maxConversationCountReached")
@@ -131,13 +131,13 @@ async def ask(websocket: WebSocket):
 
     try:
         # 标记用户为 queueing
-        await change_user_chat_status(user.id, ChatStatus.queueing)
+        await change_user_chat_status(user.id, RevChatStatus.queueing)
         # is_queueing = True
         queueing_start_time = time.time()
         async with api.revchatgpt.chatgpt_manager.semaphore:
             is_queueing = False
             try:
-                await change_user_chat_status(user.id, ChatStatus.asking)
+                await change_user_chat_status(user.id, RevChatStatus.asking)
                 await websocket.send_json({
                     "type": "waiting",
                     "tip": "tips.waiting"
@@ -255,14 +255,14 @@ async def ask(websocket: WebSocket):
                         logger.warning(e)
                     finally:
                         current_time = datetime.utcnow()
-                        conversation = Conversation(conversation_id=conversation_id, title=new_title,
-                                                    user_id=user.id,
-                                                    model_name=model_name, create_time=current_time,
-                                                    active_time=current_time)
+                        conversation = RevConversation(conversation_id=conversation_id, title=new_title,
+                                                       user_id=user.id,
+                                                       model_name=model_name, create_time=current_time,
+                                                       active_time=current_time)
                         session.add(conversation)
                 # 更新 conversation
                 if not is_new_conv:
-                    conversation = await session.get(Conversation, conversation.id)  # 此前的 conversation 属于另一个session
+                    conversation = await session.get(RevConversation, conversation.id)  # 此前的 conversation 属于另一个session
                     conversation.active_time = datetime.utcnow()
                     if conversation.model_name != model_name:
                         conversation.model_name = model_name
@@ -289,5 +289,5 @@ async def ask(websocket: WebSocket):
     except Exception as e:
         raise e
     finally:
-        await change_user_chat_status(user.id, ChatStatus.idling)
+        await change_user_chat_status(user.id, RevChatStatus.idling)
         await websocket.close(websocket_code, websocket_reason)

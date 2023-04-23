@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 import api.revchatgpt
 from api.database import get_async_session_context
-from api.models import Conversation
+from api.models import RevConversation
 from utils.logger import get_logger
 from revChatGPT.typings import Error as revChatGPTError
 
@@ -18,7 +18,7 @@ async def sync_conversations():
         logger.info(f"Fetched {len(result)} conversations from ChatGPT account.")
         openai_conversations_map = {conv['id']: conv for conv in result}
         async with get_async_session_context() as session:
-            r = await session.execute(select(Conversation))
+            r = await session.execute(select(RevConversation))
             results = r.scalars().all()
 
             for conv_db in results:
@@ -30,10 +30,10 @@ async def sync_conversations():
                         logger.info(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
                     # 同步时间
                     create_time = dateutil.parser.isoparse(openai_conv["create_time"])
-                    if create_time != conv_db.create_time:
-                        conv_db.create_time = create_time
+                    if create_time != conv_db.created_time:
+                        conv_db.created_time = create_time
                         logger.info(
-                            f"Conversation {conv_db.conversation_id} created time changed：{conv_db.create_time}")
+                            f"Conversation {conv_db.conversation_id} created time changed：{conv_db.created_time}")
                     session.add(conv_db)
                     openai_conversations_map.pop(conv_db.conversation_id)
                 else:
@@ -45,7 +45,7 @@ async def sync_conversations():
 
             # 新增对话
             for openai_conv in openai_conversations_map.values():
-                new_conv = Conversation(
+                new_conv = RevConversation(
                     conversation_id=openai_conv["id"],
                     title=openai_conv["title"],
                     is_valid=True,
