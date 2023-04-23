@@ -13,14 +13,6 @@ export interface paths {
     /** Auth:Jwt.Logout */
     post: operations["auth_jwt_logout_auth_logout_post"];
   };
-  "/auth/forgot-password": {
-    /** Reset:Forgot Password */
-    post: operations["reset_forgot_password_auth_forgot_password_post"];
-  };
-  "/auth/reset-password": {
-    /** Reset:Reset Password */
-    post: operations["reset_reset_password_auth_reset_password_post"];
-  };
   "/auth/register": {
     /** Register */
     post: operations["register_auth_register_post"];
@@ -29,27 +21,23 @@ export interface paths {
     /** Get All Users */
     get: operations["get_all_users_user_get"];
   };
-  "/user/{user_id}/reset-password": {
-    /** Reset Password */
-    patch: operations["reset_password_user__user_id__reset_password_patch"];
-  };
-  "/user/{user_id}/limit": {
-    /** Update Limit */
-    post: operations["update_limit_user__user_id__limit_post"];
-  };
   "/user/me": {
-    /** Users:Current User */
-    get: operations["users_current_user_user_me_get"];
-    /** Users:Patch Current User */
-    patch: operations["users_patch_current_user_user_me_patch"];
+    /** Get Me */
+    get: operations["get_me_user_me_get"];
+    /** Update Me */
+    patch: operations["update_me_user_me_patch"];
   };
-  "/user/{id}": {
-    /** Users:User */
-    get: operations["users_user_user__id__get"];
-    /** Users:Delete User */
-    delete: operations["users_delete_user_user__id__delete"];
-    /** Users:Patch User */
-    patch: operations["users_patch_user_user__id__patch"];
+  "/user/{user_id}": {
+    /** Admin Get User */
+    get: operations["admin_get_user_user__user_id__get"];
+    /** Admin Delete User */
+    delete: operations["admin_delete_user_user__user_id__delete"];
+    /** Admin Update User */
+    patch: operations["admin_update_user_user__user_id__patch"];
+  };
+  "/user/{user_id}/setting": {
+    /** Admin Update User Setting */
+    patch: operations["admin_update_user_setting_user__user_id__setting_patch"];
   };
   "/conv": {
     /**
@@ -92,10 +80,6 @@ export interface paths {
     /** Get Request Statistics */
     get: operations["get_request_statistics_system_request_statistics_get"];
   };
-  "/system/proxy_logs": {
-    /** Get Proxy Logs */
-    post: operations["get_proxy_logs_system_proxy_logs_post"];
-  };
   "/system/server_logs": {
     /** Get Server Logs */
     post: operations["get_server_logs_system_server_logs_post"];
@@ -105,10 +89,6 @@ export interface paths {
     get: operations["get_config_system_config_get"];
     /** Update Config */
     patch: operations["update_config_system_config_patch"];
-  };
-  "/system/shutdown": {
-    /** Shutdown Server */
-    post: operations["shutdown_server_system_shutdown_post"];
   };
   "/status": {
     /**
@@ -141,21 +121,6 @@ export interface components {
       /** Client Secret */
       client_secret?: string;
     };
-    /** Body_reset_forgot_password_auth_forgot_password_post */
-    Body_reset_forgot_password_auth_forgot_password_post: {
-      /**
-       * Email 
-       * Format: email
-       */
-      email: string;
-    };
-    /** Body_reset_reset_password_auth_reset_password_post */
-    Body_reset_reset_password_auth_reset_password_post: {
-      /** Token */
-      token: string;
-      /** Password */
-      password: string;
-    };
     /** ChatGPTSetting */
     ChatGPTSetting: {
       /**
@@ -171,18 +136,6 @@ export interface components {
        */
       ask_timeout?: number;
     };
-    /**
-     * ChatModels 
-     * @description An enumeration. 
-     * @enum {unknown}
-     */
-    ChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid" | "";
-    /**
-     * ChatStatus 
-     * @description An enumeration. 
-     * @enum {unknown}
-     */
-    ChatStatus: "asking" | "queueing" | "idling";
     /** ConfigRead */
     ConfigRead: {
       chatgpt: components["schemas"]["ChatGPTSetting"];
@@ -195,36 +148,6 @@ export interface components {
     ConfigUpdate: {
       chatgpt: components["schemas"]["ChatGPTSetting"];
       credentials: components["schemas"]["Credentials"];
-    };
-    /** ConversationSchema */
-    ConversationSchema: {
-      /**
-       * Id 
-       * @default -1
-       */
-      id?: number;
-      /**
-       * Conversation Id 
-       * Format: uuid
-       */
-      conversation_id?: string;
-      /** Title */
-      title?: string;
-      /** User Id */
-      user_id?: number;
-      /** Is Valid */
-      is_valid?: boolean;
-      model_name?: components["schemas"]["ChatModels"];
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Active Time 
-       * Format: date-time
-       */
-      active_time?: string;
     };
     /** Credentials */
     Credentials: {
@@ -249,19 +172,6 @@ export interface components {
       /** Detail */
       detail?: (components["schemas"]["ValidationError"])[];
     };
-    /** LimitSchema */
-    LimitSchema: {
-      /** Can Use Paid */
-      can_use_paid?: boolean;
-      /** Can Use Gpt4 */
-      can_use_gpt4?: boolean;
-      /** Max Conv Count */
-      max_conv_count?: number;
-      /** Available Ask Count */
-      available_ask_count?: number;
-      /** Available Gpt4 Ask Count */
-      available_gpt4_ask_count?: number;
-    };
     /** LogFilterOptions */
     LogFilterOptions: {
       /**
@@ -282,6 +192,91 @@ export interface components {
       };
       /** Ask Records */
       ask_records: (Record<string, never>)[];
+    };
+    /** RevChatAskLimits */
+    RevChatAskLimits: {
+      /**
+       * Max Conv Count 
+       * @default 1
+       */
+      max_conv_count?: number;
+      /**
+       * Total Count 
+       * @default -1
+       */
+      total_count?: number;
+      /**
+       * Per Model Count 
+       * @default {
+       *   "text-davinci-002-render-sha": 0,
+       *   "gpt-4": 0
+       * }
+       */
+      per_model_count?: {
+        [key: string]: number | undefined;
+      };
+    };
+    /**
+     * RevChatModels 
+     * @description An enumeration. 
+     * @enum {unknown}
+     */
+    RevChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid" | "";
+    /**
+     * RevChatStatus 
+     * @description An enumeration. 
+     * @enum {unknown}
+     */
+    RevChatStatus: "asking" | "queueing" | "idling";
+    /** RevChatTimeLimits */
+    RevChatTimeLimits: {
+      /**
+       * Time Window Limits 
+       * @default {
+       *   "text-davinci-002-render-sha": [],
+       *   "gpt-4": []
+       * }
+       */
+      time_window_limits?: {
+        [key: string]: ((number)[])[] | undefined;
+      };
+      /**
+       * Available Time Range In Day 
+       * @default {}
+       */
+      available_time_range_in_day?: {
+        [key: string]: (number)[] | undefined;
+      };
+    };
+    /** RevConversationSchema */
+    RevConversationSchema: {
+      /**
+       * Id 
+       * @default -1
+       */
+      id?: number;
+      /**
+       * Conversation Id 
+       * Format: uuid
+       */
+      conversation_id?: string;
+      /** Title */
+      title?: string;
+      /** User Id */
+      user_id?: number;
+      /** Is Valid */
+      is_valid?: boolean;
+      model_name?: components["schemas"]["RevChatModels"];
+      /**
+       * Created Time 
+       * Format: date-time
+       */
+      created_time?: string;
+      /**
+       * Active Time 
+       * Format: date-time
+       */
+      active_time?: string;
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {
@@ -309,7 +304,10 @@ export interface components {
     };
     /** UserCreate */
     UserCreate: {
-      /** Email */
+      /**
+       * Email 
+       * Format: email
+       */
       email: string;
       /** Password */
       password: string;
@@ -332,21 +330,42 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
+      /** Avatar */
+      avatar?: string;
+      /** Remark */
+      remark?: string;
       /**
-       * Can Use Paid 
-       * @default false
+       * Setting 
+       * @default {
+       *   "can_use_revchatgpt": true,
+       *   "revchatgpt_available_models": [
+       *     "text-davinci-002-render-sha",
+       *     "gpt-4"
+       *   ],
+       *   "revchatgpt_ask_limits": {
+       *     "max_conv_count": 1,
+       *     "total_count": -1,
+       *     "per_model_count": {
+       *       "text-davinci-002-render-sha": 0,
+       *       "gpt-4": 0
+       *     }
+       *   },
+       *   "revchatgpt_time_limits": {
+       *     "time_window_limits": {
+       *       "text-davinci-002-render-sha": [],
+       *       "gpt-4": []
+       *     },
+       *     "available_time_range_in_day": {}
+       *   },
+       *   "can_use_openai_api": true,
+       *   "openai_api_credits": 0,
+       *   "openai_api_available_models": [
+       *     "gpt-3.5-turbo"
+       *   ],
+       *   "can_use_custom_openai_api": true
+       * }
        */
-      can_use_paid?: boolean;
-      /**
-       * Max Conv Count 
-       * @default -1
-       */
-      max_conv_count?: number;
-      /**
-       * Available Ask Count 
-       * @default -1
-       */
-      available_ask_count?: number;
+      setting?: components["schemas"]["UserSettingSchema"];
     };
     /**
      * UserRead 
@@ -355,7 +374,10 @@ export interface components {
     UserRead: {
       /** Id */
       id: number;
-      /** Email */
+      /**
+       * Email 
+       * Format: email
+       */
       email: string;
       /** Is Active */
       is_active: boolean;
@@ -367,49 +389,164 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
+      rev_chat_status: components["schemas"]["RevChatStatus"];
       /**
        * Active Time 
        * Format: date-time
        */
       active_time?: string;
-      chat_status: components["schemas"]["ChatStatus"];
-      /** Can Use Paid */
-      can_use_paid: boolean;
-      /** Can Use Gpt4 */
-      can_use_gpt4: boolean;
-      /** Max Conv Count */
-      max_conv_count?: number;
-      /** Available Ask Count */
-      available_ask_count?: number;
-      /** Available Gpt4 Ask Count */
-      available_gpt4_ask_count?: number;
+      /**
+       * Created Time 
+       * Format: date-time
+       */
+      created_time: string;
+      /** Avatar */
+      avatar?: string;
+      setting: components["schemas"]["UserSettingSchema"];
     };
     /**
-     * UserUpdate 
+     * UserReadAdmin 
      * @description Base User model.
      */
-    UserUpdate: {
+    UserReadAdmin: {
       /** Id */
-      id?: Record<string, never>;
-      /** Email */
-      email?: string;
+      id: number;
       /**
-       * Is Active 
-       * @default true
+       * Email 
+       * Format: email
        */
-      is_active?: boolean;
-      /**
-       * Is Superuser 
-       * @default false
-       */
-      is_superuser?: boolean;
-      /**
-       * Is Verified 
-       * @default false
-       */
-      is_verified?: boolean;
+      email: string;
+      /** Is Active */
+      is_active: boolean;
+      /** Is Superuser */
+      is_superuser: boolean;
+      /** Is Verified */
+      is_verified: boolean;
+      /** Username */
+      username: string;
       /** Nickname */
       nickname: string;
+      rev_chat_status: components["schemas"]["RevChatStatus"];
+      /**
+       * Active Time 
+       * Format: date-time
+       */
+      active_time?: string;
+      /**
+       * Created Time 
+       * Format: date-time
+       */
+      created_time: string;
+      /** Avatar */
+      avatar?: string;
+      setting: components["schemas"]["UserSettingSchema"];
+      /** Remark */
+      remark?: string;
+    };
+    /** UserSettingSchema */
+    UserSettingSchema: {
+      /** Id */
+      id?: number;
+      /** User Id */
+      user_id?: number;
+      /**
+       * Can Use Revchatgpt 
+       * @default true
+       */
+      can_use_revchatgpt?: boolean;
+      /**
+       * Revchatgpt Available Models 
+       * @default [
+       *   "text-davinci-002-render-sha",
+       *   "gpt-4"
+       * ]
+       */
+      revchatgpt_available_models?: (string)[];
+      /**
+       * Revchatgpt Ask Limits 
+       * @default {
+       *   "max_conv_count": 1,
+       *   "total_count": -1,
+       *   "per_model_count": {
+       *     "text-davinci-002-render-sha": 0,
+       *     "gpt-4": 0
+       *   }
+       * }
+       */
+      revchatgpt_ask_limits?: components["schemas"]["RevChatAskLimits"];
+      /**
+       * Revchatgpt Time Limits 
+       * @default {
+       *   "time_window_limits": {
+       *     "text-davinci-002-render-sha": [],
+       *     "gpt-4": []
+       *   },
+       *   "available_time_range_in_day": {}
+       * }
+       */
+      revchatgpt_time_limits?: components["schemas"]["RevChatTimeLimits"];
+      /**
+       * Can Use Openai Api 
+       * @default true
+       */
+      can_use_openai_api?: boolean;
+      /**
+       * Openai Api Credits 
+       * @default 0
+       */
+      openai_api_credits?: number;
+      /**
+       * Openai Api Available Models 
+       * @default [
+       *   "gpt-3.5-turbo"
+       * ]
+       */
+      openai_api_available_models?: (string)[];
+      /**
+       * Can Use Custom Openai Api 
+       * @default true
+       */
+      can_use_custom_openai_api?: boolean;
+      /** Custom Openai Api Key */
+      custom_openai_api_key?: string;
+    };
+    /** UserUpdate */
+    UserUpdate: {
+      /** Password */
+      password?: string;
+      /** Email */
+      email?: string;
+      /** Is Active */
+      is_active?: boolean;
+      /** Is Superuser */
+      is_superuser?: boolean;
+      /** Is Verified */
+      is_verified?: boolean;
+      /** Nickname */
+      nickname?: string;
+      /** Avatar */
+      avatar?: string;
+    };
+    /** UserUpdateAdmin */
+    UserUpdateAdmin: {
+      /** Password */
+      password?: string;
+      /** Email */
+      email?: string;
+      /** Is Active */
+      is_active?: boolean;
+      /** Is Superuser */
+      is_superuser?: boolean;
+      /** Is Verified */
+      is_verified?: boolean;
+      /** Nickname */
+      nickname?: string;
+      /** Avatar */
+      avatar?: string;
+      /** Username */
+      username?: string;
+      /** Remark */
+      remark?: string;
     };
     /** ValidationError */
     ValidationError: {
@@ -473,56 +610,6 @@ export interface operations {
       401: never;
     };
   };
-  reset_forgot_password_auth_forgot_password_post: {
-    /** Reset:Forgot Password */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Body_reset_forgot_password_auth_forgot_password_post"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      202: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  reset_reset_password_auth_reset_password_post: {
-    /** Reset:Reset Password */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Body_reset_reset_password_auth_reset_password_post"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["ErrorModel"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   register_auth_register_post: {
     /** Register */
     requestBody: {
@@ -556,12 +643,42 @@ export interface operations {
       };
     };
   };
-  reset_password_user__user_id__reset_password_patch: {
-    /** Reset Password */
-    parameters: {
-      query?: {
-        new_password?: string;
+  get_me_user_me_get: {
+    /** Get Me */
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
       };
+    };
+  };
+  update_me_user_me_patch: {
+    /** Update Me */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_get_user_user__user_id__get: {
+    /** Admin Get User */
+    parameters: {
       path: {
         user_id: number;
       };
@@ -581,8 +698,30 @@ export interface operations {
       };
     };
   };
-  update_limit_user__user_id__limit_post: {
-    /** Update Limit */
+  admin_delete_user_user__user_id__delete: {
+    /** Admin Delete User */
+    parameters: {
+      path: {
+        user_id: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_update_user_user__user_id__patch: {
+    /** Admin Update User */
     parameters: {
       path: {
         user_id: number;
@@ -590,7 +729,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["LimitSchema"];
+        "application/json": components["schemas"]["UserUpdateAdmin"];
       };
     };
     responses: {
@@ -608,111 +747,16 @@ export interface operations {
       };
     };
   };
-  users_current_user_user_me_get: {
-    /** Users:Current User */
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Missing token or inactive user. */
-      401: never;
-    };
-  };
-  users_patch_current_user_user_me_patch: {
-    /** Users:Patch Current User */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserUpdate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["ErrorModel"];
-        };
-      };
-      /** @description Missing token or inactive user. */
-      401: never;
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  users_user_user__id__get: {
-    /** Users:User */
+  admin_update_user_setting_user__user_id__setting_patch: {
+    /** Admin Update User Setting */
     parameters: {
       path: {
-        id: Record<string, never>;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Missing token or inactive user. */
-      401: never;
-      /** @description Not a superuser. */
-      403: never;
-      /** @description The user does not exist. */
-      404: never;
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  users_delete_user_user__id__delete: {
-    /** Users:Delete User */
-    parameters: {
-      path: {
-        id: Record<string, never>;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      204: never;
-      /** @description Missing token or inactive user. */
-      401: never;
-      /** @description Not a superuser. */
-      403: never;
-      /** @description The user does not exist. */
-      404: never;
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  users_patch_user_user__id__patch: {
-    /** Users:Patch User */
-    parameters: {
-      path: {
-        id: Record<string, never>;
+        user_id: number;
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserUpdate"];
+        "application/json": components["schemas"]["UserSettingSchema"];
       };
     };
     responses: {
@@ -722,18 +766,6 @@ export interface operations {
           "application/json": string;
         };
       };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["ErrorModel"];
-        };
-      };
-      /** @description Missing token or inactive user. */
-      401: never;
-      /** @description Not a superuser. */
-      403: never;
-      /** @description The user does not exist. */
-      404: never;
       /** @description Validation Error */
       422: {
         content: {
@@ -943,28 +975,6 @@ export interface operations {
       };
     };
   };
-  get_proxy_logs_system_proxy_logs_post: {
-    /** Get Proxy Logs */
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["LogFilterOptions"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   get_server_logs_system_server_logs_post: {
     /** Get Server Logs */
     requestBody?: {
@@ -1016,17 +1026,6 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  shutdown_server_system_shutdown_post: {
-    /** Shutdown Server */
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
         };
       };
     };

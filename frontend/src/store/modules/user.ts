@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-import { getUserInfoApi, loginApi, LoginData, logoutApi } from '@/api/user';
+import { getUserMeApi, loginApi, LoginData, logoutApi } from '@/api/user';
 import { UserRead } from '@/types/schema';
 import { clearCookie } from '@/utils/auth';
 
@@ -35,7 +35,7 @@ const useUserStore = defineStore('user', {
 
     // Get user's information
     async fetchUserInfo() {
-      const result = (await getUserInfoApi()).data;
+      const result = (await getUserMeApi()).data;
       this.setInfo(result);
     },
 

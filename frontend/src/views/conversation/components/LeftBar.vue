@@ -40,7 +40,7 @@ import { computed, h } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useConversationStore } from '@/store';
-import { ConversationSchema } from '@/types/schema';
+import { RevConversationSchema } from '@/types/schema';
 import { dropdownRenderer, popupChangeConversationTitleDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 
@@ -53,7 +53,7 @@ const conversationStore = useConversationStore();
 const props = defineProps<{
   loading: boolean;
   value: string | null;
-  newConv: ConversationSchema | null;
+  newConv: RevConversationSchema | null;
 }>();
 
 const emits = defineEmits<{
@@ -75,7 +75,7 @@ const menuOptions = computed(() => {
   // 根据 created_time 降序排序
   const sorted_conversations = conversationStore.conversations
     ?.slice() // 创建一个新的数组副本
-    .sort((a: ConversationSchema, b: ConversationSchema) => {
+    .sort((a: RevConversationSchema, b: RevConversationSchema) => {
       // return a.create_time - b.create_time;
       if (!a.create_time) return -1;
       if (!b.create_time) return 1;
@@ -83,7 +83,7 @@ const menuOptions = computed(() => {
         date_b = new Date(b.create_time);
       return date_b.getTime() - date_a.getTime();
     });
-  const results = sorted_conversations?.map((conversation: ConversationSchema) => {
+  const results = sorted_conversations?.map((conversation: RevConversationSchema) => {
     return {
       label: () => h(NEllipsis, null, { default: () => conversation.title }),
       key: conversation.conversation_id,

@@ -96,15 +96,15 @@ import {
   getAllConversationsApi,
   vanishConversationApi,
 } from '@/api/conv';
-import { ConversationSchema } from '@/types/schema';
+import { RevConversationSchema } from '@/types/schema';
 import { getModelNameTrans } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 
 import UserSelector from '../components/UserSelector.vue';
 const { t } = useI18n();
 const router = useRouter();
-const data = ref<Array<ConversationSchema>>([]);
-const rowKey = (row: ConversationSchema) => row.conversation_id;
+const data = ref<Array<RevConversationSchema>>([]);
+const rowKey = (row: RevConversationSchema) => row.conversation_id;
 const checkedRowKeys = ref<Array<string>>([]);
 
 const refreshData = () => {
@@ -115,7 +115,7 @@ const refreshData = () => {
 
 refreshData();
 
-const columns: DataTableColumns<ConversationSchema> = [
+const columns: DataTableColumns<RevConversationSchema> = [
   {
     type: 'selection',
   },

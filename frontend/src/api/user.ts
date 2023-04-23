@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { LimitSchema, UserCreate, UserRead } from '@/types/schema';
+import { UserCreate, UserRead, UserReadAdmin, UserSettingSchema, UserUpdate, UserUpdateAdmin } from '@/types/schema';
 
 import ApiUrl from './url';
 
-export interface LoginData {
+export type LoginData = {
   username: string;
   password: string;
 }
@@ -28,28 +28,30 @@ export function logoutApi() {
   return axios.post<any>(ApiUrl.Logout);
 }
 
-export function getUserInfoApi() {
-  return axios.get<UserRead>(ApiUrl.UserInfo);
-}
-
 export function getAllUserApi() {
   return axios.get<UserRead[]>(ApiUrl.UserList);
+}
+
+export function getUserMeApi() {
+  return axios.get<UserRead>(ApiUrl.UserMe);
+}
+
+export function updateUserMeApi(userUpdate: UserUpdate) {
+  return axios.patch<UserRead>(ApiUrl.UserMe, userUpdate);
+}
+
+export function getUserByIdApi(userId: number) {
+  return axios.get<UserReadAdmin>(ApiUrl.UserList + `/${userId}`);
+}
+
+export function updateUserByIdApi(userId: number, userUpdateAdmin: UserUpdateAdmin) {
+  return axios.patch<UserReadAdmin>(ApiUrl.UserList + `/${userId}`, userUpdateAdmin);
 }
 
 export function deleteUserApi(user_id: number) {
   return axios.delete(ApiUrl.UserList + `/${user_id}`);
 }
 
-export function resetUserPasswordApi(user_id: number, new_password: string) {
-  return axios.patch(ApiUrl.UserList + `/${user_id}/reset-password`, null, {
-    params: { new_password },
-  });
+export function updateUserSettingApi(userId: number, userSetting: UserSettingSchema) {
+  return axios.patch<UserReadAdmin>(ApiUrl.UserList + `/${userId}/setting`, userSetting);
 }
-
-export function updateUserLimitApi(user_id: number, limit: LimitSchema) {
-  return axios.post(ApiUrl.UserList + `/${user_id}/limit`, limit);
-}
-
-// export function updateUserInfoApi(userInfo: Partial<UserUpdate>) {
-//   return axios.patch<UserRead>(ApiUrl.UserInfo, userInfo);
-// }

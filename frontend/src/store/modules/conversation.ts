@@ -2,11 +2,11 @@ import { defineStore } from 'pinia';
 
 import { deleteConversationApi, getAllConversationsApi, getConversationHistoryApi, setConversationTitleApi } from '@/api/conv';
 import { ChatConversationDetail, ChatMessage } from '@/types/custom';
-import { ConversationSchema } from '@/types/schema';
+import { RevConversationSchema } from '@/types/schema';
 
 const useConversationStore = defineStore('conversation', {
   state: (): any => ({
-    conversations: [] as Array<ConversationSchema>,
+    conversations: [] as Array<RevConversationSchema>,
     conversationDetailMap: {} as Record<string, ChatConversationDetail>, // conv_id => ChatConversationDetail
   }),
   getters: {},
@@ -52,7 +52,7 @@ const useConversationStore = defineStore('conversation', {
       });
     },
 
-    addConversation(conversation: ConversationSchema) {
+    addConversation(conversation: RevConversationSchema) {
       this.conversations.push(conversation);
     },
 

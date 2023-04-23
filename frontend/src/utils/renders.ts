@@ -5,7 +5,7 @@ import { h } from 'vue';
 import { i18n } from '@/i18n';
 import useUserStore from '@/store/modules/user';
 import { ChatConversationDetail } from '@/types/custom';
-import { ChatModels,ConversationSchema } from '@/types/schema';
+import { RevChatModels,RevConversationSchema } from '@/types/schema';
 import { Dialog } from '@/utils/tips';
 
 const t = i18n.global.t as any;
@@ -25,7 +25,7 @@ const getCountTrans = (count: number): string => {
 };
 
 const dropdownRenderer = (
-  conversation: ConversationSchema,
+  conversation: RevConversationSchema,
   handleDeleteConversation: (conversation_id?: string) => void,
   handleChangeConversationTitle: (conversation_id?: string) => void
 ) =>

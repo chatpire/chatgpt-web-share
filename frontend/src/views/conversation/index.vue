@@ -120,7 +120,7 @@ import { useI18n } from 'vue-i18n';
 import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 import { useAppStore, useConversationStore, useUserStore } from '@/store';
 import { ChatConversationDetail, ChatMessage } from '@/types/custom';
-import { ConversationSchema } from '@/types/schema';
+import { RevConversationSchema } from '@/types/schema';
 import { getConvMessageListFromId } from '@/utils/conversation';
 import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
@@ -158,11 +158,11 @@ let aborter: (() => void) | null = null;
 //   return result;
 // });
 
-const newConversation = ref<ConversationSchema | null>(null);
+const newConversation = ref<RevConversationSchema | null>(null);
 const currentConversationId = ref<string | null>(null);
-const currentConversation = computed<ConversationSchema>(() => {
+const currentConversation = computed<RevConversationSchema>(() => {
   if (newConversation.value?.conversation_id === currentConversationId.value) return newConversation.value;
-  const conv = conversationStore.conversations?.find((conversation: ConversationSchema) => {
+  const conv = conversationStore.conversations?.find((conversation: RevConversationSchema) => {
     return conversation.conversation_id == currentConversationId.value;
   });
   return conv;

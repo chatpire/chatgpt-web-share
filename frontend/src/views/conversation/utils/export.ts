@@ -1,10 +1,10 @@
 import { saveAs } from 'file-saver';
 
 import { ChatMessage } from '@/types/custom';
-import { ConversationSchema } from '@/types/schema';
+import { RevConversationSchema } from '@/types/schema';
 import { getModelNameTrans } from '@/utils/renders';
 
-export const saveAsMarkdown = (conv: ConversationSchema, messageList: ChatMessage[]) => {
+export const saveAsMarkdown = (conv: RevConversationSchema, messageList: ChatMessage[]) => {
   let content = `# ${conv.title}\n\n`;
   const create_time = new Date(conv.create_time ? conv.create_time + 'Z' : new Date()).toLocaleString();
   content += `Date: ${create_time}\nModel: ${getModelNameTrans(conv.model_name as any)}\n`;

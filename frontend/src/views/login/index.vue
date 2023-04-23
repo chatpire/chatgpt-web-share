@@ -51,11 +51,11 @@
 <script setup lang="ts">
 import { FormInst } from 'naive-ui';
 import { FormValidationError } from 'naive-ui/es/form';
-import { reactive,ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import { loginApi, LoginData } from '@/api/user';
+import { LoginData } from '@/api/user';
 import { useUserStore } from '@/store';
 import { Message } from '@/utils/tips';
 
@@ -85,9 +85,13 @@ const login = async () => {
     .then(async () => {
       try {
         await userStore.login(formValue as LoginData);
-        const { redirect, ...othersQuery } = router.currentRoute.value.query;
+        const { redirect } = router.currentRoute.value.query;
         await userStore.fetchUserInfo();
         Message.success(t('tips.loginSuccess'));
+        if (redirect) {
+          await router.push(redirect as string);
+          return;
+        }
         await router.push({
           name: userStore.user?.is_superuser ? 'admin' : 'conversation',
         });

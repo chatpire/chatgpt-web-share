@@ -1,7 +1,7 @@
-import { RemovableRef, UseStorageOptions } from '@vueuse/core';
+import { RemovableRef } from '@vueuse/core';
 
 import { Preference } from '@/types/custom';
-import { ConversationSchema,UserRead } from '@/types/schema';
+import { UserRead } from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;

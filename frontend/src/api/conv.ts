@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-import { ConversationSchema } from '@/types/schema';
+import { RevConversationSchema } from '@/types/schema';
 
 import ApiUrl from './url';
 
 export function getAllConversationsApi(fetch_all = false) {
-  return axios.get<Array<ConversationSchema>>(ApiUrl.Conversation, {
+  return axios.get<Array<RevConversationSchema>>(ApiUrl.Conversation, {
     params: { fetch_all },
   });
 }
@@ -27,13 +27,13 @@ export function vanishConversationApi(conversation_id: string) {
 }
 
 export function setConversationTitleApi(conversation_id: string, title: string) {
-  return axios.patch<ConversationSchema>(ApiUrl.Conversation + '/' + conversation_id, null, {
+  return axios.patch<RevConversationSchema>(ApiUrl.Conversation + '/' + conversation_id, null, {
     params: { title },
   });
 }
 
 export function generateConversationTitleApi(conversation_id: string, message_id: string) {
-  return axios.patch<ConversationSchema>(ApiUrl.Conversation + '/' + conversation_id + '/gen_title', null, {
+  return axios.patch<RevConversationSchema>(ApiUrl.Conversation + '/' + conversation_id + '/gen_title', null, {
     params: { message_id },
   });
 }

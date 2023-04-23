@@ -21,10 +21,8 @@ import { computed, ref } from 'vue';
 
 import { i18n } from '@/i18n';
 import { useUserStore } from '@/store';
-import { chatStatusMap,ServerStatusSchema, UserRead } from '@/types/schema';
+import { chatStatusMap, UserRead } from '@/types/schema';
 const t = i18n.global.t as any;
-
-const serverStatus = ref<ServerStatusSchema>({});
 
 const userStore = useUserStore();
 const user: UserRead | null = userStore.user;

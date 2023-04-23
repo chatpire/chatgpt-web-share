@@ -96,7 +96,7 @@ import { useRoute } from 'vue-router';
 
 // eslint-disable-next-line import/no-unresolved
 import chatgptIcon from '/chatgpt-icon.svg';
-import { resetUserPasswordApi } from '@/api/user';
+import { updateUserMeApi } from '@/api/user';
 import router from '@/router';
 import { useAppStore,useUserStore } from '@/store';
 import { Preference } from '@/types/custom';
@@ -226,7 +226,7 @@ const getOptions = (): Array<DropdownOption> => {
 const resetPassword = () => {
   popupResetUserPasswordDialog(
     async (password: string) => {
-      await resetUserPasswordApi(userStore.user!.id, password);
+      await updateUserMeApi({ password });
     },
     () => {
       Message.info(t('tips.resetUserPasswordSuccess'));

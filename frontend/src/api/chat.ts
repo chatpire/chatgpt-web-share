@@ -5,7 +5,6 @@ export type AskInfo = {
   conversation_id?: string;
   parent_id?: string;
   model_name?: string;
-  is_public?: boolean;
   timeout?: number;
 };
 

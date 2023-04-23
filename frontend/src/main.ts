@@ -6,7 +6,7 @@ import 'highlight.js/styles/atom-one-dark.css';
 import 'highlight.js/lib/common';
 import 'katex/dist/katex.css';
 
-import Vue, { createApp } from 'vue';
+import { createApp } from 'vue';
 
 import App from './App.vue';
 import { i18n } from './i18n';

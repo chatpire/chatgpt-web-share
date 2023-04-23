@@ -2,7 +2,7 @@ enum ApiUrl {
   Register = '/auth/register',
   Login = '/auth/login',
   Logout = '/auth/logout',
-  UserInfo = '/user/me',
+  UserMe = '/user/me',
 
   Conversation = '/conv',
   UserList = '/user',
