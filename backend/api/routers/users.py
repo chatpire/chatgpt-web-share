@@ -63,37 +63,35 @@ async def get_me(user: User = Depends(current_active_user)):
 async def update_me(
         request: Request,
         user_update: UserUpdate,  # type: ignore
-        user: User = Depends(current_active_user),
+        _user: User = Depends(current_active_user),
 ):
     async with get_async_session_context() as session:
         async with get_user_db_context(session) as user_db:
             async with get_user_manager_context(user_db) as user_manager:
+                user = await session.get(User, _user.id)
                 user = await user_manager.update(
                     user_update, user, safe=True, request=request
                 )
                 return UserRead.from_orm(user)
 
 
-async def get_user_or_404(user_id: int) -> User:
+@router.get("/user/{user_id}", response_model=UserReadAdmin, tags=["user"])
+async def admin_get_user(user_id: int, _user: User = Depends(current_super_user)):
     async with get_async_session_context() as session:
         user = await session.get(User, user_id)
         if user is None:
             raise UserNotExistException()
-        return user
-
-
-@router.get("/user/{user_id}", response_model=Union[UserRead, UserReadAdmin], tags=["user"])
-async def admin_get_user(user: User = Depends(get_user_or_404), _user: User = Depends(current_super_user)):
-    result = UserReadAdmin.from_orm(user)
-    return result
+        result = UserRead.from_orm(user)
+        return result
 
 
 @router.patch("/user/{user_id}", tags=["user"])
 async def admin_update_user(user_update_admin: UserUpdateAdmin, request: Request,
-                            user: User = Depends(get_user_or_404), _user: User = Depends(current_super_user)):
+                            user_id: int, _user: User = Depends(current_super_user)):
     async with get_async_session_context() as session:
         async with get_user_db_context(session) as user_db:
             async with get_user_manager_context(user_db) as user_manager:
+                user = await session.get(User, user_id)
                 user = await user_manager.update(
                     user_update_admin, user, safe=False, request=request
                 )
@@ -101,10 +99,11 @@ async def admin_update_user(user_update_admin: UserUpdateAdmin, request: Request
 
 
 @router.delete("/user/{user_id}", tags=["user"])
-async def admin_delete_user(user: User = Depends(get_user_or_404), _user: User = Depends(current_super_user)):
+async def admin_delete_user(user_id: int, _user: User = Depends(current_super_user)):
     async with get_async_session_context() as session:
         async with get_user_db_context(session) as user_db:
             async with get_user_manager_context(user_db) as user_manager:
+                user = await session.get(User, user_id)
                 await user_manager.delete(user)
                 return None
 
