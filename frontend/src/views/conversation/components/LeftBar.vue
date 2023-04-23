@@ -73,14 +73,16 @@ const convId = computed<string | null>({
 
 const menuOptions = computed(() => {
   // 根据 created_time 降序排序
-  const sorted_conversations = conversationStore.conversations?.toSorted((a: ConversationSchema, b: ConversationSchema) => {
-    // return a.create_time - b.create_time;
-    if (!a.create_time) return -1;
-    if (!b.create_time) return 1;
-    const date_a = new Date(a.create_time),
-      date_b = new Date(b.create_time);
-    return date_b.getTime() - date_a.getTime();
-  });
+  const sorted_conversations = conversationStore.conversations
+    ?.slice() // 创建一个新的数组副本
+    .sort((a: ConversationSchema, b: ConversationSchema) => {
+      // return a.create_time - b.create_time;
+      if (!a.create_time) return -1;
+      if (!b.create_time) return 1;
+      const date_a = new Date(a.create_time),
+        date_b = new Date(b.create_time);
+      return date_b.getTime() - date_a.getTime();
+    });
   const results = sorted_conversations?.map((conversation: ConversationSchema) => {
     return {
       label: () => h(NEllipsis, null, { default: () => conversation.title }),
