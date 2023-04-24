@@ -9,7 +9,6 @@ export const revChatModelNameMap: Record<RevChatModels, string> = {
   'text-davinci-002-render-sha': t('commons.shaModel'),
   'text-davinci-002-render-paid': t('commons.paidModel'),
   'gpt-4': t('commons.gpt4Model'),
-  '': 'unknown',
 };
 
 export const getRevChatModelNameTrans = (model_name: RevChatModels | string) => {

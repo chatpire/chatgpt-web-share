@@ -14,7 +14,10 @@ export interface paths {
     post: operations["auth_jwt_logout_auth_logout_post"];
   };
   "/auth/register": {
-    /** Register */
+    /**
+     * Register 
+     * @description 注册时不能指定setting，使用默认setting
+     */
     post: operations["register_auth_register_post"];
   };
   "/user": {
@@ -219,7 +222,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {unknown}
      */
-    RevChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid" | "";
+    RevChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid";
     /**
      * RevChatStatus 
      * @description An enumeration. 
@@ -326,39 +329,6 @@ export interface components {
       avatar?: string;
       /** Remark */
       remark?: string;
-      /**
-       * Setting 
-       * @default {
-       *   "can_use_revchatgpt": true,
-       *   "revchatgpt_available_models": [
-       *     "text-davinci-002-render-sha",
-       *     "gpt-4"
-       *   ],
-       *   "revchatgpt_ask_limits": {
-       *     "max_conv_count": 1,
-       *     "total_count": 0,
-       *     "per_model_count": {
-       *       "text-davinci-002-render-sha": 0,
-       *       "gpt-4": 0
-       *     }
-       *   },
-       *   "revchatgpt_time_limits": {
-       *     "time_window_limits": {
-       *       "text-davinci-002-render-sha": [],
-       *       "gpt-4": []
-       *     },
-       *     "available_time_range_in_day": {}
-       *   },
-       *   "can_use_openai_api": true,
-       *   "openai_api_credits": 0,
-       *   "openai_api_available_models": [
-       *     "gpt-3.5-turbo",
-       *     "gpt-4"
-       *   ],
-       *   "can_use_custom_openai_api": true
-       * }
-       */
-      setting?: components["schemas"]["UserSettingSchema"];
     };
     /**
      * UserRead 
@@ -558,7 +528,10 @@ export interface operations {
     };
   };
   register_auth_register_post: {
-    /** Register */
+    /**
+     * Register 
+     * @description 注册时不能指定setting，使用默认setting
+     */
     requestBody: {
       content: {
         "application/json": components["schemas"]["UserCreate"];

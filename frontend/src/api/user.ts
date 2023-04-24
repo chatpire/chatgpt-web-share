@@ -36,7 +36,7 @@ export function getUserMeApi() {
   return axios.get<UserRead>(ApiUrl.UserMe);
 }
 
-export function updateUserMeApi(userUpdate: UserUpdate) {
+export function updateUserMeApi(userUpdate: Partial<UserUpdate>) {
   return axios.patch<UserRead>(ApiUrl.UserMe, userUpdate);
 }
 
@@ -44,7 +44,7 @@ export function getUserByIdApi(userId: number) {
   return axios.get<UserReadAdmin>(ApiUrl.UserList + `/${userId}`);
 }
 
-export function updateUserByIdApi(userId: number, userUpdateAdmin: UserUpdateAdmin) {
+export function updateUserByIdApi(userId: number, userUpdateAdmin: Partial<UserUpdateAdmin>) {
   return axios.patch<UserReadAdmin>(ApiUrl.UserList + `/${userId}`, userUpdateAdmin);
 }
 
@@ -52,6 +52,6 @@ export function deleteUserApi(user_id: number) {
   return axios.delete(ApiUrl.UserList + `/${user_id}`);
 }
 
-export function updateUserSettingApi(userId: number, userSetting: UserSettingSchema) {
+export function updateUserSettingApi(userId: number, userSetting: Partial<UserSettingSchema>) {
   return axios.patch<UserReadAdmin>(ApiUrl.UserList + `/${userId}/setting`, userSetting);
 }

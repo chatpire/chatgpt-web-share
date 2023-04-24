@@ -52,7 +52,6 @@ const dropdownRenderer = (
 
 const popupInputDialog = (title: string, placeholder: string, callback: (inp: string) => Promise<any>, success: () => void, fail: () => void) => {
   let input = '';
-  const secondInput: string | undefined = undefined;
   const d = Dialog.info({
     title: title,
     positiveText: t('commons.confirm'),

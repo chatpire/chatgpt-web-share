@@ -1,58 +1,81 @@
 <template>
-  <div>
-    <div class="mb-4 mt-1 ml-1 flex flex-row space-x-2 justify-between">
-      <n-button
-        circle
-        @click="refreshData"
-      >
-        <template #icon>
-          <n-icon>
-            <RefreshFilled />
-          </n-icon>
-        </template>
-      </n-button>
-      <n-button
-        type="primary"
-        @click="handleAddUser"
-      >
-        {{ $t('commons.addUser') }}
-      </n-button>
-    </div>
-    <n-data-table
-      :scroll-x="1400"
-      size="small"
-      :columns="columns"
-      :data="data"
-      :bordered="true"
-      :pagination="{
-        pageSize: 20,
-      }"
-    />
+  <div class="mb-4 mt-1 ml-1 flex flex-row space-x-2 justify-between">
+    <n-button
+      circle
+      @click="refreshData"
+    >
+      <template #icon>
+        <n-icon>
+          <RefreshFilled />
+        </n-icon>
+      </template>
+    </n-button>
+    <n-button
+      type="primary"
+      @click="triggerShowCreateUserDrawer"
+    >
+      {{ $t('commons.addUser') }}
+    </n-button>
   </div>
+  <n-data-table
+    :scroll-x="1400"
+    size="small"
+    :columns="columns"
+    :data="data"
+    :bordered="true"
+    :pagination="{
+      pageSize: 20,
+    }"
+  />
+  <n-drawer
+    v-if="showUpdateUserDrawer"
+    v-model:show="showUpdateUserDrawer"
+    :width="'50%'"
+    :placement="'right'"
+    closable
+  >
+    <n-drawer-content :title="t('commons.updateUser')">
+      <UpdateUserForm
+        :user-id="currentUserId"
+        @save="triggerCloseUserSettingDrawer"
+      />
+    </n-drawer-content>
+  </n-drawer>
+  <n-drawer
+    v-if="showCreateUserDrawer"
+    v-model:show="showCreateUserDrawer"
+    :width="'50%'"
+    :placement="'right'"
+    closable
+  >
+    <n-drawer-content :title="t('commons.createUser')">
+      <CreateUserForm @save="triggerCloseCreateUserDrawer" />
+    </n-drawer-content>
+  </n-drawer>
 </template>
 
 <script setup lang="ts">
 import { Pencil, TrashOutline } from '@vicons/ionicons5';
-import { PasswordRound, RefreshFilled } from '@vicons/material';
+import { RefreshFilled } from '@vicons/material';
 import { DataTableColumns, NButton, NIcon } from 'naive-ui';
 import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
-import { useUserStore } from '@/store';
-import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
-import {getCountTrans, getRevChatModelNameTrans} from '@/utils/chat';
-import { popupResetUserPasswordDialog } from '@/utils/renders';
+import { deleteUserApi, getAllUserApi } from '@/api/user';
+import { chatStatusMap, UserReadAdmin } from '@/types/schema';
+import { getCountTrans, getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
 import { Dialog, Message } from '@/utils/tips';
 
-import EditUserForm from '../components/EditUserForm.vue';
-import EditUserSettingForm from '../components/EditUserSettingForm.vue';
+import CreateUserForm from '../components/CreateUserForm.vue';
+import UpdateUserForm from '../components/UpdateUserForm.vue';
 
 const { t } = useI18n();
 
-const userStore = useUserStore();
-
 const data = ref<Array<UserReadAdmin>>([]);
+
+const currentUserId = ref<number>(0);
+const showUpdateUserDrawer = ref(false);
+const showCreateUserDrawer = ref(false);
 
 const refreshData = () => {
   getAllUserApi().then((res) => {
@@ -94,7 +117,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
     },
     sorter: (a, b) => {
       if (!a.active_time || !b.active_time) return 0;
-      return new Date(a.active_time!).getTime() - new Date(b.active_time!).getTime();
+      return new Date(a.active_time).getTime() - new Date(b.active_time).getTime();
     },
   },
   {
@@ -117,24 +140,18 @@ const columns: DataTableColumns<UserReadAdmin> = [
     key: 'availableAskCountPerModel',
     render(row) {
       if (row.setting.revchatgpt_available_models && row.setting.revchatgpt_ask_limits) {
-        const per_model_count = row.setting.revchatgpt_ask_limits!.per_model_count;
-        return row.setting.revchatgpt_available_models
-          .map((model) => {
-            if (per_model_count && per_model_count[model]) {
-              return `${getRevChatModelNameTrans(model)}: ${getCountTrans(per_model_count[model])}`;
-            }
-          })
+        const per_model_count = row.setting.revchatgpt_ask_limits.per_model_count;
+        return revChatModelNames.map((modelName) => {
+          if (row.setting.revchatgpt_available_models.includes(modelName)) {
+            return `${getRevChatModelNameTrans(modelName)}: ${getCountTrans(per_model_count[modelName])}`;
+          } else {
+            return `${getRevChatModelNameTrans(modelName)}: ${t('commons.disabled')}`;
+          }
+        })
           .join(', ');
       } else {
         return t('commons.unlimited');
       }
-    },
-  },
-  {
-    title: t('commons.availableModels'),
-    key: 'availableModels',
-    render(row) {
-      return row.setting.revchatgpt_available_models ? row.setting.revchatgpt_available_models.map((model) => getRevChatModelNameTrans(model)).join(', ') : t('commons.unlimited');
     },
   },
   {
@@ -149,11 +166,17 @@ const columns: DataTableColumns<UserReadAdmin> = [
     },
   },
   {
+    title: t('labels.remark'),
+    key: 'remark',
+    render(row) {
+      return row.remark ? row.remark : t('commons.empty');
+    },
+  },
+  {
     title: t('commons.actions'),
     key: 'actions',
     fixed: 'right',
     render(row) {
-      // TODO: 删除、修改密码，两个按钮
       return h(
         'div',
         {
@@ -177,7 +200,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
                     d.loading = true;
                     return new Promise((resolve, reject) => {
                       deleteUserApi(row.id)
-                        .then((res) => {
+                        .then(() => {
                           Message.success(t('tips.deleteUserSuccess'));
                           getAllUserApi().then((res) => {
                             data.value = res.data;
@@ -207,40 +230,10 @@ const columns: DataTableColumns<UserReadAdmin> = [
             NButton,
             {
               size: 'small',
-              type: 'info',
-              circle: true,
-              secondary: true,
-              onClick: () => {
-                popupResetUserPasswordDialog(
-                  async (password: string) => {
-                    await updateUserByIdApi(row.id, {
-                      password
-                    });
-                  },
-                  () => {
-                    Message.info(t('tips.resetUserPasswordSuccess'));
-                  },
-                  () => {
-                    Message.error(t('tips.resetUserPasswordFailed'));
-                  }
-                );
-              },
-            },
-            {
-              icon: () =>
-                h(NIcon, null, {
-                  default: () => h(PasswordRound),
-                }),
-            }
-          ),
-          h(
-            NButton,
-            {
-              size: 'small',
               type: 'primary',
               circle: true,
               secondary: true,
-              onClick: handleUpdateUserSetting(row),
+              onClick: triggerShowUserSettingDrawer(row),
             },
             {
               icon: () =>
@@ -255,88 +248,28 @@ const columns: DataTableColumns<UserReadAdmin> = [
   },
 ];
 
-const handleAddUser = () => {
-  const user = ref<UserCreate>({
-    username: '',
-    nickname: '',
-    email: '',
-    password: '',
-    is_superuser: false,
-  });
-  const d = Dialog.info({
-    title: t('commons.addUser'),
-    content: () =>
-      h(
-        EditUserForm,
-        {
-          user: user.value,
-          'onUpdate:user': (newUser: UserCreate) => {
-            user.value = newUser;
-          },
-        },
-        { default: () => '' }
-      ),
-    positiveText: t('commons.confirm'),
-    negativeText: t('commons.cancel'),
-    onPositiveClick: () => {
-      d.loading = true;
-      return new Promise((resolve, reject) => {
-        registerApi(user.value)
-          .then((res) => {
-            Message.success(t('commons.addUserSuccess'));
-            getAllUserApi().then((res) => {
-              data.value = res.data;
-            });
-            resolve(true);
-          })
-          .catch((err) => {
-            Message.error(t('commons.addUserFailed') + ': ' + err);
-            reject(err);
-          })
-          .finally(() => {
-            d.loading = false;
-          });
-      });
-    },
+
+const triggerShowUserSettingDrawer = (user: UserReadAdmin) => () => {
+  currentUserId.value = user.id;
+  showUpdateUserDrawer.value = true;
+};
+
+const triggerCloseUserSettingDrawer = () => {
+  showUpdateUserDrawer.value = false;
+  getAllUserApi().then((res) => {
+    data.value = res.data;
   });
 };
 
-const handleUpdateUserSetting = (user: UserReadAdmin) => () => {
-  const setting = ref<UserSettingSchema>(user.setting);
-  const d = Dialog.info({
-    title: t('commons.setUserLimit'),
-    content: () =>
-      h(
-        EditUserSettingForm,
-        {
-          value: setting.value,
-          'onUpdate:value': (newVal: UserSettingSchema) => {
-            setting.value = newVal;
-          },
-        },
-        { default: () => '' }
-      ),
-    positiveText: t('commons.confirm'),
-    negativeText: t('commons.cancel'),
-    onPositiveClick: () => {
-      d.loading = true;
-      return new Promise((resolve, reject) => {
-        updateUserSettingApi(user.id, setting.value)
-          .then((res) => {
-            Message.success(t('commons.setUserLimitSuccess'));
-            getAllUserApi().then((res) => {
-              data.value = res.data;
-            });
-            resolve(true);
-          })
-          .catch((err) => {
-            reject(err);
-          })
-          .finally(() => {
-            d.loading = false;
-          });
-      });
-    },
+const triggerShowCreateUserDrawer = () => {
+  showCreateUserDrawer.value = true;
+};
+
+const triggerCloseCreateUserDrawer = () => {
+  showCreateUserDrawer.value = false;
+  getAllUserApi().then((res) => {
+    data.value = res.data;
   });
 };
+
 </script>

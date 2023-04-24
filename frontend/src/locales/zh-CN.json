@@ -116,7 +116,15 @@
     "alreadySet": "已设置",
     "save": "保存",
     "confirmSaveConfig": "保存配置",
-    "seconds": "秒"
+    "seconds": "秒",
+    "userBasicInfo": "用户基本信息",
+    "updateUser": "更新用户",
+    "userSettings": "用户功能设置",
+    "submit": "提交",
+    "remark": "备注（用户不可见）",
+    "keepEmptyIfNotChange": "不更改则留空",
+    "disabled": "禁用",
+    "createUser": "创建新用户"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -190,7 +198,11 @@
     "autoScrolling": "自动滚动",
     "alreadySet": "该项已设置，留空则不修改",
     "saveSuccess": "保存成功",
-    "confirmSaveConfig": "确定要更新配置吗？更新后可能需要重新启动服务才能生效。"
+    "confirmSaveConfig": "确定要更新配置吗？更新后可能需要重新启动服务才能生效。",
+    "invalidEmail": "非法邮箱地址",
+    "invalidPassword": "密码不合法：必须为大于6位的数字、字母或符号，不含空格",
+    "pleaseCheckInput": "请检查输入内容",
+    "registerSuccess": "注册成功"
   },
   "labels": {
     "nickname": "昵称",
@@ -203,6 +215,11 @@
     "available_ask_count": "剩余可询问次数",
     "available_gpt4_ask_count": "剩余GPT-4可询问次数",
     "is_plus_account": "是否为Plus账号",
-    "ask_timeout": "对话超时时间"
+    "ask_timeout": "对话超时时间",
+    "can_use_revchatgpt": "允许使用ChatGPT账号",
+    "revchatgpt_ask_limits": {
+      "total_count": "ChatGPT账号总可用次数"
+    },
+    "remark": "备注"
   }
 }

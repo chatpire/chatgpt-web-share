@@ -2,7 +2,7 @@
   <!-- user register form -->
   <n-form
     ref="formRef"
-    :model="props.user"
+    :model="user"
     :rules="rules"
     :label-col="{ span: 8 }"
     :wrapper-col="{ span: 16 }"
@@ -43,34 +43,68 @@
         placeholder=""
       />
     </n-form-item>
+    <n-form-item
+      :label="t('commons.remark')"
+      path="remark"
+    >
+      <n-input
+        v-model:value="user.remark"
+        placeholder=""
+      />
+    </n-form-item>
   </n-form>
+  <n-button
+    type="primary"
+    @click="handleSubmit"
+  >
+    {{ t('commons.submit') }}
+  </n-button>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref } from 'vue';
 
+import { registerApi } from '@/api/user';
 import { i18n } from '@/i18n';
 import { UserCreate } from '@/types/schema';
+import { Message } from '@/utils/tips';
+import { getEmailRule, getPasswordRule } from '@/utils/validate';
 const t = i18n.global.t as any;
 
-const props = defineProps<{
-  user: UserCreate;
-}>();
+const emits = defineEmits(['save']);
 
-const emits = defineEmits(['update:user']);
+const formRef = ref();
 
-const user = computed({
-  get: () => props.user,
-  set: (value) => {
-    emits('update:user', value);
-  },
+const user = ref<UserCreate>({
+  username: '',
+  password: '',
+  nickname: '',
+  email: '',
+  avatar: '',
+  remark: '',
+  is_active: true,
+  is_verified: false,
+  is_superuser: false,
 });
 
 const rules = {
   username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
-  password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
-  email: { required: true, message: t('tips.pleaseEnterEmail'), trigger: 'blur' },
+  email: getEmailRule(true),
   nickname: { required: true, message: t('tips.pleaseEnterNickname'), trigger: 'blur' },
+  password: getPasswordRule(true),
+};
+
+const handleSubmit = () => {
+  formRef.value?.validate((errors: any) => {
+    if (errors) {
+      Message.error(t('tips.pleaseCheckInput'));
+      return;
+    }
+    registerApi(user.value).then(() => {
+      Message.success(t('tips.registerSuccess'));
+      emits('save');
+    });
+  });
 };
 
 </script>
