@@ -7,20 +7,11 @@
     }"
   >
     <n-form-item
-      :label="t('commons.canUsePaidModel')"
-      path="can_use_paid"
+      :label="t('labels.can_use_revchatgpt')"
+      path="can_use_revchatgpt"
     >
       <n-switch
-        v-model:value="limit.can_use_paid"
-        placeholder=""
-      />
-    </n-form-item>
-    <n-form-item
-      :label="t('commons.canUseGPT4Model')"
-      path="can_use_paid"
-    >
-      <n-switch
-        v-model:value="limit.can_use_gpt4"
+        v-model:value="userSetting.can_use_revchatgpt"
         placeholder=""
       />
     </n-form-item>
@@ -29,27 +20,17 @@
       path="max_conv_count"
     >
       <n-input-number
-        v-model:value="limit.max_conv_count"
+        v-model:value="userSetting.revchatgpt_ask_limits.max_conv_count"
         :parse="parseValue"
         :format="formatValue"
       />
     </n-form-item>
     <n-form-item
-      :label="t('commons.availableAskCount')"
-      path="available_ask_count"
+      :label="t('labels.revchatgpt_ask_limits.total_count')"
+      path="revchatgpt_ask_limits.total_count"
     >
       <n-input-number
-        v-model:value="limit.available_ask_count"
-        :parse="parseValue"
-        :format="formatValue"
-      />
-    </n-form-item>
-    <n-form-item
-      :label="t('commons.availableGPT4AskCount')"
-      path="available_gpt4_ask_count"
-    >
-      <n-input-number
-        v-model:value="limit.available_gpt4_ask_count"
+        v-model:value="userSetting.revchatgpt_ask_limits.total_count"
         :parse="parseValue"
         :format="formatValue"
       />
@@ -61,20 +42,20 @@
 import { computed } from 'vue';
 
 import { i18n } from '@/i18n';
-import { LimitSchema } from '@/types/schema';
+import { UserSettingSchema } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
 const props = defineProps<{
-  limit: LimitSchema;
+  value: UserSettingSchema;
 }>();
 
-const emits = defineEmits(['update:limit']);
+const emits = defineEmits(['update:value']);
 
-const limit = computed({
-  get: () => props.limit,
+const userSetting = computed({
+  get: () => props.value,
   set: (value) => {
-    emits('update:limit', value);
+    emits('update:value', value);
   },
 });
 

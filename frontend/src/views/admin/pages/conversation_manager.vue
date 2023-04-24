@@ -97,7 +97,7 @@ import {
   vanishConversationApi,
 } from '@/api/conv';
 import { RevConversationSchema } from '@/types/schema';
-import { getModelNameTrans } from '@/utils/renders';
+import { getRevChatModelNameTrans } from '@/utils/chat';
 import { Dialog, Message } from '@/utils/tips';
 
 import UserSelector from '../components/UserSelector.vue';
@@ -174,17 +174,17 @@ const columns: DataTableColumns<RevConversationSchema> = [
     key: 'create_time',
     defaultSortOrder: 'descend',
     sorter: (a, b) => {
-      if (!a.create_time || !b.create_time) return 0;
-      return new Date(a.create_time!).getTime() - new Date(b.create_time!).getTime();
+      if (!a.created_time || !b.created_time) return 0;
+      return new Date(a.created_time!).getTime() - new Date(b.created_time!).getTime();
     },
     render: (row) => {
-      if (!row.create_time) return '';
+      if (!row.created_time) return '';
       return h(
         NTooltip,
         { trigger: 'hover' },
         {
-          trigger: () => new Date(row.create_time! + 'Z').toLocaleString(),
-          default: () => row.create_time,
+          trigger: () => new Date(row.created_time! + 'Z').toLocaleString(),
+          default: () => row.created_time,
         }
       );
     },
@@ -193,7 +193,7 @@ const columns: DataTableColumns<RevConversationSchema> = [
     title: t('commons.modelName'),
     key: 'model_name',
     render(row) {
-      return row.model_name ? getModelNameTrans(row.model_name) : t('commons.unknown');
+      return row.model_name ? getRevChatModelNameTrans(row.model_name) : t('commons.unknown');
     },
     sorter: 'default',
   },

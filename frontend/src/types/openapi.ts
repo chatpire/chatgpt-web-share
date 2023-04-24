@@ -72,6 +72,10 @@ export interface paths {
     /** Generate Conversation Title */
     patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
   };
+  "/chat/avaliable-models": {
+    /** Get Avaliable Models */
+    get: operations["get_avaliable_models_chat_avaliable_models_get"];
+  };
   "/system/info": {
     /** Get System Info */
     get: operations["get_system_info_system_info_get"];
@@ -103,6 +107,12 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /**
+     * ApiChatModels 
+     * @description An enumeration. 
+     * @enum {unknown}
+     */
+    ApiChatModels: "gpt-3.5-turbo" | "gpt-4";
     /** Body_auth_jwt_login_auth_login_post */
     Body_auth_jwt_login_auth_login_post: {
       /** Grant Type */
@@ -195,24 +205,12 @@ export interface components {
     };
     /** RevChatAskLimits */
     RevChatAskLimits: {
-      /**
-       * Max Conv Count 
-       * @default 1
-       */
-      max_conv_count?: number;
-      /**
-       * Total Count 
-       * @default -1
-       */
-      total_count?: number;
-      /**
-       * Per Model Count 
-       * @default {
-       *   "text-davinci-002-render-sha": 0,
-       *   "gpt-4": 0
-       * }
-       */
-      per_model_count?: {
+      /** Max Conv Count */
+      max_conv_count: number;
+      /** Total Count */
+      total_count: number;
+      /** Per Model Count */
+      per_model_count: {
         [key: string]: number | undefined;
       };
     };
@@ -230,21 +228,12 @@ export interface components {
     RevChatStatus: "asking" | "queueing" | "idling";
     /** RevChatTimeLimits */
     RevChatTimeLimits: {
-      /**
-       * Time Window Limits 
-       * @default {
-       *   "text-davinci-002-render-sha": [],
-       *   "gpt-4": []
-       * }
-       */
-      time_window_limits?: {
+      /** Time Window Limits */
+      time_window_limits: {
         [key: string]: ((number)[])[] | undefined;
       };
-      /**
-       * Available Time Range In Day 
-       * @default {}
-       */
-      available_time_range_in_day?: {
+      /** Available Time Range In Day */
+      available_time_range_in_day: {
         [key: string]: (number)[] | undefined;
       };
     };
@@ -264,7 +253,10 @@ export interface components {
       title?: string;
       /** User Id */
       user_id?: number;
-      /** Is Valid */
+      /**
+       * Is Valid 
+       * @default true
+       */
       is_valid?: boolean;
       model_name?: components["schemas"]["RevChatModels"];
       /**
@@ -344,7 +336,7 @@ export interface components {
        *   ],
        *   "revchatgpt_ask_limits": {
        *     "max_conv_count": 1,
-       *     "total_count": -1,
+       *     "total_count": 0,
        *     "per_model_count": {
        *       "text-davinci-002-render-sha": 0,
        *       "gpt-4": 0
@@ -360,7 +352,8 @@ export interface components {
        *   "can_use_openai_api": true,
        *   "openai_api_credits": 0,
        *   "openai_api_available_models": [
-       *     "gpt-3.5-turbo"
+       *     "gpt-3.5-turbo",
+       *     "gpt-4"
        *   ],
        *   "can_use_custom_openai_api": true
        * }
@@ -449,64 +442,18 @@ export interface components {
       id?: number;
       /** User Id */
       user_id?: number;
-      /**
-       * Can Use Revchatgpt 
-       * @default true
-       */
-      can_use_revchatgpt?: boolean;
-      /**
-       * Revchatgpt Available Models 
-       * @default [
-       *   "text-davinci-002-render-sha",
-       *   "gpt-4"
-       * ]
-       */
-      revchatgpt_available_models?: (string)[];
-      /**
-       * Revchatgpt Ask Limits 
-       * @default {
-       *   "max_conv_count": 1,
-       *   "total_count": -1,
-       *   "per_model_count": {
-       *     "text-davinci-002-render-sha": 0,
-       *     "gpt-4": 0
-       *   }
-       * }
-       */
-      revchatgpt_ask_limits?: components["schemas"]["RevChatAskLimits"];
-      /**
-       * Revchatgpt Time Limits 
-       * @default {
-       *   "time_window_limits": {
-       *     "text-davinci-002-render-sha": [],
-       *     "gpt-4": []
-       *   },
-       *   "available_time_range_in_day": {}
-       * }
-       */
-      revchatgpt_time_limits?: components["schemas"]["RevChatTimeLimits"];
-      /**
-       * Can Use Openai Api 
-       * @default true
-       */
-      can_use_openai_api?: boolean;
-      /**
-       * Openai Api Credits 
-       * @default 0
-       */
-      openai_api_credits?: number;
-      /**
-       * Openai Api Available Models 
-       * @default [
-       *   "gpt-3.5-turbo"
-       * ]
-       */
-      openai_api_available_models?: (string)[];
-      /**
-       * Can Use Custom Openai Api 
-       * @default true
-       */
-      can_use_custom_openai_api?: boolean;
+      /** Can Use Revchatgpt */
+      can_use_revchatgpt: boolean;
+      revchatgpt_available_models: (components["schemas"]["RevChatModels"])[];
+      revchatgpt_ask_limits: components["schemas"]["RevChatAskLimits"];
+      revchatgpt_time_limits: components["schemas"]["RevChatTimeLimits"];
+      /** Can Use Openai Api */
+      can_use_openai_api: boolean;
+      /** Openai Api Credits */
+      openai_api_credits: number;
+      openai_api_available_models: (components["schemas"]["ApiChatModels"])[];
+      /** Can Use Custom Openai Api */
+      can_use_custom_openai_api: boolean;
       /** Custom Openai Api Key */
       custom_openai_api_key?: string;
     };
@@ -949,6 +896,17 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_avaliable_models_chat_avaliable_models_get: {
+    /** Get Avaliable Models */
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
         };
       };
     };

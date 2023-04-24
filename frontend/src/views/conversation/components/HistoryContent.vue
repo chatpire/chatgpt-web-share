@@ -13,7 +13,7 @@
         class="flex justify-center py-4 px-4 max-w-full relative"
         :style="{ backgroundColor: themeVars.baseColor }"
       >
-        <n-text>{{ $t('commons.currentConversationModel') }}: {{ getModelNameTrans(modelName as any) }} </n-text>
+        <n-text>{{ $t('commons.currentConversationModel') }}: {{ getRevChatModelNameTrans(modelName as any) }}</n-text>
         <n-button
           v-if="_fullscreen"
           class="absolute left-4 hide-in-print"
@@ -53,8 +53,8 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ChatMessage } from '@/types/custom';
+import {getRevChatModelNameTrans} from '@/utils/chat';
 import { getModelNameFromMessages } from '@/utils/conversation';
-import { getModelNameTrans } from '@/utils/renders';
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';

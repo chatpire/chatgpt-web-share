@@ -38,20 +38,21 @@ import { DataTableColumns, NButton, NIcon } from 'naive-ui';
 import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { deleteUserApi, getAllUserApi, registerApi, resetUserPasswordApi, updateUserLimitApi } from '@/api/user';
+import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
 import { useUserStore } from '@/store';
-import { chatStatusMap,LimitSchema, UserCreate, UserRead } from '@/types/schema';
-import { getCountTrans, popupResetUserPasswordDialog } from '@/utils/renders';
+import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
+import {getCountTrans, getRevChatModelNameTrans} from '@/utils/chat';
+import { popupResetUserPasswordDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 
-import EditLimitForm from '../components/EditLimitForm.vue';
 import EditUserForm from '../components/EditUserForm.vue';
+import EditUserSettingForm from '../components/EditUserSettingForm.vue';
 
 const { t } = useI18n();
 
 const userStore = useUserStore();
 
-const data = ref<Array<UserRead>>([]);
+const data = ref<Array<UserReadAdmin>>([]);
 
 const refreshData = () => {
   getAllUserApi().then((res) => {
@@ -64,7 +65,7 @@ getAllUserApi().then((res) => {
   data.value = res.data;
 });
 
-const columns: DataTableColumns<UserRead> = [
+const columns: DataTableColumns<UserReadAdmin> = [
   {
     title: '#',
     key: 'id',
@@ -79,9 +80,9 @@ const columns: DataTableColumns<UserRead> = [
   },
   {
     title: t('commons.status'),
-    key: 'chat_status',
+    key: 'rev_chat_status',
     render(row) {
-      return row.chat_status ? t(chatStatusMap[row.chat_status as keyof typeof chatStatusMap]) : '';
+      return row.rev_chat_status ? t(chatStatusMap[row.rev_chat_status as keyof typeof chatStatusMap]) : '';
     },
     sorter: 'default',
   },
@@ -100,35 +101,40 @@ const columns: DataTableColumns<UserRead> = [
     title: t('commons.maxConversationCount'),
     key: 'max_conv_count',
     render(row) {
-      return getCountTrans(row.max_conv_count!);
+      return row.setting.revchatgpt_ask_limits ? getCountTrans(row.setting.revchatgpt_ask_limits.max_conv_count) : t('commons.unlimited');
     },
   },
   {
-    title: t('commons.availableAskCount'),
+    title: t('commons.availableTotalAskCount'),
     key: 'available_ask_count',
     render(row) {
-      return getCountTrans(row.available_ask_count!);
+      // return getCountTrans(row.available_ask_count!);
+      return row.setting.revchatgpt_ask_limits ? getCountTrans(row.setting.revchatgpt_ask_limits.total_count) : t('commons.unlimited');
     },
   },
   {
-    title: t('commons.availableGPT4AskCount'),
-    key: 'available_gpt4_ask_count',
+    title: t('commons.availableAskCountPerModel'),
+    key: 'availableAskCountPerModel',
     render(row) {
-      return getCountTrans(row.available_gpt4_ask_count!);
+      if (row.setting.revchatgpt_available_models && row.setting.revchatgpt_ask_limits) {
+        const per_model_count = row.setting.revchatgpt_ask_limits!.per_model_count;
+        return row.setting.revchatgpt_available_models
+          .map((model) => {
+            if (per_model_count && per_model_count[model]) {
+              return `${getRevChatModelNameTrans(model)}: ${getCountTrans(per_model_count[model])}`;
+            }
+          })
+          .join(', ');
+      } else {
+        return t('commons.unlimited');
+      }
     },
   },
   {
-    title: t('commons.canUsePaidModel'),
-    key: 'can_use_paid',
+    title: t('commons.availableModels'),
+    key: 'availableModels',
     render(row) {
-      return row.can_use_paid ? t('commons.yes') : t('commons.no');
-    },
-  },
-  {
-    title: t('commons.canUseGPT4Model'),
-    key: 'can_use_gpt4',
-    render(row) {
-      return row.can_use_gpt4 ? t('commons.yes') : t('commons.no');
+      return row.setting.revchatgpt_available_models ? row.setting.revchatgpt_available_models.map((model) => getRevChatModelNameTrans(model)).join(', ') : t('commons.unlimited');
     },
   },
   {
@@ -207,7 +213,9 @@ const columns: DataTableColumns<UserRead> = [
               onClick: () => {
                 popupResetUserPasswordDialog(
                   async (password: string) => {
-                    await resetUserPasswordApi(row.id, password);
+                    await updateUserByIdApi(row.id, {
+                      password
+                    });
                   },
                   () => {
                     Message.info(t('tips.resetUserPasswordSuccess'));
@@ -232,7 +240,7 @@ const columns: DataTableColumns<UserRead> = [
               type: 'primary',
               circle: true,
               secondary: true,
-              onClick: handleSetUserLimit(row),
+              onClick: handleUpdateUserSetting(row),
             },
             {
               icon: () =>
@@ -293,23 +301,17 @@ const handleAddUser = () => {
   });
 };
 
-const handleSetUserLimit = (user: UserRead) => () => {
-  const limit = ref<LimitSchema>({
-    max_conv_count: user.max_conv_count,
-    available_ask_count: user.available_ask_count,
-    can_use_paid: user.can_use_paid,
-    can_use_gpt4: user.can_use_gpt4,
-    available_gpt4_ask_count: user.available_gpt4_ask_count,
-  });
+const handleUpdateUserSetting = (user: UserReadAdmin) => () => {
+  const setting = ref<UserSettingSchema>(user.setting);
   const d = Dialog.info({
     title: t('commons.setUserLimit'),
     content: () =>
       h(
-        EditLimitForm,
+        EditUserSettingForm,
         {
-          limit: limit.value,
-          'onUpdate:limit': (newLimit: LimitSchema) => {
-            limit.value = newLimit;
+          value: setting.value,
+          'onUpdate:value': (newVal: UserSettingSchema) => {
+            setting.value = newVal;
           },
         },
         { default: () => '' }
@@ -319,7 +321,7 @@ const handleSetUserLimit = (user: UserRead) => () => {
     onPositiveClick: () => {
       d.loading = true;
       return new Promise((resolve, reject) => {
-        updateUserLimitApi(user.id, limit.value)
+        updateUserSettingApi(user.id, setting.value)
           .then((res) => {
             Message.success(t('commons.setUserLimitSuccess'));
             getAllUserApi().then((res) => {
