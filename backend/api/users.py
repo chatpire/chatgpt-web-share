@@ -15,7 +15,7 @@ import api.exceptions
 from api.conf import Config
 from api.database import get_user_db, get_async_session_context, get_user_db_context
 from api.models import User, UserSetting
-from api.schema import UserCreate, UserSettingSchema
+from api.schema import UserCreate, UserSettingSchema, UserUpdate, UserUpdateAdmin
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -57,12 +57,7 @@ async def get_by_username(username: str) -> Optional[UP]:
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
 
-    async def update(self, user_update: schemas.UU, user: models.UP, safe: bool = False,
-                     request: Optional[Request] = None) -> models.UP:
-        # 使用了自定义路由，不会调用到这里
-        raise NotImplementedError("should not use user_manager.update!")
-
-    async def validate_password(self, password: str, user: Union[schemas.UC, models.UP]) -> None:
+    async def validate_password(self, password: str, user: Any) -> None:
         if len(password) < 6:
             raise api.exceptions.InvalidParamsException("Password too short")
         if len(password) > 32:
@@ -72,16 +67,18 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
             raise api.exceptions.InvalidParamsException("Password contains invalid characters")
         return
 
-    async def _check_unique(self, username=None):
+    async def _check_username_unique(self, username, exclude_username=None):
+        if not username:
+            return
         async with get_async_session_context() as session:
-            if username and (
-                    await session.execute(select(User).filter(User.username == username))).scalar_one_or_none():
-                raise api.exceptions.InvalidParamsException("Username already exists")
+            user = (await session.execute(select(User).filter(User.username == username))).scalar_one_or_none()
+            if user and user.username != exclude_username:
+                raise api.exceptions.UserAlreadyExists("Username already exists")
             # TODO 暂时没有检查email是否unique
 
     async def create(self, user_create: UserCreate, user_setting: Optional[UserSettingSchema] = None,
                      safe: bool = False, request: Optional[Request] = None) -> User:
-        await self._check_unique(username=user_create.username)
+        await self._check_username_unique(username=user_create.username)
         await self.validate_password(user_create.password, user_create)
 
         user_dict = user_create.dict()
@@ -98,6 +95,28 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         async with get_async_session_context() as session:
             user = User(**user_dict)
             user.setting = UserSetting(**user_setting.dict())
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+            return user
+
+    async def update(self, user_update: Union[UserUpdate, UserUpdateAdmin], user: User, safe: bool = False,
+                     request: Optional[Request] = None) -> User:
+        update_dict = user_update.dict(exclude_unset=True)
+        if "password" in update_dict:
+            await self.validate_password(update_dict["password"], user_update)
+            update_dict["hashed_password"] = self.password_helper.hash(update_dict.pop("password"))
+        if "username" in update_dict:
+            await self._check_username_unique(username=update_dict["username"], exclude_username=user.username)
+        if safe:
+            update_dict.pop("is_active")
+            update_dict.pop("is_superuser")
+            update_dict.pop("is_verified")
+
+        async with get_async_session_context() as session:
+            user = await session.get(User, user.id)
+            for key, value in update_dict.items():
+                setattr(user, key, value)
             session.add(user)
             await session.commit()
             await session.refresh(user)
