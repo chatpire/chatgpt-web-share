@@ -14,7 +14,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import api.globals as g
 from api.conf import Config
-from api.database import create_db_and_tables, get_async_session_context
+from api.database import create_db_and_tables, get_async_session_context, get_user_db_context
 from api.enums import RevChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
@@ -22,7 +22,8 @@ from api.models import User
 from api.response import CustomJSONResponse, handle_exception_response
 from api.routers import users, conv, chat, system, status
 from api.schema import UserCreate, UserSettingSchema
-from utils.admin import sync_conversations, create_user
+from api.users import get_user_manager_context
+from utils.admin import sync_conversations
 from utils.logger import setup_logger, get_log_config, get_logger
 from utils.stats import dump_stats, load_stats
 
@@ -86,16 +87,18 @@ async def on_startup():
 
     if config.common.create_initial_admin_user:
         try:
-            user = await create_user(UserCreate(
-                username=config.common.initial_admin_user_username,
-                nickname="admin",
-                email="admin@admin.com",
-                password=config.common.initial_admin_user_password,
-                is_active=True,
-                is_verified=True,
-                is_superuser=True,
-                setting=UserSettingSchema.unlimited()
-            ), safe=False)
+            async with get_async_session_context() as session:
+                async with get_user_db_context(session) as user_db:
+                    async with get_user_manager_context(user_db) as user_manager:
+                        user = await user_manager.create(UserCreate(
+                            username=config.common.initial_admin_user_username,
+                            nickname="admin",
+                            email="admin@admin.com",
+                            password=config.common.initial_admin_user_password,
+                            is_active=True,
+                            is_verified=True,
+                            is_superuser=True,
+                        ), user_setting=UserSettingSchema.unlimited(), safe=False)
             print(user)
         except UserAlreadyExists:
             logger.info(f"admin already exists, skip creating admin user")

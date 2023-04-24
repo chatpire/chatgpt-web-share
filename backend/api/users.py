@@ -1,6 +1,7 @@
+import re
 import contextlib
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
@@ -13,7 +14,8 @@ from starlette.websockets import WebSocket
 import api.exceptions
 from api.conf import Config
 from api.database import get_user_db, get_async_session_context, get_user_db_context
-from api.models import User
+from api.models import User, UserSetting
+from api.schema import UserCreate, UserSettingSchema
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -55,26 +57,51 @@ async def get_by_username(username: str) -> Optional[UP]:
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
 
+    async def update(self, user_update: schemas.UU, user: models.UP, safe: bool = False,
+                     request: Optional[Request] = None) -> models.UP:
+        # 使用了自定义路由，不会调用到这里
+        raise NotImplementedError("should not use user_manager.update!")
+
+    async def validate_password(self, password: str, user: Union[schemas.UC, models.UP]) -> None:
+        if len(password) < 6:
+            raise api.exceptions.InvalidParamsException("Password too short")
+        if len(password) > 32:
+            raise api.exceptions.InvalidParamsException("Password too long")
+        # 用正则检查：仅包含数字、字母和符号（\w!@#$%^&*()_+|{}:;<>?~`-），不含空格
+        if not re.match(r"^[\w!@#$%^&*()_+|{}:;<>?~`-]+$", password):
+            raise api.exceptions.InvalidParamsException("Password contains invalid characters")
+        return
+
     async def _check_unique(self, username=None):
-        # 检查用户名、手机、邮箱是否已经存在
         async with get_async_session_context() as session:
             if username and (
                     await session.execute(select(User).filter(User.username == username))).scalar_one_or_none():
-                raise api.exceptions.UserAlreadyExists("Username already exists")
-            # fastapi_users 会检查 email 是否已经存在
-            # if email and (await session.execute(select(User).filter(User.email == email))).scalar_one_or_none():
-            #     raise api.exceptions.UserAlreadyExists("Email already exists")
+                raise api.exceptions.InvalidParamsException("Username already exists")
+            # TODO 暂时没有检查email是否unique
 
-    async def update(self, user_update: schemas.UU, user: models.UP, safe: bool = False,
-                     request: Optional[Request] = None) -> models.UP:
-        # if user_update has username attribute
-        if hasattr(user_update, "username"):
-            await self._check_unique(username=user_update.username)
-        return await super().update(user_update, user, safe, request)
-
-    async def create(self, user_create: schemas.UC, safe: bool = False, request: Optional[Request] = None) -> models.UP:
+    async def create(self, user_create: UserCreate, user_setting: Optional[UserSettingSchema] = None,
+                     safe: bool = False, request: Optional[Request] = None) -> User:
         await self._check_unique(username=user_create.username)
-        return await super().create(user_create, safe, request)
+        await self.validate_password(user_create.password, user_create)
+
+        user_dict = user_create.dict()
+
+        if safe:
+            user_dict["is_active"] = True
+            user_dict["is_superuser"] = False
+            user_dict["is_verified"] = False
+        password = user_dict.pop("password")
+        user_dict["hashed_password"] = self.password_helper.hash(password)
+
+        user_setting = user_setting or UserSettingSchema.default()
+
+        async with get_async_session_context() as session:
+            user = User(**user_dict)
+            user.setting = UserSetting(**user_setting.dict())
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+            return user
 
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET
@@ -90,7 +117,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
     ) -> Optional[models.UP]:
         """
         Authenticate and return a user following an email and a password.
-
         Will automatically upgrade password hash if necessary.
 
         :param credentials: The user credentials.
@@ -113,20 +139,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
             await self.user_db.update(user, {"hashed_password": updated_password_hash})
 
         return user
-
-    # async def on_after_register(self, user: User, request: Optional[Request] = None):
-    #     print(f"User {user.id} has registered.")
-    #
-    # async def on_after_forgot_password(
-    #         self, user: User, token: str, request: Optional[Request] = None
-    # ):
-    #     print(f"User {user.id} has forgot their password. Reset token: {token}")
-    #
-    # async def on_after_request_verify(
-    #         self, user: User, token: str, request: Optional[Request] = None
-    # ):
-    #     print(
-    #         f"Verification requested for user {user.id}. Verification token: {token}")
 
 
 async def websocket_auth(websocket: WebSocket) -> User | None:

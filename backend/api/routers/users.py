@@ -7,7 +7,6 @@ from api.exceptions import UserNotExistException
 from api.models import User
 from api.schema import UserRead, UserUpdate, UserCreate, UserUpdateAdmin, UserReadAdmin, UserSettingSchema
 from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
-from utils.admin import create_user
 
 router = APIRouter()
 
@@ -22,17 +21,18 @@ router.include_router(
 #     tags=["auth"],
 # )
 
-@router.post("/auth/register", tags=["auth"])
+@router.post("/auth/register", response_model=UserReadAdmin, tags=["auth"])
 async def register(
         request: Request,
         user_create: UserCreate,
         _user: User = Depends(current_super_user),
 ):
-    created_user = await create_user(
-        user_create, safe=False, request=request
-    )
-
-    return UserRead.from_orm(created_user)
+    """注册时不能指定setting，使用默认setting"""
+    async with get_async_session_context() as session:
+        async with get_user_db_context(session) as user_db:
+            async with get_user_manager_context(user_db) as user_manager:
+                user = await user_manager.create(user_create, safe=False, request=request)
+                return UserReadAdmin.from_orm(user)
 
 
 @router.get("/user", tags=["user"])
