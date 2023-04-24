@@ -72,6 +72,15 @@ class UserSettingSchema(BaseModel):
         getter_dict = UserSettingGetterDict
 
 
+class UserCreate(schemas.BaseUserCreate):
+    username: str
+    nickname: str
+    email: EmailStr
+    avatar: str | None
+    remark: str | None
+    # setting: UserSettingSchema = UserSettingSchema.default()
+
+
 class UserRead(schemas.BaseUser[int]):
     id: int
     username: str
@@ -100,15 +109,6 @@ class UserUpdate(schemas.BaseUserUpdate):
 class UserUpdateAdmin(UserUpdate):
     username: str | None
     remark: str | None
-
-
-class UserCreate(schemas.BaseUserCreate):
-    username: str
-    nickname: str
-    email: EmailStr
-    avatar: str | None
-    remark: str | None
-    setting: UserSettingSchema = UserSettingSchema.default()
 
 
 class RevConversationSchema(BaseModel):
