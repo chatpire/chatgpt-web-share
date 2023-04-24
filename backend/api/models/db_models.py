@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
 
+from api.models.pydantic_type import Pydantic
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels
 from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
 
@@ -49,8 +50,8 @@ class UserSetting(Base):
     # ChatGPT 账号相关
     can_use_revchatgpt: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用chatgpt账号对话")
     revchatgpt_available_models: Mapped[List[str]] = mapped_column(JSON, comment="chatgpt账号可用的模型")
-    revchatgpt_ask_limits: Mapped[RevChatAskLimits] = mapped_column(JSON, comment="chatgpt账号对话限制")
-    revchatgpt_time_limits: Mapped[RevChatTimeLimits] = mapped_column(JSON, comment="chatgpt账号时间频率限制")
+    revchatgpt_ask_limits: Mapped[RevChatAskLimits] = mapped_column(Pydantic(RevChatAskLimits), comment="chatgpt账号对话限制")
+    revchatgpt_time_limits: Mapped[RevChatTimeLimits] = mapped_column(Pydantic(RevChatTimeLimits), comment="chatgpt账号时间频率限制")
 
     # OpenAI API 相关
     can_use_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用服务端OpenAI API")

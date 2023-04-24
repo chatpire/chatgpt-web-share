@@ -1,4 +1,3 @@
-import asyncio
 import contextlib
 from typing import AsyncGenerator
 
@@ -11,7 +10,6 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from alembic.config import Config as AlembicConfig
 from alembic import command
 
-import api.globals as g
 from api.conf import Config
 from api.models import Base, User
 
