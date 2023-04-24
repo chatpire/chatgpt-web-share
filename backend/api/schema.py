@@ -1,12 +1,29 @@
 import datetime
 import uuid
+from typing import Any
 
 from fastapi_users import schemas
 from pydantic import BaseModel, validator, EmailStr
+from pydantic.utils import GetterDict
 
 from api.conf.config_model import ChatGPTSetting, Credentials
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels
 from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
+
+
+class UserSettingGetterDict(GetterDict):
+    def get(self, key: Any, default: Any = None) -> Any:
+        if key == "revchatgpt_available_models":
+            if getattr(self._obj, key):
+                return [RevChatModels(m) for m in getattr(self._obj, key) if m in RevChatModels.values()]
+            else:
+                return []
+        elif key == "openai_api_available_models":
+            if getattr(self._obj, key):
+                return [ApiChatModels(m) for m in getattr(self._obj, key) if m in ApiChatModels.values()]
+            else:
+                return []
+        return super().get(key, default)
 
 
 class UserSettingSchema(BaseModel):
@@ -52,6 +69,7 @@ class UserSettingSchema(BaseModel):
 
     class Config:
         orm_mode = True
+        getter_dict = UserSettingGetterDict
 
 
 class UserRead(schemas.BaseUser[int]):
