@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 
 import requests
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from httpx import HTTPError
 from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, func, and_
@@ -16,8 +16,8 @@ from api.database import get_async_session_context
 from api.enums import RevChatStatus, RevChatModels
 from api.models import RevConversation, User
 from api.routers.conv import _get_conversation_by_id
-from api.schema import UserSettingSchema, UserReadAdmin
-from api.users import websocket_auth
+from api.schema import UserSettingSchema, UserReadAdmin, RevConversationSchema
+from api.users import websocket_auth, current_active_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -32,6 +32,12 @@ async def change_user_chat_status(user_id: int, status: RevChatStatus):
         await session.commit()
         await session.refresh(user)
     return user
+
+
+@router.get("/chat/avaliable-models", tags=["chat"])
+async def get_avaliable_models(_user: User = Depends(current_active_user)):
+    # TODO 允许设置全局可用模型
+    return [model.value for model in RevChatModels]
 
 
 @router.websocket("/chat")
@@ -257,10 +263,11 @@ async def ask_revchatgpt(websocket: WebSocket):
                         logger.warning(e)
                     finally:
                         current_time = datetime.utcnow()
-                        conversation = RevConversation(conversation_id=conversation_id, title=new_title,
-                                                       user_id=user.id,
-                                                       model_name=model_name, created_time=current_time,
-                                                       active_time=current_time)
+                        rev_conversation = RevConversationSchema(
+                            conversation_id=conversation_id, title=new_title, user_id=user.id,
+                            model_name=model_name, created_time=current_time, active_time=current_time
+                        )
+                        conversation = RevConversation(**rev_conversation.dict())
                         session.add(conversation)
                 # 更新 conversation
                 if not is_new_conv:

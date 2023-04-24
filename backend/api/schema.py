@@ -13,27 +13,42 @@ from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
 class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
-    can_use_revchatgpt: bool = True
-    revchatgpt_available_models: list[str] = [RevChatModels.default.value, RevChatModels.gpt4.value]
-    revchatgpt_ask_limits: RevChatAskLimits = RevChatAskLimits()
-    revchatgpt_time_limits: RevChatTimeLimits = RevChatTimeLimits()
-    can_use_openai_api: bool = True
-    openai_api_credits: float = 0.0
-    openai_api_available_models: list[str] = [ApiChatModels.gpt3]
-    can_use_custom_openai_api: bool = True
+    can_use_revchatgpt: bool
+    revchatgpt_available_models: list[RevChatModels]
+    revchatgpt_ask_limits: RevChatAskLimits
+    revchatgpt_time_limits: RevChatTimeLimits
+    can_use_openai_api: bool
+    openai_api_credits: float
+    openai_api_available_models: list[ApiChatModels]
+    can_use_custom_openai_api: bool
     custom_openai_api_key: str | None
+
+    @staticmethod
+    def default():
+        return UserSettingSchema(
+            can_use_revchatgpt=True,
+            revchatgpt_available_models=[RevChatModels.default, RevChatModels.gpt4],
+            revchatgpt_ask_limits=RevChatAskLimits.default(),
+            revchatgpt_time_limits=RevChatTimeLimits.default(),
+            can_use_openai_api=True,
+            openai_api_credits=0.0,
+            openai_api_available_models=[m.value for m in ApiChatModels],
+            can_use_custom_openai_api=True,
+            custom_openai_api_key=None,
+        )
 
     @staticmethod
     def unlimited():
         return UserSettingSchema(
             can_use_revchatgpt=True,
-            revchatgpt_available_models=[m.value for m in RevChatModels],
+            revchatgpt_available_models=[m for m in RevChatModels],
             revchatgpt_ask_limits=RevChatAskLimits.unlimited(),
             revchatgpt_time_limits=RevChatTimeLimits.unlimited(),
             can_use_openai_api=True,
             openai_api_credits=-1,
-            openai_api_available_models=[m.value for m in ApiChatModels],
+            openai_api_available_models=[m for m in ApiChatModels],
             can_use_custom_openai_api=True,
+            custom_openai_api_key=None
         )
 
     class Config:
@@ -76,7 +91,7 @@ class UserCreate(schemas.BaseUserCreate):
     email: EmailStr
     avatar: str | None
     remark: str | None
-    setting: UserSettingSchema = UserSettingSchema()
+    setting: UserSettingSchema = UserSettingSchema.default()
 
 
 class RevConversationSchema(BaseModel):
@@ -84,7 +99,7 @@ class RevConversationSchema(BaseModel):
     conversation_id: uuid.UUID | None
     title: str | None
     user_id: int | None
-    is_valid: bool | None
+    is_valid: bool = True
     model_name: RevChatModels | None
     created_time: datetime.datetime | None
     active_time: datetime.datetime | None
