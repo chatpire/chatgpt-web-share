@@ -1,7 +1,6 @@
 from fastapi import Depends, APIRouter
 
 import api.revchatgpt
-from api import globals as g
 from api.models import User
 from api.routers.system import check_users
 from api.schema import ServerStatusSchema

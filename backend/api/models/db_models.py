@@ -1,15 +1,13 @@
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi_users_db_sqlalchemy import Integer, GUID, UUID_ID
+from fastapi_users_db_sqlalchemy import Integer
 from sqlalchemy import String, DateTime, Enum, Boolean, Float, ForeignKey, JSON, func
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
-from api.models.pydantic_type import Pydantic
-from api.enums import RevChatStatus, RevChatModels, ApiChatModels
+from api.enums import RevChatStatus, RevChatModels
 from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
+from api.models.pydantic_type import Pydantic
 
 
 # declarative base class

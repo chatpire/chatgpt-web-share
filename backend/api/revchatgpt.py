@@ -1,9 +1,10 @@
-import api.globals as g
+import asyncio
+
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
-import asyncio
-from api.enums import RevChatModels
+
 from api.conf import Config
+from api.enums import RevChatModels
 from utils.conv import get_model_name_from_conv
 
 _config = Config().get_config()

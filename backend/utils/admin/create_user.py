@@ -1,10 +1,7 @@
-from sqlalchemy import select
-
-import api.exceptions
-from api.models import User, UserSetting
+from api.database import get_user_db_context, get_async_session_context
+from api.models import UserSetting
 from api.schema import UserCreate
 from api.users import get_user_manager_context
-from api.database import get_user_db_context, get_async_session_context
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

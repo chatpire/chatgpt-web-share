@@ -16,7 +16,7 @@ from api.database import get_async_session_context
 from api.enums import RevChatStatus, RevChatModels
 from api.models import RevConversation, User
 from api.routers.conv import _get_conversation_by_id
-from api.schema import UserSettingSchema, UserReadAdmin, RevConversationSchema
+from api.schema import RevConversationSchema
 from api.users import websocket_auth, current_active_user
 from utils.logger import get_logger
 

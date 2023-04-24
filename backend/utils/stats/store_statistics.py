@@ -1,10 +1,9 @@
-from collections import OrderedDict, deque
+import json
+import os
+from collections import deque
 
 import api.globals as g
 from api.conf import Config
-import json
-import os
-
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

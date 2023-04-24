@@ -6,14 +6,12 @@ from fastapi import Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi_users.router import ErrorCode
+from pydantic.generics import GenericModel
+from revChatGPT.typings import Error as revChatGPTError
 from starlette.background import BackgroundTask
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.responses import JSONResponse
-
-from pydantic.generics import GenericModel
 
 from api.exceptions import SelfDefinedException
-from revChatGPT.typings import Error as revChatGPTError
 
 T = TypeVar('T')
 

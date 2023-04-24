@@ -3,17 +3,16 @@ from typing import List
 import httpx
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
+from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, and_, delete
-import api.revchatgpt
 
+import api.revchatgpt
 from api.database import get_async_session_context
-from api.enums import RevChatModels
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
 from api.models import User, RevConversation
+from api.response import response
 from api.schema import RevConversationSchema
 from api.users import current_active_user, current_super_user
-from revChatGPT.typings import Error as revChatGPTError
-from api.response import response
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

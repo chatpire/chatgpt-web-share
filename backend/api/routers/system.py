@@ -1,14 +1,12 @@
-import os
 import random
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
 import api.enums
 import api.globals as g
 from api.conf import Config
-from api.conf.config_model import ChatGPTSetting
 from api.database import get_async_session_context
 from api.enums import RevChatStatus
 from api.models import User, RevConversation

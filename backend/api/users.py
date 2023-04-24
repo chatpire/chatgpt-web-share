@@ -1,27 +1,20 @@
 import contextlib
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID, schemas
+from fastapi_users.authentication import CookieTransport, AuthenticationBackend, JWTStrategy
+from fastapi_users.models import UP
+from sqlalchemy import select, Integer
 from starlette.websockets import WebSocket
 
 import api.exceptions
-import api.globals as g
-
-from typing import Optional
-
-from fastapi import Depends, Request, HTTPException
-from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID, schemas
-from fastapi_users.authentication import CookieTransport, AuthenticationBackend
-from fastapi_users.authentication import JWTStrategy
-
+from api.conf import Config
 from api.database import get_user_db, get_async_session_context, get_user_db_context
 from api.models import User
-
-from sqlalchemy import select, Integer
-from fastapi_users.models import UP
 from utils.logger import get_logger
-from api.conf import Config
 
 logger = get_logger(__name__)
 config = Config().get_config()

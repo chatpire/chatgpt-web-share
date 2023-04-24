@@ -1,9 +1,8 @@
-import uuid
 import datetime
-from typing import List, Optional
+import uuid
 
 from fastapi_users import schemas
-from pydantic import Field, BaseModel, validator, EmailStr
+from pydantic import BaseModel, validator, EmailStr
 
 from api.conf.config_model import ChatGPTSetting, Credentials
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels

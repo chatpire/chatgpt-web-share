@@ -1,17 +1,13 @@
-from typing import Union
-
+from fastapi import APIRouter, Depends
 from sqlalchemy.future import select
 from starlette.requests import Request
-from pydantic import BaseModel
+
 from api.database import get_async_session_context, get_user_db_context
-from api.exceptions import AuthorityDenyException, InvalidParamsException, UserNotExistException
-from api.models import User, UserSetting
-from api.response import response
+from api.exceptions import UserNotExistException
+from api.models import User
 from api.schema import UserRead, UserUpdate, UserCreate, UserUpdateAdmin, UserReadAdmin, UserSettingSchema
 from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
 from utils.admin import create_user
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi_users import exceptions
 
 router = APIRouter()
 
