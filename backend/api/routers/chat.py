@@ -16,6 +16,7 @@ from api.database import get_async_session_context
 from api.enums import RevChatStatus, RevChatModels
 from api.models import RevConversation, User
 from api.routers.conv import _get_conversation_by_id
+from api.schema import UserSettingSchema, UserReadAdmin
 from api.users import websocket_auth
 from utils.logger import get_logger
 
@@ -46,12 +47,12 @@ async def ask_revchatgpt(websocket: WebSocket):
 
     await websocket.accept()
     user = await websocket_auth(websocket)
-    logger.debug(f"{user.username} connected to websocket")
-    websocket.scope["auth_user"] = user
-
     if user is None:
         await websocket.close(1008, "errors.unauthorized")
         return
+
+    logger.debug(f"{user.username} connected to websocket")
+    websocket.scope["auth_user"] = user
 
     if user.rev_chat_status != RevChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
@@ -92,11 +93,14 @@ async def ask_revchatgpt(websocket: WebSocket):
     # 判断是否能新建对话，以及是否能继续提问
     async with get_async_session_context() as session:
         user_conversations_count = await session.execute(
-            select(func.count(RevConversation.id)).filter(and_(RevConversation.user_id == user.id, RevConversation.is_valid))).scalar()
-        
+            select(func.count(RevConversation.id)).filter(
+                and_(RevConversation.user_id == user.id, RevConversation.is_valid)))
+        user_conversations_count = user_conversations_count.scalar()
+
+        # user_setting = UserSettingSchema.from_orm(user.setting)
         max_conv_count = user.setting.revchatgpt_ask_limits.max_conv_count
-        total_ask_count = user.setting.revchatgpt_ask_limits.total_count
         model_ask_count = user.setting.revchatgpt_ask_limits.per_model_count.get(model_name.value, -1)
+        total_ask_count = user.setting.revchatgpt_ask_limits.total_count
         if is_new_conv and max_conv_count != -1 and user_conversations_count >= max_conv_count:
             await websocket.close(1008, "errors.maxConversationCountReached")
             return
@@ -141,8 +145,9 @@ async def ask_revchatgpt(websocket: WebSocket):
                 })
                 ask_start_time = time.time()
                 api.revchatgpt.chatgpt_manager.reset_chat()
-                async for data in api.revchatgpt.chatgpt_manager.ask_revchatgpt(message, conversation_id, parent_id, timeout,
-                                                                                model_name):
+                async for data in api.revchatgpt.chatgpt_manager.ask(message, conversation_id, parent_id,
+                                                                     timeout,
+                                                                     model_name):
                     has_got_reply = True
                     reply = {
                         "type": "message",
@@ -254,7 +259,7 @@ async def ask_revchatgpt(websocket: WebSocket):
                         current_time = datetime.utcnow()
                         conversation = RevConversation(conversation_id=conversation_id, title=new_title,
                                                        user_id=user.id,
-                                                       model_name=model_name, create_time=current_time,
+                                                       model_name=model_name, created_time=current_time,
                                                        active_time=current_time)
                         session.add(conversation)
                 # 更新 conversation
