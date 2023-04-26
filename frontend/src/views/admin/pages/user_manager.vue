@@ -21,8 +21,8 @@
       pageSize: 20,
     }"
   />
-  <n-drawer v-if="drawer.show.value" v-model:show="drawer.show.value" :width="sm ? '50%' : '80%'" :placement="'right'" closable>
-    <n-drawer-content :title="drawer.title.value">
+  <n-drawer v-if="drawer.show.value" v-model:show="drawer.show.value" :width="sm ? '50%' : '80%'" :placement="'right'">
+    <n-drawer-content closable :title="drawer.title.value" :native-scrollbar="false">
       <CreateUserForm v-if="drawer.name.value == 'create'" @save="handleCreateUser" />
       <UpdateUserBasicForm
         v-else-if="drawer.name.value == 'updateBasic'"
@@ -49,7 +49,7 @@ import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUse
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
 import { getCountTrans, getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
-import { screenWidthGreaterThan as wgt } from '@/utils/screen';
+import { screenWidthGreaterThan } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
 import CreateUserForm from '../components/CreateUserForm.vue';
@@ -58,7 +58,7 @@ import UpdateUserSettingForm from '../components/UpdateUserSettingForm.vue';
 
 const { t } = useI18n();
 
-const sm = wgt('sm');
+const sm = screenWidthGreaterThan('sm');
 
 const data = ref<Array<UserReadAdmin>>([]);
 
@@ -156,8 +156,9 @@ const columns: DataTableColumns<UserReadAdmin> = [
     title: t('commons.actions'),
     key: 'actions',
     fixed: 'right',
+    width: '120px',
     render(row) {
-      return h('div', { class: 'flex justify-start space-x-2 w-20 mx-1' }, [
+      return h('div', { class: 'w-full flex flex-row justify-center space-x-2' }, [
         // 删除
         h(
           NButton,

@@ -1,71 +1,110 @@
 <template>
-  <n-form
-    v-if="userSetting"
-    ref="settingFormRef"
-    :rules="rules"
-    label-placement="left"
-    label-align="left"
-    label-width="170px"
-    :style="{
-      maxWidth: '640px',
-    }"
-    class="mt-2"
-  >
-    <n-h3>{{ t('commons.revchatgptSettings') }}</n-h3>
-    <n-form-item :label="t('labels.can_use_revchatgpt')" path="can_use_revchatgpt">
-      <n-switch v-model:value="userSetting.can_use_revchatgpt" placeholder="" />
-    </n-form-item>
-    <n-form-item :label="t('labels.revchatgpt_ask_limits.max_conv_count')" path="max_conv_count">
-      <n-input-number
-        v-model:value="userSetting.revchatgpt_ask_limits!.max_conv_count"
-        :parse="parseValue"
-        :format="formatValue"
-      />
-    </n-form-item>
-    <n-form-item :label="t('labels.revchatgpt_ask_limits.total_count')" path="revchatgpt_ask_limits.total_count">
-      <n-input-number
-        v-model:value="userSetting.revchatgpt_ask_limits!.total_count"
-        :parse="parseValue"
-        :format="formatValue"
-      />
-    </n-form-item>
-    <n-form-item :label="t('labels.revchatgpt_available_models')" path="revchatgpt_available_models">
-      <n-checkbox-group v-model:value="userSetting.revchatgpt_available_models">
-        <n-space item-style="display: flex;">
-          <n-checkbox v-for="m in revChatModelNames" :key="m" :value="m" :label="getRevChatModelNameTrans(m)" />
-        </n-space>
-      </n-checkbox-group>
-    </n-form-item>
-    <n-form-item
-      v-for="m in revChatModelLimitNames"
-      :key="m"
-      :label="t('labels.revchatgpt_ask_limits.per_model_count', [getRevChatModelNameTrans(m)])"
-    >
-      <n-input-number
-        v-model:value="userSetting.revchatgpt_ask_limits!.per_model_count[m]"
-        :parse="parseValue"
-        :format="formatValue"
-      />
-    </n-form-item>
-    <n-divider />
-  </n-form>
-  <n-button type="primary" @click="handleSave">
-    {{ t('commons.submit') }}
-  </n-button>
+  <n-tabs type="line">
+    <n-tab-pane name="revchatgpt" :tab="t('commons.revchatgptSettings')">
+      <n-form
+        v-if="userSetting"
+        :rules="rules"
+        label-placement="left"
+        label-align="left"
+        :label-width="sm ? '180px' : '120px'"
+        class="mt-2"
+      >
+        <n-form-item :label="t('labels.can_use_revchatgpt')" path="can_use_revchatgpt">
+          <n-switch v-model:value="userSetting.can_use_revchatgpt" placeholder="" />
+        </n-form-item>
+        <n-form-item :label="t('labels.revchatgpt_ask_limits.max_conv_count')" path="max_conv_count">
+          <n-input-number
+            v-model:value="userSetting.revchatgpt_ask_limits!.max_conv_count"
+            :parse="parseValue"
+            :format="formatValue"
+          />
+        </n-form-item>
+        <n-form-item :label="t('labels.revchatgpt_ask_limits.total_count')" path="revchatgpt_ask_limits.total_count">
+          <n-input-number
+            v-model:value="userSetting.revchatgpt_ask_limits!.total_count"
+            :parse="parseValue"
+            :format="formatValue"
+          />
+        </n-form-item>
+        <n-form-item :label="t('labels.revchatgpt_available_models')" path="revchatgpt_available_models">
+          <n-checkbox-group v-model:value="userSetting.revchatgpt_available_models">
+            <n-space item-style="display: flex;">
+              <n-checkbox v-for="m in revChatModelNames" :key="m" :value="m" :label="getRevChatModelNameTrans(m)" />
+            </n-space>
+          </n-checkbox-group>
+        </n-form-item>
+        <n-form-item
+          v-for="m in revChatModelNames"
+          :key="m"
+          :label="t('labels.revchatgpt_ask_limits.per_model_count', [getRevChatModelNameTrans(m)])"
+        >
+          <n-input-number
+            v-model:value="userSetting.revchatgpt_ask_limits!.per_model_count[m]"
+            :disabled="!userSetting.revchatgpt_available_models?.includes(m)"
+            :parse="parseValue"
+            :format="formatValue"
+          />
+        </n-form-item>
+      </n-form>
+    </n-tab-pane>
+    <n-tab-pane name="api" :tab="t('commons.openaiApiSettings')">
+      <n-form
+        v-if="userSetting"
+        :rules="rules"
+        label-placement="left"
+        label-align="left"
+        :label-width="sm ? '180px' : '120px'"
+        class="mt-2"
+      >
+        <n-form-item :label="t('labels.can_use_openai_api')" path="can_use_openai_api">
+          <n-switch v-model:value="userSetting.can_use_openai_api" placeholder="" />
+        </n-form-item>
+        <n-form-item path="openai_api_credits">
+          <template #label>
+            {{ t('labels.openai_api_credits') }}
+            <!-- <HelpTooltip>
+              {{ t('helps.openai_api_credits') }}
+            </HelpTooltip> -->
+          </template>
+          <n-input-number
+            v-model:value="userSetting.openai_api_credits"
+            :parse="parseValue"
+            :format="formatValue"
+            :step="10"
+          />
+        </n-form-item>
+        <n-form-item :label="t('labels.openai_api_available_models')" path="openai_api_available_models">
+          <n-checkbox-group v-model:value="userSetting.openai_api_available_models">
+            <n-space item-style="display: flex;">
+              <n-checkbox v-for="m in apiChatModelNames" :key="m" :value="m" :label="getApiChatModelNameTrans(m)" />
+            </n-space>
+          </n-checkbox-group>
+        </n-form-item>
+      </n-form>
+    </n-tab-pane>
+  </n-tabs>
+  <div class="flex flex-row space-x-4">
+    <n-button type="primary" @click="handleSave">
+      {{ t('commons.submit') }}
+    </n-button>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { HelpRound } from '@vicons/material';
 import { FormRules } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 
-import { getUserByIdApi } from '@/api/user';
+import HelpTooltip from '@/components/HelpTooltip.vue';
 import { i18n } from '@/i18n';
 import { UserReadAdmin, UserSettingSchema } from '@/types/schema';
-import { getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
+import { apiChatModelNames,getApiChatModelNameTrans, getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
+import { screenWidthGreaterThan } from '@/utils/screen';
 const t = i18n.global.t as any;
 
+const sm = screenWidthGreaterThan('sm');
 const props = defineProps<{
-  user: UserReadAdmin | null
+  user: UserReadAdmin | null;
 }>();
 
 const emits = defineEmits<{
@@ -93,7 +132,7 @@ const userSetting = ref<Partial<UserSettingSchema> | null>(null);
 watch(
   () => props.user,
   async (user) => {
-    if (!user ) {
+    if (!user) {
       return;
     }
     userSetting.value = user.setting;
@@ -101,12 +140,12 @@ watch(
     for (const m of revChatModelNames) {
       if (userSetting.value.revchatgpt_available_models!.includes(m)) {
         if (userSetting.value.revchatgpt_ask_limits!.per_model_count[m] == undefined) {
-            userSetting.value.revchatgpt_ask_limits!.per_model_count[m] = 0;
+          userSetting.value.revchatgpt_ask_limits!.per_model_count[m] = 0;
         }
       }
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const revChatModelLimitNames = computed(() => {

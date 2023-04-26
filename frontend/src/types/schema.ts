@@ -10,6 +10,7 @@ export type RevConversationSchema = components['schemas']['RevConversationSchema
 export type ServerStatusSchema = components['schemas']['ServerStatusSchema'];
 export type RevChatStatus = components['schemas']['RevChatStatus'];
 export type RevChatModels = components['schemas']['RevChatModels'];
+export type ApiChatModels = components['schemas']['ApiChatModels'];
 
 export type SystemInfo = components['schemas']['SystemInfo'];
 export type RequestStatistics = components['schemas']['RequestStatistics'];

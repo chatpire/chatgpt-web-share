@@ -125,9 +125,11 @@
     "keepEmptyIfNotChange": "不更改则留空",
     "disabled": "禁用",
     "createUser": "创建新用户",
-    "revchatgptSettings": "ChatGPT账号设置",
+    "revchatgptSettings": "ChatGPT 账号选项",
     "updateUserBasic": "更新用户基本信息",
-    "updateUserSetting": "更新用户设置"
+    "updateUserSetting": "更新用户设置",
+    "openaiApiSettings": "OpenAI API 选项",
+    "gpt3TurboModel": "GPT-3.5"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -228,6 +230,9 @@
       "per_model_count": "{0} 模型可用次数"
     },
     "remark": "备注",
-    "revchatgpt_available_models": "可用模型"
+    "revchatgpt_available_models": "可用模型",
+    "can_use_openai_api": "允许使用 OpenAI API",
+    "openai_api_credits": "OpenAI API 积分余额",
+    "openai_api_available_models": "可用模型"
   }
 }
