@@ -209,7 +209,7 @@
     "available_gpt4_ask_count": "Available GPT-4 ask count",
     "is_plus_account": "is_plus_account",
     "ask_timeout": "ask_timeout",
-    "can_use_revchatgpt": "Can use ChatGPT accounts",
+    "can_use_revchatgpt": "Allow using revChatGPT",
     "remark": "remark"
   }
 }

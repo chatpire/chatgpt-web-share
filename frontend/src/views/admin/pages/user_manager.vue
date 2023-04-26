@@ -12,7 +12,7 @@
     </n-button>
   </div>
   <n-data-table
-    :scroll-x="1400"
+    :scroll-x="1600"
     size="small"
     :columns="columns"
     :data="data"
@@ -24,7 +24,7 @@
   <n-drawer
     v-if="showUpdateUserDrawer"
     v-model:show="showUpdateUserDrawer"
-    :width="'50%'"
+    :width="sm ? '50%' : '80%'"
     :placement="'right'"
     closable
   >
@@ -55,12 +55,15 @@ import { useI18n } from 'vue-i18n';
 import { deleteUserApi, getAllUserApi } from '@/api/user';
 import { chatStatusMap, UserReadAdmin } from '@/types/schema';
 import { getCountTrans, getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
+import { screenWidthGreaterThan as wgt } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserForm from '../components/UpdateUserForm.vue';
 
 const { t } = useI18n();
+
+const sm = wgt('sm');
 
 const data = ref<Array<UserReadAdmin>>([]);
 
