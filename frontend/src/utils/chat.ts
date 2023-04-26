@@ -5,8 +5,8 @@ const t = i18n.global.t as any;
 
 export const revChatModelNames: RevChatModels[] = [
   'text-davinci-002-render-sha',
-  'text-davinci-002-render-paid',
   'gpt-4',
+  'text-davinci-002-render-paid',
 ];
 
 export const revChatModelNameMap: Record<RevChatModels, string> = {

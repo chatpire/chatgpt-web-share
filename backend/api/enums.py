@@ -18,9 +18,9 @@ class RevChatStatus(Enum):
 
 
 class RevChatModels(Enum):
-    gpt4 = "gpt-4"
     default = "text-davinci-002-render-sha"
-    paid = "text-davinci-002-render-paid"
+    gpt4 = "gpt-4"
+    legacy = "text-davinci-002-render-paid"
 
 
 class ApiChatModels(Enum):

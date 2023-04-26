@@ -124,7 +124,8 @@
     "remark": "备注（用户不可见）",
     "keepEmptyIfNotChange": "不更改则留空",
     "disabled": "禁用",
-    "createUser": "创建新用户"
+    "createUser": "创建新用户",
+    "revchatgptSettings": "ChatGPT账号设置"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -216,11 +217,13 @@
     "available_gpt4_ask_count": "剩余GPT-4可询问次数",
     "is_plus_account": "是否为Plus账号",
     "ask_timeout": "对话超时时间",
-    "can_use_revchatgpt": "允许使用ChatGPT账号",
+    "can_use_revchatgpt": "允许使用 ChatGPT 账号",
     "revchatgpt_ask_limits": {
-      "total_count": "ChatGPT账号总可用次数"
+      "total_count": "可用总对话次数",
+      "max_conv_count": "最大对话数量",
+      "per_model_count": "{0} 模型可用次数"
     },
     "remark": "备注",
-    "revchatgpt_available_models": "ChatGPT账号允许模型"
+    "revchatgpt_available_models": "可用模型"
   }
 }

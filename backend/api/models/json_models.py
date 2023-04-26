@@ -18,6 +18,7 @@ class RevChatAskLimits(BaseModel):
             per_model_count={
                 RevChatModels.default: 0,
                 RevChatModels.gpt4: 0,
+                RevChatModels.legacy: 0,
             })
 
     @staticmethod
@@ -28,6 +29,7 @@ class RevChatAskLimits(BaseModel):
             per_model_count={
                 RevChatModels.default: -1,
                 RevChatModels.gpt4: -1,
+                RevChatModels.legacy: -1,
             })
 
 

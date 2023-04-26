@@ -29,7 +29,7 @@
     closable
   >
     <n-drawer-content :title="t('commons.updateUser')">
-      <UpdateUserForm :user-id="currentUserId" @save="triggerCloseUserSettingDrawer" />
+      <UpdateUserForm :user-id="currentUserId" :init-tab="updateUserFormTab" @save="triggerCloseUserSettingDrawer" />
     </n-drawer-content>
   </n-drawer>
   <n-drawer
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { Pencil, TrashOutline } from '@vicons/ionicons5';
-import { RefreshFilled } from '@vicons/material';
+import { RefreshFilled, SettingsRound } from '@vicons/material';
 import { DataTableColumns, NButton, NIcon } from 'naive-ui';
 import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -67,6 +67,7 @@ const data = ref<Array<UserReadAdmin>>([]);
 const currentUserId = ref<number>(0);
 const showUpdateUserDrawer = ref(false);
 const showCreateUserDrawer = ref(false);
+const updateUserFormTab = ref<string>('basic');
 
 const refreshData = () => {
   getAllUserApi().then((res) => {
@@ -80,18 +81,9 @@ getAllUserApi().then((res) => {
 });
 
 const columns: DataTableColumns<UserReadAdmin> = [
-  {
-    title: '#',
-    key: 'id',
-  },
-  {
-    title: t('commons.username'),
-    key: 'username',
-  },
-  {
-    title: t('commons.nickname'),
-    key: 'nickname',
-  },
+  { title: '#', key: 'id' },
+  { title: t('commons.username'), key: 'username' },
+  { title: t('commons.nickname'), key: 'nickname' },
   {
     title: t('commons.status'),
     key: 'rev_chat_status',
@@ -150,10 +142,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
       }
     },
   },
-  {
-    title: t('commons.email'),
-    key: 'email',
-  },
+  { title: t('commons.email'), key: 'email' },
   {
     title: t('commons.isSuperuser'),
     key: 'is_superuser',
@@ -173,79 +162,72 @@ const columns: DataTableColumns<UserReadAdmin> = [
     key: 'actions',
     fixed: 'right',
     render(row) {
-      return h(
-        'div',
-        {
-          class: 'flex justify-start space-x-2',
-        },
-        [
-          h(
-            NButton,
-            {
-              size: 'small',
-              type: 'error',
-              circle: true,
-              secondary: true,
-              onClick: () => {
-                const d = Dialog.warning({
-                  title: t('commons.deleteUser'),
-                  content: t('tips.deleteUserConfirm'),
-                  positiveText: t('commons.confirm'),
-                  negativeText: t('commons.cancel'),
-                  onPositiveClick: () => {
-                    d.loading = true;
-                    return new Promise((resolve, reject) => {
-                      deleteUserApi(row.id)
-                        .then(() => {
-                          Message.success(t('tips.deleteUserSuccess'));
-                          getAllUserApi().then((res) => {
-                            data.value = res.data;
-                          });
-                          resolve(true);
-                        })
-                        .catch((err) => {
-                          Message.error(t('tips.deleteUserFailed') + ': ' + err);
-                          reject(err);
-                        })
-                        .finally(() => {
-                          d.loading = false;
-                        });
-                    });
-                  },
-                });
-              },
-            },
-            {
-              icon: () =>
-                h(NIcon, null, {
-                  default: () => h(TrashOutline),
-                }),
-            }
-          ),
-          h(
-            NButton,
-            {
-              size: 'small',
-              type: 'primary',
-              circle: true,
-              secondary: true,
-              onClick: triggerShowUserSettingDrawer(row),
-            },
-            {
-              icon: () =>
-                h(NIcon, null, {
-                  default: () => h(Pencil),
-                }),
-            }
-          ),
-        ]
-      );
+      return h('div', { class: 'flex justify-start space-x-2 w-20 mx-1' }, [
+        // 删除
+        h(
+          NButton,
+          { size: 'small', type: 'error', circle: true, secondary: true, onClick: () => handleDeleteUser(row) },
+          { icon: () => h(NIcon, null, { default: () => h(TrashOutline) }) }
+        ),
+        h(
+          NButton,
+          {
+            size: 'small',
+            type: 'primary',
+            circle: true,
+            secondary: true,
+            onClick: triggerShowUserSettingDrawer(row, 'basic'),
+          },
+          { icon: () => h(NIcon, null, { default: () => h(Pencil) }) }
+        ),
+        h(
+          NButton,
+          {
+            size: 'small',
+            type: 'info',
+            circle: true,
+            secondary: true,
+            onClick: triggerShowUserSettingDrawer(row, 'setting'),
+          },
+          { icon: () => h(NIcon, null, { default: () => h(SettingsRound) }) }
+        ),
+      ]);
     },
   },
 ];
 
-const triggerShowUserSettingDrawer = (user: UserReadAdmin) => () => {
+const handleDeleteUser = (row: UserReadAdmin) => {
+  const d = Dialog.warning({
+    title: t('commons.deleteUser'),
+    content: t('tips.deleteUserConfirm'),
+    positiveText: t('commons.confirm'),
+    negativeText: t('commons.cancel'),
+    onPositiveClick: () => {
+      d.loading = true;
+      return new Promise((resolve, reject) => {
+        deleteUserApi(row.id)
+          .then(() => {
+            Message.success(t('tips.deleteUserSuccess'));
+            getAllUserApi().then((res) => {
+              data.value = res.data;
+            });
+            resolve(true);
+          })
+          .catch((err) => {
+            Message.error(t('tips.deleteUserFailed') + ': ' + err);
+            reject(err);
+          })
+          .finally(() => {
+            d.loading = false;
+          });
+      });
+    },
+  });
+};
+
+const triggerShowUserSettingDrawer = (user: UserReadAdmin, tab: 'basic' | 'setting') => () => {
   currentUserId.value = user.id;
+  updateUserFormTab.value = tab;
   showUpdateUserDrawer.value = true;
 };
 
