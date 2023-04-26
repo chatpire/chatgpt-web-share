@@ -41,26 +41,28 @@
             </template>
           </n-button>
         </div>
-        <!-- 回到底部按钮 -->
-        <div class="right-2 bottom-30 absolute z-20">
-          <n-button
-            secondary
-            circle
-            size="small"
-            @click="scrollToBottomSmooth"
-          >
-            <template #icon>
-              <n-icon :component="ArrowDown" />
-            </template>
-          </n-button>
-        </div>
+        
         <!-- 消息记录内容（用于全屏展示） -->
         <n-scrollbar
           v-if="currentConversationId"
           ref="historyRef"
-          class="h-0 flex-grow"
+          class="basis-0 flex-grow shrink-grow relative"
+          :style="{'overflow-y': 'scroll','-webkit-overflow-scrolling': 'touch'}"
           :content-style="loadingHistory ? { height: '100%' } : { }"
         >
+          <!-- 回到底部按钮 -->
+          <div class="right-2 bottom-5 absolute z-20">
+            <n-button
+              secondary
+              circle
+              size="small"
+              @click="scrollToBottomSmooth"
+            >
+              <template #icon>
+                <n-icon :component="ArrowDown" />
+              </template>
+            </n-button>
+          </div>
           <HistoryContent
             ref="historyContentRef"
             :messages="currentMessageListDisplay"
