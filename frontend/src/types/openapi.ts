@@ -263,10 +263,10 @@ export interface components {
       is_valid?: boolean;
       model_name?: components["schemas"]["RevChatModels"];
       /**
-       * Created Time 
+       * Create Time 
        * Format: date-time
        */
-      created_time?: string;
+      create_time?: string;
       /**
        * Active Time 
        * Format: date-time
@@ -359,10 +359,10 @@ export interface components {
        */
       active_time?: string;
       /**
-       * Created Time 
+       * Create Time 
        * Format: date-time
        */
-      created_time: string;
+      create_time: string;
       /** Avatar */
       avatar?: string;
       setting: components["schemas"]["UserSettingSchema"];
@@ -396,10 +396,10 @@ export interface components {
        */
       active_time?: string;
       /**
-       * Created Time 
+       * Create Time 
        * Format: date-time
        */
-      created_time: string;
+      create_time: string;
       /** Avatar */
       avatar?: string;
       setting: components["schemas"]["UserSettingSchema"];

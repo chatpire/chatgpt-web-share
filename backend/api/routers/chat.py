@@ -265,7 +265,7 @@ async def ask_revchatgpt(websocket: WebSocket):
                         current_time = datetime.utcnow()
                         rev_conversation = RevConversationSchema(
                             conversation_id=conversation_id, title=new_title, user_id=user.id,
-                            model_name=model_name, created_time=current_time, active_time=current_time
+                            model_name=model_name, create_time=current_time, active_time=current_time
                         )
                         conversation = RevConversation(**rev_conversation.dict())
                         session.add(conversation)

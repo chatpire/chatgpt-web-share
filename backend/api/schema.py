@@ -88,7 +88,7 @@ class UserRead(schemas.BaseUser[int]):
     email: EmailStr
     rev_chat_status: RevChatStatus
     active_time: datetime.datetime | None
-    created_time: datetime.datetime
+    create_time: datetime.datetime
     avatar: str | None
     is_superuser: bool
     is_active: bool
@@ -118,7 +118,7 @@ class RevConversationSchema(BaseModel):
     user_id: int | None
     is_valid: bool = True
     model_name: RevChatModels | None
-    created_time: datetime.datetime | None
+    create_time: datetime.datetime | None
     active_time: datetime.datetime | None
 
     class Config:

@@ -25,8 +25,8 @@ class User(Base):
     rev_chat_status: Mapped[RevChatStatus] = mapped_column(Enum(RevChatStatus), default=RevChatStatus.idling,
                                                            comment="对话状态")
     active_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="最后活跃时间")
-    created_time: Mapped[datetime] = mapped_column(DateTime(timezone=True),
-                                                   server_default=func.now(), comment="创建时间")
+    create_time: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                                  server_default=func.now(), comment="创建时间")
     avatar: Mapped[Optional[str]] = mapped_column(comment="头像")
     remark: Mapped[Optional[str]] = mapped_column(String(256), comment="仅管理员可见的备注")
     is_superuser: Mapped[bool] = mapped_column(Boolean, comment="是否是管理员")
@@ -76,5 +76,5 @@ class RevConversation(Base):
     model_name: Mapped[Optional[Enum["RevChatModels"]]] = mapped_column(
         Enum(RevChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None), default=None,
         comment="使用的模型")
-    created_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="创建时间")
+    create_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="创建时间")
     active_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="最后活跃时间")

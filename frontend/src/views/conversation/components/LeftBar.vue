@@ -72,7 +72,7 @@ const convId = computed<string | null>({
 });
 
 const menuOptions = computed(() => {
-  // 根据 created_time 降序排序
+  // 根据 create_time 降序排序
   const sorted_conversations = conversationStore.conversations
     ?.slice() // 创建一个新的数组副本
     .sort((a: RevConversationSchema, b: RevConversationSchema) => {

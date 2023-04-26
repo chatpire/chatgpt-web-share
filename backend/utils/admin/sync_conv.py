@@ -30,10 +30,10 @@ async def sync_conversations():
                         logger.info(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
                     # 同步时间
                     create_time = dateutil.parser.isoparse(openai_conv["create_time"])
-                    if create_time != conv_db.created_time:
-                        conv_db.created_time = create_time
+                    if create_time != conv_db.create_time:
+                        conv_db.create_time = create_time
                         logger.info(
-                            f"Conversation {conv_db.conversation_id} created time changed：{conv_db.created_time}")
+                            f"Conversation {conv_db.conversation_id} create time changed：{conv_db.create_time}")
                     session.add(conv_db)
                     openai_conversations_map.pop(conv_db.conversation_id)
                 else:
@@ -49,7 +49,7 @@ async def sync_conversations():
                     conversation_id=openai_conv["id"],
                     title=openai_conv["title"],
                     is_valid=True,
-                    created_time=dateutil.parser.isoparse(openai_conv["create_time"])
+                    create_time=dateutil.parser.isoparse(openai_conv["create_time"])
                 )
                 session.add(new_conv)
                 logger.info(
