@@ -46,7 +46,8 @@ module.exports = {
       "multiline": {
         "max": 1
       }
-    }]
+    }],
+    "@typescript-eslint/no-non-null-assertion": ["off"],
   },
   settings: {
     'import/parsers': {

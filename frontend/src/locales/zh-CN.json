@@ -125,7 +125,9 @@
     "keepEmptyIfNotChange": "不更改则留空",
     "disabled": "禁用",
     "createUser": "创建新用户",
-    "revchatgptSettings": "ChatGPT账号设置"
+    "revchatgptSettings": "ChatGPT账号设置",
+    "updateUserBasic": "更新用户基本信息",
+    "updateUserSetting": "更新用户设置"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -203,7 +205,9 @@
     "invalidEmail": "非法邮箱地址",
     "invalidPassword": "密码不合法：必须为大于6位的数字、字母或符号，不含空格",
     "pleaseCheckInput": "请检查输入内容",
-    "registerSuccess": "注册成功"
+    "registerSuccess": "注册成功",
+    "createSuccess": "创建成功",
+    "updateSuccess": "更新成功"
   },
   "labels": {
     "nickname": "昵称",

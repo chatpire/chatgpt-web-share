@@ -7,7 +7,7 @@
         </n-icon>
       </template>
     </n-button>
-    <n-button type="primary" @click="triggerShowCreateUserDrawer">
+    <n-button type="primary" @click="drawer.open('create', null)">
       {{ $t('commons.addUser') }}
     </n-button>
   </div>
@@ -21,26 +21,19 @@
       pageSize: 20,
     }"
   />
-  <n-drawer
-    v-if="showUpdateUserDrawer"
-    v-model:show="showUpdateUserDrawer"
-    :width="sm ? '50%' : '80%'"
-    :placement="'right'"
-    closable
-  >
-    <n-drawer-content :title="t('commons.updateUser')">
-      <UpdateUserForm :user-id="currentUserId" :init-tab="updateUserFormTab" @save="triggerCloseUserSettingDrawer" />
-    </n-drawer-content>
-  </n-drawer>
-  <n-drawer
-    v-if="showCreateUserDrawer"
-    v-model:show="showCreateUserDrawer"
-    :width="'50%'"
-    :placement="'right'"
-    closable
-  >
-    <n-drawer-content :title="t('commons.createUser')">
-      <CreateUserForm @save="triggerCloseCreateUserDrawer" />
+  <n-drawer v-if="drawer.show.value" v-model:show="drawer.show.value" :width="sm ? '50%' : '80%'" :placement="'right'" closable>
+    <n-drawer-content :title="drawer.title.value">
+      <CreateUserForm v-if="drawer.name.value == 'create'" @save="handleCreateUser" />
+      <UpdateUserBasicForm
+        v-else-if="drawer.name.value == 'updateBasic'"
+        :user="currentUser"
+        @save="handleUpdateUserBasic"
+      />
+      <UpdateUserSettingForm
+        v-else-if="drawer.name.value == 'updateSetting'"
+        :user="currentUser"
+        @save="handleUpdateUserSetting"
+      />
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -52,14 +45,16 @@ import { DataTableColumns, NButton, NIcon } from 'naive-ui';
 import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { deleteUserApi, getAllUserApi } from '@/api/user';
-import { chatStatusMap, UserReadAdmin } from '@/types/schema';
+import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
+import { useDrawer } from '@/hooks/drawer';
+import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
 import { getCountTrans, getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
 import { screenWidthGreaterThan as wgt } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
 import CreateUserForm from '../components/CreateUserForm.vue';
-import UpdateUserForm from '../components/UpdateUserForm.vue';
+import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';
+import UpdateUserSettingForm from '../components/UpdateUserSettingForm.vue';
 
 const { t } = useI18n();
 
@@ -67,15 +62,12 @@ const sm = wgt('sm');
 
 const data = ref<Array<UserReadAdmin>>([]);
 
-const currentUserId = ref<number>(0);
-const showUpdateUserDrawer = ref(false);
-const showCreateUserDrawer = ref(false);
-const updateUserFormTab = ref<string>('basic');
+const currentUser = ref<UserReadAdmin | null>(null);
 
 const refreshData = () => {
   getAllUserApi().then((res) => {
     data.value = res.data;
-    // Message.success(t("tips.refreshed"));
+    Message.success(t('tips.refreshed'));
   });
 };
 
@@ -179,7 +171,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
             type: 'primary',
             circle: true,
             secondary: true,
-            onClick: triggerShowUserSettingDrawer(row, 'basic'),
+            onClick: () => drawer.open('updateBasic', row),
           },
           { icon: () => h(NIcon, null, { default: () => h(Pencil) }) }
         ),
@@ -190,7 +182,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
             type: 'info',
             circle: true,
             secondary: true,
-            onClick: triggerShowUserSettingDrawer(row, 'setting'),
+            onClick: () => drawer.open('updateSetting', row),
           },
           { icon: () => h(NIcon, null, { default: () => h(SettingsRound) }) }
         ),
@@ -198,6 +190,82 @@ const columns: DataTableColumns<UserReadAdmin> = [
     },
   },
 ];
+
+const drawer = useDrawer([
+  { name: 'create', title: t('commons.createUser') },
+  {
+    name: 'updateBasic',
+    title: t('commons.updateUserBasic'),
+    beforeOpen: (row: UserReadAdmin) => {
+      currentUser.value = JSON.parse(JSON.stringify(row));
+    },
+    afterClose: () => {
+      currentUser.value = null;
+    },
+  },
+  {
+    name: 'updateSetting',
+    title: t('commons.updateUserSetting'),
+    beforeOpen: (row: UserReadAdmin) => {
+      currentUser.value = JSON.parse(JSON.stringify(row));
+    },
+    afterClose: () => {
+      currentUser.value = null;
+    },
+  },
+]);
+
+const handleCreateUser = (userCreate: UserCreate) => {
+  registerApi(userCreate)
+    .then(() => {
+      Message.success(t('tips.createSuccess'));
+      getAllUserApi().then((res) => {
+        data.value = res.data;
+      });
+    })
+    .finally(() => {
+      drawer.close();
+    });
+};
+
+const handleUpdateUserBasic = (userUpdate: Partial<UserUpdateAdmin>) => {
+  if (!currentUser.value) return;
+  if (userUpdate.password === '') {
+    delete userUpdate.password;
+  }
+  updateUserByIdApi(currentUser.value.id, userUpdate)
+    .then((res) => {
+      Message.success(t('tips.updateSuccess'));
+      data.value = data.value.map((item) => {
+        if (item.id === res.data.id) {
+          return res.data;
+        } else {
+          return item;
+        }
+      });
+    })
+    .finally(() => {
+      drawer.close();
+    });
+};
+
+const handleUpdateUserSetting = (userSetting: Partial<UserSettingSchema>) => {
+  if (!currentUser.value) return;
+  updateUserSettingApi(currentUser.value.id, userSetting)
+    .then((res) => {
+      Message.success(t('tips.updateSuccess'));
+      data.value = data.value.map((item) => {
+        if (item.id === res.data.id) {
+          return res.data;
+        } else {
+          return item;
+        }
+      });
+    })
+    .finally(() => {
+      drawer.close();
+    });
+};
 
 const handleDeleteUser = (row: UserReadAdmin) => {
   const d = Dialog.warning({
@@ -225,30 +293,6 @@ const handleDeleteUser = (row: UserReadAdmin) => {
           });
       });
     },
-  });
-};
-
-const triggerShowUserSettingDrawer = (user: UserReadAdmin, tab: 'basic' | 'setting') => () => {
-  currentUserId.value = user.id;
-  updateUserFormTab.value = tab;
-  showUpdateUserDrawer.value = true;
-};
-
-const triggerCloseUserSettingDrawer = () => {
-  showUpdateUserDrawer.value = false;
-  getAllUserApi().then((res) => {
-    data.value = res.data;
-  });
-};
-
-const triggerShowCreateUserDrawer = () => {
-  showCreateUserDrawer.value = true;
-};
-
-const triggerCloseCreateUserDrawer = () => {
-  showCreateUserDrawer.value = false;
-  getAllUserApi().then((res) => {
-    data.value = res.data;
   });
 };
 </script>
