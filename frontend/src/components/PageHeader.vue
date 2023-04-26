@@ -3,29 +3,14 @@
     <template #title>
       <n-space :align="'center'">
         <div>
-          <a
-            href="/"
-            style="text-decoration: none; color: inherit"
-          >{{ $t('commons.siteTitle') }}</a>
+          <a href="/" style="text-decoration: none; color: inherit">{{ $t('commons.siteTitle') }}</a>
         </div>
         <div class="hidden sm:block">
-          <a
-            class="h-full inline-block flex"
-            href="https://github.com/moeakwak/chatgpt-web-share"
-            target="_blank"
-          >
-            <n-icon
-              :color="appStore.theme == 'dark' ? 'white' : 'black'"
-              :component="LogoGithub"
-            />
+          <a class="h-full inline-block flex" href="https://github.com/moeakwak/chatgpt-web-share" target="_blank">
+            <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
           </a>
         </div>
-        <n-tag
-          :bordered="false"
-          type="success"
-          size="small"
-          class="hidden sm:inline-flex"
-        >
+        <n-tag :bordered="false" type="success" size="small" class="hidden sm:inline-flex">
           {{ version }}
         </n-tag>
       </n-space>
@@ -36,46 +21,24 @@
     <template #extra>
       <n-space>
         <div class="space-x-2">
-          <div
-            v-if="userStore.user"
-            class="inline-block"
-          >
+          <div v-if="userStore.user" class="inline-block">
             <span class="hidden sm:inline mr-1">Hi, {{ userStore.user.nickname }}</span>
-            <n-dropdown
-              :options="getOptions()"
-              placement="bottom-start"
-            >
-              <n-button
-                circle
-                class="ml-2"
-              >
+            <n-dropdown :options="getOptions()" placement="bottom-start">
+              <n-button circle class="ml-2">
                 <n-icon :component="SettingsSharp" />
               </n-button>
             </n-dropdown>
           </div>
-          <div
-            v-else
-            class="text-gray-500 inline-block"
-          >
+          <div v-else class="text-gray-500 inline-block">
             {{ $t('commons.notLogin') }}
           </div>
-          <n-button
-            v-if="userStore.user?.is_superuser"
-            circle
-            @click="jumpToAdminOrConv"
-          >
+          <n-button v-if="userStore.user?.is_superuser" circle @click="jumpToAdminOrConv">
             <n-icon :component="isInAdmin ? ChatFilled : ManageAccountsFilled" />
           </n-button>
-          <n-button
-            circle
-            @click="toggleTheme"
-          >
+          <n-button circle @click="toggleTheme">
             <n-icon :component="themeIcon" />
           </n-button>
-          <n-dropdown
-            :options="languageOptions"
-            placement="bottom-start"
-          >
+          <n-dropdown :options="languageOptions" placement="bottom-start">
             <n-button circle>
               <n-icon :component="Language" />
             </n-button>
@@ -87,8 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { Language,LogoGithub, SettingsSharp } from '@vicons/ionicons5';
-import { ChatFilled,DarkModeRound, LightModeRound, ManageAccountsFilled } from '@vicons/material';
+import { Language, LogoGithub, SettingsSharp } from '@vicons/ionicons5';
+import { ChatFilled, DarkModeRound, LightModeRound, ManageAccountsFilled } from '@vicons/material';
 import { DropdownOption } from 'naive-ui';
 import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -98,7 +61,7 @@ import { useRoute } from 'vue-router';
 import chatgptIcon from '/chatgpt-icon.svg';
 import { updateUserMeApi } from '@/api/user';
 import router from '@/router';
-import { useAppStore,useUserStore } from '@/store';
+import { useAppStore, useUserStore } from '@/store';
 import { Preference } from '@/types/custom';
 import { popupResetUserPasswordDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';

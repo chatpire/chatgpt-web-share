@@ -12,4 +12,4 @@ const clearCookie = () => {
   removeCookie(COOKIE_KEY);
 };
 
-export { clearCookie,hasLoginCookie };
+export { clearCookie, hasLoginCookie };

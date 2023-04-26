@@ -9,17 +9,9 @@
   >
     <div v-if="!props.loading">
       <!-- 消息记录 -->
-      <div
-        class="flex justify-center py-4 px-4 max-w-full relative"
-        :style="{ backgroundColor: themeVars.baseColor }"
-      >
+      <div class="flex justify-center py-4 px-4 max-w-full relative" :style="{ backgroundColor: themeVars.baseColor }">
         <n-text>{{ $t('commons.currentConversationModel') }}: {{ getRevChatModelNameTrans(modelName as any) }}</n-text>
-        <n-button
-          v-if="_fullscreen"
-          class="absolute left-4 hide-in-print"
-          text
-          @click="toggleFullscreenHistory"
-        >
+        <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
           <template #icon>
             <n-icon>
               <Close />
@@ -27,11 +19,7 @@
           </template>
         </n-button>
       </div>
-      <MessageRow
-        v-for="message in messages"
-        :key="message.id"
-        :message="message"
-      />
+      <MessageRow v-for="message in messages" :key="message.id" :message="message" />
     </div>
     <n-empty
       v-else
@@ -53,7 +41,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ChatMessage } from '@/types/custom';
-import {getRevChatModelNameTrans} from '@/utils/chat';
+import { getRevChatModelNameTrans } from '@/utils/chat';
 import { getModelNameFromMessages } from '@/utils/conversation';
 import { Message } from '@/utils/tips';
 

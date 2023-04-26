@@ -220,6 +220,7 @@
     "revchatgpt_ask_limits": {
       "total_count": "ChatGPT账号总可用次数"
     },
-    "remark": "备注"
+    "remark": "备注",
+    "revchatgpt_available_models": "ChatGPT账号允许模型"
   }
 }

@@ -1,9 +1,5 @@
 <template>
-  <n-card
-    :title="t('commons.statisticsInfo')"
-    :content-style="{ padding: '0px' }"
-    :header-style="{ paddingBottom: 0 }"
-  >
+  <n-card :title="t('commons.statisticsInfo')" :content-style="{ padding: '0px' }" :header-style="{ paddingBottom: 0 }">
     <RequestsChart
       :users="users"
       :loading="loading"
@@ -11,11 +7,7 @@
       :request-counts="requestCounts"
     />
 
-    <AskChart
-      :loading="loading"
-      :ask-records="askRecords"
-      :users="users"
-    />
+    <AskChart :loading="loading" :ask-records="askRecords" :users="users" />
   </n-card>
 </template>
 

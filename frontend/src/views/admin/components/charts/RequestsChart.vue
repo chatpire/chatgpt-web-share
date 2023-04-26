@@ -1,10 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart
-      class="h-35"
-      :option="option"
-      :loading="props.loading"
-    />
+    <v-chart class="h-35" :option="option" :loading="props.loading" />
   </div>
 </template>
 
@@ -216,7 +212,10 @@ const option = computed(() => {
         const [el] = params as ToolTipFormatterParams[];
         const data = el.data as any;
         return `<div>
-                  <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(data.timestamp + props.requestCountsInterval! * 1000, true)}</span>
+                  <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(
+  data.timestamp + props.requestCountsInterval! * 1000,
+  true
+)}</span>
                   <br />
                   <span>${el.seriesName}: ${data.count}</span> <br />
                   <span>${t('commons.requestUsers')}: ${data.userIds.map((id: number) => findUsername(id))}</span>

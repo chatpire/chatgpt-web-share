@@ -1,9 +1,6 @@
 <template>
   <div class="mb-4 flex flex-col">
-    <n-tabs
-      v-model:value="tab"
-      type="segment"
-    >
+    <n-tabs v-model:value="tab" type="segment">
       <n-tab name="server">
         {{ t('commons.serverLogs') }}
       </n-tab>
@@ -40,36 +37,17 @@
         </div>
         <div class="option-item">
           <n-text>{{ t('commons.excludeKeywords') }}</n-text>
-          <n-dynamic-tags
-            v-if="tab === 'proxy'"
-            v-model:value="proxyExcludeKeywords"
-            size="small"
-          />
-          <n-dynamic-tags
-            v-else
-            v-model:value="serverExcludeKeywords"
-            size="small"
-          />
+          <n-dynamic-tags v-if="tab === 'proxy'" v-model:value="proxyExcludeKeywords" size="small" />
+          <n-dynamic-tags v-else v-model:value="serverExcludeKeywords" size="small" />
         </div>
       </div>
       <div class="flex items-center space-x-2">
         <n-text>{{ t('commons.autoScrolling') }}</n-text>
-        <n-switch
-          v-model:value="enableAutoScroll"
-          size="small"
-        />
+        <n-switch v-model:value="enableAutoScroll" size="small" />
       </div>
     </div>
-    <n-card
-      class="mt-3 flex-grow h-full"
-      :content-style="{ height: '100%' }"
-    >
-      <n-log
-        ref="logInstRef"
-        :font-size="10"
-        :rows="40"
-        :lines="logsContent"
-      />
+    <n-card class="mt-3 flex-grow h-full" :content-style="{ height: '100%' }">
+      <n-log ref="logInstRef" :font-size="10" :rows="40" :lines="logsContent" />
     </n-card>
   </div>
 </template>

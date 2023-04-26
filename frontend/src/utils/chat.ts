@@ -3,7 +3,11 @@ import { RevChatModels } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
-export const revChatModelNames: RevChatModels[] = ['text-davinci-002-render-sha', 'text-davinci-002-render-paid', 'gpt-4'];
+export const revChatModelNames: RevChatModels[] = [
+  'text-davinci-002-render-sha',
+  'text-davinci-002-render-paid',
+  'gpt-4',
+];
 
 export const revChatModelNameMap: Record<RevChatModels, string> = {
   'text-davinci-002-render-sha': t('commons.shaModel'),
@@ -12,7 +16,8 @@ export const revChatModelNameMap: Record<RevChatModels, string> = {
 };
 
 export const getRevChatModelNameTrans = (model_name: RevChatModels | string) => {
-  if (revChatModelNameMap[model_name as keyof typeof revChatModelNameMap]) return revChatModelNameMap[model_name as keyof typeof revChatModelNameMap];
+  if (revChatModelNameMap[model_name as keyof typeof revChatModelNameMap])
+    return revChatModelNameMap[model_name as keyof typeof revChatModelNameMap];
   else return model_name;
 };
 

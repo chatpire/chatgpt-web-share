@@ -1,10 +1,10 @@
-import type { AxiosResponse,InternalAxiosRequestConfig } from 'axios';
+import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 
 import { i18n } from '@/i18n';
 import router from '@/router';
 import { useUserStore } from '@/store';
-import { Dialog,Message } from '@/utils/tips';
+import { Dialog, Message } from '@/utils/tips';
 
 // import { isLogin } from '@/utils/auth';
 import ApiUrl from './url';
@@ -57,7 +57,10 @@ axios.interceptors.response.use(
       Message.error(msg, {
         duration: 5 * 1000,
       });
-      if ([401].includes(res.code) && !([ApiUrl.Login, ApiUrl.Logout] as Array<string>).includes(response.config.url || '')) {
+      if (
+        [401].includes(res.code) &&
+        !([ApiUrl.Login, ApiUrl.Logout] as Array<string>).includes(response.config.url || '')
+      ) {
         Dialog.error({
           title: t('errors.loginExpired') as string,
           content: t('tips.loginExpired'),

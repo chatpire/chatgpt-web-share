@@ -1,14 +1,7 @@
 <template>
   <div class="mb-4 mt-2 flex flex-col space-y-4">
-    <SystemInfoCard
-      :system-info="systemInfo"
-      :server-status="serverStatus"
-      @refresh="refreshData"
-    />
-    <StatisticsCard
-      :request-statistics="requestStatistics"
-      :users="users"
-    />
+    <SystemInfoCard :system-info="systemInfo" :server-status="serverStatus" @refresh="refreshData" />
+    <StatisticsCard :request-statistics="requestStatistics" :users="users" />
   </div>
 </template>
 

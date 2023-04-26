@@ -2,7 +2,7 @@ import { saveAs } from 'file-saver';
 
 import { ChatMessage } from '@/types/custom';
 import { RevConversationSchema } from '@/types/schema';
-import {getRevChatModelNameTrans} from '@/utils/chat';
+import { getRevChatModelNameTrans } from '@/utils/chat';
 
 export const saveAsMarkdown = (conv: RevConversationSchema, messageList: ChatMessage[]) => {
   let content = `# ${conv.title}\n\n`;

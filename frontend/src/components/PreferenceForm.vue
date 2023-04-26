@@ -1,36 +1,17 @@
 <template>
   <!-- A n-form: a n-select to switch sendKey in ["Shift+Enter", "Enter", "Ctrl+Enter"] -->
-  <n-form
-    v-model:value="model"
-    label-placement="left"
-    label-width="auto"
-  >
-    <n-form-item
-      :label="t('commons.sendKey')"
-      prop="sendKey"
-    >
-      <n-select
-        v-model:value="model.sendKey"
-        :options="sendKeyOptions"
-      />
+  <n-form v-model:value="model" label-placement="left" label-width="auto">
+    <n-form-item :label="t('commons.sendKey')" prop="sendKey">
+      <n-select v-model:value="model.sendKey" :options="sendKeyOptions" />
     </n-form-item>
     <!-- n-switch for renderUserMessageInMd and codeAutoWrap -->
-    <n-form-item
-      :label="t('commons.renderUserMessageInMd')"
-      prop="renderUserMessageInMd"
-    >
+    <n-form-item :label="t('commons.renderUserMessageInMd')" prop="renderUserMessageInMd">
       <n-switch v-model:value="model.renderUserMessageInMd" />
     </n-form-item>
-    <n-form-item
-      :label="t('commons.codeAutoWrap')"
-      prop="codeAutoWrap"
-    >
+    <n-form-item :label="t('commons.codeAutoWrap')" prop="codeAutoWrap">
       <n-switch v-model:value="model.codeAutoWrap" />
     </n-form-item>
-    <n-form-item
-      :label="t('commons.widerConversationPage')"
-      prop="widerConversationPage"
-    >
+    <n-form-item :label="t('commons.widerConversationPage')" prop="widerConversationPage">
       <n-switch v-model:value="model.widerConversationPage" />
     </n-form-item>
   </n-form>

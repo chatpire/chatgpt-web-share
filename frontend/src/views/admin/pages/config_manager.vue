@@ -1,22 +1,9 @@
 <template>
-  <n-card
-    class="mb-4"
-    :title="t('commons.chatgptSetting')"
-  >
+  <n-card class="mb-4" :title="t('commons.chatgptSetting')">
     <n-space vertical>
-      <n-form
-        :model="model.chatgpt"
-        label-placement="left"
-        label-align="left"
-        :label-width="140"
-      >
-        <n-form-item
-          :label="$t('labels.is_plus_account')"
-          path="is_plus_account"
-        >
-          <n-switch
-            v-model:value="model.chatgpt.is_plus_account"
-          >
+      <n-form :model="model.chatgpt" label-placement="left" label-align="left" :label-width="140">
+        <n-form-item :label="$t('labels.is_plus_account')" path="is_plus_account">
+          <n-switch v-model:value="model.chatgpt.is_plus_account">
             <template #checked>
               <n-text>{{ t('commons.yes') }}</n-text>
             </template>
@@ -26,23 +13,12 @@
           </n-switch>
         </n-form-item>
 
-        <n-form-item
-          :label="'chatgpt_base_url'"
-          path="chatgpt_base_url"
-        >
-          <n-input
-            v-model:value="model.chatgpt.chatgpt_base_url"
-          />
+        <n-form-item :label="'chatgpt_base_url'" path="chatgpt_base_url">
+          <n-input v-model:value="model.chatgpt.chatgpt_base_url" />
         </n-form-item>
 
-        <n-form-item
-          :label="$t('labels.ask_timeout')"
-          path="ask_timeout"
-        >
-          <n-input-number
-            v-model:value="model.chatgpt.ask_timeout"
-            :step="60"
-          >
+        <n-form-item :label="$t('labels.ask_timeout')" path="ask_timeout">
+          <n-input-number v-model:value="model.chatgpt.ask_timeout" :step="60">
             <template #suffix>
               {{ t('commons.seconds') }}
             </template>
@@ -52,15 +28,9 @@
     </n-space>
   </n-card>
 
-  <n-card 
-    :title="t('commons.credentials')"
-    class="mb-4"
-  >
+  <n-card :title="t('commons.credentials')" class="mb-4">
     <n-space vertical>
-      <n-form
-        :model="model.credentials"
-        :label-width="240"
-      >
+      <n-form :model="model.credentials" :label-width="240">
         <!-- <n-form-item
           :label="'chatgpt_account_access_token'"
           path="credentials.chatgpt_account_access_token"
@@ -70,12 +40,7 @@
             :placeholder="placeholder('chatgpt_account_access_token')"
           />
         </n-form-item> -->
-        <n-form-item
-          v-for="item in credentialKeys"
-          :key="item"
-          :label="item"
-          :path="item"
-        >
+        <n-form-item v-for="item in credentialKeys" :key="item" :label="item" :path="item">
           <n-input
             v-model:value="model.credentials[item as keyof ConfigUpdate['credentials']]"
             :placeholder="placeholder[item]"
@@ -85,10 +50,7 @@
     </n-space>
   </n-card>
   <div>
-    <n-button
-      type="primary"
-      @click="handleSave"
-    >
+    <n-button type="primary" @click="handleSave">
       {{ t('commons.save') }}
     </n-button>
   </div>
@@ -131,7 +93,9 @@ const placeholder = computed(() => {
   const result: Record<string, string> = {};
   if (configRead.value) {
     for (const key of credentialKeys) {
-      result[key] = configRead.value.credentials_exist[key as keyof ConfigRead['credentials_exist']] ? `(${t('tips.alreadySet')})` : t('commons.empty');
+      result[key] = configRead.value.credentials_exist[key as keyof ConfigRead['credentials_exist']]
+        ? `(${t('tips.alreadySet')})`
+        : t('commons.empty');
     }
   }
   return result;
@@ -146,13 +110,14 @@ const handleSave = () => {
     onPositiveClick: () => {
       const configUpdate = {
         chatgpt: model.value.chatgpt,
-        credentials: {...model.value.credentials} as Partial<ConfigUpdate['credentials']>,
+        credentials: { ...model.value.credentials } as Partial<ConfigUpdate['credentials']>,
       };
 
       // 仅保留有值的 credentials
       for (const key of credentialKeys) {
         if (model.value.credentials[key as keyof ConfigUpdate['credentials']]) {
-          configUpdate.credentials[key as keyof ConfigUpdate['credentials']] = model.value.credentials[key as keyof ConfigUpdate['credentials']];
+          configUpdate.credentials[key as keyof ConfigUpdate['credentials']] =
+            model.value.credentials[key as keyof ConfigUpdate['credentials']];
         }
       }
 
@@ -166,5 +131,4 @@ const handleSave = () => {
     },
   });
 };
-
 </script>

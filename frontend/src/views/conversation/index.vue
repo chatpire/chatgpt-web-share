@@ -1,7 +1,10 @@
 <template>
   <div
     ref="rootRef"
-    :class="['flex-grow flex flex-col md:flex-row', !appStore.preference.widerConversationPage ? 'lg:w-screen-lg lg:mx-auto' : '']"
+    :class="[
+      'flex-grow flex flex-col md:flex-row',
+      !appStore.preference.widerConversationPage ? 'lg:w-screen-lg lg:mx-auto' : '',
+    ]"
   >
     <!-- 左栏 -->
     <LeftBar
@@ -17,10 +20,7 @@
     />
     <!-- 右栏 -->
     <div
-      :class="[
-        'flex-grow flex flex-col md:px-4',
-        appStore.preference.widerConversationPage ? 'md:w-4/5' : 'md:w-3/4',
-      ]"
+      :class="['flex-grow flex flex-col md:px-4', appStore.preference.widerConversationPage ? 'md:w-4/5' : 'md:w-3/4']"
     >
       <n-card
         class="flex-grow md:mb-4 relative"
@@ -43,12 +43,7 @@
         </div>
         <!-- 回到底部按钮 -->
         <div class="right-2 bottom-30 absolute z-20">
-          <n-button
-            secondary
-            circle
-            size="small"
-            @click="scrollToBottomSmooth"
-          >
+          <n-button secondary circle size="small" @click="scrollToBottomSmooth">
             <template #icon>
               <n-icon :component="ArrowDown" />
             </template>
@@ -59,7 +54,7 @@
           v-if="currentConversationId"
           ref="historyRef"
           class="h-0 flex-grow"
-          :content-style="loadingHistory ? { height: '100%' } : { }"
+          :content-style="loadingHistory ? { height: '100%' } : {}"
         >
           <HistoryContent
             ref="historyContentRef"
@@ -76,10 +71,7 @@
           class="flex-grow flex flex-col justify-center"
           :style="{ backgroundColor: themeVars.cardColor }"
         >
-          <n-empty
-            v-if="!currentConversation"
-            :description="$t('tips.loadConversation')"
-          >
+          <n-empty v-if="!currentConversation" :description="$t('tips.loadConversation')">
             <template #icon>
               <n-icon>
                 <ChatboxEllipses />
@@ -192,9 +184,15 @@ const currentNode = computed<string | undefined>(() => {
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<ChatMessage>>(() => {
   const result: ChatMessage[] = [];
-  if (currentActiveMessageSend.value && result.findIndex((message) => message.id === currentActiveMessageSend.value?.id) === -1)
+  if (
+    currentActiveMessageSend.value &&
+    result.findIndex((message) => message.id === currentActiveMessageSend.value?.id) === -1
+  )
     result.push(currentActiveMessageSend.value);
-  if (currentActiveMessageRecv.value && result.findIndex((message) => message.id === currentActiveMessageRecv.value?.id) === -1)
+  if (
+    currentActiveMessageRecv.value &&
+    result.findIndex((message) => message.id === currentActiveMessageRecv.value?.id) === -1
+  )
     result.push(currentActiveMessageRecv.value);
   return result;
 });
@@ -227,7 +225,12 @@ const handleChangeConversation = (key: string | null) => {
 };
 
 const sendDisabled = computed(() => {
-  return loadingBar.value || currentConversationId.value == null || inputValue.value === null || inputValue.value.trim() == '';
+  return (
+    loadingBar.value ||
+    currentConversationId.value == null ||
+    inputValue.value === null ||
+    inputValue.value.trim() == ''
+  );
 });
 
 const makeNewConversation = () => {
@@ -256,7 +259,11 @@ const scrollToBottom = () => {
 };
 
 const scrollToBottomSmooth = () => {
-  historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight, behavior: 'smooth' });
+  historyRef.value.scrollTo({
+    left: 0,
+    top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight,
+    behavior: 'smooth',
+  });
 };
 
 const sendMsg = async () => {
@@ -334,7 +341,8 @@ const sendMsg = async () => {
       currentActiveMessageRecv.value!.model_slug = reply.model_name;
       if (newConversation.value) {
         newConversation.value.model_name = reply.model_name;
-        if (newConversation.value.conversation_id !== reply.conversation_id) newConversation.value.conversation_id = reply.conversation_id;
+        if (newConversation.value.conversation_id !== reply.conversation_id)
+          newConversation.value.conversation_id = reply.conversation_id;
         if (currentConversationId.value !== newConversation.value.conversation_id) {
           currentConversationId.value = newConversation.value.conversation_id!;
         }
@@ -387,7 +395,11 @@ const sendMsg = async () => {
           // 将新消息存入 store
           if (!currentActiveMessageRecv.value!.id.startsWith('recv')) {
             // TODO 其它属性
-            conversationStore.addMessageToConversation(currentConversationId.value, currentActiveMessageSend.value!, currentActiveMessageRecv.value!);
+            conversationStore.addMessageToConversation(
+              currentConversationId.value,
+              currentActiveMessageSend.value!,
+              currentActiveMessageRecv.value!
+            );
           }
           currentActiveMessageSend.value = null;
           currentActiveMessageRecv.value = null;
@@ -396,7 +408,10 @@ const sendMsg = async () => {
     } else {
       Dialog.error({
         title: t('errors.askError'),
-        content: wsErrorMessage != null ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}` : `[${event.code}] ${t(event.reason)}`,
+        content:
+          wsErrorMessage != null
+            ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}`
+            : `[${event.code}] ${t(event.reason)}`,
         positiveText: t('commons.withdrawMessage'),
         negativeText: t('commons.cancel'),
         onPositiveClick: () => {

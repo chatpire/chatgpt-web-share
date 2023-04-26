@@ -1,19 +1,13 @@
 <template>
   <div class="mb-4 mt-1 ml-1 flex flex-row space-x-2 justify-between">
-    <n-button
-      circle
-      @click="refreshData"
-    >
+    <n-button circle @click="refreshData">
       <template #icon>
         <n-icon>
           <RefreshFilled />
         </n-icon>
       </template>
     </n-button>
-    <n-button
-      type="primary"
-      @click="triggerShowCreateUserDrawer"
-    >
+    <n-button type="primary" @click="triggerShowCreateUserDrawer">
       {{ $t('commons.addUser') }}
     </n-button>
   </div>
@@ -35,10 +29,7 @@
     closable
   >
     <n-drawer-content :title="t('commons.updateUser')">
-      <UpdateUserForm
-        :user-id="currentUserId"
-        @save="triggerCloseUserSettingDrawer"
-      />
+      <UpdateUserForm :user-id="currentUserId" @save="triggerCloseUserSettingDrawer" />
     </n-drawer-content>
   </n-drawer>
   <n-drawer
@@ -124,7 +115,9 @@ const columns: DataTableColumns<UserReadAdmin> = [
     title: t('commons.maxConversationCount'),
     key: 'max_conv_count',
     render(row) {
-      return row.setting.revchatgpt_ask_limits ? getCountTrans(row.setting.revchatgpt_ask_limits.max_conv_count) : t('commons.unlimited');
+      return row.setting.revchatgpt_ask_limits
+        ? getCountTrans(row.setting.revchatgpt_ask_limits.max_conv_count)
+        : t('commons.unlimited');
     },
   },
   {
@@ -132,7 +125,9 @@ const columns: DataTableColumns<UserReadAdmin> = [
     key: 'available_ask_count',
     render(row) {
       // return getCountTrans(row.available_ask_count!);
-      return row.setting.revchatgpt_ask_limits ? getCountTrans(row.setting.revchatgpt_ask_limits.total_count) : t('commons.unlimited');
+      return row.setting.revchatgpt_ask_limits
+        ? getCountTrans(row.setting.revchatgpt_ask_limits.total_count)
+        : t('commons.unlimited');
     },
   },
   {
@@ -141,13 +136,14 @@ const columns: DataTableColumns<UserReadAdmin> = [
     render(row) {
       if (row.setting.revchatgpt_available_models && row.setting.revchatgpt_ask_limits) {
         const per_model_count = row.setting.revchatgpt_ask_limits.per_model_count;
-        return revChatModelNames.map((modelName) => {
-          if (row.setting.revchatgpt_available_models.includes(modelName)) {
-            return `${getRevChatModelNameTrans(modelName)}: ${getCountTrans(per_model_count[modelName])}`;
-          } else {
-            return `${getRevChatModelNameTrans(modelName)}: ${t('commons.disabled')}`;
-          }
-        })
+        return revChatModelNames
+          .map((modelName) => {
+            if (row.setting.revchatgpt_available_models.includes(modelName)) {
+              return `${getRevChatModelNameTrans(modelName)}: ${getCountTrans(per_model_count[modelName])}`;
+            } else {
+              return `${getRevChatModelNameTrans(modelName)}: ${t('commons.disabled')}`;
+            }
+          })
           .join(', ');
       } else {
         return t('commons.unlimited');
@@ -248,7 +244,6 @@ const columns: DataTableColumns<UserReadAdmin> = [
   },
 ];
 
-
 const triggerShowUserSettingDrawer = (user: UserReadAdmin) => () => {
   currentUserId.value = user.id;
   showUpdateUserDrawer.value = true;
@@ -271,5 +266,4 @@ const triggerCloseCreateUserDrawer = () => {
     data.value = res.data;
   });
 };
-
 </script>

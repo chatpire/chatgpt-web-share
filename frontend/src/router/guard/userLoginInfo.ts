@@ -1,4 +1,4 @@
-import type { LocationQueryRaw,Router } from 'vue-router';
+import type { LocationQueryRaw, Router } from 'vue-router';
 
 import { useUserStore } from '@/store';
 import { hasLoginCookie } from '@/utils/auth';

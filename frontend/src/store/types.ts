@@ -15,4 +15,4 @@ interface AppState {
   preference: RemovableRef<Preference>;
 }
 
-export type { AppState,UserState };
+export type { AppState, UserState };

@@ -1,62 +1,23 @@
 <template>
   <!-- user register form -->
-  <n-form
-    ref="formRef"
-    :model="user"
-    :rules="rules"
-    :label-col="{ span: 8 }"
-    :wrapper-col="{ span: 16 }"
-  >
-    <n-form-item
-      :label="t('commons.username')"
-      path="username"
-    >
-      <n-input
-        v-model:value="user.username"
-        placeholder=""
-      />
+  <n-form ref="formRef" :model="user" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+    <n-form-item :label="t('commons.username')" path="username">
+      <n-input v-model:value="user.username" placeholder="" />
     </n-form-item>
-    <n-form-item
-      :label="t('commons.nickname')"
-      path="nickname"
-    >
-      <n-input
-        v-model:value="user.nickname"
-        placeholder=""
-      />
+    <n-form-item :label="t('commons.nickname')" path="nickname">
+      <n-input v-model:value="user.nickname" placeholder="" />
     </n-form-item>
-    <n-form-item
-      :label="t('commons.password')"
-      path="password"
-    >
-      <n-input
-        v-model:value="user.password"
-        placeholder=""
-      />
+    <n-form-item :label="t('commons.password')" path="password">
+      <n-input v-model:value="user.password" placeholder="" />
     </n-form-item>
-    <n-form-item
-      :label="t('commons.email')"
-      path="email"
-    >
-      <n-input
-        v-model:value="user.email"
-        placeholder=""
-      />
+    <n-form-item :label="t('commons.email')" path="email">
+      <n-input v-model:value="user.email" placeholder="" />
     </n-form-item>
-    <n-form-item
-      :label="t('commons.remark')"
-      path="remark"
-    >
-      <n-input
-        v-model:value="user.remark"
-        placeholder=""
-      />
+    <n-form-item :label="t('commons.remark')" path="remark">
+      <n-input v-model:value="user.remark" placeholder="" />
     </n-form-item>
   </n-form>
-  <n-button
-    type="primary"
-    @click="handleSubmit"
-  >
+  <n-button type="primary" @click="handleSubmit">
     {{ t('commons.submit') }}
   </n-button>
 </template>
@@ -106,5 +67,4 @@ const handleSubmit = () => {
     });
   });
 };
-
 </script>

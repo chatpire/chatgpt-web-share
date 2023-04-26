@@ -2,25 +2,15 @@
   <div>
     <div class="mb-4 mt-1 ml-1 flex flex-row justify-between space-x-2">
       <div class="flex flex-row space-x-4">
-        <n-button
-          circle
-          @click="refreshData"
-        >
+        <n-button circle @click="refreshData">
           <template #icon>
             <n-icon>
               <RefreshFilled />
             </n-icon>
           </template>
         </n-button>
-        <div
-          v-show="checkedRowKeys.length !== 0"
-          class="space-x-2"
-        >
-          <n-button
-            type="warning"
-            secondary
-            @click="handleInvalidateConversations"
-          >
+        <div v-show="checkedRowKeys.length !== 0" class="space-x-2">
+          <n-button type="warning" secondary @click="handleInvalidateConversations">
             <template #icon>
               <n-icon>
                 <EmojiFlagsFilled />
@@ -28,11 +18,7 @@
             </template>
             {{ $t('commons.invalidateConversation') }}
           </n-button>
-          <n-button
-            type="error"
-            secondary
-            @click="handleVanishConversations"
-          >
+          <n-button type="error" secondary @click="handleVanishConversations">
             <template #icon>
               <n-icon>
                 <TrashOutline />
@@ -40,11 +26,7 @@
             </template>
             {{ $t('commons.vanishConversation') }}
           </n-button>
-          <n-button
-            type="info"
-            secondary
-            @click="handleAssignConversations"
-          >
+          <n-button type="info" secondary @click="handleAssignConversations">
             <template #icon>
               <n-icon>
                 <PersonAddAlt1Filled />
@@ -58,10 +40,7 @@
         <n-button @click="handleVanishAllInvalidConversations">
           {{ $t('commons.deleteInvalidConversations') }}
         </n-button>
-        <n-button
-          type="error"
-          @click="handleClearAllConversations"
-        >
+        <n-button type="error" @click="handleClearAllConversations">
           {{ $t('commons.clearAllConversations') }}
         </n-button>
       </div>

@@ -1,12 +1,12 @@
-import {MdMore} from '@vicons/ionicons4';
-import {NButton, NDropdown, NIcon, NInput, NSelect, SelectOption} from 'naive-ui';
-import {h} from 'vue';
+import { MdMore } from '@vicons/ionicons4';
+import { NButton, NDropdown, NIcon, NInput, NSelect, SelectOption } from 'naive-ui';
+import { h } from 'vue';
 
-import {i18n} from '@/i18n';
+import { i18n } from '@/i18n';
 import useUserStore from '@/store/modules/user';
-import {RevConversationSchema} from '@/types/schema';
-import {getRevChatModelNameTrans} from '@/utils/chat';
-import {Dialog} from '@/utils/tips';
+import { RevConversationSchema } from '@/types/schema';
+import { getRevChatModelNameTrans } from '@/utils/chat';
+import { Dialog } from '@/utils/tips';
 
 const t = i18n.global.t as any;
 
@@ -50,7 +50,13 @@ const dropdownRenderer = (
     }
   );
 
-const popupInputDialog = (title: string, placeholder: string, callback: (inp: string) => Promise<any>, success: () => void, fail: () => void) => {
+const popupInputDialog = (
+  title: string,
+  placeholder: string,
+  callback: (inp: string) => Promise<any>,
+  success: () => void,
+  fail: () => void
+) => {
   let input = '';
   const d = Dialog.info({
     title: title,
@@ -154,7 +160,11 @@ const popupChangeConversationTitleDialog = (
   popupInputDialog(t('commons.rename'), t('tips.rename'), callback, success, fail);
 };
 
-const popupResetUserPasswordDialog = (callback: (password: string) => Promise<any>, success: () => void, fail: () => void) => {
+const popupResetUserPasswordDialog = (
+  callback: (password: string) => Promise<any>,
+  success: () => void,
+  fail: () => void
+) => {
   popupInputDialog(t('commons.resetPassword'), t('tips.resetPassword'), callback, success, fail);
 };
 

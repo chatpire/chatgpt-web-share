@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="flex-shrink-0 flex flex-col align-middle relative z-10"
-    :style="{ background: themeVars.baseColor }"
-  >
+  <div class="flex-shrink-0 flex flex-col align-middle relative z-10" :style="{ background: themeVars.baseColor }">
     <n-divider />
     <!-- 暂停按钮 -->
     <div class="flex w-full justify-center absolute -top-10">
@@ -24,13 +21,7 @@
     <!-- 工具栏 -->
     <div class="mx-2 flex flex-row space-x-2 py-2 justify-center relative">
       <!-- 展开/收起按钮 -->
-      <n-button
-        class="absolute left-0 top-2"
-        quaternary
-        circle
-        size="small"
-        @click="toggleInputExpanded"
-      >
+      <n-button class="absolute left-0 top-2" quaternary circle size="small" @click="toggleInputExpanded">
         <template #icon>
           <n-icon :component="inputExpanded ? KeyboardDoubleArrowDownRound : KeyboardDoubleArrowUpRound" />
         </template>
@@ -38,11 +29,7 @@
       <!-- 是否启用自动滚动 -->
       <n-tooltip>
         <template #trigger>
-          <n-switch
-            v-model:value="autoScrolling"
-            size="small"
-            class="absolute right-2 top-3"
-          >
+          <n-switch v-model:value="autoScrolling" size="small" class="absolute right-2 top-3">
             <template #icon>
               A
             </template>
@@ -50,36 +37,21 @@
         </template>
         {{ $t('tips.autoScrolling') }}
       </n-tooltip>
-      <n-button
-        secondary
-        type="info"
-        size="small"
-        @click="emits('show-fullscreen-history')"
-      >
+      <n-button secondary type="info" size="small" @click="emits('show-fullscreen-history')">
         <template #icon>
           <n-icon :size="22">
             <FullscreenRound />
           </n-icon>
         </template>
       </n-button>
-      <n-button
-        secondary
-        type="primary"
-        size="small"
-        @click="emits('export-to-markdown-file')"
-      >
+      <n-button secondary type="primary" size="small" @click="emits('export-to-markdown-file')">
         <template #icon>
           <n-icon>
             <LogoMarkdown />
           </n-icon>
         </template>
       </n-button>
-      <n-button
-        secondary
-        type="warning"
-        size="small"
-        @click="emits('export-to-pdf-file')"
-      >
+      <n-button secondary type="warning" size="small" @click="emits('export-to-pdf-file')">
         <template #icon>
           <n-icon>
             <Print />

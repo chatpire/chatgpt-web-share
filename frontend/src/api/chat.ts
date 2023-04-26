@@ -1,4 +1,3 @@
-
 export type AskInfo = {
   message: string;
   new_title?: string;

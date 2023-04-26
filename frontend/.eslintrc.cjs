@@ -39,6 +39,14 @@ module.exports = {
         argsIgnorePattern: '^_',
       },
     ],
+    "vue/max-attributes-per-line": ["error", {
+      "singleline": {
+        "max": 5
+      },      
+      "multiline": {
+        "max": 1
+      }
+    }]
   },
   settings: {
     'import/parsers': {

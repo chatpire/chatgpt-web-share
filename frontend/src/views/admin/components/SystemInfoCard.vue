@@ -3,10 +3,7 @@
     <template #header>
       <div class="flex flex-row space-x-2">
         <n-text>{{ t('commons.serverOverview') }}</n-text>
-        <n-button
-          text
-          @click="emits('refresh')"
-        >
+        <n-button text @click="emits('refresh')">
           <template #icon>
             <n-icon>
               <RefreshFilled />
@@ -16,16 +13,8 @@
       </div>
     </template>
     <div class="grid grid-cols-3 md:grid-cols-5 gap-4">
-      <n-statistic
-        v-for="item in statistics"
-        :key="item.label"
-        :label="item.label"
-        :value="item.value"
-      >
-        <template
-          v-if="item.prefixIcon"
-          #prefix
-        >
+      <n-statistic v-for="item in statistics" :key="item.label" :label="item.label" :value="item.value">
+        <template v-if="item.prefixIcon" #prefix>
           <n-icon :component="item.prefixIcon" />
         </template>
         <template #suffix>

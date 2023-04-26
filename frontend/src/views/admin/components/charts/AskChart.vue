@@ -1,10 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart
-      class="h-60"
-      :option="option"
-      :loading="props.loading"
-    />
+    <v-chart class="h-60" :option="option" :loading="props.loading" />
   </div>
 </template>
 
@@ -93,7 +89,9 @@ function makeDataset(askRecords: AskRecord[]) {
     let currentTimestamp = alignedEarliestTimestamp;
     // console.log('currentTimestamp', currentTimestamp, new Date(currentTimestamp).toLocaleString())
     while (currentTimestamp < alignedLatestTimestamp) {
-      const recordsInInterval = records.filter((record) => record[1] * 1000 >= currentTimestamp && record[1] * 1000 < currentTimestamp + 1800 * 1000);
+      const recordsInInterval = records.filter(
+        (record) => record[1] * 1000 >= currentTimestamp && record[1] * 1000 < currentTimestamp + 1800 * 1000
+      );
 
       if (recordsInInterval.length > 0) {
         const userIds = new Set(recordsInInterval.map((record) => record[0][0]));
@@ -143,7 +141,12 @@ const findUsername = (user_id: number) => {
 
 const isDark = computed(() => appStore.theme === 'dark');
 
-const generateSeries = (name: string, lineColor: string, itemBorderColor: string, datasetIndex: number): BarSeriesOption => {
+const generateSeries = (
+  name: string,
+  lineColor: string,
+  itemBorderColor: string,
+  datasetIndex: number
+): BarSeriesOption => {
   return {
     type: 'bar',
     name,
@@ -268,12 +271,19 @@ const option = computed(() => {
         const data0 = el0.data as StatRecord;
         const data1 = el1.data as StatRecord;
         return `<div>
-                  <span>${timeFormatter(data0.timestamp, true)} ~ ${timeFormatter(data0.timestamp + 1800 * 1000, true)}</span>
+                  <span>${timeFormatter(data0.timestamp, true)} ~ ${timeFormatter(
+  data0.timestamp + 1800 * 1000,
+  true
+)}</span>
                   <br />
                   <span>${el0.seriesName}: ${data0.count}</span> <br />
                   <span>${el1.seriesName}: ${data1.count}</span> <br />
-                  <span>${t('commons.normalAskUsers')}: ${data0.userIds.map((id: number) => findUsername(id))}</span> <br />
-                  <span>${t('commons.gpt4AskUsers')}: ${data1.userIds.map((id: number) => findUsername(id))}</span> <br />
+                  <span>${t('commons.normalAskUsers')}: ${data0.userIds.map((id: number) =>
+  findUsername(id)
+)}</span> <br />
+                  <span>${t('commons.gpt4AskUsers')}: ${data1.userIds.map((id: number) =>
+  findUsername(id)
+)}</span> <br />
                   <span>${t('commons.sumOfNormalAskDuration')}: ${data0.sumAskDuration.toFixed(2)} s</span> <br />
                   <span>${t('commons.sumOfGpt4AskDuration')}: ${data1.sumAskDuration.toFixed(2)} s</span> <br />
                 </div>`;

@@ -1,12 +1,6 @@
 <template>
-  <n-space
-    vertical
-    class="-ml-2 h-full px-2"
-  >
-    <n-layout
-      has-sider
-      class="h-90vh"
-    >
+  <n-space vertical class="-ml-2 h-full px-2">
+    <n-layout has-sider class="h-90vh">
       <n-layout-sider
         bordered
         :collapsed="collapsed"
@@ -17,21 +11,13 @@
         @collapse="collapsed = true"
         @expand="collapsed = false"
       >
-        <n-menu
-          v-model:value="activeKey"
-          :collapsed-width="64"
-          :collapsed-icon-size="22"
-          :options="menuOptions"
-        />
+        <n-menu v-model:value="activeKey" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
       </n-layout-sider>
       <n-layout class="ml-4 mr-2">
         <n-scrollbar>
           <router-view v-slot="{ Component, route }">
             <keep-alive>
-              <component
-                :is="Component"
-                :key="route.fullPath"
-              />
+              <component :is="Component" :key="route.fullPath" />
             </keep-alive>
           </router-view>
         </n-scrollbar>

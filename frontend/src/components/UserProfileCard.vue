@@ -1,11 +1,6 @@
 <template>
   <n-card content-style="padding: 0;">
-    <n-list
-      v-for="(item, i) of items"
-      :key="i"
-      hoverable
-      show-divider
-    >
+    <n-list v-for="(item, i) of items" :key="i" hoverable show-divider>
       <n-list-item>
         <div class="flex flex-row justify-between content-center">
           <div>{{ item.title }}</div>

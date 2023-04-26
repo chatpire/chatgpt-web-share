@@ -16,8 +16,8 @@ export function removeCookie(key: string, path: string | null = null, domain: st
   if (!key || !hasCookie(key)) {
     return false;
   }
-  document.cookie = `${encodeURIComponent(key)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT${domain ? `; domain=${domain}` : defaultConfig.domain}${
-    path ? `; path=${path}` : defaultConfig.path
-  }; SameSite=Lax`;
+  document.cookie = `${encodeURIComponent(key)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT${
+    domain ? `; domain=${domain}` : defaultConfig.domain
+  }${path ? `; path=${path}` : defaultConfig.path}; SameSite=Lax`;
   return true;
 }

@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia';
 
-import { deleteConversationApi, getAllConversationsApi, getConversationHistoryApi, setConversationTitleApi } from '@/api/conv';
+import {
+  deleteConversationApi,
+  getAllConversationsApi,
+  getConversationHistoryApi,
+  setConversationTitleApi,
+} from '@/api/conv';
 import { ChatConversationDetail, ChatMessage } from '@/types/custom';
 import { RevConversationSchema } from '@/types/schema';
 

@@ -1,14 +1,8 @@
 <template>
   <n-card content-style="padding: 0;">
     <n-collapse @update:expanded-names="handleExpand">
-      <n-collapse-item
-        :title="$t('commons.serverStatus')"
-        name="serverStatus"
-      >
-        <n-list
-          hoverable
-          show-divider
-        >
+      <n-collapse-item :title="$t('commons.serverStatus')" name="serverStatus">
+        <n-list hoverable show-divider>
           <n-list-item>
             <div class="flex flex-row justify-between content-center">
               <div>

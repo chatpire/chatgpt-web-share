@@ -7,7 +7,7 @@ import ApiUrl from './url';
 export type LoginData = {
   username: string;
   password: string;
-}
+};
 
 export function loginApi(data: LoginData) {
   const formData = new FormData();

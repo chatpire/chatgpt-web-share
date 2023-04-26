@@ -5,24 +5,13 @@
   >
     <div class="w-10 lt-sm:ml-0 ml-2 mt-3">
       <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
-      <n-avatar
-        v-if="props.message.author_role == 'user'"
-        size="small"
-      >
+      <n-avatar v-if="props.message.author_role == 'user'" size="small">
         <n-icon>
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <n-avatar
-        v-else-if="isGpt4"
-        size="small"
-        :src="chatgptIconBlack"
-      />
-      <n-avatar
-        v-else
-        size="small"
-        :src="chatgptIcon"
-      />
+      <n-avatar v-else-if="isGpt4" size="small" :src="chatgptIconBlack" />
+      <n-avatar v-else size="small" :src="chatgptIcon" />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
       <div
@@ -38,10 +27,7 @@
       >
         {{ renderedContent }}
       </div>
-      <div
-        v-else-if="showRawContent"
-        class="my-3 w-full whitespace-pre-wrap text-gray-500"
-      >
+      <div v-else-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">
         {{ props.message.message }}
       </div>
       <div class="hide-in-print">

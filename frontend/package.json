@@ -8,7 +8,8 @@
     "build": "vue-tsc && vite build --config ./config/vite.config.prod.ts",
     "preview": "pnpm run build && vite preview --host",
     "lint": "eslint src/ --ext .ts,.tsx,.js,.jsx,.vue",
-    "lint-fix": "eslint src/ --ext .ts,.tsx,.js,.jsx,.vue --fix --cache"
+    "lint-fix": "eslint src/ --ext .ts,.tsx,.js,.jsx,.vue --fix --cache",
+    "prettier": "prettier --write src"
   },
   "dependencies": {
     "@sentry/tracing": "^7.44.2",

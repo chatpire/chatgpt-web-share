@@ -3,13 +3,7 @@
     <StatusCard />
     <div class="flex-grow flex flex-col">
       <!-- <div class="flex box-content" v-if="!newConversation"> -->
-      <n-button
-        secondary
-        strong
-        type="primary"
-        :disabled="props.loading"
-        @click="emits('new-conversation')"
-      >
+      <n-button secondary strong type="primary" :disabled="props.loading" @click="emits('new-conversation')">
         <template #icon>
           <n-icon class="">
             <Add />
