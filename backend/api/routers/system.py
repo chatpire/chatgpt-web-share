@@ -15,7 +15,7 @@ from api.users import current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
-config = Config().get_config()
+config = Config().config
 
 router = APIRouter()
 

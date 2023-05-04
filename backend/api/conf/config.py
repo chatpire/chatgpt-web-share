@@ -51,7 +51,8 @@ class Config(object):
 
         self._config = ConfigModel(**self._config_dict)
 
-    def get_config(self) -> ConfigModel:
+    @property
+    def config(self) -> ConfigModel:
         return self._config
 
     def save_config(self, new_cfg: ConfigModel):

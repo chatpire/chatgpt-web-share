@@ -8,7 +8,7 @@ from api.conf import Config
 from api.enums import RevChatModels
 from api.models import RevChatMessageMetadata, ChatMessage, ConversationHistory
 
-_config = Config().get_config()
+_config = Config().config
 
 
 def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[uuid.UUID, ChatMessage]:

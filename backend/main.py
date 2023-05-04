@@ -28,7 +28,7 @@ from utils.admin import sync_conversations
 from utils.logger import setup_logger, get_log_config, get_logger
 from utils.stats import dump_stats, load_stats
 
-config = Config().get_config()
+config = Config().config
 
 setup_logger()
 

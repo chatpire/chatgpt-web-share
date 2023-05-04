@@ -27,7 +27,7 @@ def _custom_json_serializer(*args, **kwargs) -> str:
 
 
 logger = get_logger(__name__)
-config = Config().get_config()
+config = Config().config
 
 database_url = config.data.database_url
 engine = create_async_engine(database_url, echo=config.common.print_sql, json_serializer=_custom_json_serializer)
@@ -35,7 +35,6 @@ async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit
 metadata = sqlalchemy.MetaData()
 alembic_cfg = AlembicConfig("alembic.ini")
 alembic_cfg.set_main_option("sqlalchemy.url", database_url)
-
 
 
 def run_upgrade(conn, cfg):

@@ -1,7 +1,7 @@
 from api.conf import Config
 from utils.stats import RequestCounter, TimeQueue
-_config = Config().get_config()
 
+_config = Config().config
 
 reverse_proxy_log_file = None
 reverse_proxy_process = None
