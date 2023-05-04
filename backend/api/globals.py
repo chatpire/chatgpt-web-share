@@ -14,3 +14,5 @@ request_log_counter = RequestCounter(
     interval=_config.stats.request_counts_interval
 )
 ask_log_queue = TimeQueue(_config.stats.ask_log_time_window)  # 7 days
+
+chatgpt_manager = None

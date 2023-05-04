@@ -56,7 +56,7 @@ def get_last_model_name_from_mapping(current_node_uuid: uuid.UUID, mapping: dict
         return model_name
 
 
-class ChatGPTManager:
+class RevChatGPTManager:
     def __init__(self):
         self.chatbot = AsyncChatbot({
             "access_token": _config.credentials.chatgpt_account_access_token,
@@ -115,6 +115,3 @@ class ChatGPTManager:
 
     def reset_chat(self):
         self.chatbot.reset_chat()
-
-
-chatgpt_manager = ChatGPTManager()

@@ -22,6 +22,7 @@ from api.models import User
 from api.response import CustomJSONResponse, handle_exception_response
 from api.routers import users, conv, chat, system, status
 from api.schema import UserCreate, UserSettingSchema
+from api.sources import RevChatGPTManager
 from api.users import get_user_manager_context
 from utils.admin import sync_conversations
 from utils.logger import setup_logger, get_log_config, get_logger
@@ -85,6 +86,9 @@ async def on_startup():
 
     load_stats()
 
+    # 初始化 chatgpt_manager
+    g.chatgpt_manager = RevChatGPTManager()
+
     if config.common.create_initial_admin_user:
         try:
             async with get_async_session_context() as session:
@@ -116,12 +120,6 @@ async def on_startup():
             user.rev_chat_status = RevChatStatus.idling
             session.add(user)
         await session.commit()
-
-    # 运行 Proxy Server
-    # if config.common.run_reverse_proxy:
-    #     from utils.proxy import run_reverse_proxy
-    #     run_reverse_proxy()
-    #     await asyncio.sleep(2)  # 等待 Proxy Server 启动
 
     logger.info(
         f"Using {config.chatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")

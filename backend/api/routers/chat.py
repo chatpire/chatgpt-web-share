@@ -8,8 +8,6 @@ from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, func, and_
 from starlette.websockets import WebSocket
 from websockets.exceptions import ConnectionClosed
-
-import api.revchatgpt
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
@@ -117,7 +115,7 @@ async def ask_revchatgpt(websocket: WebSocket):
             await websocket.close(1008, "errors.noAvailableModelAskCount")
             return
 
-    if api.revchatgpt.chatgpt_manager.is_busy():
+    if g.chatgpt_manager.is_busy():
         await websocket.send_json({
             "type": "queueing",
             "tip": "tips.queueing"
@@ -141,7 +139,7 @@ async def ask_revchatgpt(websocket: WebSocket):
         # 标记用户为 queueing
         await change_user_chat_status(user.id, RevChatStatus.queueing)
         queueing_start_time = time.time()
-        async with api.revchatgpt.chatgpt_manager.semaphore:
+        async with g.chatgpt_manager.semaphore:
             is_queueing = False
             try:
                 await change_user_chat_status(user.id, RevChatStatus.asking)
@@ -150,10 +148,10 @@ async def ask_revchatgpt(websocket: WebSocket):
                     "tip": "tips.waiting"
                 })
                 ask_start_time = time.time()
-                api.revchatgpt.chatgpt_manager.reset_chat()
-                async for data in api.revchatgpt.chatgpt_manager.ask(message, conversation_id, parent_id,
-                                                                     timeout,
-                                                                     model_name):
+                g.chatgpt_manager.reset_chat()
+                async for data in g.chatgpt_manager.ask(message, conversation_id, parent_id,
+                                                        timeout,
+                                                        model_name):
                     has_got_reply = True
                     reply = {
                         "type": "message",
@@ -173,7 +171,7 @@ async def ask_revchatgpt(websocket: WebSocket):
                 else:
                     raise e
             finally:
-                api.revchatgpt.chatgpt_manager.reset_chat()
+                g.chatgpt_manager.reset_chat()
 
     except ConnectionClosed:
         # print("websocket aborted", e.code)
@@ -258,7 +256,7 @@ async def ask_revchatgpt(websocket: WebSocket):
                     # 设置默认标题
                     try:
                         if new_title is not None:
-                            await api.revchatgpt.chatgpt_manager.set_conversation_title(conversation_id, new_title)
+                            await g.chatgpt_manager.set_conversation_title(conversation_id, new_title)
                     except Exception as e:
                         logger.warning(e)
                     finally:
