@@ -122,7 +122,7 @@ async def on_startup():
         await session.commit()
 
     logger.info(
-        f"Using {config.chatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
+        f"Using {config.revchatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
 
     # 获取 ChatGPT 对话，并同步数据库
     if not config.common.sync_conversations_on_startup:

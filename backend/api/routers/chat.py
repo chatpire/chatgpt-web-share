@@ -68,7 +68,7 @@ async def ask_revchatgpt(websocket: WebSocket):
     conversation_id = params.get("conversation_id", None)
     parent_id = params.get("parent_id", None)
     model_name = params.get("model_name")
-    timeout = Config().config.chatgpt.ask_timeout
+    timeout = Config().config.revchatgpt.ask_timeout
     new_title = params.get("new_title", None)
 
     if message is None:
@@ -131,7 +131,7 @@ async def ask_revchatgpt(websocket: WebSocket):
     queueing_start_time = None
 
     def check_message(msg: str):
-        url = Config().config.chatgpt.chatgpt_base_url
+        url = Config().config.revchatgpt.chatgpt_base_url
         if url and url in msg:
             return msg.replace(url, "<chatgpt_base_url>")
 

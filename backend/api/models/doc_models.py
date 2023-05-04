@@ -25,7 +25,7 @@ class ApiChatMessageMetadata(BaseModel):
 
 
 class ChatMessage(BaseModel):
-    id: uuid.UUID
+    id: uuid.UUID = Field(default_factory=uuid.uuid4)
     role: str  # rev: mapping[id].message.author.role: system, user, assistant
     create_time: datetime.datetime
     parent: Optional[uuid.UUID]

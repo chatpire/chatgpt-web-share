@@ -163,7 +163,7 @@ async def get_server_logs(_user: User = Depends(current_super_user), options: Lo
 @router.get("/system/config", tags=["system"], response_model=ConfigRead)
 async def get_config(_user: User = Depends(current_super_user)):
     result = ConfigRead(
-        chatgpt=config.chatgpt.copy(),
+        chatgpt=config.revchatgpt.copy(),
         credentials_exist={}
     )
     for key, value in config.credentials:
@@ -177,9 +177,9 @@ async def update_config(config_update: ConfigUpdate, _user: User = Depends(curre
     credentials_update = config_update.credentials.dict(exclude_unset=True)
     for key, value in chatgpt_update.items():
         if isinstance(value, str) and value != "" and value.strip() == "":
-            setattr(config.chatgpt, key, None)
+            setattr(config.revchatgpt, key, None)
         elif value is not None and value != "":
-            setattr(config.chatgpt, key, value)
+            setattr(config.revchatgpt, key, value)
     for key, value in credentials_update.items():
         if isinstance(value, str) and value != "" and value.strip() == "":
             setattr(config.credentials, key, None)

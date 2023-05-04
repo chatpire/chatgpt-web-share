@@ -33,10 +33,23 @@ class AuthSetting(BaseModel):
     user_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
 
 
-class ChatGPTSetting(BaseModel):
+class Credentials(BaseModel):
+    chatgpt_account_access_token: Optional[str] = None
+    chatgpt_account_username: Optional[str] = None
+    chatgpt_account_password: Optional[str] = None
+    openai_api_key: Optional[str] = None
+
+
+class RevChatGPTSetting(BaseModel):
     is_plus_account: bool = False
     chatgpt_base_url: Optional[str] = None
     ask_timeout: int = 600
+
+
+class APISetting(BaseModel):
+    openai_base_url: str = 'https://api.openai.com/v1/'
+    connect_timeout: int = 5
+    read_timeout: int = 60
 
 
 class LogSetting(BaseModel):
@@ -50,19 +63,13 @@ class StatsSetting(BaseModel):
     ask_log_time_window: int = 604800  # 7 days
 
 
-class Credentials(BaseModel):
-    chatgpt_account_access_token: Optional[str] = None
-    chatgpt_account_username: Optional[str] = None
-    chatgpt_account_password: Optional[str] = None
-    openai_api_key: Optional[str] = None
-
-
 class ConfigModel(BaseModel):
     common: CommonSetting = CommonSetting()
     http: HttpSetting = HttpSetting()
     data: DataSetting = DataSetting()
     auth: AuthSetting = AuthSetting()
-    chatgpt: ChatGPTSetting = ChatGPTSetting()
+    credentials: Credentials = Credentials()
+    revchatgpt: RevChatGPTSetting = RevChatGPTSetting()
+    api: APISetting = APISetting()
     log: LogSetting = LogSetting()
     stats: StatsSetting = StatsSetting()
-    credentials: Credentials = Credentials()

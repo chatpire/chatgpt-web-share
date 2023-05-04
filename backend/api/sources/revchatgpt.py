@@ -60,9 +60,9 @@ class RevChatGPTManager:
     def __init__(self):
         self.chatbot = AsyncChatbot({
             "access_token": _config.credentials.chatgpt_account_access_token,
-            "paid": _config.chatgpt.is_plus_account,
+            "paid": _config.revchatgpt.is_plus_account,
             "model": "text-davinci-002-render-sha",  # default model
-        }, base_url=_config.chatgpt.chatgpt_base_url)
+        }, base_url=_config.revchatgpt.chatgpt_base_url)
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):
