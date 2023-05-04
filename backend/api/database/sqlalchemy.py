@@ -37,6 +37,7 @@ alembic_cfg = AlembicConfig("alembic.ini")
 alembic_cfg.set_main_option("sqlalchemy.url", database_url)
 
 
+
 def run_upgrade(conn, cfg):
     cfg.attributes["connection"] = conn
     command.upgrade(cfg, "head")

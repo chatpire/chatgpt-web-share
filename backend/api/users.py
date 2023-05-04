@@ -192,11 +192,11 @@ __current_active_user = fastapi_users.current_user(active=True)
 
 async def current_active_user(request: Request, user: User = Depends(__current_active_user)):
     current_time = datetime.utcnow()
-    user.active_time = current_time
+    user.last_active_time = current_time
     try:
         async with get_async_session_context() as session:
             user_update = await session.get(User, user.id)
-            user_update.active_time = current_time
+            user_update.last_active_time = current_time
             session.add(user_update)
             await session.commit()
         request.scope["auth_user"] = user

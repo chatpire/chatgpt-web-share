@@ -47,17 +47,17 @@ async def check_users(refresh_cache: bool = False):
     active_user_in_1d = 0
     current_time = datetime.utcnow()
     for user in users:
-        if not user.active_time:
+        if not user.last_active_time:
             continue
         if user.rev_chat_status == RevChatStatus.queueing:
             queueing_count += 1
         if user.is_superuser:  # 管理员不计入在线人数
             continue
-        if user.active_time > current_time - timedelta(minutes=5):
+        if user.last_active_time > current_time - timedelta(minutes=5):
             active_user_in_5m += 1
-        if user.active_time > current_time - timedelta(hours=1):
+        if user.last_active_time > current_time - timedelta(hours=1):
             active_user_in_1h += 1
-        if user.active_time > current_time - timedelta(days=1):
+        if user.last_active_time > current_time - timedelta(days=1):
             active_user_in_1d += 1
 
     check_users_cache = (active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, users)

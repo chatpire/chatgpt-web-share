@@ -85,7 +85,7 @@ class UserRead(schemas.BaseUser[int]):
     nickname: str
     email: EmailStr
     rev_chat_status: RevChatStatus
-    active_time: datetime.datetime | None
+    last_active_time: datetime.datetime | None
     create_time: datetime.datetime
     avatar: str | None
     is_superuser: bool
