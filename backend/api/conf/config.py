@@ -68,5 +68,6 @@ class Config(object):
 if __name__ == '__main__':
     # 用于生成默认配置文件
     cfg = Config()
+    cfg._config_path = './config.example.yaml'
     cm = ConfigModel()
     cfg.save_config(cm)

@@ -14,6 +14,7 @@ http:
 data:
   data_dir: ./data
   database_url: sqlite+aiosqlite:///data/database.db
+  mongodb_url: mongodb://cws:password@localhost:27017
   run_migration: false
 auth:
   jwt_secret: MODIFY_THIS_TO_RANDOM_SECRET

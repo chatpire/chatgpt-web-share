@@ -21,6 +21,7 @@ class HttpSetting(BaseModel):
 class DataSetting(BaseModel):
     data_dir: str = './data'
     database_url: str = 'sqlite+aiosqlite:///data/database.db'
+    mongodb_url: str = 'mongodb://cws:password@localhost:27017'
     run_migration: bool = False
 
 
