@@ -1,16 +1,16 @@
 import datetime
 import uuid
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, Literal
 
 from beanie import Document
 from pydantic import BaseModel, Field
 
-from api.enums import RevChatModels, ChatGPTSource, ApiChatModels
+from api.enums import RevChatModels, ApiChatModels
 
 
 class RevChatMessageMetadata(BaseModel):
     # mapping[id].message.metadata 中的内容 加上 mapping[id].message 中的 weight, end_turn
-    # 以下只有非用户回复有
+    # 以下只有assistant有
     model_slug: Optional[Union[RevChatModels, str]]
     finish_details: Optional[dict[str, Any]]
     weight: Optional[float]
@@ -37,7 +37,7 @@ class ChatMessage(BaseModel):
 
 class ConversationHistory(Document):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
-    source: ChatGPTSource
+    conv_type: Literal["rev", "api"]
     title: str
     create_time: datetime.datetime
     update_time: datetime.datetime

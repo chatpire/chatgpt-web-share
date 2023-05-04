@@ -65,22 +65,50 @@ class UserSetting(Base):
     custom_openai_api_key: Mapped[Optional[str]] = mapped_column(String, comment="自定义OpenAI API key")
 
 
-class RevConversation(Base):
+class BaseConversation(Base):
     """
-    ChatGPT 非官方 API 所使用的对话，使用 revChatGPT
-    只记录对话和用户之间的对应关系，不存储内容
+    https://docs.sqlalchemy.org/en/20/orm/inheritance.html#single-table-inheritance
+    仅保留用户映射关系和基础信息，对话内容保存在mongodb中
     """
 
-    __tablename__ = "rev_conversation"
+    __tablename__ = "conversation"
+    __mapper_args__ = {
+        "polymorphic_on": "conv_type",
+        "polymorphic_identity": "base",
+    }
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    conv_type: Mapped[str]
     conversation_id: Mapped[uuid.UUID] = mapped_column(GUID, index=True, unique=True, comment="uuid")
     title: Mapped[Optional[str]] = mapped_column(comment="对话标题")
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
     user: Mapped["User"] = relationship(back_populates="rev_conversations")
     is_valid: Mapped[bool] = mapped_column(Boolean, comment="是否有效")
-    model_name: Mapped[Optional[Enum["RevChatModels"]]] = mapped_column(
-        Enum(RevChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None), default=None,
-        comment="使用的模型")
     create_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="创建时间")
-    active_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="最后活跃时间")
+    update_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="最后更新时间")
+
+
+class RevConversation(BaseConversation):
+    __mapper_args__ = {
+        "polymorphic_identity": "rev",
+    }
+
+    model_name: Mapped[Optional[Enum["RevChatModels"]]] = mapped_column(
+        Enum(RevChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
+        default=None,
+        comment="使用的模型",
+        use_existing_column=True)
+    cached_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="缓存时间")
+    # TODO 缓存 revchatgpt 对话内容
+
+
+class ApiConversation(BaseConversation):
+    __mapper_args__ = {
+        "polymorphic_identity": "api",
+    }
+
+    model_name: Mapped[Optional[Enum["ApiChatModels"]]] = mapped_column(
+        Enum(ApiChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
+        default=None,
+        comment="使用的模型",
+        use_existing_column=True)

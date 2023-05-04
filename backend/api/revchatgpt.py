@@ -26,7 +26,7 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[uuid.UUID, ChatMessa
                 raise ValueError(
                     f"!! Unknown message content type: {v['message']['content']['content_type']} in message {k}")
         result[k] = ChatMessage(
-            id=k,  # TODO 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
+            id=k,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
             role=v["message"]["author"]["role"],
             create_time=v["message"].get("create_time"),
             parent=v.get("parent"),
@@ -81,6 +81,7 @@ class ChatGPTManager:
             current_model = get_last_model_name_from_mapping(result["current_node"], mapping)
         doc = ConversationHistory(
             id=conversation_id,
+            conv_type="rev",
             title=result.get("title"),
             create_time=result.get("create_time"),
             update_time=result.get("update_time"),

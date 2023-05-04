@@ -28,7 +28,7 @@ class ApiChatModels(Enum):
     gpt4 = "gpt-4"
 
 
-class ChatGPTSource(Enum):
-    openai_api = "openai_api"
-    azure_api = "azure_api"
-    revchatgpt = "revchatgpt"
+class ChatGPTAPISource(Enum):
+    openai = "openai"
+    azure = "azure"
+    custom = "custom"

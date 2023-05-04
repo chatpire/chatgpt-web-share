@@ -11,7 +11,7 @@ from api.database import get_async_session_context
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
 from api.models import User, RevConversation, ConversationHistory
 from api.response import response
-from api.schema import RevConversationSchema
+from api.schema import RevConversationSchema, ConversationHistoryResponse
 from api.users import current_active_user, current_super_user
 from utils.logger import get_logger
 
@@ -52,7 +52,7 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
         return results
 
 
-@router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistory)
+@router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistoryResponse)
 async def get_conversation_history(conversation: RevConversation = Depends(_get_conversation_by_id)):
     try:
         result = await api.revchatgpt.chatgpt_manager.get_conversation_history(conversation.conversation_id)
@@ -62,7 +62,7 @@ async def get_conversation_history(conversation: RevConversation = Depends(_get_
         raise InternalException()
     except ValueError as e:
         raise InternalException(str(e))
-    return result
+    return ConversationHistoryResponse(history=result, is_cached=False)
 
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
