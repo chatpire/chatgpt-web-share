@@ -25,6 +25,7 @@ asgiref = "^3.6.0"
 aiocron = "^1.8"
 ruamel-yaml = "^0.17.21"
 beanie = "^1.18.0"
+httpx = "^0.24.0"
 
 
 [build-system]
