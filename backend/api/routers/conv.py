@@ -9,7 +9,7 @@ from sqlalchemy import select, and_, delete
 import api.revchatgpt
 from api.database import get_async_session_context
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
-from api.models import User, RevConversation
+from api.models import User, RevConversation, ConversationHistory
 from api.response import response
 from api.schema import RevConversationSchema
 from api.users import current_active_user, current_super_user
@@ -52,23 +52,16 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
         return results
 
 
-@router.get("/conv/{conversation_id}", tags=["conversation"])
+@router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistory)
 async def get_conversation_history(conversation: RevConversation = Depends(_get_conversation_by_id)):
     try:
-        result = await api.revchatgpt.chatgpt_manager.get_conversation_messages(conversation.conversation_id)
+        result = await api.revchatgpt.chatgpt_manager.get_conversation_history(conversation.conversation_id)
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 404:
             raise InvalidParamsException("errors.conversationNotFound")
         raise InternalException()
-    # 当不知道模型名时，顺便从对话中获取
-    if conversation.model_name is None:
-        model_name = result.get("model_name")
-        if model_name is not None:
-            async with get_async_session_context() as session:
-                conversation = await session.get(RevConversation, conversation.id)
-                conversation.model_name = model_name
-                session.add(conversation)
-                await session.commit()
+    except ValueError as e:
+        raise InternalException(str(e))
     return result
 
 

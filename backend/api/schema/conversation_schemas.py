@@ -1,7 +1,5 @@
 import datetime
 import uuid
-from typing import Optional
-
 from pydantic import BaseModel
 
 from api.enums import RevChatModels
