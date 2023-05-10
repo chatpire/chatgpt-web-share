@@ -94,7 +94,7 @@ class RevChatGPTManager:
     async def clear_conversations(self):
         await self.chatbot.clear_conversations()
 
-    def ask(self, message, conversation_id: str = None, parent_id: str = None,
+    def ask(self, message: str, conversation_id: str = None, parent_id: str = None,
             timeout=360, model_name: RevChatModels = None):
         model = None
         if model_name is not None:

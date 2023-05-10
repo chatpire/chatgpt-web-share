@@ -27,12 +27,22 @@ class ApiChatMessageMetadata(BaseModel):
 class ChatMessage(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     role: str  # rev: mapping[id].message.author.role: system, user, assistant
-    create_time: datetime.datetime
+    create_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
     parent: Optional[uuid.UUID]
     children: list[uuid.UUID]
     content: str  # rev: mapping[id].message.content.parts[0]; mapping[id].message.content.content_type 为 text
     rev_metadata: Optional[RevChatMessageMetadata]  # rev only
     api_metadata: Optional[ApiChatMessageMetadata]  # api only
+
+    @classmethod
+    def new(cls, role, content):
+        return cls(
+            id=uuid.uuid4(),
+            role=role,
+            create_time=datetime.datetime.now(),
+            parent=None,
+            children=[],
+            content=content)
 
 
 class ConversationHistory(Document):
