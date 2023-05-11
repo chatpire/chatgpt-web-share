@@ -45,13 +45,13 @@ class ChatMessage(BaseModel):
             content=content)
 
 
-class ConversationHistory(Document):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+class ConversationHistoryDocument(Document):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
     conv_type: Literal["rev", "api"]
     title: str
     create_time: datetime.datetime
     update_time: datetime.datetime
-    mapping: dict[uuid.UUID, ChatMessage]
+    mapping: dict[str, ChatMessage]
     current_node: uuid.UUID
     current_model: Optional[Union[RevChatModels, str]]  # rev: mapping[current_node].message.metadata.model_slug
 

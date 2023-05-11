@@ -1,4 +1,6 @@
 import os
+import shutil
+
 from typing import TypeVar, Generic, Type
 from pydantic import BaseModel
 from ruamel.yaml import YAML
@@ -41,6 +43,12 @@ class BaseConfig(Generic[T]):
 
     def save(self):
         config_dict = self._model.dict()
+        # 复制 self._config_path 备份一份
+        config_dir = os.path.dirname(self._config_path)
+        if not os.path.exists(config_dir):
+            raise ConfigException(f"Config dir not found: {config_dir}")
+        backup_config_path = os.path.join(config_dir, f"{os.path.basename(self._config_path)}.backup.yaml")
+        shutil.copyfile(self._config_path, backup_config_path)
         with open(self._config_path, mode='w', encoding='utf-8') as sf:
             yaml = YAML()
             yaml.dump(config_dict, sf)

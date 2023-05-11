@@ -5,7 +5,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from api.enums import RevChatModels, ApiChatModels
-from api.models import ConversationHistory
+from api.models import ConversationHistoryDocument
 
 
 class BaseConversationSchema(BaseModel):
@@ -34,5 +34,5 @@ class ApiConversationSchema(BaseConversationSchema):
 
 
 class ConversationHistoryResponse(BaseModel):
-    history: ConversationHistory
     is_cached: bool
+    history: ConversationHistoryDocument

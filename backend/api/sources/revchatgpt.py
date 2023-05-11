@@ -1,47 +1,49 @@
 import asyncio
 import uuid
+from typing import Dict
+from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
 from api.enums import RevChatModels
-from api.models import RevChatMessageMetadata, ChatMessage, ConversationHistory
+from api.models import RevChatMessageMetadata, ChatMessage, ConversationHistoryDocument
 
 config = Config()
 credentials = Credentials()
 
 
-def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[uuid.UUID, ChatMessage]:
+def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
     result = {}
     if not mapping:
         return result
-    for k, v in mapping.items():
-        if not v.get("message"):
+    for key, item in mapping.items():
+        if not item.get("message"):
             continue
         content = ""
-        if v["message"].get("content"):
-            if v["message"]["content"].get("content_type") == "text":
-                content = v["message"]["content"]["parts"][0]
+        if item["message"].get("content"):
+            if item["message"]["content"].get("content_type") == "text":
+                content = item["message"]["content"]["parts"][0]
             else:
                 raise ValueError(
-                    f"!! Unknown message content type: {v['message']['content']['content_type']} in message {k}")
-        result[k] = ChatMessage(
-            id=k,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
-            role=v["message"]["author"]["role"],
-            create_time=v["message"].get("create_time"),
-            parent=v.get("parent"),
-            children=v.get("children", []),
+                    f"!! Unknown message content type: {item['message']['content']['content_type']} in message {key}")
+        result[key] = ChatMessage(
+            id=key,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
+            role=item["message"]["author"]["role"],
+            create_time=item["message"].get("create_time"),
+            parent=item.get("parent"),
+            children=item.get("children", []),
             content=content
         )
-        if "metadata" in v["message"] and v["message"]["metadata"] != {}:
-            result[k].rev_metadata = RevChatMessageMetadata(
-                model_slug=v["message"]["metadata"].get("model_slug"),
-                finish_details=v["message"]["metadata"].get("finish_details"),
-                weight=v["message"].get("weight"),
-                end_turn=v["message"].get("end_turn"),
+        if "metadata" in item["message"] and item["message"]["metadata"] != {}:
+            result[key].rev_metadata = RevChatMessageMetadata(
+                model_slug=item["message"]["metadata"].get("model_slug"),
+                finish_details=item["message"]["metadata"].get("finish_details"),
+                weight=item["message"].get("weight"),
+                end_turn=item["message"].get("end_turn"),
             )
-    return result
+    return {str(key): value for key, value in result.items()}
 
 
 def get_last_model_name_from_mapping(current_node_uuid: uuid.UUID, mapping: dict[uuid.UUID, ChatMessage]):
@@ -61,6 +63,7 @@ class RevChatGPTManager:
     """
     TODO: 解除 revChatGPT 依赖
     """
+
     def __init__(self):
         self.chatbot = AsyncChatbot({
             "access_token": credentials.chatgpt_access_token,
@@ -76,14 +79,19 @@ class RevChatGPTManager:
         conversations = await self.chatbot.get_conversations(limit=80)
         return conversations
 
-    async def get_conversation_history(self, conversation_id: uuid.UUID | str) -> ConversationHistory:
+    async def get_conversation_history(self, conversation_id: uuid.UUID | str,
+                                       refresh=True) -> ConversationHistoryDocument:
+        if not refresh:
+            doc = await ConversationHistoryDocument.get(conversation_id)
+            if doc:
+                return doc
         result = await self.chatbot.get_msg_history(conversation_id)
         result = jsonable_encoder(result)
         mapping = convert_mapping(result.get("mapping"))
         current_model = None
         if mapping.get(result.get("current_node")):
             current_model = get_last_model_name_from_mapping(result["current_node"], mapping)
-        doc = ConversationHistory(
+        doc = ConversationHistoryDocument(
             id=conversation_id,
             conv_type="rev",
             title=result.get("title"),
@@ -93,6 +101,7 @@ class RevChatGPTManager:
             current_node=result.get("current_node"),
             current_model=current_model,
         )
+        await doc.save()
         return doc
 
     async def clear_conversations(self):

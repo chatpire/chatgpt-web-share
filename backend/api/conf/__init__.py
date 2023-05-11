@@ -5,4 +5,6 @@ config = Config()
 credentials = Credentials()
 
 config.load()
+# config.save()
 credentials.load()
+# credentials.save()

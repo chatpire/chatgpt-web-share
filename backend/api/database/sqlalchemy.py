@@ -81,6 +81,8 @@ async def create_db_and_tables():
                 logger.warning("Database migration might fail, please check the database manually!")
                 logger.warning(f"detail: {str(e)}")
 
+        logger.info("database initialized")
+
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:

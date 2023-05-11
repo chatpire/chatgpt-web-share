@@ -1,13 +1,19 @@
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
-from api.models import ConversationHistory
+
+from api.conf import Config
+from api.models import ConversationHistoryDocument
+from utils.logger import get_logger
+from motor.core import AgnosticClient
+
+logger = get_logger(__name__)
 
 
 async def init_mongodb():
     # Create Motor client
     client = AsyncIOMotorClient(
-        "mongodb://user:pass@host:27017"
+        Config().data.mongodb_url
     )
 
-    # Initialize beanie with the Product document class and a database
-    await init_beanie(database=client.db_name, document_models=[ConversationHistory])
+    await init_beanie(database=client.cws, document_models=[ConversationHistoryDocument])
+    logger.info("MongoDB initialized")

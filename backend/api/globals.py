@@ -15,4 +15,3 @@ request_log_counter = RequestCounter(
 )
 ask_log_queue = TimeQueue(config.stats.ask_log_time_window)  # 7 days
 
-chatgpt_manager = None

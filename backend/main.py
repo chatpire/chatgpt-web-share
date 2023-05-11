@@ -15,7 +15,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from api.conf import Config
 import api.globals as g
 
-from api.database import create_db_and_tables, get_async_session_context, get_user_db_context
+from api.database import create_db_and_tables, get_async_session_context, get_user_db_context, init_mongodb
 from api.enums import RevChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
@@ -82,7 +82,8 @@ async def validation_exception_handler(request, exc):
 @app.on_event("startup")
 async def on_startup():
     await create_db_and_tables()
-    logger.info("database initialized")
+    await init_mongodb()
+
     g.startup_time = time.time()
 
     load_stats()

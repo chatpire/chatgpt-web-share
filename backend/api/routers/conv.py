@@ -9,14 +9,17 @@ from sqlalchemy import select, and_, delete
 import api.globals as g
 from api.database import get_async_session_context
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
-from api.models import User, RevConversation, ConversationHistory
+from api.models import User, RevConversation, ConversationHistoryDocument
 from api.response import response
 from api.schema import RevConversationSchema, ConversationHistoryResponse
 from api.users import current_active_user, current_super_user
+from api.sources import RevChatGPTManager
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
+
+manager = RevChatGPTManager()
 
 
 async def _get_conversation_by_id(conversation_id: str, user: User = Depends(current_active_user)):
@@ -53,16 +56,16 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
 
 
 @router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistoryResponse)
-async def get_conversation_history(conversation: RevConversation = Depends(_get_conversation_by_id)):
+async def get_conversation_history(refresh: bool = False, conversation: RevConversation = Depends(_get_conversation_by_id)):
     try:
-        result = await api.revchatgpt.chatgpt_manager.get_conversation_history(conversation.conversation_id)
+        result = await manager.get_conversation_history(conversation.conversation_id, refresh=refresh)
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 404:
             raise InvalidParamsException("errors.conversationNotFound")
         raise InternalException()
     except ValueError as e:
         raise InternalException(str(e))
-    return ConversationHistoryResponse(history=result, is_cached=False)
+    return ConversationHistoryResponse(history=result, is_cached=not refresh)
 
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
@@ -71,7 +74,7 @@ async def delete_conversation(conversation: RevConversation = Depends(_get_conve
     if not conversation.is_valid:
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
     try:
-        await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
+        await manager.delete_conversation(conversation.conversation_id)
     except revChatGPTError as e:
         logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
     except httpx.HTTPStatusError as e:
@@ -88,7 +91,7 @@ async def delete_conversation(conversation: RevConversation = Depends(_get_conve
 async def vanish_conversation(conversation: RevConversation = Depends(_get_conversation_by_id)):
     if conversation.is_valid:
         try:
-            await g.chatgpt_manager.delete_conversation(conversation.conversation_id)
+            await manager.delete_conversation(conversation.conversation_id)
         except revChatGPTError as e:
             logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
         except httpx.HTTPStatusError as e:
@@ -102,7 +105,7 @@ async def vanish_conversation(conversation: RevConversation = Depends(_get_conve
 
 @router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=RevConversationSchema)
 async def update_conversation_title(title: str, conversation: RevConversation = Depends(_get_conversation_by_id)):
-    await g.chatgpt_manager.set_conversation_title(conversation.conversation_id,
+    await manager.set_conversation_title(conversation.conversation_id,
                                                                 title)
     async with get_async_session_context() as session:
         conversation.title = title
@@ -133,7 +136,7 @@ async def assign_conversation(username: str, conversation_id: str, _user: User =
 
 @router.delete("/conv", tags=["conversation"])
 async def delete_all_conversation(_user: User = Depends(current_super_user)):
-    await g.chatgpt_manager.clear_conversations()
+    await manager.clear_conversations()
     async with get_async_session_context() as session:
         await session.execute(delete(RevConversation))
         await session.commit()
@@ -145,7 +148,7 @@ async def generate_conversation_title(message_id: str, conversation: RevConversa
     if conversation.title is not None:
         raise InvalidParamsException("errors.conversationTitleAlreadyGenerated")
     async with get_async_session_context() as session:
-        result = await g.chatgpt_manager.generate_conversation_title(conversation.id, message_id)
+        result = await manager.generate_conversation_title(conversation.id, message_id)
         if result["title"]:
             conversation.title = result["title"]
             session.add(conversation)
