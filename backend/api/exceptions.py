@@ -40,3 +40,8 @@ class InvalidRequestException(SelfDefinedException):
 class InternalException(SelfDefinedException):
     def __init__(self, message: str = ""):
         super().__init__("errors.internal", message)
+
+
+class ConfigException(SelfDefinedException):
+    def __init__(self, message: str = ""):
+        super().__init__("errors.config", message)

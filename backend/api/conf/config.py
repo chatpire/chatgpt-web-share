@@ -1,74 +1,99 @@
-"""
-modified from NAStool/nas-tools/config.py
-"""
+from typing import Optional
 
-import os
-from threading import Lock
-from ruamel.yaml import YAML
-from api.conf.config_model import ConfigModel
+from pydantic import BaseModel
 
-# 线程锁
-lock = Lock()
+from api.conf.base_config import BaseConfig
+from utils.common import singleton_with_lock
 
-# 全局实例
-_CONFIG = None
+_TYPE_CHECKING = False
 
 
-def singleConfig(cls):
-    def _singleConfig(*args, **kwargs):
-        global _CONFIG
-        if not _CONFIG:
-            with lock:
-                _CONFIG = cls(*args, **kwargs)
-        return _CONFIG
-
-    return _singleConfig
+class CommonSetting(BaseModel):
+    print_sql: bool = False
+    create_initial_admin_user: bool = True
+    initial_admin_user_username: str = 'admin'
+    initial_admin_user_password: str = 'password'
+    sync_conversations_on_startup: bool = True
+    sync_conversations_regularly: bool = True
 
 
-@singleConfig
-class Config(object):
-    _config_path = None
-    _config_dict = None
-    _config: ConfigModel = None
+class HttpSetting(BaseModel):
+    host: str = '127.0.0.1'
+    port: int = 8000
+    cors_allow_origins: list = ['http://localhost', 'http://127.0.0.1']
+
+
+class DataSetting(BaseModel):
+    data_dir: str = './data'
+    database_url: str = 'sqlite+aiosqlite:///data/database.db'
+    mongodb_url: str = 'mongodb://cws:password@localhost:27017'
+    run_migration: bool = False
+
+
+class AuthSetting(BaseModel):
+    jwt_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
+    jwt_lifetime_seconds: int = 86400
+    cookie_max_age: int = 86400
+    cookie_name: str = 'user_auth'
+    user_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
+
+
+class RevChatGPTSetting(BaseModel):
+    is_plus_account: bool = False
+    chatgpt_base_url: Optional[str] = None
+    ask_timeout: int = 600
+
+
+class APISetting(BaseModel):
+    openai_base_url: str = 'https://api.openai.com/v1/'
+    connect_timeout: int = 5
+    read_timeout: int = 60
+
+
+class LogSetting(BaseModel):
+    log_dir: str = 'logs'
+    console_log_level: str = 'INFO'
+
+
+class StatsSetting(BaseModel):
+    request_counter_time_window: int = 30 * 24 * 60 * 60  # 30 days
+    request_counts_interval: int = 30 * 60  # 30 minutes
+    ask_log_time_window: int = 604800  # 7 days
+
+
+class ConfigModel(BaseModel):
+    common: CommonSetting = CommonSetting()
+    http: HttpSetting = HttpSetting()
+    data: DataSetting = DataSetting()
+    auth: AuthSetting = AuthSetting()
+    revchatgpt: RevChatGPTSetting = RevChatGPTSetting()
+    api: APISetting = APISetting()
+    log: LogSetting = LogSetting()
+    stats: StatsSetting = StatsSetting()
+
+    class Config:
+        underscore_attrs_are_private = True
+
+
+@singleton_with_lock
+class Config(BaseConfig[ConfigModel]):
+    if _TYPE_CHECKING:
+        common: CommonSetting = CommonSetting()
+        http: HttpSetting = HttpSetting()
+        data: DataSetting = DataSetting()
+        auth: AuthSetting = AuthSetting()
+        revchatgpt: RevChatGPTSetting = RevChatGPTSetting()
+        api: APISetting = APISetting()
+        log: LogSetting = LogSetting()
+        stats: StatsSetting = StatsSetting()
 
     def __init__(self):
-        self._config_path = os.environ.get('CWS_CONFIG_PATH', './config.yaml')
-        if not os.environ.get('TZ'):
-            os.environ['TZ'] = 'Asia/Shanghai'
-
-        if not os.path.exists(self._config_path):
-            print("Error: Config file not found: %s" % self._config_path)
-            quit(1)
-
-        try:
-            with open(self._config_path, mode='r', encoding='utf-8') as f:
-                # 读取配置
-                yaml = YAML()
-                self._config_dict = yaml.load(f) or {}
-        except Exception as e:
-            print(f"Error: Cannot read config ({self._config_path}), file format error: {str(e)}")
-            quit(1)
-
-        self._config = ConfigModel(**self._config_dict)
-
-    @property
-    def config(self) -> ConfigModel:
-        return self._config
-
-    def save_config(self, new_cfg: ConfigModel):
-        self._config = new_cfg
-        self._config_dict = new_cfg.dict()
-        with open(self._config_path, mode='w', encoding='utf-8') as sf:
-            yaml = YAML()
-            yaml.dump(self._config_dict, sf)
-
-    def get_config_path(self):
-        return os.path.dirname(self._config_path)
+        super().__init__(ConfigModel, "config.yaml")
 
 
 if __name__ == '__main__':
     # 用于生成默认配置文件
     cfg = Config()
+    cfg._model = ConfigModel()
     cfg._config_path = './config.example.yaml'
-    cm = ConfigModel()
-    cfg.save_config(cm)
+    cfg.save()
