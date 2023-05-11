@@ -1,6 +1,7 @@
 from pydantic import BaseModel, validator
 
-from api.conf.config_model import RevChatGPTSetting, Credentials
+from api.conf.config import RevChatGPTSetting
+from api.conf.credentials import CredentialsModel
 
 
 class ServerStatusSchema(BaseModel):
@@ -42,4 +43,4 @@ class ConfigRead(BaseModel):
 
 class ConfigUpdate(BaseModel):
     chatgpt: RevChatGPTSetting
-    credentials: Credentials
+    credentials: CredentialsModel

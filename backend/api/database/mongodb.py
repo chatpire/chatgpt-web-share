@@ -1,4 +1,4 @@
-from beanie import init_beanie, Document
+from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from api.models import ConversationHistory
 

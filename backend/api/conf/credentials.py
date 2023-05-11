@@ -10,7 +10,7 @@ _TYPE_CHECKING = False
 
 
 class CredentialsModel(BaseModel):
-    revchatgpt_access_token: Optional[str] = None
+    chatgpt_access_token: Optional[str] = None
     # chatgpt_account_username: Optional[str] = None
     # chatgpt_account_password: Optional[str] = None
     openai_api_key: Optional[str] = None

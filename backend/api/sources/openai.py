@@ -7,7 +7,7 @@ from api.enums import ApiChatModels
 from api.models import ChatMessage
 from api.schema import ApiConversationSchema
 
-config = Config().config
+config = Config()
 
 
 class OpenAIManager:
@@ -18,6 +18,9 @@ class OpenAIManager:
     def __init__(self, api_key):
         self.client = httpx.AsyncClient()
 
-    async def ask(self, message: ChatMessage, model: ApiChatModels = None, conversation: ApiConversationSchema = None,
-                  parent: uuid.UUID = None):
+    async def ask(self, content: str, conversation: ApiConversationSchema = None,
+                  parent: uuid.UUID = None, model: ApiChatModels = None):
+        if not conversation:
+            raise ValueError("conversation is required")
         model = model or ApiChatModels.gpt3
+        message = ChatMessage.new(role="user", content=content)

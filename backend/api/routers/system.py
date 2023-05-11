@@ -15,7 +15,7 @@ from api.users import current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
-config = Config().config
+config = Config()
 
 router = APIRouter()
 
@@ -185,5 +185,5 @@ async def update_config(config_update: ConfigUpdate, _user: User = Depends(curre
             setattr(config.credentials, key, None)
         elif value is not None and value != "":
             setattr(config.credentials, key, value)
-    Config().save_config(config)
+    Config().save(config)
     return await get_config(_user)

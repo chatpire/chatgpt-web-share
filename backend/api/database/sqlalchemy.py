@@ -27,7 +27,7 @@ def _custom_json_serializer(*args, **kwargs) -> str:
 
 
 logger = get_logger(__name__)
-config = Config().config
+config = Config()
 
 database_url = config.data.database_url
 engine = create_async_engine(database_url, echo=config.common.print_sql, json_serializer=_custom_json_serializer)

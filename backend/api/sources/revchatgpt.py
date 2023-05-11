@@ -4,11 +4,12 @@ import uuid
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 
-from api.conf import Config
+from api.conf import Config, Credentials
 from api.enums import RevChatModels
 from api.models import RevChatMessageMetadata, ChatMessage, ConversationHistory
 
-_config = Config().config
+config = Config()
+credentials = Credentials()
 
 
 def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[uuid.UUID, ChatMessage]:
@@ -57,12 +58,15 @@ def get_last_model_name_from_mapping(current_node_uuid: uuid.UUID, mapping: dict
 
 
 class RevChatGPTManager:
+    """
+    TODO: 解除 revChatGPT 依赖
+    """
     def __init__(self):
         self.chatbot = AsyncChatbot({
-            "access_token": _config.credentials.chatgpt_account_access_token,
-            "paid": _config.revchatgpt.is_plus_account,
+            "access_token": credentials.chatgpt_access_token,
+            "paid": config.revchatgpt.is_plus_account,
             "model": "text-davinci-002-render-sha",  # default model
-        }, base_url=_config.revchatgpt.chatgpt_base_url)
+        }, base_url=config.revchatgpt.chatgpt_base_url)
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):

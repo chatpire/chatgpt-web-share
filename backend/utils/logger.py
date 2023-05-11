@@ -13,12 +13,12 @@ def get_log_config():
     with open('logging_config.yaml', 'r') as f:
         log_config = yaml.safe_load(f.read())
     log_config['handlers']['file_handler']['filename'] = g.server_log_filename
-    log_config['handlers']['console_handler']['level'] = Config().config.log.console_log_level
+    log_config['handlers']['console_handler']['level'] = Config().log.console_log_level
     return log_config
 
 
 def setup_logger():
-    log_dir = Config().config.log.log_dir
+    log_dir = Config().log.log_dir
     os.makedirs(log_dir, exist_ok=True)
     g.server_log_filename = os.path.join(log_dir, f"{datetime.now().strftime('%Y%m%d_%H-%M-%S')}.log")
     log_config = get_log_config()

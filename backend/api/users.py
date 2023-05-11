@@ -19,7 +19,7 @@ from api.schema import UserCreate, UserSettingSchema, UserUpdate, UserUpdateAdmi
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
-config = Config().config
+config = Config()
 
 # 使用 cookie + JWT
 # 参考 https://fastapi-users.github.io/fastapi-users/10.2/configuration/full-example/

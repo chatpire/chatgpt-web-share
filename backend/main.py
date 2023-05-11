@@ -12,8 +12,9 @@ from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-import api.globals as g
 from api.conf import Config
+import api.globals as g
+
 from api.database import create_db_and_tables, get_async_session_context, get_user_db_context
 from api.enums import RevChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
@@ -28,7 +29,7 @@ from utils.admin import sync_conversations
 from utils.logger import setup_logger, get_log_config, get_logger
 from utils.stats import dump_stats, load_stats
 
-config = Config().config
+config = Config()
 
 setup_logger()
 

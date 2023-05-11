@@ -10,9 +10,9 @@ logger = get_logger(__name__)
 
 
 def dump_stats(print_log=True):
-    path = os.path.join(Config().config.data.data_dir, "statistics.json")
+    path = os.path.join(Config().data.data_dir, "statistics.json")
     data = {
-        "request_log_counter_interval": Config().config.stats.request_counts_interval,
+        "request_log_counter_interval": Config().stats.request_counts_interval,
         "request_log_counter": g.request_log_counter.counter,
         "ask_log_queue": list(g.ask_log_queue.queue)
     }
@@ -23,13 +23,13 @@ def dump_stats(print_log=True):
 
 
 def load_stats():
-    path = os.path.join(Config().config.data.data_dir, "statistics.json")
+    path = os.path.join(Config().data.data_dir, "statistics.json")
     logger.debug(f"loading statistics from {path}")
     try:
         with open(path, "r") as f:
             data = json.load(f)
 
-            if Config().config.stats.request_counts_interval != data["request_log_counter_interval"]:
+            if Config().stats.request_counts_interval != data["request_log_counter_interval"]:
                 logger.warning("request_log_counter_interval is different from the saved one, counter cleared.")
                 return
 
