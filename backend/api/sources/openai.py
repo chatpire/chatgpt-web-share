@@ -22,5 +22,5 @@ class OpenAIManager:
                   parent: uuid.UUID = None, model: ApiChatModels = None):
         if not conversation:
             raise ValueError("conversation is required")
-        model = model or ApiChatModels.gpt3
+        model = model or ApiChatModels.gpt_3_5_turbo
         message = ChatMessage.new(role="user", content=content)

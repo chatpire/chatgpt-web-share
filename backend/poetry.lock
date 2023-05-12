@@ -1856,6 +1856,23 @@ anyio = ">=3.4.0,<5"
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyaml"]
 
 [[package]]
+name = "strenum"
+version = "0.4.10"
+description = "An Enum that inherits from str."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "StrEnum-0.4.10-py3-none-any.whl", hash = "sha256:aebf04bba8e5af435937c452d69a86798b6f8d5ca5f20ba18561dbfad571ccdd"},
+    {file = "StrEnum-0.4.10.tar.gz", hash = "sha256:898cc0ebb5054ee07400341ac1d75fdfee489d76d6df3fbc1c2eaf95971e3916"},
+]
+
+[package.extras]
+docs = ["myst-parser[linkify]", "sphinx", "sphinx-rtd-theme"]
+release = ["twine"]
+test = ["pylint", "pytest", "pytest-black", "pytest-cov", "pytest-pylint"]
+
+[[package]]
 name = "tiktoken"
 version = "0.4.0"
 description = "tiktoken is a fast BPE tokeniser for use with OpenAI's models"
@@ -2197,4 +2214,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0b00e29cea4ce4be7f2b8013f05052f8c871930cc34638bbd9c46ae067857ef0"
+content-hash = "eaed76c21f585a187cfbaa011aedacd33929c49ef0b831992f22e16d6d4c6696"

@@ -41,7 +41,7 @@ class UserSettingSchema(BaseModel):
     def default():
         return UserSettingSchema(
             can_use_revchatgpt=True,
-            revchatgpt_available_models=[RevChatModels.default, RevChatModels.gpt4],
+            revchatgpt_available_models=[RevChatModels.chatgpt_3_5, RevChatModels.gpt_4],
             revchatgpt_ask_limits=RevChatAskLimits.default(),
             revchatgpt_time_limits=RevChatTimeLimits.default(),
             can_use_openai_api=True,

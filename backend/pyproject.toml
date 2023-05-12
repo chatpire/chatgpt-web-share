@@ -26,6 +26,7 @@ aiocron = "^1.8"
 ruamel-yaml = "^0.17.26"
 beanie = "^1.19.0"
 httpx = "^0.24.0"
+strenum = "^0.4.10"
 
 
 [build-system]

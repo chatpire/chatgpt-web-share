@@ -16,9 +16,8 @@ class RevChatAskLimits(BaseModel):
             max_conv_count=1,
             total_count=0,
             per_model_count={
-                RevChatModels.default: 0,
-                RevChatModels.gpt4: 0,
-                RevChatModels.legacy: 0,
+                RevChatModels.chatgpt_3_5: 0,
+                RevChatModels.gpt_4: 0,
             })
 
     @staticmethod
@@ -27,9 +26,8 @@ class RevChatAskLimits(BaseModel):
             max_conv_count=-1,
             total_count=-1,
             per_model_count={
-                RevChatModels.default: -1,
-                RevChatModels.gpt4: -1,
-                RevChatModels.legacy: -1,
+                RevChatModels.chatgpt_3_5: -1,
+                RevChatModels.gpt_4: -1,
             })
 
 
@@ -41,20 +39,20 @@ class RevChatTimeLimits(BaseModel):
     def default():
         return RevChatTimeLimits(
             time_window_limits={
-                RevChatModels.default: [],
-                RevChatModels.gpt4: [],
+                RevChatModels.chatgpt_3_5: [],
+                RevChatModels.gpt_4: [],
             }, available_time_range_in_day={
-                RevChatModels.default: None,
-                RevChatModels.gpt4: None,
+                RevChatModels.chatgpt_3_5: None,
+                RevChatModels.gpt_4: None,
             })
 
     @staticmethod
     def unlimited():
         return RevChatTimeLimits(
             time_window_limits={
-                RevChatModels.default.value: [],
-                RevChatModels.gpt4.value: [],
+                RevChatModels.chatgpt_3_5.value: [],
+                RevChatModels.gpt_4.value: [],
             }, available_time_range_in_day={
-                RevChatModels.default.value: None,
-                RevChatModels.gpt4.value: None,
+                RevChatModels.chatgpt_3_5.value: None,
+                RevChatModels.gpt_4.value: None,
             })

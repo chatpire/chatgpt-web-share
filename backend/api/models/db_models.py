@@ -7,7 +7,7 @@ from sqlalchemy import String, DateTime, Enum, Boolean, Float, ForeignKey, JSON,
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic
-from api.enums import RevChatStatus, RevChatModels, ApiChatModels
+from api.enums import RevChatStatus, RevChatModels, ApiChatModels, ChatModels
 from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
 
 
@@ -80,6 +80,10 @@ class BaseConversation(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     conv_type: Mapped[str]
     conversation_id: Mapped[uuid.UUID] = mapped_column(GUID, index=True, unique=True, comment="uuid")
+    model_name: Mapped[Optional[Enum["ChatModels"]]] = mapped_column(
+        Enum(ChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
+        default=None,
+        use_existing_column=True)
     title: Mapped[Optional[str]] = mapped_column(comment="对话标题")
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
     user: Mapped["User"] = relationship(back_populates="rev_conversations")
@@ -96,10 +100,7 @@ class RevConversation(BaseConversation):
     model_name: Mapped[Optional[Enum["RevChatModels"]]] = mapped_column(
         Enum(RevChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
         default=None,
-        comment="使用的模型",
         use_existing_column=True)
-    cached_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="缓存时间")
-    # TODO 缓存 revchatgpt 对话内容
 
 
 class ApiConversation(BaseConversation):
@@ -110,5 +111,4 @@ class ApiConversation(BaseConversation):
     model_name: Mapped[Optional[Enum["ApiChatModels"]]] = mapped_column(
         Enum(ApiChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
         default=None,
-        comment="使用的模型",
         use_existing_column=True)

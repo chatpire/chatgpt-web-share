@@ -9,8 +9,8 @@ async-timeout==4.0.2
 async-tio==1.3.2
 attrs==23.1.0
 bcrypt==4.0.1
-beanie==1.18.1
-certifi==2022.12.7
+beanie==1.19.0
+certifi==2023.5.7
 cffi==1.15.1
 charset-normalizer==3.1.0
 click==8.1.3
@@ -50,13 +50,15 @@ PyYAML==6.0
 regex==2023.5.5
 requests==2.30.0
 revChatGPT==5.0.0
-ruamel.yaml==0.17.22
+ruamel.yaml==0.17.26
+ruamel.yaml.clib==0.2.7
 six==1.16.0
 sniffio==1.3.0
 socksio==1.0.0
 SQLAlchemy==2.0.12
 starlette==0.26.1
-tiktoken==0.3.3
+StrEnum==0.4.10
+tiktoken==0.4.0
 toml==0.10.2
 tqdm==4.65.0
 typing_extensions==4.5.0
@@ -65,5 +67,5 @@ tzlocal==4.3
 urllib3==2.0.2
 uvicorn==0.22.0
 wcwidth==0.2.6
-websockets==11.0.2
+websockets==11.0.3
 yarl==1.9.2

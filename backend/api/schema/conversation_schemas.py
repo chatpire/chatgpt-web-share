@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from api.enums import RevChatModels, ApiChatModels
+from api.enums import RevChatModels, ApiChatModels, ChatModels
 from api.models import ConversationHistoryDocument
 
 
@@ -15,7 +15,7 @@ class BaseConversationSchema(BaseModel):
     title: str | None
     user_id: int | None
     is_valid: bool = True
-    model_name: str | None
+    model_name: ChatModels | None
     create_time: datetime.datetime | None
     update_time: datetime.datetime | None
 

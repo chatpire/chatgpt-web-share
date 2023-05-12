@@ -84,7 +84,7 @@ async def ask_revchatgpt(websocket: WebSocket):
         conversation = await _get_conversation_by_id(conversation_id, user)
         model_name = model_name or conversation.model_name
     else:
-        model_name = model_name or RevChatModels.default
+        model_name = model_name or RevChatModels.chatgpt_3_5
 
     if isinstance(model_name, str):
         model_name = RevChatModels(model_name)
