@@ -24,15 +24,10 @@ class BaseConversationSchema(BaseModel):
 
 
 class RevConversationSchema(BaseConversationSchema):
-    conv_type: Literal['rev'] = "rev"
+    conv_type: Literal['rev']
     model_name: RevChatModels | None
 
 
 class ApiConversationSchema(BaseConversationSchema):
-    conv_type: Literal['api'] = "api"
+    conv_type: Literal['api']
     model_name: ApiChatModels | None
-
-
-class ConversationHistoryResponse(BaseModel):
-    is_cached: bool
-    history: ConversationHistoryDocument

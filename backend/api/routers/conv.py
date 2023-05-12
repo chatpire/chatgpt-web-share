@@ -55,7 +55,7 @@ async def get_all_conversations(user: User = Depends(current_active_user), fetch
         return results
 
 
-@router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistoryResponse)
+@router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistoryDocument)
 async def get_conversation_history(refresh: bool = False, conversation: RevConversation = Depends(_get_conversation_by_id)):
     try:
         result = await manager.get_conversation_history(conversation.conversation_id, refresh=refresh)
@@ -65,7 +65,7 @@ async def get_conversation_history(refresh: bool = False, conversation: RevConve
         raise InternalException()
     except ValueError as e:
         raise InternalException(str(e))
-    return ConversationHistoryResponse(history=result, is_cached=not refresh)
+    return result
 
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
