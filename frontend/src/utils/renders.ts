@@ -90,7 +90,7 @@ const popupInputDialog = (
 
 const getAvailableModelOptions = (): SelectOption[] => {
   const userStore = useUserStore();
-  const options = [{ label: t('commons.shaModel'), value: 'text-davinci-002-render-sha' }];
+  const options = [] as SelectOption[];
   // if (userStore.user?.setting.openai_api_available_models)
   //   options.push({
   //     label: t('commons.paidModel'),

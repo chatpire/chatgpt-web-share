@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { defineStore } from 'pinia';
 
 import {
@@ -56,10 +55,11 @@ const useConversationStore = defineStore('conversation', {
 
     // 仅当收到新信息时调用，为了避免重复获取整个对话历史
     addMessageToConversation(conversation_id: string, sendMessage: ChatMessage, recvMessage: ChatMessage) {
-      assert(sendMessage.id && recvMessage.id);
-
       if (!this.conversationHistoryMap[conversation_id]) {
         return;
+      }
+      if (!sendMessage.id || !recvMessage.id) {
+        throw new Error('Message id is null');
       }
 
       const convHistory = this.conversationHistoryMap[conversation_id];

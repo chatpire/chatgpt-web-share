@@ -5,6 +5,7 @@ enum ApiUrl {
   UserMe = '/user/me',
 
   Conversation = '/conv',
+  AllConversation = '/conv/all',
   UserList = '/user',
 
   ServerStatus = '/status',

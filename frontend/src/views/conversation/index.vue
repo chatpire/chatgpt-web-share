@@ -114,7 +114,6 @@
 import { ArrowDown, ChatboxEllipses } from '@vicons/ionicons5';
 import { MenuRound } from '@vicons/material';
 import { RemovableRef, useStorage } from '@vueuse/core';
-import assert from 'assert';
 import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -335,8 +334,7 @@ const sendMsg = async () => {
     } else if (response.type === 'message') {
       // console.log(reply)
       hasGotReply = true;
-      assert(response.message);
-      currentRecvMessage.value = response.message;
+      currentRecvMessage.value = response.message!;
       canAbort.value = true;
     } else if (response.type === 'error') {
       currentRecvMessage.value!.content = `${t(response.tip || 'error')}: ${response.error_detail}}`;

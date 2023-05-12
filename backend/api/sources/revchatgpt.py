@@ -5,6 +5,7 @@ from typing import Dict, Generator, AsyncGenerator
 from uuid import UUID
 
 import httpx
+import revChatGPT
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 
@@ -52,7 +53,9 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
     if not mapping:
         return result
     for key, item in mapping.items():
-        result[key] = convert_revchatgpt_message(item, str(key))
+        message = convert_revchatgpt_message(item, str(key))
+        if message:
+            result[key] = message
     return {str(key): value for key, value in result.items()}
 
 
@@ -67,6 +70,28 @@ def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, Cha
             current = mapping.get(str(current.parent))
     finally:
         return ChatModel.from_code(model_name)
+
+
+def _check_fields(data: dict) -> bool:
+    try:
+        data["message"]["content"]
+    except (TypeError, KeyError):
+        return False
+    return True
+
+
+async def _check_response(response: httpx.Response) -> None:
+    # 改成自带的错误处理
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as ex:
+        await response.aread()
+        error = revChatGPT.typings.Error(
+            source="OpenAI",
+            message=response.text,
+            code=response.status_code,
+        )
+        raise error from ex
 
 
 @singleton_with_lock
@@ -98,7 +123,11 @@ class RevChatGPTManager:
                 return doc
         result = await self.chatbot.get_msg_history(conversation_id)
         result = jsonable_encoder(result)
-        mapping = convert_mapping(result.get("mapping"))
+        mapping = {}
+        try:
+            mapping = convert_mapping(result.get("mapping"))
+        except Exception as e:
+            raise InvalidParamsException(f"!! Failed to convert mapping: {e}")
         current_model = None
         if mapping.get(result.get("current_node")):
             current_model = get_latest_model_from_mapping(result["current_node"], mapping)
@@ -126,8 +155,9 @@ class RevChatGPTManager:
         #                         model=model.code(ChatSourceTypes.rev),
         #                         timeout=timeout)
 
-        assert parent_id and not conversation_id, "parent_id must be set with conversation_id"
-        if not conversation_id and not parent_id:
+        if conversation_id or parent_id:
+            assert parent_id and conversation_id, "parent_id must be set with conversation_id"
+        else:
             parent_id = str(uuid.uuid4())
 
         messages = [
@@ -142,8 +172,8 @@ class RevChatGPTManager:
         data = {
             "action": "next",
             "messages": messages,
-            "conversation_id": str(conversation_id),
-            "parent_message_id": str(parent_id),
+            "conversation_id": conversation_id,
+            "parent_message_id": parent_id,
             "model": model.code(ChatSourceTypes.rev)
         }
 
@@ -153,7 +183,7 @@ class RevChatGPTManager:
                 data=json.dumps(data),
                 timeout=timeout,
         ) as response:
-            await self.chatbot.__check_response(response)
+            await _check_response(response)
             async for line in response.aiter_lines():
                 if not line or line is None:
                     continue
@@ -166,7 +196,7 @@ class RevChatGPTManager:
                     line = json.loads(line)
                 except json.decoder.JSONDecodeError:
                     continue
-                if not self.chatbot.__check_fields(line):
+                if not _check_fields(line):
                     raise ValueError(f"Field missing. Details: {str(line)}")
 
                 yield line

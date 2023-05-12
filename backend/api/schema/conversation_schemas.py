@@ -3,7 +3,7 @@ import uuid
 from enum import auto
 from typing import Literal, Optional
 
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, root_validator, validator
 from strenum import StrEnum
 
 from api.enums import ChatModel, ChatSourceTypes
@@ -26,6 +26,7 @@ class AskRequest(BaseModel):
             assert values["conversation_id"] is not None, "must specify conversation_id"
             assert values["parent"] is not None, "must specify parent"
             assert values["new_title"] is None, "can not specify new_title"
+        return values
 
 
 class AskResponseType(StrEnum):
@@ -59,8 +60,8 @@ class BaseConversationSchema(BaseModel):
 
 
 class RevConversationSchema(BaseConversationSchema):
-    type: Literal['rev']
+    type: Literal['rev'] = 'rev'
 
 
 class ApiConversationSchema(BaseConversationSchema):
-    type: Literal['api']
+    type: Literal['api'] = 'api'

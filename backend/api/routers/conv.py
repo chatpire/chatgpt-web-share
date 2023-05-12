@@ -49,7 +49,7 @@ async def get_my_conversations(user: User = Depends(current_active_user)):
 
 
 @router.get("/conv/all", tags=["conversation"],
-            response_model=List[Union[BaseConversationSchema, RevConversationSchema, ApiConversationSchema]])
+            response_model=List[BaseConversationSchema])
 async def get_all_conversations(_user: User = Depends(current_super_user), valid_only: bool = True):
     async with get_async_session_context() as session:
         stat = True
@@ -80,8 +80,6 @@ async def get_conversation_history(refresh: bool = False,
         if e.response.status_code == 404:
             raise InvalidParamsException("errors.conversationNotFound")
         raise InternalException()
-    except ValueError as e:
-        raise InternalException(str(e))
     return result
 
 

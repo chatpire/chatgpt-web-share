@@ -87,7 +87,7 @@ const menuOptions = computed<MenuOption[]>(() => {
   });
   if (results && props.newConv) {
     results.unshift({
-      label: () => h(Text, props.newConv?.title || ''),
+      label: () => props.newConv?.title || '',
       key: props.newConv.conversation_id,
       disabled: props.loading == true,
     });

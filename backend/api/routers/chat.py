@@ -56,7 +56,7 @@ async def ask_revchatgpt(websocket: WebSocket):
     """
 
     async def reply(response: AskResponse):
-        await websocket.send_json(response.dict())
+        await websocket.send_json(jsonable_encoder(response))
 
     await websocket.accept()
     user = await websocket_auth(websocket)
@@ -77,6 +77,7 @@ async def ask_revchatgpt(websocket: WebSocket):
     try:
         ask_request = AskRequest(**params)
     except ValidationError as e:
+        await reply(AskResponse(type=AskResponseType.error, error_detail=str(e)))
         await websocket.close(1007, "errors.invalidAskRequest")
         return
 

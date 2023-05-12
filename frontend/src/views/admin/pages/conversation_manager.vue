@@ -72,29 +72,29 @@ import {
   assignConversationToUserApi,
   clearAllConversationApi,
   deleteConversationApi,
-  getAllConversationsApi,
+  getAdminAllConversationsApi,
   vanishConversationApi,
 } from '@/api/conv';
-import { RevConversationSchema } from '@/types/schema';
+import { BaseConversationSchema } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { Dialog, Message } from '@/utils/tips';
 
 import UserSelector from '../components/UserSelector.vue';
 const { t } = useI18n();
 const router = useRouter();
-const data = ref<Array<RevConversationSchema>>([]);
-const rowKey = (row: RevConversationSchema) => row.conversation_id;
+const data = ref<Array<BaseConversationSchema>>([]);
+const rowKey = (row: BaseConversationSchema) => row.conversation_id;
 const checkedRowKeys = ref<Array<string>>([]);
 
 const refreshData = () => {
-  getAllConversationsApi(true).then((res) => {
+  getAdminAllConversationsApi(true).then((res) => {
     data.value = res.data;
   });
 };
 
 refreshData();
 
-const columns: DataTableColumns<RevConversationSchema> = [
+const columns: DataTableColumns<BaseConversationSchema> = [
   {
     type: 'selection',
   },

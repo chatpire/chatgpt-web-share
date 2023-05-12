@@ -17,7 +17,7 @@
         </template>
       </n-button>
       <!-- 消息记录 -->
-      <MessageRow v-for="message in messages" :key="message.id" :message="message" />
+      <MessageRow v-for="message in filteredMessages" :key="message.id" :message="message" />
     </div>
     <n-empty
       v-else
@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { Close } from '@vicons/ionicons5';
 import { useThemeVars } from 'naive-ui';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ChatMessage } from '@/types/schema';
@@ -64,6 +64,10 @@ watch(
     toggleFullscreenHistory(props.showTips);
   }
 );
+
+const filteredMessages = computed<ChatMessage[]>(() => {
+  return props.messages.filter((message) => message.role !== 'system');
+});
 
 const toggleFullscreenHistory = (showTips: boolean) => {
   // fullscreenHistory.value = !fullscreenHistory.value;

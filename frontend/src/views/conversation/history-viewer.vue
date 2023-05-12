@@ -13,7 +13,7 @@ import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useConversationStore } from '@/store';
-import { getConvMessageListFromId } from '@/utils/conversation';
+import { getMessageListFromHistory } from '@/utils/conversation';
 
 import HistoryContent from './components/HistoryContent.vue';
 
@@ -39,6 +39,8 @@ conversationStore
   });
 
 const messages = computed(() => {
-  return getConvMessageListFromId(conversationId);
+  const convHistory = conversationStore.conversationHistoryMap[conversationId];
+  if (!convHistory) return [];
+  return getMessageListFromHistory(convHistory);
 });
 </script>
