@@ -1,17 +1,50 @@
 import asyncio
+import json
 import uuid
-from typing import Dict
+from typing import Dict, Generator, AsyncGenerator
 from uuid import UUID
 
+import httpx
 from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
 from api.enums import ChatModel, ChatSourceTypes
-from api.models import RevChatMessageMetadata, ChatMessage, ConversationHistoryDocument
+from api.exceptions import InvalidParamsException
+from api.models import RevChatMessageMetadata, ConversationHistoryDocument, ChatMessage
+from utils.common import singleton_with_lock
 
 config = Config()
 credentials = Credentials()
+
+
+def convert_revchatgpt_message(item: dict, message_id: str = None) -> ChatMessage | None:
+    if not item.get("message"):
+        return None
+    content = ""
+    message_id = message_id or item["message"]["id"]
+    if item["message"].get("content"):
+        if item["message"]["content"].get("content_type") == "text":
+            content = item["message"]["content"]["parts"][0]
+        else:
+            raise ValueError(
+                f"!! Unknown message content type: {item['message']['content']['content_type']} in message {message_id}")
+    result = ChatMessage(
+        id=message_id,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
+        role=item["message"]["author"]["role"],
+        create_time=item["message"].get("create_time"),
+        parent=item.get("parent"),
+        children=item.get("children", []),
+        content=content
+    )
+    if "metadata" in item["message"] and item["message"]["metadata"] != {}:
+        result.model = ChatModel.from_code(item["message"]["metadata"].get("model_slug"))
+        result.rev_metadata = RevChatMessageMetadata(
+            finish_details=item["message"]["metadata"].get("finish_details"),
+            weight=item["message"].get("weight"),
+            end_turn=item["message"].get("end_turn"),
+        )
+    return result
 
 
 def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
@@ -19,30 +52,7 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
     if not mapping:
         return result
     for key, item in mapping.items():
-        if not item.get("message"):
-            continue
-        content = ""
-        if item["message"].get("content"):
-            if item["message"]["content"].get("content_type") == "text":
-                content = item["message"]["content"]["parts"][0]
-            else:
-                raise ValueError(
-                    f"!! Unknown message content type: {item['message']['content']['content_type']} in message {key}")
-        result[key] = ChatMessage(
-            id=key,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
-            role=item["message"]["author"]["role"],
-            create_time=item["message"].get("create_time"),
-            parent=item.get("parent"),
-            children=item.get("children", []),
-            content=content
-        )
-        if "metadata" in item["message"] and item["message"]["metadata"] != {}:
-            result[key].rev_metadata = RevChatMessageMetadata(
-                model=item["message"]["metadata"].get("model_slug"),
-                finish_details=item["message"]["metadata"].get("finish_details"),
-                weight=item["message"].get("weight"),
-                end_turn=item["message"].get("end_turn"),
-            )
+        result[key] = convert_revchatgpt_message(item, str(key))
     return {str(key): value for key, value in result.items()}
 
 
@@ -59,6 +69,7 @@ def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, Cha
         return ChatModel.from_code(model_name)
 
 
+@singleton_with_lock
 class RevChatGPTManager:
     """
     TODO: 解除 revChatGPT 依赖
@@ -107,12 +118,58 @@ class RevChatGPTManager:
     async def clear_conversations(self):
         await self.chatbot.clear_conversations()
 
-    def ask(self, message: str, conversation_id: str = None, parent_id: str = None,
-            timeout=360, model_name: ChatModel = None):
-        model = model_name or ChatModel.gpt_3_5
-        return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id,
-                                model=model.code(ChatSourceTypes.rev),
-                                timeout=timeout)
+    async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
+                  timeout=360, model: ChatModel = None) -> AsyncGenerator[ChatMessage, None]:
+
+        model = model or ChatModel.gpt_3_5
+        # return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id,
+        #                         model=model.code(ChatSourceTypes.rev),
+        #                         timeout=timeout)
+
+        assert parent_id and not conversation_id, "parent_id must be set with conversation_id"
+        if not conversation_id and not parent_id:
+            parent_id = str(uuid.uuid4())
+
+        messages = [
+            {
+                "id": str(uuid.uuid4()),
+                "role": "user",
+                "author": {"role": "user"},
+                "content": {"content_type": "text", "parts": [content]},
+            }
+        ]
+
+        data = {
+            "action": "next",
+            "messages": messages,
+            "conversation_id": str(conversation_id),
+            "parent_message_id": str(parent_id),
+            "model": model.code(ChatSourceTypes.rev)
+        }
+
+        async with self.chatbot.session.stream(
+                method="POST",
+                url=f"{self.chatbot.base_url}conversation",
+                data=json.dumps(data),
+                timeout=timeout,
+        ) as response:
+            await self.chatbot.__check_response(response)
+            async for line in response.aiter_lines():
+                if not line or line is None:
+                    continue
+                if "data: " in line:
+                    line = line[6:]
+                if "[DONE]" in line:
+                    break
+
+                try:
+                    line = json.loads(line)
+                except json.decoder.JSONDecodeError:
+                    continue
+                if not self.chatbot.__check_fields(line):
+                    raise ValueError(f"Field missing. Details: {str(line)}")
+
+                yield line
 
     async def delete_conversation(self, conversation_id: str):
         await self.chatbot.delete_conversation(conversation_id)

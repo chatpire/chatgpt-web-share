@@ -11,14 +11,12 @@ from api.enums import ChatModel
 class RevChatMessageMetadata(BaseModel):
     # mapping[id].message.metadata 中的内容 加上 mapping[id].message 中的 weight, end_turn
     # 以下只有assistant有
-    model: Optional[Union[ChatModel, str]]
     finish_details: Optional[dict[str, Any]]
     weight: Optional[float]
     end_turn: Optional[bool]
 
 
 class ApiChatMessageMetadata(BaseModel):
-    model: Optional[Union[ChatModel, str]]
     prompt_tokens: Optional[int]
     completion_tokens: Optional[int]
     finish_reason: Optional[str]
@@ -27,6 +25,7 @@ class ApiChatMessageMetadata(BaseModel):
 class ChatMessage(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     role: str  # rev: mapping[id].message.author.role: system, user, assistant
+    model: Optional[Union[ChatModel, str]]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
     create_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
     parent: Optional[uuid.UUID]
     children: list[uuid.UUID]
@@ -53,7 +52,7 @@ class ConversationHistoryDocument(Document):
     update_time: datetime.datetime
     mapping: dict[str, ChatMessage]
     current_node: uuid.UUID
-    current_model: Optional[Union[ChatModel, str]]  # rev: mapping[current_node].message.metadata.model_slug
+    current_model: Optional[Union[ChatModel, str]]
 
     class Settings:
         name = "conversation_history"

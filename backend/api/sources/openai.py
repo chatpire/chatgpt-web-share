@@ -4,8 +4,8 @@ import httpx
 
 from api.conf import Config
 from api.enums import ChatModel
-from api.models import ChatMessage
 from api.schema import ApiConversationSchema
+from api.models import ChatMessage
 
 config = Config()
 

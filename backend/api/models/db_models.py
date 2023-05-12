@@ -80,7 +80,7 @@ class BaseConversation(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     type: Mapped[ChatSourceTypes] = mapped_column(Enum(ChatSourceTypes), comment="对话类型")
     conversation_id: Mapped[uuid.UUID] = mapped_column(GUID, index=True, unique=True, comment="uuid")
-    model_name: Mapped[Optional[Enum["ChatModel"]]] = mapped_column(
+    current_model: Mapped[Optional[Enum["ChatModel"]]] = mapped_column(
         Enum(ChatModel, values_callable=lambda obj: [e.value for e in obj] if obj else None),
         default=None,
         use_existing_column=True)

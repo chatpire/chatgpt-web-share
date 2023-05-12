@@ -1,3 +1,4 @@
+import uuid
 from typing import List, Union
 
 import httpx
@@ -18,13 +19,12 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-
 manager = RevChatGPTManager()
 
 
-async def _get_conversation_by_id(conversation_id: str, user: User = Depends(current_active_user)):
+async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User = Depends(current_active_user)):
     async with get_async_session_context() as session:
-        r = await session.execute(select(BaseConversation).where(BaseConversation.conversation_id == conversation_id))
+        r = await session.execute(select(BaseConversation).where(BaseConversation.conversation_id == str(conversation_id)))
         conversation = r.scalars().one_or_none()
         if conversation is None:
             raise InvalidParamsException("errors.conversationNotFound")
