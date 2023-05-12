@@ -7,18 +7,16 @@
     style="outline: none"
     @keyup.esc="toggleFullscreenHistory(true)"
   >
-    <div v-if="!props.loading">
+    <div v-if="!props.loading" class="relative">
+      <slot name="top" />
+      <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
+        <template #icon>
+          <n-icon>
+            <Close />
+          </n-icon>
+        </template>
+      </n-button>
       <!-- 消息记录 -->
-      <div class="flex justify-center py-4 px-4 max-w-full relative" :style="{ backgroundColor: themeVars.baseColor }">
-        <n-text>{{ $t('commons.currentConversationModel') }}: {{ getRevChatModelNameTrans(modelName as any) }}</n-text>
-        <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
-          <template #icon>
-            <n-icon>
-              <Close />
-            </n-icon>
-          </template>
-        </n-button>
-      </div>
       <MessageRow v-for="message in messages" :key="message.id" :message="message" />
     </div>
     <n-empty
@@ -37,12 +35,10 @@
 <script setup lang="ts">
 import { Close } from '@vicons/ionicons5';
 import { useThemeVars } from 'naive-ui';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { ChatMessage } from '@/types/custom';
-import { getRevChatModelNameTrans } from '@/utils/chat';
-import { getModelNameFromMessages } from '@/utils/conversation';
+import { ChatMessage } from '@/types/schema';
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';
@@ -53,7 +49,6 @@ const themeVars = useThemeVars();
 
 const props = defineProps<{
   messages: ChatMessage[];
-  modelName?: string;
   fullscreen: boolean; // 初始状态下是否全屏
   showTips: boolean;
   loading: boolean;
@@ -62,14 +57,6 @@ const props = defineProps<{
 const contentRef = ref();
 const historyContentParent = ref<HTMLElement>();
 const _fullscreen = ref(false);
-
-const modelName = computed(() => {
-  if (props.modelName) {
-    return props.modelName;
-  } else {
-    return getModelNameFromMessages(props.messages);
-  }
-});
 
 watch(
   () => props.fullscreen,

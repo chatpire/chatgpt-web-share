@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { RevConversationSchema } from '@/types/schema';
+import { ConversationHistoryDocument, RevConversationSchema } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -11,7 +11,7 @@ export function getAllConversationsApi(fetch_all = false) {
 }
 
 export function getConversationHistoryApi(conversation_id: string) {
-  return axios.get<any>(ApiUrl.Conversation + '/' + conversation_id);
+  return axios.get<ConversationHistoryDocument>(ApiUrl.Conversation + '/' + conversation_id);
 }
 
 export function deleteConversationApi(conversation_id: string) {

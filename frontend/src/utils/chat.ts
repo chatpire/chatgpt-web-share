@@ -1,39 +1,19 @@
 import { i18n } from '@/i18n';
-import { ApiChatModels,RevChatModels } from '@/types/schema';
+import { ChatModel } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
-export const revChatModelNames: RevChatModels[] = [
-  'text-davinci-002-render-sha',
-  'gpt-4',
-  'text-davinci-002-render-paid',
-];
+export const chatModelNames = ['gpt_3_5', 'gpt_4'] as ChatModel[];
 
-export const apiChatModelNames: ApiChatModels[] = [
-  'gpt-3.5-turbo',
-  'gpt-4',
-];
-
-export const revChatModelNameMap: Record<RevChatModels, string> = {
-  'text-davinci-002-render-sha': t('commons.shaModel'),
-  'text-davinci-002-render-paid': t('commons.paidModel'),
-  'gpt-4': t('commons.gpt4Model'),
+export const chatModelNameMap: Record<ChatModel, string> = {
+  gpt_3_5: 'GPT 3.5',
+  gpt_4: 'GPT 4',
 };
 
-export const apiChatModelNameMap: Record<ApiChatModels, string> = {
-  'gpt-3.5-turbo': t('commons.gpt3TurboModel'),
-  'gpt-4': t('commons.gpt4Model'),
-};
-
-export const getRevChatModelNameTrans = (model_name: RevChatModels | string) => {
-  if (revChatModelNameMap[model_name as keyof typeof revChatModelNameMap])
-    return revChatModelNameMap[model_name as keyof typeof revChatModelNameMap];
-  else return model_name;
-};
-
-export const getApiChatModelNameTrans = (model_name: ApiChatModels | string) => {
-  if (apiChatModelNameMap[model_name as keyof typeof apiChatModelNameMap])
-    return apiChatModelNameMap[model_name as keyof typeof apiChatModelNameMap];
+export const getChatModelNameTrans = (model_name: ChatModel | string | null) => {
+  if (model_name == null) return t('commons.unknown');
+  if (chatModelNameMap[model_name as keyof typeof chatModelNameMap])
+    return chatModelNameMap[model_name as keyof typeof chatModelNameMap];
   else return model_name;
 };
 

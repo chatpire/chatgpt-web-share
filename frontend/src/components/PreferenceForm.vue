@@ -21,7 +21,7 @@
 import { ref, watch } from 'vue';
 
 import { i18n } from '@/i18n';
-import { Preference } from '@/types/custom';
+import { Preference } from '@/store/types';
 
 const t = i18n.global.t as any;
 

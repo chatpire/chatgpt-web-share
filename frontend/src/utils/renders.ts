@@ -4,14 +4,14 @@ import { h } from 'vue';
 
 import { i18n } from '@/i18n';
 import useUserStore from '@/store/modules/user';
-import { RevConversationSchema } from '@/types/schema';
-import { getRevChatModelNameTrans } from '@/utils/chat';
+import { BaseConversationSchema } from '@/types/schema';
+import { getChatModelNameTrans } from '@/utils/chat';
 import { Dialog } from '@/utils/tips';
 
 const t = i18n.global.t as any;
 
 const dropdownRenderer = (
-  conversation: RevConversationSchema,
+  conversation: BaseConversationSchema,
   handleDeleteConversation: (conversation_id?: string) => void,
   handleChangeConversationTitle: (conversation_id?: string) => void
 ) =>
@@ -98,7 +98,7 @@ const getAvailableModelOptions = (): SelectOption[] => {
   //   });
   // if (userStore.user?.can_use_gpt4) options.push({ label: t('commons.gpt4Model'), value: 'gpt-4' });
   userStore.user?.setting.openai_api_available_models?.forEach((model) => {
-    options.push({ label: getRevChatModelNameTrans(model), value: model });
+    options.push({ label: getChatModelNameTrans(model), value: model });
   });
   return options;
 };

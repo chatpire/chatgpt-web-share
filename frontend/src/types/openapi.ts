@@ -5,104 +5,113 @@
 
 
 export interface paths {
-  "/auth/login": {
+  '/auth/login': {
     /** Auth:Jwt.Login */
-    post: operations["auth_jwt_login_auth_login_post"];
+    post: operations['auth_jwt_login_auth_login_post'];
   };
-  "/auth/logout": {
+  '/auth/logout': {
     /** Auth:Jwt.Logout */
-    post: operations["auth_jwt_logout_auth_logout_post"];
+    post: operations['auth_jwt_logout_auth_logout_post'];
   };
-  "/auth/register": {
+  '/auth/register': {
     /**
      * Register 
      * @description 注册时不能指定setting，使用默认setting
      */
-    post: operations["register_auth_register_post"];
+    post: operations['register_auth_register_post'];
   };
-  "/user": {
+  '/user': {
     /** Get All Users */
-    get: operations["get_all_users_user_get"];
+    get: operations['get_all_users_user_get'];
   };
-  "/user/me": {
+  '/user/me': {
     /** Get Me */
-    get: operations["get_me_user_me_get"];
+    get: operations['get_me_user_me_get'];
     /** Update Me */
-    patch: operations["update_me_user_me_patch"];
+    patch: operations['update_me_user_me_patch'];
   };
-  "/user/{user_id}": {
+  '/user/{user_id}': {
     /** Admin Get User */
-    get: operations["admin_get_user_user__user_id__get"];
+    get: operations['admin_get_user_user__user_id__get'];
     /** Admin Delete User */
-    delete: operations["admin_delete_user_user__user_id__delete"];
+    delete: operations['admin_delete_user_user__user_id__delete'];
     /** Admin Update User */
-    patch: operations["admin_update_user_user__user_id__patch"];
+    patch: operations['admin_update_user_user__user_id__patch'];
   };
-  "/user/{user_id}/setting": {
+  '/user/{user_id}/setting': {
     /** Admin Update User Setting */
-    patch: operations["admin_update_user_setting_user__user_id__setting_patch"];
+    patch: operations['admin_update_user_setting_user__user_id__setting_patch'];
   };
-  "/conv": {
+  '/conv': {
     /**
-     * Get All Conversations 
+     * Get My Conversations 
      * @description 返回自己的有效会话
-     * 对于管理员，返回所有对话，并可以指定是否只返回有效会话
      */
-    get: operations["get_all_conversations_conv_get"];
+    get: operations['get_my_conversations_conv_get'];
     /** Delete All Conversation */
-    delete: operations["delete_all_conversation_conv_delete"];
+    delete: operations['delete_all_conversation_conv_delete'];
   };
-  "/conv/{conversation_id}": {
+  '/conv/all': {
+    /** Get All Conversations */
+    get: operations['get_all_conversations_conv_all_get'];
+  };
+  '/conv/{conversation_id}': {
     /** Get Conversation History */
-    get: operations["get_conversation_history_conv__conversation_id__get"];
+    get: operations['get_conversation_history_conv__conversation_id__get'];
     /**
      * Delete Conversation 
-     * @description remove conversation from database and chatgpt server
+     * @description 软删除：标记为 invalid 并且从 chatgpt 账号中删除会话，但不会删除 mongodb 中的历史记录
      */
-    delete: operations["delete_conversation_conv__conversation_id__delete"];
+    delete: operations['delete_conversation_conv__conversation_id__delete'];
     /** Update Conversation Title */
-    patch: operations["update_conversation_title_conv__conversation_id__patch"];
+    patch: operations['update_conversation_title_conv__conversation_id__patch'];
   };
-  "/conv/{conversation_id}/vanish": {
-    /** Vanish Conversation */
-    delete: operations["vanish_conversation_conv__conversation_id__vanish_delete"];
+  '/conv/{conversation_id}/vanish': {
+    /**
+     * Vanish Conversation 
+     * @description 硬删除：删除数据库和账号中的对话和历史记录
+     */
+    delete: operations['vanish_conversation_conv__conversation_id__vanish_delete'];
   };
-  "/conv/{conversation_id}/assign/{username}": {
+  '/conv/{conversation_id}/assign/{username}': {
     /** Assign Conversation */
-    patch: operations["assign_conversation_conv__conversation_id__assign__username__patch"];
+    patch: operations['assign_conversation_conv__conversation_id__assign__username__patch'];
   };
-  "/conv/{conversation_id}/gen_title": {
+  '/conv/{conversation_id}/gen_title': {
     /** Generate Conversation Title */
-    patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
+    patch: operations['generate_conversation_title_conv__conversation_id__gen_title_patch'];
   };
-  "/chat/avaliable-models": {
-    /** Get Avaliable Models */
-    get: operations["get_avaliable_models_chat_avaliable_models_get"];
+  '/chat/__schema_types': {
+    /**
+     * Predict Schema Types 
+     * @description 只用来让 openapi 自动生成 schema，并不实际调用
+     */
+    get: operations['_predict_schema_types_chat___schema_types_get'];
   };
-  "/system/info": {
+  '/system/info': {
     /** Get System Info */
-    get: operations["get_system_info_system_info_get"];
+    get: operations['get_system_info_system_info_get'];
   };
-  "/system/request_statistics": {
+  '/system/request_statistics': {
     /** Get Request Statistics */
-    get: operations["get_request_statistics_system_request_statistics_get"];
+    get: operations['get_request_statistics_system_request_statistics_get'];
   };
-  "/system/server_logs": {
+  '/system/server_logs': {
     /** Get Server Logs */
-    post: operations["get_server_logs_system_server_logs_post"];
+    post: operations['get_server_logs_system_server_logs_post'];
   };
-  "/system/config": {
+  '/system/config': {
     /** Get Config */
-    get: operations["get_config_system_config_get"];
+    get: operations['get_config_system_config_get'];
     /** Update Config */
-    patch: operations["update_config_system_config_patch"];
+    patch: operations['update_config_system_config_patch'];
   };
-  "/status": {
+  '/status': {
     /**
      * Get Server Status 
      * @description 普通用户获取服务器状态
      */
-    get: operations["get_server_status_status_get"];
+    get: operations['get_server_status_status_get'];
   };
 }
 
@@ -110,12 +119,127 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** ApiChatMessageMetadata */
+    ApiChatMessageMetadata: {
+      /** Prompt Tokens */
+      prompt_tokens?: number;
+      /** Completion Tokens */
+      completion_tokens?: number;
+      /** Finish Reason */
+      finish_reason?: string;
+    };
+    /** ApiConversationSchema */
+    ApiConversationSchema: {
+      /**
+       * Id 
+       * @default -1
+       */
+      id?: number;
+      /**
+       * Type 
+       * @enum {string}
+       */
+      type: 'api';
+      /**
+       * Conversation Id 
+       * Format: uuid
+       */
+      conversation_id?: string;
+      /** Title */
+      title?: string;
+      /** User Id */
+      user_id?: number;
+      /**
+       * Is Valid 
+       * @default true
+       */
+      is_valid?: boolean;
+      current_model?: components['schemas']['ChatModel'];
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time?: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time?: string;
+    };
+    /** AskRequest */
+    AskRequest: {
+      /** New Conversation */
+      new_conversation: boolean;
+      /** New Title */
+      new_title?: string;
+      /**
+       * Conversation Id 
+       * Format: uuid
+       */
+      conversation_id?: string;
+      /**
+       * Parent 
+       * Format: uuid
+       */
+      parent?: string;
+      model: components['schemas']['ChatModel'];
+      /** Content */
+      content: string;
+    };
+    /** AskResponse */
+    AskResponse: {
+      type: components['schemas']['AskResponseType'];
+      /** Tip */
+      tip?: string;
+      /**
+       * Conversation Id 
+       * Format: uuid
+       */
+      conversation_id?: string;
+      message?: components['schemas']['ChatMessage'];
+      /** Error Detail */
+      error_detail?: string;
+    };
     /**
-     * ApiChatModels 
+     * AskResponseType 
      * @description An enumeration. 
-     * @enum {unknown}
+     * @enum {string}
      */
-    ApiChatModels: "gpt-3.5-turbo" | "gpt-4";
+    AskResponseType: 'waiting' | 'queueing' | 'message' | 'error';
+    /** BaseConversationSchema */
+    BaseConversationSchema: {
+      /**
+       * Id 
+       * @default -1
+       */
+      id?: number;
+      type: components['schemas']['ChatSourceTypes'];
+      /**
+       * Conversation Id 
+       * Format: uuid
+       */
+      conversation_id?: string;
+      /** Title */
+      title?: string;
+      /** User Id */
+      user_id?: number;
+      /**
+       * Is Valid 
+       * @default true
+       */
+      is_valid?: boolean;
+      current_model?: components['schemas']['ChatModel'];
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time?: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time?: string;
+    };
     /** Body_auth_jwt_login_auth_login_post */
     Body_auth_jwt_login_auth_login_post: {
       /** Grant Type */
@@ -134,24 +258,49 @@ export interface components {
       /** Client Secret */
       client_secret?: string;
     };
-    /** ChatGPTSetting */
-    ChatGPTSetting: {
+    /** ChatMessage */
+    ChatMessage: {
       /**
-       * Is Plus Account 
-       * @default false
+       * Id 
+       * Format: uuid
        */
-      is_plus_account?: boolean;
-      /** Chatgpt Base Url */
-      chatgpt_base_url?: string;
+      id?: string;
+      /** Role */
+      role: string;
+      /** Model */
+      model?: components['schemas']['ChatModel'] | string;
       /**
-       * Ask Timeout 
-       * @default 600
+       * Create Time 
+       * Format: date-time
        */
-      ask_timeout?: number;
+      create_time?: string;
+      /**
+       * Parent 
+       * Format: uuid
+       */
+      parent?: string;
+      /** Children */
+      children: (string)[];
+      /** Content */
+      content: string;
+      rev_metadata?: components['schemas']['RevChatMessageMetadata'];
+      api_metadata?: components['schemas']['ApiChatMessageMetadata'];
     };
+    /**
+     * ChatModel 
+     * @description An enumeration. 
+     * @enum {string}
+     */
+    ChatModel: 'gpt_3_5' | 'gpt_4';
+    /**
+     * ChatSourceTypes 
+     * @description An enumeration. 
+     * @enum {string}
+     */
+    ChatSourceTypes: 'rev' | 'api';
     /** ConfigRead */
     ConfigRead: {
-      chatgpt: components["schemas"]["ChatGPTSetting"];
+      chatgpt: components['schemas']['RevChatGPTSetting'];
       /** Credentials Exist */
       credentials_exist: {
         [key: string]: boolean | undefined;
@@ -159,17 +308,62 @@ export interface components {
     };
     /** ConfigUpdate */
     ConfigUpdate: {
-      chatgpt: components["schemas"]["ChatGPTSetting"];
-      credentials: components["schemas"]["Credentials"];
+      chatgpt: components['schemas']['RevChatGPTSetting'];
+      credentials: components['schemas']['CredentialsModel'];
     };
-    /** Credentials */
-    Credentials: {
-      /** Chatgpt Account Access Token */
-      chatgpt_account_access_token?: string;
-      /** Chatgpt Account Username */
-      chatgpt_account_username?: string;
-      /** Chatgpt Account Password */
-      chatgpt_account_password?: string;
+    /**
+     * ConversationHistoryDocument 
+     * @description Document Mapping class.
+     * 
+     * Fields:
+     * 
+     * - `id` - MongoDB document ObjectID "_id" field.
+     * Mapped to the PydanticObjectId class
+     * 
+     * Inherited from:
+     * 
+     * - Pydantic BaseModel
+     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+     */
+    ConversationHistoryDocument: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      _id?: string;
+      /**
+       * Type 
+       * @enum {string}
+       */
+      type: 'rev' | 'api';
+      /** Title */
+      title: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time: string;
+      /** Mapping */
+      mapping: {
+        [key: string]: components['schemas']['ChatMessage'] | undefined;
+      };
+      /**
+       * Current Node 
+       * Format: uuid
+       */
+      current_node: string;
+      /** Current Model */
+      current_model?: components['schemas']['ChatModel'] | string;
+    };
+    /** CredentialsModel */
+    CredentialsModel: {
+      /** Chatgpt Access Token */
+      chatgpt_access_token?: string;
       /** Openai Api Key */
       openai_api_key?: string;
     };
@@ -183,7 +377,7 @@ export interface components {
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
-      detail?: (components["schemas"]["ValidationError"])[];
+      detail?: (components['schemas']['ValidationError'])[];
     };
     /** LogFilterOptions */
     LogFilterOptions: {
@@ -217,18 +411,36 @@ export interface components {
         [key: string]: number | undefined;
       };
     };
-    /**
-     * RevChatModels 
-     * @description An enumeration. 
-     * @enum {unknown}
-     */
-    RevChatModels: "gpt-4" | "text-davinci-002-render-sha" | "text-davinci-002-render-paid";
+    /** RevChatGPTSetting */
+    RevChatGPTSetting: {
+      /**
+       * Is Plus Account 
+       * @default false
+       */
+      is_plus_account?: boolean;
+      /** Chatgpt Base Url */
+      chatgpt_base_url?: string;
+      /**
+       * Ask Timeout 
+       * @default 600
+       */
+      ask_timeout?: number;
+    };
+    /** RevChatMessageMetadata */
+    RevChatMessageMetadata: {
+      /** Finish Details */
+      finish_details?: Record<string, never>;
+      /** Weight */
+      weight?: number;
+      /** End Turn */
+      end_turn?: boolean;
+    };
     /**
      * RevChatStatus 
      * @description An enumeration. 
-     * @enum {unknown}
+     * @enum {string}
      */
-    RevChatStatus: "asking" | "queueing" | "idling";
+    RevChatStatus: 'asking' | 'queueing' | 'idling';
     /** RevChatTimeLimits */
     RevChatTimeLimits: {
       /** Time Window Limits */
@@ -248,6 +460,11 @@ export interface components {
        */
       id?: number;
       /**
+       * Type 
+       * @enum {string}
+       */
+      type: 'rev';
+      /**
        * Conversation Id 
        * Format: uuid
        */
@@ -261,17 +478,17 @@ export interface components {
        * @default true
        */
       is_valid?: boolean;
-      model_name?: components["schemas"]["RevChatModels"];
+      current_model?: components['schemas']['ChatModel'];
       /**
        * Create Time 
        * Format: date-time
        */
       create_time?: string;
       /**
-       * Active Time 
+       * Update Time 
        * Format: date-time
        */
-      active_time?: string;
+      update_time?: string;
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {
@@ -352,12 +569,12 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
-      rev_chat_status: components["schemas"]["RevChatStatus"];
+      rev_chat_status: components['schemas']['RevChatStatus'];
       /**
-       * Active Time 
+       * Last Active Time 
        * Format: date-time
        */
-      active_time?: string;
+      last_active_time?: string;
       /**
        * Create Time 
        * Format: date-time
@@ -365,7 +582,7 @@ export interface components {
       create_time: string;
       /** Avatar */
       avatar?: string;
-      setting: components["schemas"]["UserSettingSchema"];
+      setting: components['schemas']['UserSettingSchema'];
     };
     /**
      * UserReadAdmin 
@@ -389,12 +606,12 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
-      rev_chat_status: components["schemas"]["RevChatStatus"];
+      rev_chat_status: components['schemas']['RevChatStatus'];
       /**
-       * Active Time 
+       * Last Active Time 
        * Format: date-time
        */
-      active_time?: string;
+      last_active_time?: string;
       /**
        * Create Time 
        * Format: date-time
@@ -402,7 +619,7 @@ export interface components {
       create_time: string;
       /** Avatar */
       avatar?: string;
-      setting: components["schemas"]["UserSettingSchema"];
+      setting: components['schemas']['UserSettingSchema'];
       /** Remark */
       remark?: string;
     };
@@ -414,14 +631,14 @@ export interface components {
       user_id?: number;
       /** Can Use Revchatgpt */
       can_use_revchatgpt: boolean;
-      revchatgpt_available_models: (components["schemas"]["RevChatModels"])[];
-      revchatgpt_ask_limits: components["schemas"]["RevChatAskLimits"];
-      revchatgpt_time_limits: components["schemas"]["RevChatTimeLimits"];
+      revchatgpt_available_models: (components['schemas']['ChatModel'])[];
+      revchatgpt_ask_limits: components['schemas']['RevChatAskLimits'];
+      revchatgpt_time_limits: components['schemas']['RevChatTimeLimits'];
       /** Can Use Openai Api */
       can_use_openai_api: boolean;
       /** Openai Api Credits */
       openai_api_credits: number;
-      openai_api_available_models: (components["schemas"]["ApiChatModels"])[];
+      openai_api_available_models: (components['schemas']['ChatModel'])[];
       /** Can Use Custom Openai Api */
       can_use_custom_openai_api: boolean;
       /** Custom Openai Api Key */
@@ -490,26 +707,28 @@ export interface operations {
     /** Auth:Jwt.Login */
     requestBody: {
       content: {
-        "application/x-www-form-urlencoded": components["schemas"]["Body_auth_jwt_login_auth_login_post"];
+        'application/x-www-form-urlencoded': components['schemas']['Body_auth_jwt_login_auth_login_post'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
+      /** @description No Content */
+      204: never;
       /** @description Bad Request */
       400: {
         content: {
-          "application/json": components["schemas"]["ErrorModel"];
+          'application/json': components['schemas']['ErrorModel'];
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -520,9 +739,11 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
+      /** @description No Content */
+      204: never;
       /** @description Missing token or inactive user. */
       401: never;
     };
@@ -534,20 +755,20 @@ export interface operations {
      */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserCreate"];
+        'application/json': components['schemas']['UserCreate'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -558,7 +779,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -569,7 +790,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -578,20 +799,20 @@ export interface operations {
     /** Update Me */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserUpdate"];
+        'application/json': components['schemas']['UserUpdate'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -607,13 +828,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -629,13 +850,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -649,20 +870,20 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserUpdateAdmin"];
+        'application/json': components['schemas']['UserUpdateAdmin'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -676,46 +897,34 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserSettingSchema"];
+        'application/json': components['schemas']['UserSettingSchema'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
   };
-  get_all_conversations_conv_get: {
+  get_my_conversations_conv_get: {
     /**
-     * Get All Conversations 
+     * Get My Conversations 
      * @description 返回自己的有效会话
-     * 对于管理员，返回所有对话，并可以指定是否只返回有效会话
      */
-    parameters?: {
-      query?: {
-        fetch_all?: boolean;
-      };
-    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': string;
         };
       };
     };
@@ -726,7 +935,29 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
+        };
+      };
+    };
+  };
+  get_all_conversations_conv_all_get: {
+    /** Get All Conversations */
+    parameters?: {
+      query?: {
+        valid_only?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          'application/json': string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -734,21 +965,24 @@ export interface operations {
   get_conversation_history_conv__conversation_id__get: {
     /** Get Conversation History */
     parameters: {
+      query?: {
+        refresh?: boolean;
+      };
       path: {
-        conversation_id: string;
+        conversation_id: string | string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -756,24 +990,24 @@ export interface operations {
   delete_conversation_conv__conversation_id__delete: {
     /**
      * Delete Conversation 
-     * @description remove conversation from database and chatgpt server
+     * @description 软删除：标记为 invalid 并且从 chatgpt 账号中删除会话，但不会删除 mongodb 中的历史记录
      */
     parameters: {
       path: {
-        conversation_id: string;
+        conversation_id: string | string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -785,42 +1019,45 @@ export interface operations {
         title: string;
       };
       path: {
-        conversation_id: string;
+        conversation_id: string | string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
   };
   vanish_conversation_conv__conversation_id__vanish_delete: {
-    /** Vanish Conversation */
+    /**
+     * Vanish Conversation 
+     * @description 硬删除：删除数据库和账号中的对话和历史记录
+     */
     parameters: {
       path: {
-        conversation_id: string;
+        conversation_id: string | string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -830,20 +1067,20 @@ export interface operations {
     parameters: {
       path: {
         username: string;
-        conversation_id: string;
+        conversation_id: string | string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -855,31 +1092,45 @@ export interface operations {
         message_id: string;
       };
       path: {
-        conversation_id: string;
+        conversation_id: string | string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
   };
-  get_avaliable_models_chat_avaliable_models_get: {
-    /** Get Avaliable Models */
+  _predict_schema_types_chat___schema_types_get: {
+    /**
+     * Predict Schema Types 
+     * @description 只用来让 openapi 自动生成 schema，并不实际调用
+     */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AskRequest'];
+      };
+    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -890,7 +1141,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -901,7 +1152,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -910,20 +1161,20 @@ export interface operations {
     /** Get Server Logs */
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["LogFilterOptions"];
+        'application/json': components['schemas']['LogFilterOptions'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -934,7 +1185,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -943,20 +1194,20 @@ export interface operations {
     /** Update Config */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ConfigUpdate"];
+        'application/json': components['schemas']['ConfigUpdate'];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };
@@ -970,7 +1221,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };

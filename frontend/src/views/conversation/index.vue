@@ -58,12 +58,21 @@
         >
           <HistoryContent
             ref="historyContentRef"
-            :messages="currentMessageListDisplay"
+            :messages="currentMessageListToDisplay"
             :fullscreen="false"
-            :model-name="currentConversation?.model_name || ''"
+            :model-name="currentConversation?.current_model || ''"
             :show-tips="showFullscreenTips"
             :loading="loadingHistory"
-          />
+          >
+            <template #top>
+              <div
+                class="flex justify-center py-4 px-4 max-w-full relative"
+                :style="{ backgroundColor: themeVars.baseColor }"
+              >
+                <n-text>{{ $t('commons.currentConversationModel') }}: {{ getChatModelNameTrans(currentConversation?.current_model || null) }}</n-text>
+              </div>
+            </template>
+          </HistoryContent>
         </n-scrollbar>
         <!-- 未选中对话（空界面） -->
         <div
@@ -105,15 +114,16 @@
 import { ArrowDown, ChatboxEllipses } from '@vicons/ionicons5';
 import { MenuRound } from '@vicons/material';
 import { RemovableRef, useStorage } from '@vueuse/core';
+import assert from 'assert';
 import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 import { useAppStore, useConversationStore, useUserStore } from '@/store';
-import { ChatConversationDetail, ChatMessage } from '@/types/custom';
-import { RevConversationSchema } from '@/types/schema';
-import { getConvMessageListFromId } from '@/utils/conversation';
+import { AskRequest, AskResponse, BaseConversationSchema, ChatMessage, ConversationHistoryDocument,RevConversationSchema  } from '@/types/schema';
+import { getChatModelNameTrans } from '@/utils/chat';
+import { getMessageListFromHistory } from '@/utils/conversation';
 import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
@@ -141,33 +151,25 @@ const canAbort = ref<boolean>(false);
 const foldLeftBar = ref<RemovableRef<boolean>>(useStorage('foldLeftBar', false));
 let aborter: (() => void) | null = null;
 
-// const currentAvaliableAskCountsTip = computed(() => {
-//   let result = '';
-//   if (userStore.user?.available_ask_count != -1)
-//     result += `${t('commons.availableAskCount')}: ${getCountTrans(userStore.user?.available_ask_count!)}   `;
-//   if (currentConversation.value && currentConversation.value.model_name === 'gpt-4' && userStore.user?.available_gpt4_ask_count != -1)
-//     result += `${t('commons.availableGPT4AskCount')}: ${getCountTrans(userStore.user?.available_gpt4_ask_count!)}`;
-//   return result;
-// });
-
-const newConversation = ref<RevConversationSchema | null>(null);
+const newConversation = ref<BaseConversationSchema | null>(null);
 const currentConversationId = ref<string | null>(null);
-const currentConversation = computed<RevConversationSchema>(() => {
-  if (newConversation.value?.conversation_id === currentConversationId.value) return newConversation.value;
-  const conv = conversationStore.conversations?.find((conversation: RevConversationSchema) => {
+const currentConversation = computed<BaseConversationSchema | null>(() => {
+  if (newConversation.value?.conversation_id === currentConversationId.value)
+    return newConversation.value;
+  const conv = conversationStore.conversations?.find((conversation: BaseConversationSchema) => {
     return conversation.conversation_id == currentConversationId.value;
   });
-  return conv;
+  return conv || null;
 });
 
 const inputValue = ref('');
-const currentActiveMessageSend = ref<ChatMessage | null>(null);
-const currentActiveMessageRecv = ref<ChatMessage | null>(null);
-const currentMessageListDisplay = computed(() => {
+const currentSendMessage = ref<ChatMessage | null>(null);
+const currentRecvMessage = ref<ChatMessage | null>(null);
+const currentMessageListToDisplay = computed<ChatMessage[]>(() => {
   const conversationId = currentConversationId.value;
   if (!conversationId) return [];
-  // const _ensure_conv = conversationStore.conversationDetailMap[props.conversationId];
-  let result = getConvMessageListFromId(conversationId);
+  const convHistory = conversationStore.conversationHistoryMap[conversationId];
+  let result = getMessageListFromHistory(convHistory);
   if (currentActiveMessages.value.length > 0) {
     result = result.concat(currentActiveMessages.value);
   }
@@ -175,25 +177,25 @@ const currentMessageListDisplay = computed(() => {
 });
 
 // 从 store 中获取当前对话最新消息的 id
-const currentNode = computed<string | undefined>(() => {
+const currentNode = computed<string | null>(() => {
   if (currentConversation.value?.conversation_id)
-    return conversationStore.conversationDetailMap[currentConversation.value?.conversation_id]?.current_node;
-  else return undefined;
+    return conversationStore.conversationHistoryMap[currentConversation.value?.conversation_id]?.current_node;
+  else return null;
 });
 
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<ChatMessage>>(() => {
   const result: ChatMessage[] = [];
   if (
-    currentActiveMessageSend.value &&
-    result.findIndex((message) => message.id === currentActiveMessageSend.value?.id) === -1
+    currentSendMessage.value &&
+    result.findIndex((message) => message.id === currentSendMessage.value?.id) === -1
   )
-    result.push(currentActiveMessageSend.value);
+    result.push(currentSendMessage.value);
   if (
-    currentActiveMessageRecv.value &&
-    result.findIndex((message) => message.id === currentActiveMessageRecv.value?.id) === -1
+    currentRecvMessage.value &&
+    result.findIndex((message) => message.id === currentRecvMessage.value?.id) === -1
   )
-    result.push(currentActiveMessageRecv.value);
+    result.push(currentRecvMessage.value);
   return result;
 });
 
@@ -235,15 +237,14 @@ const sendDisabled = computed(() => {
 
 const makeNewConversation = () => {
   if (newConversation.value) return;
-  popupNewConversationDialog(async (title: string, model_name: any) => {
-    // console.log(title, model_name);
+  popupNewConversationDialog(async (title: string, current_model: any) => {
     newConversation.value = {
       conversation_id: 'new_conversation',
       // 默认标题格式：MMDD - username
-      title: title || `New Chat ${new Date().toLocaleString()} - ${userStore.user?.username}`,
-      model_name: model_name || 'text-davinci-002-render-sha',
+      title: title || 'New Chat',
+      current_model: current_model || 'gpt_3_5',
       create_time: new Date().toISOString(), // 仅用于当前排序到顶部
-    };
+    } as BaseConversationSchema;
     currentConversationId.value = 'new_conversation';
   });
 };
@@ -281,78 +282,67 @@ const sendMsg = async () => {
   isAborted.value = false;
   let hasGotReply = false;
 
-  const askInfo: AskInfo = { message };
+  const askRequest: AskRequest = {
+    new_conversation: newConversation.value != null,
+    model: currentConversation.value!.current_model!,
+    content: message,
+  };
   if (newConversation.value) {
-    askInfo.new_title = newConversation.value.title;
-    askInfo.model_name = newConversation.value.model_name;
+    askRequest.new_title = newConversation.value.title;
   } else {
-    askInfo.conversation_id = currentConversation.value!.conversation_id;
-    askInfo.parent_id = currentNode.value!;
+    askRequest.conversation_id = currentConversation.value!.conversation_id;
+    askRequest.parent = currentNode.value!;
   }
 
   // 使用临时的随机 id 保持当前更新的两个消息
   const random_strid = Math.random().toString(36).substring(2, 16);
-  currentActiveMessageSend.value = {
+  currentSendMessage.value = {
     id: `send_${random_strid}`,
-    message,
-    author_role: 'user',
-    parent: currentNode.value,
+    content: message,
+    role: 'user',
+    parent: currentNode.value || undefined,
     children: [`recv_${random_strid}`],
   };
-  currentActiveMessageRecv.value = {
+  currentRecvMessage.value = {
     id: `recv_${random_strid}`,
-    message: '',
-    author_role: 'assistent',
+    content: '',
+    role: 'assistent',
     parent: `send_${random_strid}`,
     children: [],
-    typing: true,
-    model_slug: currentConversation.value?.model_name,
+    model: currentConversation.value?.current_model,
   };
   const wsUrl = getAskWebsocketApiUrl();
   let wsErrorMessage: string | null = null;
-  console.log('Connecting to', wsUrl, askInfo);
+  console.log('Connecting to', wsUrl, askRequest);
   const webSocket = new WebSocket(wsUrl);
 
   webSocket.onopen = (_event: Event) => {
     // console.log('WebSocket connection is open', askInfo);
-    webSocket.send(JSON.stringify(askInfo));
+    webSocket.send(JSON.stringify(askRequest));
   };
 
   webSocket.onmessage = (event: MessageEvent) => {
-    const reply = JSON.parse(event.data);
+    const response = JSON.parse(event.data) as AskResponse;
     // console.log('Received message from server:', reply);
-    if (!reply.type) return;
-    if (reply.type === 'waiting') {
+    if (response.type === 'waiting') {
       // 等待回复
       canAbort.value = false;
-      currentActiveMessageRecv.value!.message = t(reply.tip);
-    } else if (reply.type === 'queueing') {
+      currentRecvMessage.value!.content = t(response.tip || 'tips.waiting');
+    } else if (response.type === 'queueing') {
       // 正在排队
       canAbort.value = true;
-      currentActiveMessageRecv.value!.message = t(reply.tip);
-      // if (reply.waiting_count) {
-      //   currentActiveMessageRecv.value!.message += `(${reply.waiting_count})`;
-      // }
-    } else if (reply.type === 'message') {
+      currentRecvMessage.value!.content = t(response.tip || 'tips.queueing');
+    } else if (response.type === 'message') {
       // console.log(reply)
       hasGotReply = true;
-      currentActiveMessageRecv.value!.message = reply.message;
-      currentActiveMessageRecv.value!.id = reply.parent_id;
-      currentActiveMessageRecv.value!.model_slug = reply.model_name;
-      if (newConversation.value) {
-        newConversation.value.model_name = reply.model_name;
-        if (newConversation.value.conversation_id !== reply.conversation_id)
-          newConversation.value.conversation_id = reply.conversation_id;
-        if (currentConversationId.value !== newConversation.value.conversation_id) {
-          currentConversationId.value = newConversation.value.conversation_id!;
-        }
-      }
+      assert(response.message);
+      currentRecvMessage.value = response.message;
       canAbort.value = true;
-    } else if (reply.type === 'error') {
-      currentActiveMessageRecv.value!.message = `${t(reply.tip)}: ${reply.message}}`;
-      console.error(reply.tip, reply.message);
-      if (reply.message) {
-        wsErrorMessage = reply.message;
+    } else if (response.type === 'error') {
+      currentRecvMessage.value!.content = `${t(response.tip || 'error')}: ${response.error_detail}}`;
+      console.error(response);
+      if (response.error_detail) {
+        wsErrorMessage = response.error_detail;
       }
     }
     if (autoScrolling.value) scrollToBottom();
@@ -361,7 +351,6 @@ const sendMsg = async () => {
   webSocket.onclose = async (event: CloseEvent) => {
     aborter = null;
     canAbort.value = false;
-    currentActiveMessageRecv.value!.typing = false;
     console.log('WebSocket connection is closed', event, isAborted.value);
     if (isAborted.value || event.code === 1000) {
       // 正常关闭
@@ -369,40 +358,42 @@ const sendMsg = async () => {
         if (newConversation.value) {
           // 解析 ISO string 为 小数时间戳
           const create_time = new Date(newConversation.value.create_time!).getTime() / 1000;
-          const newConvDetail = {
-            id: currentConversationId.value,
+          const newConvHistory = {
+            _id: currentConversationId.value,
+            type: 'rev',
             title: newConversation.value!.title,
-            model_name: newConversation.value!.model_name,
-            create_time,
+            current_model: newConversation.value!.current_model,
+            create_time: `${create_time}`,
+            update_time: `${create_time}`,
             mapping: {},
-            current_node: null,
-          } as ChatConversationDetail;
+            current_node: '',
+          } as ConversationHistoryDocument;
           conversationStore.$patch({
-            conversationDetailMap: {
-              [newConversation.value.conversation_id!]: newConvDetail,
+            conversationHistoryMap: {
+              [newConversation.value.conversation_id!]: newConvHistory,
             },
           });
-          const msgSend = currentActiveMessageSend.value;
-          const msgRecv = currentActiveMessageRecv.value;
-          currentActiveMessageSend.value = null;
-          currentActiveMessageRecv.value = null;
-          conversationStore.addMessageToConversation(currentConversationId.value, msgSend, msgRecv);
+          const msgSend = currentSendMessage.value;
+          const msgRecv = currentRecvMessage.value;
+          currentSendMessage.value = null;
+          currentRecvMessage.value = null;
+          conversationStore.addMessageToConversation(currentConversationId.value!, msgSend!, msgRecv!);
           currentConversationId.value = newConversation.value.conversation_id!; // 这里将会导致 currentConversation 切换
           await conversationStore.fetchAllConversations();
           newConversation.value = null;
-          console.log('done', newConvDetail, msgSend, msgRecv, currentConversationId.value);
+          console.log('done', newConvHistory, msgSend, msgRecv, currentConversationId.value);
         } else {
           // 将新消息存入 store
-          if (!currentActiveMessageRecv.value!.id.startsWith('recv')) {
+          if (!currentRecvMessage.value!.id!.startsWith('recv')) {
             // TODO 其它属性
             conversationStore.addMessageToConversation(
-              currentConversationId.value,
-              currentActiveMessageSend.value!,
-              currentActiveMessageRecv.value!
+              currentConversationId.value!,
+              currentSendMessage.value!,
+              currentRecvMessage.value!
             );
           }
-          currentActiveMessageSend.value = null;
-          currentActiveMessageRecv.value = null;
+          currentSendMessage.value = null;
+          currentRecvMessage.value = null;
         }
       }
     } else {
@@ -415,8 +406,8 @@ const sendMsg = async () => {
         positiveText: t('commons.withdrawMessage'),
         negativeText: t('commons.cancel'),
         onPositiveClick: () => {
-          currentActiveMessageSend.value = null;
-          currentActiveMessageRecv.value = null;
+          currentSendMessage.value = null;
+          currentRecvMessage.value = null;
         },
       });
     }
@@ -441,7 +432,7 @@ const exportToMarkdownFile = () => {
     Message.error(t('tips.pleaseSelectConversation'));
     return;
   }
-  saveAsMarkdown(currentConversation.value, currentMessageListDisplay.value);
+  saveAsMarkdown(currentConversation.value!, currentMessageListToDisplay.value);
 };
 
 const historyContentRef = ref();

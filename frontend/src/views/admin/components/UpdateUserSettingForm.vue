@@ -29,14 +29,14 @@
         <n-form-item :label="t('labels.revchatgpt_available_models')" path="revchatgpt_available_models">
           <n-checkbox-group v-model:value="userSetting.revchatgpt_available_models">
             <n-space item-style="display: flex;">
-              <n-checkbox v-for="m in revChatModelNames" :key="m" :value="m" :label="getRevChatModelNameTrans(m)" />
+              <n-checkbox v-for="m in userSetting.revchatgpt_available_models" :key="m" :value="m" :label="getChatModelNameTrans(m)" />
             </n-space>
           </n-checkbox-group>
         </n-form-item>
         <n-form-item
-          v-for="m in revChatModelNames"
+          v-for="m in userSetting.revchatgpt_available_models"
           :key="m"
-          :label="t('labels.revchatgpt_ask_limits.per_model_count', [getRevChatModelNameTrans(m)])"
+          :label="t('labels.revchatgpt_ask_limits.per_model_count', [getChatModelNameTrans(m)])"
         >
           <n-input-number
             v-model:value="userSetting.revchatgpt_ask_limits!.per_model_count[m]"
@@ -76,7 +76,7 @@
         <n-form-item :label="t('labels.openai_api_available_models')" path="openai_api_available_models">
           <n-checkbox-group v-model:value="userSetting.openai_api_available_models">
             <n-space item-style="display: flex;">
-              <n-checkbox v-for="m in apiChatModelNames" :key="m" :value="m" :label="getApiChatModelNameTrans(m)" />
+              <n-checkbox v-for="m in userSetting.openai_api_available_models" :key="m" :value="m" :label="getChatModelNameTrans(m)" />
             </n-space>
           </n-checkbox-group>
         </n-form-item>
@@ -98,7 +98,7 @@ import { computed, ref, watch } from 'vue';
 import HelpTooltip from '@/components/HelpTooltip.vue';
 import { i18n } from '@/i18n';
 import { UserReadAdmin, UserSettingSchema } from '@/types/schema';
-import { apiChatModelNames,getApiChatModelNameTrans, getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
+import { getChatModelNameTrans } from '@/utils/chat';
 import { screenWidthGreaterThan } from '@/utils/screen';
 const t = i18n.global.t as any;
 
@@ -137,7 +137,7 @@ watch(
     }
     userSetting.value = user.setting;
     // 对于允许使用的模型，如果没有设置限制，则设置为默认值. 防止缺失key
-    for (const m of revChatModelNames) {
+    for (const m of userSetting.value.revchatgpt_available_models!) {
       if (userSetting.value.revchatgpt_available_models!.includes(m)) {
         if (userSetting.value.revchatgpt_ask_limits!.per_model_count[m] == undefined) {
           userSetting.value.revchatgpt_ask_limits!.per_model_count[m] = 0;
@@ -151,7 +151,7 @@ watch(
 const revChatModelLimitNames = computed(() => {
   if (!userSetting.value) return [];
   const result = [];
-  for (const m of revChatModelNames) {
+  for (const m of userSetting.value.revchatgpt_available_models!) {
     if (userSetting.value.revchatgpt_available_models?.includes(m)) {
       result.push(m);
     }

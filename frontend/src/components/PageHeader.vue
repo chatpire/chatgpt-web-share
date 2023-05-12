@@ -62,7 +62,7 @@ import chatgptIcon from '/chatgpt-icon.svg';
 import { updateUserMeApi } from '@/api/user';
 import router from '@/router';
 import { useAppStore, useUserStore } from '@/store';
-import { Preference } from '@/types/custom';
+import { Preference } from '@/store/types';
 import { popupResetUserPasswordDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 

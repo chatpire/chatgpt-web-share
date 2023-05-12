@@ -48,7 +48,7 @@ import { useI18n } from 'vue-i18n';
 import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
-import { getCountTrans, getRevChatModelNameTrans, revChatModelNames } from '@/utils/chat';
+import { chatModelNames, getChatModelNameTrans, getCountTrans } from '@/utils/chat';
 import { screenWidthGreaterThan } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
@@ -89,13 +89,13 @@ const columns: DataTableColumns<UserReadAdmin> = [
   },
   {
     title: t('commons.activeTime'),
-    key: 'active_time',
+    key: 'last_active_time',
     render(row) {
-      return row.active_time ? new Date(row.active_time + 'Z').toLocaleString() : t('commons.neverActive');
+      return row.last_active_time ? new Date(row.last_active_time + 'Z').toLocaleString() : t('commons.neverActive');
     },
     sorter: (a, b) => {
-      if (!a.active_time || !b.active_time) return 0;
-      return new Date(a.active_time).getTime() - new Date(b.active_time).getTime();
+      if (!a.last_active_time || !b.last_active_time) return 0;
+      return new Date(a.last_active_time).getTime() - new Date(b.last_active_time).getTime();
     },
   },
   {
@@ -123,12 +123,12 @@ const columns: DataTableColumns<UserReadAdmin> = [
     render(row) {
       if (row.setting.revchatgpt_available_models && row.setting.revchatgpt_ask_limits) {
         const per_model_count = row.setting.revchatgpt_ask_limits.per_model_count;
-        return revChatModelNames
+        return chatModelNames
           .map((modelName) => {
             if (row.setting.revchatgpt_available_models.includes(modelName)) {
-              return `${getRevChatModelNameTrans(modelName)}: ${getCountTrans(per_model_count[modelName])}`;
+              return `${getChatModelNameTrans(modelName)}: ${getCountTrans(per_model_count[modelName])}`;
             } else {
-              return `${getRevChatModelNameTrans(modelName)}: ${t('commons.disabled')}`;
+              return `${getChatModelNameTrans(modelName)}: ${t('commons.disabled')}`;
             }
           })
           .join(', ');

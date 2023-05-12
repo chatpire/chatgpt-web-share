@@ -76,7 +76,7 @@ import {
   vanishConversationApi,
 } from '@/api/conv';
 import { RevConversationSchema } from '@/types/schema';
-import { getRevChatModelNameTrans } from '@/utils/chat';
+import { getChatModelNameTrans } from '@/utils/chat';
 import { Dialog, Message } from '@/utils/tips';
 
 import UserSelector from '../components/UserSelector.vue';
@@ -170,9 +170,9 @@ const columns: DataTableColumns<RevConversationSchema> = [
   },
   {
     title: t('commons.modelName'),
-    key: 'model_name',
+    key: 'current_model',
     render(row) {
-      return row.model_name ? getRevChatModelNameTrans(row.model_name) : t('commons.unknown');
+      return row.current_model ? getChatModelNameTrans(row.current_model) : t('commons.unknown');
     },
     sorter: 'default',
   },
@@ -327,6 +327,7 @@ const handleVanishAllInvalidConversations = () => {
             resolve(true);
           })
           .catch((err) => {
+            console.error(err);
             Message.error(t('tips.deleteConversationFailed'));
             reject();
           })
@@ -355,6 +356,7 @@ const handleClearAllConversations = () => {
             resolve(true);
           })
           .catch((err) => {
+            console.error(err);
             Message.error(t('tips.deleteConversationFailed'));
             reject();
           })

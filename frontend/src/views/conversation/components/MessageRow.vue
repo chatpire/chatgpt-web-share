@@ -5,7 +5,7 @@
   >
     <div class="w-10 lt-sm:ml-0 ml-2 mt-3">
       <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
-      <n-avatar v-if="props.message.author_role == 'user'" size="small">
+      <n-avatar v-if="props.message.role == 'user'" size="small">
         <n-icon>
           <PersonFilled />
         </n-icon>
@@ -28,7 +28,7 @@
         {{ renderedContent }}
       </div>
       <div v-else-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">
-        {{ props.message.message }}
+        {{ props.message.content }}
       </div>
       <div class="hide-in-print">
         <n-button
@@ -73,7 +73,7 @@ import chatgptIcon from '/chatgpt-icon.svg';
 // eslint-disable-next-line import/no-unresolved
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import { useAppStore } from '@/store';
-import { ChatMessage } from '@/types/custom';
+import { ChatMessage } from '@/types/schema';
 import md from '@/utils/markdown';
 import { Message } from '@/utils/tips';
 // let md: any;
@@ -97,7 +97,7 @@ const contentRef = ref<HTMLDivElement>();
 const showRawContent = ref(false);
 
 const renderPureText = computed(() => {
-  return appStore.preference.renderUserMessageInMd === false && props.message.author_role == 'user';
+  return appStore.preference.renderUserMessageInMd === false && props.message.role == 'user';
 });
 
 const toggleShowRawContent = () => {
@@ -109,11 +109,11 @@ const props = defineProps<{
 }>();
 
 const isGpt4 = computed(() => {
-  return props.message.model_slug == 'gpt-4';
+  return props.message.model == 'gpt-4';
 });
 
 const backgroundColor = computed(() => {
-  if (props.message.author_role == 'user') {
+  if (props.message.role == 'user') {
     return themeVars.value.bodyColor;
   } else {
     return themeVars.value.actionColor;
@@ -125,9 +125,9 @@ const renderedContent = computed(() => {
   //   return '';
   // }
   if (renderPureText.value) {
-    return props.message.message;
+    return props.message.content;
   }
-  const result = md.render(props.message.message || '');
+  const result = md.render(props.message.content || '');
   return addButtonsToPreTags(result);
 });
 
@@ -239,7 +239,7 @@ const copyMessageContent = () => {
       Message.success(t('commons.copiedToClipboard'))
     }
     ).then(); */
-  const messageContent = props.message.message || '';
+  const messageContent = props.message.content || '';
   clipboard
     .writeText(messageContent)
     .then(() => {

@@ -1,7 +1,6 @@
 import { RemovableRef } from '@vueuse/core';
 
-import { Preference } from '@/types/custom';
-import { UserRead } from '@/types/schema';
+import { BaseConversationSchema, ConversationHistoryDocument, UserRead } from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;
@@ -9,10 +8,22 @@ interface UserState {
   savedPassword: string | null;
 }
 
+export type Preference = {
+  sendKey: 'Shift+Enter' | 'Enter' | 'Ctrl+Enter';
+  renderUserMessageInMd: boolean;
+  codeAutoWrap: boolean;
+  widerConversationPage: boolean;
+};
+
 interface AppState {
   theme: any;
   language: any;
   preference: RemovableRef<Preference>;
 }
 
-export type { AppState, UserState };
+interface ConversationState {
+  conversations: Array<BaseConversationSchema>;
+  conversationHistoryMap: Record<string, ConversationHistoryDocument>;
+}
+
+export type { AppState, ConversationState, UserState };

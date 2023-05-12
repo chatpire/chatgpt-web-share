@@ -29,12 +29,12 @@
 
 <script lang="ts" setup>
 import { Add } from '@vicons/ionicons5';
-import { NEllipsis } from 'naive-ui';
+import { MenuOption, NEllipsis } from 'naive-ui';
 import { computed, h } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useConversationStore } from '@/store';
-import { RevConversationSchema } from '@/types/schema';
+import { BaseConversationSchema } from '@/types/schema';
 import { dropdownRenderer, popupChangeConversationTitleDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
 
@@ -47,7 +47,7 @@ const conversationStore = useConversationStore();
 const props = defineProps<{
   loading: boolean;
   value: string | null;
-  newConv: RevConversationSchema | null;
+  newConv: BaseConversationSchema | null;
 }>();
 
 const emits = defineEmits<{
@@ -65,11 +65,11 @@ const convId = computed<string | null>({
   },
 });
 
-const menuOptions = computed(() => {
+const menuOptions = computed<MenuOption[]>(() => {
   // 根据 create_time 降序排序
   const sorted_conversations = conversationStore.conversations
     ?.slice() // 创建一个新的数组副本
-    .sort((a: RevConversationSchema, b: RevConversationSchema) => {
+    .sort((a: BaseConversationSchema, b: BaseConversationSchema) => {
       // return a.create_time - b.create_time;
       if (!a.create_time) return -1;
       if (!b.create_time) return 1;
@@ -77,17 +77,17 @@ const menuOptions = computed(() => {
         date_b = new Date(b.create_time);
       return date_b.getTime() - date_a.getTime();
     });
-  const results = sorted_conversations?.map((conversation: RevConversationSchema) => {
+  const results = sorted_conversations?.map((conversation: BaseConversationSchema) => {
     return {
       label: () => h(NEllipsis, null, { default: () => conversation.title }),
       key: conversation.conversation_id,
       disabled: props.loading == true,
       extra: () => dropdownRenderer(conversation, handleDeleteConversation, handleChangeConversationTitle),
-    };
+    } as MenuOption;
   });
-  if (props.newConv) {
-    results?.unshift({
-      label: props.newConv.title,
+  if (results && props.newConv) {
+    results.unshift({
+      label: () => h(Text, props.newConv?.title || ''),
       key: props.newConv.conversation_id,
       disabled: props.loading == true,
     });
