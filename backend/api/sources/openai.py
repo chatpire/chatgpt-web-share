@@ -3,7 +3,7 @@ import uuid
 import httpx
 
 from api.conf import Config
-from api.enums import ApiChatModels
+from api.enums import ChatModel
 from api.models import ChatMessage
 from api.schema import ApiConversationSchema
 
@@ -19,8 +19,8 @@ class OpenAIManager:
         self.client = httpx.AsyncClient()
 
     async def ask(self, content: str, conversation: ApiConversationSchema = None,
-                  parent: uuid.UUID = None, model: ApiChatModels = None):
+                  parent: uuid.UUID = None, model: ChatModel = None):
         if not conversation:
             raise ValueError("conversation is required")
-        model = model or ApiChatModels.gpt_3_5_turbo
+        model = model or ChatModel.gpt_3_5
         message = ChatMessage.new(role="user", content=content)

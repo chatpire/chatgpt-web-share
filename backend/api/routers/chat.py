@@ -11,7 +11,7 @@ from websockets.exceptions import ConnectionClosed
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import RevChatStatus, RevChatModels
+from api.enums import RevChatStatus, ChatModel
 from api.models import RevConversation, User
 from api.routers.conv import _get_conversation_by_id
 from api.schema import RevConversationSchema
@@ -84,10 +84,10 @@ async def ask_revchatgpt(websocket: WebSocket):
         conversation = await _get_conversation_by_id(conversation_id, user)
         model_name = model_name or conversation.model_name
     else:
-        model_name = model_name or RevChatModels.chatgpt_3_5
+        model_name = model_name or ChatModel.gpt_3_5
 
     if isinstance(model_name, str):
-        model_name = RevChatModels(model_name)
+        model_name = ChatModel(model_name)
 
     # 判断是否能使用该模型
     if model_name.value not in user.setting.revchatgpt_available_models:

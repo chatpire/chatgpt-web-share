@@ -7,7 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
-from api.enums import RevChatModels
+from api.enums import ChatModel, ChatSourceTypes
 from api.models import RevChatMessageMetadata, ChatMessage, ConversationHistoryDocument
 
 config = Config()
@@ -38,7 +38,7 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
         )
         if "metadata" in item["message"] and item["message"]["metadata"] != {}:
             result[key].rev_metadata = RevChatMessageMetadata(
-                model_slug=item["message"]["metadata"].get("model_slug"),
+                model=item["message"]["metadata"].get("model_slug"),
                 finish_details=item["message"]["metadata"].get("finish_details"),
                 weight=item["message"].get("weight"),
                 end_turn=item["message"].get("end_turn"),
@@ -46,17 +46,17 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
     return {str(key): value for key, value in result.items()}
 
 
-def get_last_model_name_from_mapping(current_node_uuid: uuid.UUID, mapping: dict[uuid.UUID, ChatMessage]):
+def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, ChatMessage]) -> ChatModel:
     model_name = None
     try:
         current = mapping.get(current_node_uuid)
         while current:
-            if current.rev_metadata and current.rev_metadata.model_slug:
-                model_name = current.rev_metadata.model_slug
+            if current.rev_metadata and current.rev_metadata.model:
+                model_name = current.rev_metadata.model
                 break
-            current = mapping.get(current.parent)
+            current = mapping.get(str(current.parent))
     finally:
-        return model_name
+        return ChatModel.from_code(model_name)
 
 
 class RevChatGPTManager:
@@ -90,10 +90,10 @@ class RevChatGPTManager:
         mapping = convert_mapping(result.get("mapping"))
         current_model = None
         if mapping.get(result.get("current_node")):
-            current_model = get_last_model_name_from_mapping(result["current_node"], mapping)
+            current_model = get_latest_model_from_mapping(result["current_node"], mapping)
         doc = ConversationHistoryDocument(
             id=conversation_id,
-            conv_type="rev",
+            type="rev",
             title=result.get("title"),
             create_time=result.get("create_time"),
             update_time=result.get("update_time"),
@@ -108,11 +108,10 @@ class RevChatGPTManager:
         await self.chatbot.clear_conversations()
 
     def ask(self, message: str, conversation_id: str = None, parent_id: str = None,
-            timeout=360, model_name: RevChatModels = None):
-        model = None
-        if model_name is not None:
-            model = model_name.value
-        return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id, model=model,
+            timeout=360, model_name: ChatModel = None):
+        model = model_name or ChatModel.gpt_3_5
+        return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id,
+                                model=model.code(ChatSourceTypes.rev),
                                 timeout=timeout)
 
     async def delete_conversation(self, conversation_id: str):

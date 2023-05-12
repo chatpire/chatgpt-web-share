@@ -4,18 +4,18 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from api.enums import RevChatModels, ApiChatModels, ChatModels
+from api.enums import ChatModel, ChatSourceTypes
 from api.models import ConversationHistoryDocument
 
 
 class BaseConversationSchema(BaseModel):
     id: int = -1
-    conv_type: str
+    type: ChatSourceTypes
     conversation_id: uuid.UUID | None
     title: str | None
     user_id: int | None
     is_valid: bool = True
-    model_name: ChatModels | None
+    model_name: ChatModel | None
     create_time: datetime.datetime | None
     update_time: datetime.datetime | None
 
@@ -24,10 +24,8 @@ class BaseConversationSchema(BaseModel):
 
 
 class RevConversationSchema(BaseConversationSchema):
-    conv_type: Literal['rev']
-    model_name: RevChatModels | None
+    type: Literal['rev']
 
 
 class ApiConversationSchema(BaseConversationSchema):
-    conv_type: Literal['api']
-    model_name: ApiChatModels | None
+    type: Literal['api']

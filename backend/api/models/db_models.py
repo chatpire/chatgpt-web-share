@@ -7,7 +7,7 @@ from sqlalchemy import String, DateTime, Enum, Boolean, Float, ForeignKey, JSON,
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic
-from api.enums import RevChatStatus, RevChatModels, ApiChatModels, ChatModels
+from api.enums import RevChatStatus, ChatModel, ChatSourceTypes
 from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
 
 
@@ -51,7 +51,7 @@ class UserSetting(Base):
 
     # ChatGPT 账号相关
     can_use_revchatgpt: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用chatgpt账号对话")
-    revchatgpt_available_models: Mapped[List[RevChatModels]] = mapped_column(JSON, comment="chatgpt账号可用的模型")
+    revchatgpt_available_models: Mapped[List[ChatModel]] = mapped_column(JSON, comment="chatgpt账号可用的模型")
     revchatgpt_ask_limits: Mapped[RevChatAskLimits] = mapped_column(Pydantic(RevChatAskLimits),
                                                                     comment="chatgpt账号对话限制")
     revchatgpt_time_limits: Mapped[RevChatTimeLimits] = mapped_column(Pydantic(RevChatTimeLimits),
@@ -60,7 +60,7 @@ class UserSetting(Base):
     # OpenAI API 相关
     can_use_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用服务端OpenAI API")
     openai_api_credits: Mapped[float] = mapped_column(Float, comment="可用的OpenAI API积分")
-    openai_api_available_models: Mapped[List[ApiChatModels]] = mapped_column(JSON, comment="OpenAI API可用的模型")
+    openai_api_available_models: Mapped[List[ChatModel]] = mapped_column(JSON, comment="OpenAI API可用的模型")
     can_use_custom_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用自定义API")
     custom_openai_api_key: Mapped[Optional[str]] = mapped_column(String, comment="自定义OpenAI API key")
 
@@ -73,15 +73,15 @@ class BaseConversation(Base):
 
     __tablename__ = "conversation"
     __mapper_args__ = {
-        "polymorphic_on": "conv_type",
+        "polymorphic_on": "type",
         "polymorphic_identity": "base",
     }
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    conv_type: Mapped[str]
+    type: Mapped[ChatSourceTypes] = mapped_column(Enum(ChatSourceTypes), comment="对话类型")
     conversation_id: Mapped[uuid.UUID] = mapped_column(GUID, index=True, unique=True, comment="uuid")
-    model_name: Mapped[Optional[Enum["ChatModels"]]] = mapped_column(
-        Enum(ChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
+    model_name: Mapped[Optional[Enum["ChatModel"]]] = mapped_column(
+        Enum(ChatModel, values_callable=lambda obj: [e.value for e in obj] if obj else None),
         default=None,
         use_existing_column=True)
     title: Mapped[Optional[str]] = mapped_column(comment="对话标题")
@@ -97,10 +97,10 @@ class RevConversation(BaseConversation):
         "polymorphic_identity": "rev",
     }
 
-    model_name: Mapped[Optional[Enum["RevChatModels"]]] = mapped_column(
-        Enum(RevChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
-        default=None,
-        use_existing_column=True)
+    # model_name: Mapped[Optional[Enum["RevChatModels"]]] = mapped_column(
+    #     Enum(RevChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
+    #     default=None,
+    #     use_existing_column=True)
 
 
 class ApiConversation(BaseConversation):
@@ -108,7 +108,7 @@ class ApiConversation(BaseConversation):
         "polymorphic_identity": "api",
     }
 
-    model_name: Mapped[Optional[Enum["ApiChatModels"]]] = mapped_column(
-        Enum(ApiChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
-        default=None,
-        use_existing_column=True)
+    # model_name: Mapped[Optional[Enum["ApiChatModels"]]] = mapped_column(
+    #     Enum(ApiChatModels, values_callable=lambda obj: [e.value for e in obj] if obj else None),
+    #     default=None,
+    #     use_existing_column=True)
