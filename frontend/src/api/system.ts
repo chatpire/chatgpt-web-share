@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ConfigRead, ConfigUpdate, LogFilterOptions, RequestStatistics, SystemInfo } from '@/types/schema';
+import { ConfigModel, CredentialsModel, LogFilterOptions, RequestStatistics, SystemInfo } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -16,14 +16,18 @@ export function getServerLogsApi(options: LogFilterOptions | null) {
   return axios.post(ApiUrl.ServerLogs, options);
 }
 
-export function getProxyLogsApi(options: LogFilterOptions | null) {
-  return axios.post(ApiUrl.ProxyLogs, options);
-}
-
 export function getSystemConfig() {
-  return axios.get<ConfigRead>(ApiUrl.SystemConfig);
+  return axios.get<ConfigModel>(ApiUrl.SystemConfig);
 }
 
-export function updateSystemConfig(config: Partial<ConfigUpdate>) {
-  return axios.patch<ConfigRead>(ApiUrl.SystemConfig, config);
+export function updateSystemConfig(config: ConfigModel) {
+  return axios.put<ConfigModel>(ApiUrl.SystemConfig, config);
+}
+
+export function getSystemCredentials() {
+  return axios.get<CredentialsModel>(ApiUrl.SystemCredentials);
+}
+
+export function updateSystemCredentials(credentials: CredentialsModel) {
+  return axios.put<CredentialsModel>(ApiUrl.SystemCredentials, credentials);
 }

@@ -17,7 +17,7 @@ class CredentialsModel(BaseModel):
 
 
 @singleton_with_lock
-class Credentials(BaseConfig[ConfigModel]):
+class Credentials(BaseConfig[CredentialsModel]):
     if _TYPE_CHECKING:
         revchatgpt_access_token: Optional[str]
         # chatgpt_account_username: Optional[str]

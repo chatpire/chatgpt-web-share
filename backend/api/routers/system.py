@@ -1,3 +1,4 @@
+import json
 import random
 from datetime import datetime, timedelta
 
@@ -6,16 +7,19 @@ from sqlalchemy import select
 
 import api.enums
 import api.globals as g
-from api.conf import Config
+from api.conf import Config, Credentials
+from api.conf.config import ConfigModel
+from api.conf.credentials import CredentialsModel
 from api.database import get_async_session_context
 from api.enums import RevChatStatus
 from api.models import User, RevConversation
-from api.schema import LogFilterOptions, SystemInfo, RequestStatistics, ConfigRead, ConfigUpdate
+from api.schema import LogFilterOptions, SystemInfo, RequestStatistics
 from api.users import current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 config = Config()
+credentials = Credentials()
 
 router = APIRouter()
 
@@ -93,7 +97,7 @@ def make_fake_requests_count(total=100, max=500):
 
 def make_fake_ask_records(total=100, days=2):
     result = []
-    model_names = list(api.enums.RevChatModels.__members__.keys())
+    model_names = list(api.enums.ChatModel)
     for i in range(total):
         ask_time = random.random() * 60 + 1
         total_time = ask_time + random.random() * 30
@@ -101,7 +105,7 @@ def make_fake_ask_records(total=100, days=2):
             [
                 # random.randint(1, 10),  # user_id
                 1,
-                model_names[random.randint(0, len(model_names) - 1)].value,  # model_name
+                model_names[random.randint(0, len(model_names) - 1)],  # model_name
                 ask_time,
                 total_time
             ],
@@ -110,7 +114,7 @@ def make_fake_ask_records(total=100, days=2):
     return result
 
 
-@router.get("/system/request_statistics", tags=["system"], response_model=RequestStatistics)
+@router.get("/system/stats/request", tags=["system"], response_model=RequestStatistics)
 async def get_request_statistics(_user: User = Depends(current_super_user)):
     result = RequestStatistics(
         request_counts_interval=config.stats.request_counts_interval,
@@ -140,17 +144,7 @@ def read_last_n_lines(file_path, n, exclude_key_words=None):
     return last_n_lines[::-1]
 
 
-# @router.post("/system/proxy_logs", tags=["system"])
-# async def get_proxy_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
-#     lines = read_last_n_lines(
-#         os.path.join(config.log.log_dir, "reverse_proxy.log"),
-#         options.max_lines,
-#         options.exclude_keywords
-#     )
-#     return lines
-
-
-@router.post("/system/server_logs", tags=["system"])
+@router.post("/system/logs/server", tags=["system"])
 async def get_server_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
     lines = read_last_n_lines(
         g.server_log_filename,
@@ -160,30 +154,26 @@ async def get_server_logs(_user: User = Depends(current_super_user), options: Lo
     return lines
 
 
-@router.get("/system/config", tags=["system"], response_model=ConfigRead)
+@router.get("/system/config", tags=["system"], response_model=ConfigModel)
 async def get_config(_user: User = Depends(current_super_user)):
-    result = ConfigRead(
-        chatgpt=config.revchatgpt.copy(),
-        credentials_exist={}
-    )
-    for key, value in config.credentials:
-        result.credentials_exist[key] = value is not None and value != ""
-    return result
+    return config.model()
 
 
-@router.patch("/system/config", tags=["system"], response_model=ConfigRead)
-async def update_config(config_update: ConfigUpdate, _user: User = Depends(current_super_user)):
-    chatgpt_update = config_update.chatgpt.dict(exclude_unset=True)
-    credentials_update = config_update.credentials.dict(exclude_unset=True)
-    for key, value in chatgpt_update.items():
-        if isinstance(value, str) and value != "" and value.strip() == "":
-            setattr(config.revchatgpt, key, None)
-        elif value is not None and value != "":
-            setattr(config.revchatgpt, key, value)
-    for key, value in credentials_update.items():
-        if isinstance(value, str) and value != "" and value.strip() == "":
-            setattr(config.credentials, key, None)
-        elif value is not None and value != "":
-            setattr(config.credentials, key, value)
-    Config().save(config)
-    return await get_config(_user)
+@router.put("/system/config", tags=["system"], response_model=ConfigModel)
+async def update_config(config_model: ConfigModel, _user: User = Depends(current_super_user)):
+    config.update(config_model)
+    config.save()
+    return config.model()
+
+
+@router.get("/system/credentials", tags=["system"], response_model=CredentialsModel)
+async def get_credentials(_user: User = Depends(current_super_user)):
+    # TODO: 安全防范
+    return credentials.model()
+
+
+@router.put("/system/credentials", tags=["system"], response_model=CredentialsModel)
+async def update_credentials(credentials_model: CredentialsModel, _user: User = Depends(current_super_user)):
+    credentials.update(credentials_model)
+    credentials.save()
+    return credentials.model()

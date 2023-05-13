@@ -20,7 +20,7 @@ class CommonSetting(BaseModel):
 class HttpSetting(BaseModel):
     host: str = '127.0.0.1'
     port: int = 8000
-    cors_allow_origins: list = ['http://localhost', 'http://127.0.0.1']
+    cors_allow_origins: list[str] = ['http://localhost', 'http://127.0.0.1']
 
 
 class DataSetting(BaseModel):

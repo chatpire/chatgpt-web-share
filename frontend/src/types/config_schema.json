@@ -1,0 +1,318 @@
+{
+  "title": "ConfigModel",
+  "type": "object",
+  "properties": {
+    "common": {
+      "title": "Common",
+      "default": {
+        "print_sql": false,
+        "create_initial_admin_user": true,
+        "initial_admin_user_username": "admin",
+        "initial_admin_user_password": "password",
+        "sync_conversations_on_startup": true,
+        "sync_conversations_regularly": true
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonSetting"
+        }
+      ]
+    },
+    "http": {
+      "title": "Http",
+      "default": {
+        "host": "127.0.0.1",
+        "port": 8000,
+        "cors_allow_origins": [
+          "http://localhost",
+          "http://127.0.0.1"
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/HttpSetting"
+        }
+      ]
+    },
+    "data": {
+      "title": "Data",
+      "default": {
+        "data_dir": "./data",
+        "database_url": "sqlite+aiosqlite:///data/database.db",
+        "mongodb_url": "mongodb://cws:password@localhost:27017",
+        "run_migration": false
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/DataSetting"
+        }
+      ]
+    },
+    "auth": {
+      "title": "Auth",
+      "default": {
+        "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECRET",
+        "jwt_lifetime_seconds": 86400,
+        "cookie_max_age": 86400,
+        "cookie_name": "user_auth",
+        "user_secret": "MODIFY_THIS_TO_RANDOM_SECRET"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/AuthSetting"
+        }
+      ]
+    },
+    "revchatgpt": {
+      "title": "Revchatgpt",
+      "default": {
+        "is_plus_account": false,
+        "chatgpt_base_url": null,
+        "ask_timeout": 600
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RevChatGPTSetting"
+        }
+      ]
+    },
+    "api": {
+      "title": "Api",
+      "default": {
+        "openai_base_url": "https://api.openai.com/v1/",
+        "connect_timeout": 5,
+        "read_timeout": 60
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/APISetting"
+        }
+      ]
+    },
+    "log": {
+      "title": "Log",
+      "default": {
+        "log_dir": "logs",
+        "console_log_level": "INFO"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/LogSetting"
+        }
+      ]
+    },
+    "stats": {
+      "title": "Stats",
+      "default": {
+        "request_counter_time_window": 2592000,
+        "request_counts_interval": 1800,
+        "ask_log_time_window": 604800
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/StatsSetting"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "CommonSetting": {
+      "title": "CommonSetting",
+      "type": "object",
+      "properties": {
+        "print_sql": {
+          "title": "Print Sql",
+          "default": false,
+          "type": "boolean"
+        },
+        "create_initial_admin_user": {
+          "title": "Create Initial Admin User",
+          "default": true,
+          "type": "boolean"
+        },
+        "initial_admin_user_username": {
+          "title": "Initial Admin User Username",
+          "default": "admin",
+          "type": "string"
+        },
+        "initial_admin_user_password": {
+          "title": "Initial Admin User Password",
+          "default": "password",
+          "type": "string"
+        },
+        "sync_conversations_on_startup": {
+          "title": "Sync Conversations On Startup",
+          "default": true,
+          "type": "boolean"
+        },
+        "sync_conversations_regularly": {
+          "title": "Sync Conversations Regularly",
+          "default": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "HttpSetting": {
+      "title": "HttpSetting",
+      "type": "object",
+      "properties": {
+        "host": {
+          "title": "Host",
+          "default": "127.0.0.1",
+          "type": "string"
+        },
+        "port": {
+          "title": "Port",
+          "default": 8000,
+          "type": "integer"
+        },
+        "cors_allow_origins": {
+          "title": "Cors Allow Origins",
+          "default": [
+            "http://localhost",
+            "http://127.0.0.1"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DataSetting": {
+      "title": "DataSetting",
+      "type": "object",
+      "properties": {
+        "data_dir": {
+          "title": "Data Dir",
+          "default": "./data",
+          "type": "string"
+        },
+        "database_url": {
+          "title": "Database Url",
+          "default": "sqlite+aiosqlite:///data/database.db",
+          "type": "string"
+        },
+        "mongodb_url": {
+          "title": "Mongodb Url",
+          "default": "mongodb://cws:password@localhost:27017",
+          "type": "string"
+        },
+        "run_migration": {
+          "title": "Run Migration",
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "AuthSetting": {
+      "title": "AuthSetting",
+      "type": "object",
+      "properties": {
+        "jwt_secret": {
+          "title": "Jwt Secret",
+          "default": "MODIFY_THIS_TO_RANDOM_SECRET",
+          "type": "string"
+        },
+        "jwt_lifetime_seconds": {
+          "title": "Jwt Lifetime Seconds",
+          "default": 86400,
+          "type": "integer"
+        },
+        "cookie_max_age": {
+          "title": "Cookie Max Age",
+          "default": 86400,
+          "type": "integer"
+        },
+        "cookie_name": {
+          "title": "Cookie Name",
+          "default": "user_auth",
+          "type": "string"
+        },
+        "user_secret": {
+          "title": "User Secret",
+          "default": "MODIFY_THIS_TO_RANDOM_SECRET",
+          "type": "string"
+        }
+      }
+    },
+    "RevChatGPTSetting": {
+      "title": "RevChatGPTSetting",
+      "type": "object",
+      "properties": {
+        "is_plus_account": {
+          "title": "Is Plus Account",
+          "default": false,
+          "type": "boolean"
+        },
+        "chatgpt_base_url": {
+          "title": "Chatgpt Base Url",
+          "type": "string"
+        },
+        "ask_timeout": {
+          "title": "Ask Timeout",
+          "default": 600,
+          "type": "integer"
+        }
+      }
+    },
+    "APISetting": {
+      "title": "APISetting",
+      "type": "object",
+      "properties": {
+        "openai_base_url": {
+          "title": "Openai Base Url",
+          "default": "https://api.openai.com/v1/",
+          "type": "string"
+        },
+        "connect_timeout": {
+          "title": "Connect Timeout",
+          "default": 5,
+          "type": "integer"
+        },
+        "read_timeout": {
+          "title": "Read Timeout",
+          "default": 60,
+          "type": "integer"
+        }
+      }
+    },
+    "LogSetting": {
+      "title": "LogSetting",
+      "type": "object",
+      "properties": {
+        "log_dir": {
+          "title": "Log Dir",
+          "default": "logs",
+          "type": "string"
+        },
+        "console_log_level": {
+          "title": "Console Log Level",
+          "default": "INFO",
+          "type": "string"
+        }
+      }
+    },
+    "StatsSetting": {
+      "title": "StatsSetting",
+      "type": "object",
+      "properties": {
+        "request_counter_time_window": {
+          "title": "Request Counter Time Window",
+          "default": 2592000,
+          "type": "integer"
+        },
+        "request_counts_interval": {
+          "title": "Request Counts Interval",
+          "default": 1800,
+          "type": "integer"
+        },
+        "ask_log_time_window": {
+          "title": "Ask Log Time Window",
+          "default": 604800,
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

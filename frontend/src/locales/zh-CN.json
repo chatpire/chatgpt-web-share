@@ -203,7 +203,7 @@
     "autoScrolling": "自动滚动",
     "alreadySet": "该项已设置，留空则不修改",
     "saveSuccess": "保存成功",
-    "confirmSaveConfig": "确定要更新配置吗？更新后可能需要重新启动服务才能生效。",
+    "confirmSaveConfig": "确定要更新配置吗？某些选项可能需要重新启动服务才能生效。",
     "invalidEmail": "非法邮箱地址",
     "invalidPassword": "密码不合法：必须为大于6位的数字、字母或符号，不含空格",
     "pleaseCheckInput": "请检查输入内容",

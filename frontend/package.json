@@ -12,6 +12,7 @@
     "prettier": "prettier --write src"
   },
   "dependencies": {
+    "@lljj/vue3-form-naive": "^1.17.0",
     "@sentry/tracing": "^7.44.2",
     "@sentry/vue": "^7.44.2",
     "@traptitech/markdown-it-katex": "^3.6.0",

@@ -9,12 +9,13 @@ enum ApiUrl {
   UserList = '/user',
 
   ServerStatus = '/status',
+
   SystemInfo = '/system/info',
-  SystemRequestStatistics = '/system/request_statistics',
-  ProxyLogs = '/system/proxy_logs',
-  ServerLogs = '/system/server_logs',
+  SystemRequestStatistics = '/system/stats/request',
+  ServerLogs = '/system/logs/server',
 
   SystemConfig = '/system/config',
+  SystemCredentials = '/system/credentials',
 }
 
 export default ApiUrl;

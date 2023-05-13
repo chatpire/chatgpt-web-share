@@ -193,7 +193,7 @@
     "refreshed": "Refreshed Successfully",
     "autoScrolling": "auto scroll",
     "alreadySet": "This item has been set, if it is left blank, it will not be modified",
-    "confirmSaveConfig": "Are you sure you want to update the configuration? \nA service restart may be required after the update to take effect.",
+    "confirmSaveConfig": "Are you sure you want to update the configuration? \nSome options may require a service restart to take effect.",
     "saveSuccess": "Saved successfully",
     "invalidEmail": "Invalid Email"
   },

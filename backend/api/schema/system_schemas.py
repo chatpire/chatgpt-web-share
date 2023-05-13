@@ -34,13 +34,3 @@ class LogFilterOptions(BaseModel):
         if v <= 0:
             raise ValueError("max_lines must be positive")
         return v
-
-
-class ConfigRead(BaseModel):
-    chatgpt: RevChatGPTSetting
-    credentials_exist: dict[str, bool]
-
-
-class ConfigUpdate(BaseModel):
-    chatgpt: RevChatGPTSetting
-    credentials: CredentialsModel

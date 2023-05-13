@@ -56,7 +56,7 @@
 import { nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getProxyLogsApi, getServerLogsApi } from '@/api/system';
+import { getServerLogsApi } from '@/api/system';
 import { LogFilterOptions } from '@/types/schema';
 const { t } = useI18n();
 
@@ -94,13 +94,6 @@ const loadLogs = () => {
     getServerLogsApi({
       max_lines: maxLineCount.value,
       exclude_keywords: serverExcludeKeywords.value,
-    } as LogFilterOptions).then((res) => {
-      logsContent.value = res.data;
-    });
-  } else {
-    getProxyLogsApi({
-      max_lines: maxLineCount.value,
-      exclude_keywords: proxyExcludeKeywords.value,
     } as LogFilterOptions).then((res) => {
       logsContent.value = res.data;
     });

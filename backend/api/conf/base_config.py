@@ -29,6 +29,15 @@ class BaseConfig(Generic[T]):
         else:
             setattr(self._model, key, value)
 
+    def schema(self):
+        return self._model.schema()
+
+    def model(self):
+        return self._model.copy()
+
+    def update(self, model: T):
+        self._model = self._model_type(**model.dict())
+
     def load(self):
         if not os.path.exists(self._config_path):
             raise ConfigException(f"Config file not found: {self._config_path}")
