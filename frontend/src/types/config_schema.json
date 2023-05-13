@@ -80,8 +80,8 @@
       "title": "Api",
       "default": {
         "openai_base_url": "https://api.openai.com/v1/",
-        "connect_timeout": 5,
-        "read_timeout": 60
+        "connect_timeout": 10,
+        "read_timeout": 10
       },
       "allOf": [
         {
@@ -164,6 +164,8 @@
         "port": {
           "title": "Port",
           "default": 8000,
+          "minimum": 1,
+          "maximum": 65535,
           "type": "integer"
         },
         "cors_allow_origins": {
@@ -217,11 +219,13 @@
         "jwt_lifetime_seconds": {
           "title": "Jwt Lifetime Seconds",
           "default": 86400,
+          "minimum": 1,
           "type": "integer"
         },
         "cookie_max_age": {
           "title": "Cookie Max Age",
           "default": 86400,
+          "minimum": 1,
           "type": "integer"
         },
         "cookie_name": {
@@ -252,6 +256,7 @@
         "ask_timeout": {
           "title": "Ask Timeout",
           "default": 600,
+          "minimum": 1,
           "type": "integer"
         }
       }
@@ -267,12 +272,14 @@
         },
         "connect_timeout": {
           "title": "Connect Timeout",
-          "default": 5,
+          "default": 10,
+          "minimum": 1,
           "type": "integer"
         },
         "read_timeout": {
           "title": "Read Timeout",
-          "default": 60,
+          "default": 10,
+          "minimum": 1,
           "type": "integer"
         }
       }
@@ -289,6 +296,11 @@
         "console_log_level": {
           "title": "Console Log Level",
           "default": "INFO",
+          "enum": [
+            "INFO",
+            "DEBUG",
+            "WARNING"
+          ],
           "type": "string"
         }
       }

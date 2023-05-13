@@ -80,6 +80,7 @@ const credentialsModel = ref<CredentialsModel | null>(null);
 const DynamicTags = modelValueComponent(NDynamicTags, { model: 'value' });
 
 const configUiSchema = {
+  'ui:title': '',
   http: {
     cors_allow_origins: {
       'ui:widget': DynamicTags,
@@ -87,7 +88,9 @@ const configUiSchema = {
   },
 };
 
-const credentialsUiSchema = {}; // TODO: 使用password input
+const credentialsUiSchema = {
+  'ui:title': '',
+}; // TODO: 使用password input
 
 getSystemConfig().then((res) => {
   configModel.value = res.data;

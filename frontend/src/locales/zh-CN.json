@@ -129,7 +129,9 @@
     "updateUserBasic": "更新用户基本信息",
     "updateUserSetting": "更新用户设置",
     "openaiApiSettings": "OpenAI API 选项",
-    "gpt3TurboModel": "GPT-3.5"
+    "gpt3TurboModel": "GPT-3.5",
+    "configSetting": "配置选项",
+    "credentialsSetting": "凭据选项"
   },
   "errors": {
     "403": "403 错误：无访问权限",

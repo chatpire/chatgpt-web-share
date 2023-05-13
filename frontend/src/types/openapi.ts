@@ -103,10 +103,14 @@ export interface paths {
   "/system/config": {
     /** Get Config */
     get: operations["get_config_system_config_get"];
+    /** Update Config */
+    put: operations["update_config_system_config_put"];
   };
   "/system/credentials": {
     /** Get Credentials */
     get: operations["get_credentials_system_credentials_get"];
+    /** Update Credentials */
+    put: operations["update_credentials_system_credentials_put"];
   };
   "/status": {
     /**
@@ -130,12 +134,12 @@ export interface components {
       openai_base_url?: string;
       /**
        * Connect Timeout 
-       * @default 5
+       * @default 10
        */
       connect_timeout?: number;
       /**
        * Read Timeout 
-       * @default 60
+       * @default 10
        */
       read_timeout?: number;
     };
@@ -439,8 +443,8 @@ export interface components {
        * Api 
        * @default {
        *   "openai_base_url": "https://api.openai.com/v1/",
-       *   "connect_timeout": 5,
-       *   "read_timeout": 60
+       *   "connect_timeout": 10,
+       *   "read_timeout": 10
        * }
        */
       api?: components["schemas"]["APISetting"];
@@ -593,9 +597,10 @@ export interface components {
       log_dir?: string;
       /**
        * Console Log Level 
-       * @default INFO
+       * @default INFO 
+       * @enum {string}
        */
-      console_log_level?: string;
+      console_log_level?: "INFO" | "DEBUG" | "WARNING";
     };
     /** RequestStatistics */
     RequestStatistics: {
@@ -1417,6 +1422,28 @@ export interface operations {
       };
     };
   };
+  update_config_system_config_put: {
+    /** Update Config */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfigModel"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   get_credentials_system_credentials_get: {
     /** Get Credentials */
     responses: {
@@ -1424,6 +1451,28 @@ export interface operations {
       200: {
         content: {
           "application/json": string;
+        };
+      };
+    };
+  };
+  update_credentials_system_credentials_put: {
+    /** Update Credentials */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CredentialsModel"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

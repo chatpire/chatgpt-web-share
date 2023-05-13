@@ -6,7 +6,7 @@ import 'highlight.js/styles/atom-one-dark.css';
 import 'highlight.js/lib/common';
 import 'katex/dist/katex.css';
 
-import { NButton, NForm, NFormItem, NInput, NInputNumber, NSwitch } from 'naive-ui';
+import { NButton, NForm, NFormItem, NInput, NInputNumber, NSelect, NSwitch } from 'naive-ui';
 import { createApp } from 'vue';
 
 import App from './App.vue';
@@ -46,7 +46,7 @@ app.use(i18n);
 // app.component('NSwitch', NSwitch);
 
 // 注册部分naive-ui组件，以供vue-form使用
-const naiveFormComponents = [NForm, NFormItem, NInput, NInputNumber, NSwitch, NButton];
+const naiveFormComponents = [NForm, NFormItem, NInput, NInputNumber, NSwitch, NButton, NSelect];
 naiveFormComponents.forEach((component) => {
   app.component(`N${component.name}`, component);
 });
