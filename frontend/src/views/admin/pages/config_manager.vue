@@ -8,7 +8,7 @@
             :ui-schema="configUiSchema"
             :schema="configJsonSchema"
             :form-props="{
-              labelPosition: 'left',
+              labelPosition: gtsm() ? 'left' : 'top',
               labelWidth: 'auto',
             }"
             :form-footer="{
@@ -62,13 +62,14 @@
 <script setup lang="ts">
 import VueForm, { modelValueComponent } from '@lljj/vue3-form-naive';
 import { NDynamicTags } from 'naive-ui';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
 import configJsonSchema from '@/types/config_schema.json';
 import credentialsJsonSchema from '@/types/credentials_schema.json';
 import { ConfigModel, CredentialsModel } from '@/types/schema';
+import {screenWidthGreaterThan} from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
 const { t } = useI18n();
@@ -76,6 +77,8 @@ const configModel = ref<ConfigModel | null>(null);
 const credentialsModel = ref<CredentialsModel | null>(null);
 
 // console.log(configJsonSchema, credentialsJsonSchema);
+
+const gtsm = screenWidthGreaterThan('sm');
 
 const DynamicTags = modelValueComponent(NDynamicTags, { model: 'value' });
 

@@ -21,7 +21,7 @@
       pageSize: 20,
     }"
   />
-  <n-drawer v-if="drawer.show.value" v-model:show="drawer.show.value" :width="sm ? '50%' : '80%'" :placement="'right'">
+  <n-drawer v-if="drawer.show.value" v-model:show="drawer.show.value" :width="gtsm() ? '50%' : '80%'" :placement="'right'">
     <n-drawer-content closable :title="drawer.title.value" :native-scrollbar="false">
       <CreateUserForm v-if="drawer.name.value == 'create'" @save="handleCreateUser" />
       <UpdateUserBasicForm
@@ -61,7 +61,7 @@ import UpdateUserSettingForm from '../components/UpdateUserSettingForm.vue';
 
 const { t } = useI18n();
 
-const sm = screenWidthGreaterThan('sm');
+const gtsm = screenWidthGreaterThan('sm');
 
 const data = ref<Array<UserReadAdmin>>([]);
 

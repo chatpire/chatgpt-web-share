@@ -5,7 +5,7 @@
       :ui-schema="uiSchema"
       :schema="userSettingJsonSchema"
       :form-props="{
-        labelPosition: 'left',
+        labelPosition: gtsm() ? 'left' : 'top',
         labelWidth: 'auto',
       }"
       :form-footer="{
@@ -29,7 +29,10 @@ import { useI18n } from 'vue-i18n';
 import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
 import { UserReadAdmin, UserSettingSchema } from '@/types/schema';
 import schemasJson from '@/types/schemas.json';
+import { screenWidthGreaterThan } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
+
+const gtsm = screenWidthGreaterThan('sm');
 
 const { t } = useI18n();
 const settingModel = ref<UserSettingSchema | null>(null);

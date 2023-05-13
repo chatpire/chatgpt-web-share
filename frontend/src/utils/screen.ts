@@ -11,6 +11,10 @@ export const breakpoints = {
 } as const;
 
 export function screenWidthGreaterThan(breakpoint: keyof typeof breakpoints | number) {
-  // return computed(() => width.value > breakpoints[breakpoint]);
-  return computed(() => width.value >= (typeof breakpoint === 'number' ? breakpoint : breakpoints[breakpoint]));
+  // return computed(() => width.value >= (typeof breakpoint === 'number' ? breakpoint : breakpoints[breakpoint]));
+  return () => {
+    const result = width.value >= (typeof breakpoint === 'number' ? breakpoint : breakpoints[breakpoint]);
+    // console.log('screenWidthGreaterThan', breakpoint, result);
+    return result;
+  };
 }
