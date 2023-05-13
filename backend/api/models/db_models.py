@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic, UTCDateTime
 from api.enums import RevChatStatus, ChatModel, ChatSourceTypes
-from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
+from api.models.json_models import AskLimitSetting, AskTimeLimits, ChatTypeDict
 
 
 # declarative base class
@@ -49,19 +49,46 @@ class UserSetting(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="用户id")
     user: Mapped["User"] = relationship(back_populates="setting")
 
-    # ChatGPT 账号相关
-    can_use_revchatgpt: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用chatgpt账号对话")
-    revchatgpt_available_models: Mapped[List[ChatModel]] = mapped_column(JSON, comment="chatgpt账号可用的模型")
-    revchatgpt_ask_limits: Mapped[RevChatAskLimits] = mapped_column(Pydantic(RevChatAskLimits),
-                                                                    comment="chatgpt账号对话限制")
-    revchatgpt_time_limits: Mapped[RevChatTimeLimits] = mapped_column(Pydantic(RevChatTimeLimits),
-                                                                      comment="chatgpt账号时间频率限制")
+    # # ChatGPT 账号相关
+    # can_use_revchatgpt: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用chatgpt账号对话")
+    # revchatgpt_available_models: Mapped[List[ChatModel]] = mapped_column(JSON, comment="chatgpt账号可用的模型")
+    # revchatgpt_ask_limits: Mapped[AskLimitSetting] = mapped_column(Pydantic(AskLimitSetting),
+    #                                                                comment="chatgpt账号对话限制")
+    # revchatgpt_time_limits: Mapped[AskTimeLimits] = mapped_column(Pydantic(AskTimeLimits),
+    #                                                               comment="chatgpt账号时间频率限制")
+    #
+    # # OpenAI API 相关
+    # can_use_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用服务端OpenAI API")
+    # openai_api_credits: Mapped[float] = mapped_column(Float, comment="可用的OpenAI API积分")
+    # openai_api_available_models: Mapped[List[ChatModel]] = mapped_column(JSON, comment="OpenAI API可用的模型")
+    # can_use_custom_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用自定义API")
+    # custom_openai_api_key: Mapped[Optional[str]] = mapped_column(String, comment="自定义OpenAI API key")
 
-    # OpenAI API 相关
-    can_use_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用服务端OpenAI API")
-    openai_api_credits: Mapped[float] = mapped_column(Float, comment="可用的OpenAI API积分")
-    openai_api_available_models: Mapped[List[ChatModel]] = mapped_column(JSON, comment="OpenAI API可用的模型")
-    can_use_custom_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否可以使用自定义API")
+    # 根据新的 schema 重写字段：
+    """
+    class UserSettingSchema(BaseModel):
+        id: int | None
+        user_id: int | None
+        allow_chat_type: ChatTypeDict[bool]
+        available_models: ChatTypeDict[list[ChatModel]]
+        ask_count_limits: ChatTypeDict[AskLimitSetting]
+        ask_time_limits: ChatTypeDict[AskTimeLimits]
+        api_credits: float = Field(default=0.0, description="Credits for OpenAI API, not support unlimited (-1)")
+        allow_custom_openai_api: bool
+        custom_openai_api_url: str | None
+        custom_openai_api_key: str | None
+    """
+
+    allow_chat_type: Mapped[ChatTypeDict[bool]] = mapped_column(Pydantic(ChatTypeDict[bool]), comment="允许的对话类型")
+    available_models: Mapped[ChatTypeDict[list[ChatModel]]] = mapped_column(Pydantic(ChatTypeDict[list[ChatModel]]),
+                                                                            comment="可用的模型")
+    ask_count_limits: Mapped[ChatTypeDict[AskLimitSetting]] = mapped_column(Pydantic(ChatTypeDict[AskLimitSetting]),
+                                                                            comment="对话限制")
+    ask_time_limits: Mapped[ChatTypeDict[AskTimeLimits]] = mapped_column(Pydantic(ChatTypeDict[AskTimeLimits]),
+                                                                         comment="时间限制")
+    api_credits: Mapped[float] = mapped_column(Float, comment="OpenAI API积分")
+    allow_custom_openai_api: Mapped[bool] = mapped_column(Boolean, comment="是否允许使用自定义OpenAI API")
+    custom_openai_api_url: Mapped[Optional[str]] = mapped_column(String, comment="自定义OpenAI API URL")
     custom_openai_api_key: Mapped[Optional[str]] = mapped_column(String, comment="自定义OpenAI API key")
 
 

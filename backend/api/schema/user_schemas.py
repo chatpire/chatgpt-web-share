@@ -1,68 +1,51 @@
 import datetime
-from typing import Any
+from typing import TypeVar
 
 from fastapi_users import schemas
-from pydantic import BaseModel, EmailStr
-from pydantic.utils import GetterDict
+from pydantic import BaseModel, EmailStr, Field
 
 from api.enums import RevChatStatus, ChatModel
-from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
-
-
-# class UserSettingGetterDict(GetterDict):
-#     def get(self, key: Any, default: Any = None) -> Any:
-#         if key == "revchatgpt_available_models":
-#             if getattr(self._obj, key):
-#                 return [RevChatModels(m) for m in getattr(self._obj, key) if m in RevChatModels.values()]
-#             else:
-#                 return []
-#         elif key == "openai_api_available_models":
-#             if getattr(self._obj, key):
-#                 return [ApiChatModels(m) for m in getattr(self._obj, key) if m in ApiChatModels.values()]
-#             else:
-#                 return []
-#         return super().get(key, default)
+from api.models import ChatTypeDict
+from api.models.json_models import AskLimitSetting, AskTimeLimits
 
 
 class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
-    can_use_revchatgpt: bool
-    revchatgpt_available_models: list[ChatModel]
-    revchatgpt_ask_limits: RevChatAskLimits
-    revchatgpt_time_limits: RevChatTimeLimits
-    can_use_openai_api: bool
-    openai_api_credits: float
-    openai_api_available_models: list[ChatModel]
-    can_use_custom_openai_api: bool
+    allow_chat_type: ChatTypeDict[bool]
+    available_models: ChatTypeDict[list[ChatModel]]
+    ask_count_limits: ChatTypeDict[AskLimitSetting]
+    ask_time_limits: ChatTypeDict[AskTimeLimits]
+    api_credits: float = Field(default=0.0, description="Credits for OpenAI API, not support unlimited (-1)")
+    allow_custom_openai_api: bool
+    custom_openai_api_url: str | None
     custom_openai_api_key: str | None
 
     @staticmethod
     def default():
         return UserSettingSchema(
-            can_use_revchatgpt=True,
-            revchatgpt_available_models=[ChatModel.gpt_3_5],
-            revchatgpt_ask_limits=RevChatAskLimits.default(),
-            revchatgpt_time_limits=RevChatTimeLimits.default(),
-            can_use_openai_api=True,
-            openai_api_credits=0.0,
-            openai_api_available_models=[ChatModel.gpt_3_5, ChatModel.gpt_4],
-            can_use_custom_openai_api=True,
-            custom_openai_api_key=None,
+            allow_chat_type=ChatTypeDict[bool](rev=True, api=True),
+            available_models=ChatTypeDict[list[ChatModel]](rev=[ChatModel.gpt_3_5],
+                                                           api=[ChatModel.gpt_3_5, ChatModel.gpt_4]),
+            ask_count_limits=ChatTypeDict[AskLimitSetting](rev=AskLimitSetting.default(),
+                                                           api=AskLimitSetting.default()),
+            ask_time_limits=ChatTypeDict[AskTimeLimits](rev=AskTimeLimits.default(), api=AskTimeLimits.default()),
+            api_credits=0.0,
+            allow_custom_openai_api=True,
         )
 
     @staticmethod
     def unlimited():
         return UserSettingSchema(
-            can_use_revchatgpt=True,
-            revchatgpt_available_models=[ChatModel.gpt_3_5, ChatModel.gpt_4],
-            revchatgpt_ask_limits=RevChatAskLimits.unlimited(),
-            revchatgpt_time_limits=RevChatTimeLimits.unlimited(),
-            can_use_openai_api=True,
-            openai_api_credits=-1,
-            openai_api_available_models=[ChatModel.gpt_3_5, ChatModel.gpt_4],
-            can_use_custom_openai_api=True,
-            custom_openai_api_key=None
+            allow_chat_type=ChatTypeDict[bool](rev=True, api=True),
+            available_models=ChatTypeDict[list[ChatModel]](rev=[ChatModel.gpt_3_5, ChatModel.gpt_4],
+                                                           api=[ChatModel.gpt_3_5, ChatModel.gpt_4]),
+            ask_count_limits=ChatTypeDict[AskLimitSetting](rev=AskLimitSetting.unlimited(),
+                                                           api=AskLimitSetting.unlimited()),
+            ask_time_limits=ChatTypeDict[AskTimeLimits](rev=AskTimeLimits.unlimited(),
+                                                        api=AskTimeLimits.unlimited()),
+            api_credits=-1,
+            allow_custom_openai_api=True,
         )
 
     class Config:

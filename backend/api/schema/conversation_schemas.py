@@ -11,11 +11,13 @@ from api.models import ChatMessage
 
 
 class AskRequest(BaseModel):
+    type: ChatSourceTypes
     new_conversation: bool
     new_title: Optional[str] = None
     conversation_id: Optional[uuid.UUID] = None
     parent: Optional[uuid.UUID] = None
     model: ChatModel
+    api_context_message_count: int = -1
     content: str
 
     @root_validator

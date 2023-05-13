@@ -1,4 +1,5 @@
 import time
+import uuid
 from datetime import datetime
 
 import requests
@@ -13,11 +14,11 @@ from websockets.exceptions import ConnectionClosed
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import RevChatStatus, ChatModel
+from api.enums import RevChatStatus, ChatModel, ChatSourceTypes
 from api.exceptions import InternalException
-from api.models import RevConversation, User
+from api.models import RevConversation, User, ApiConversation
 from api.routers.conv import _get_conversation_by_id
-from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType
+from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin
 from api.sources import RevChatGPTManager, convert_revchatgpt_message
 from api.users import websocket_auth, current_active_user
 from utils.logger import get_logger
@@ -50,7 +51,7 @@ async def _predict_schema_types(_request: AskRequest):
 
 
 @router.websocket("/chat")
-async def ask_revchatgpt(websocket: WebSocket):
+async def chat(websocket: WebSocket):
     """
     利用 WebSocket 实时更新 ChatGPT 回复
     """
@@ -59,13 +60,15 @@ async def ask_revchatgpt(websocket: WebSocket):
         await websocket.send_json(jsonable_encoder(response))
 
     await websocket.accept()
-    user = await websocket_auth(websocket)
-    if user is None:
+    user_db = await websocket_auth(websocket)
+    if user_db is None:
         await websocket.close(1008, "errors.unauthorized")
         return
 
-    logger.debug(f"{user.username} connected to websocket")
-    websocket.scope["auth_user"] = user
+    logger.debug(f"{user_db.username} connected to websocket")
+    websocket.scope["auth_user"] = user_db
+
+    user = UserReadAdmin.from_orm(user_db)
 
     if user.rev_chat_status != RevChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
@@ -81,38 +84,46 @@ async def ask_revchatgpt(websocket: WebSocket):
         await websocket.close(1007, "errors.invalidAskRequest")
         return
 
+    # 是否允许使用当前提问类型
+    if ask_request.type == ChatSourceTypes.rev and not user.setting.can_use_revchatgpt \
+            or ask_request.type == ChatSourceTypes.api and not user.setting.can_use_openai_api:
+        await websocket.close(1007, "errors.userNotAllowToUseChatType")
+        return
+
     conversation = None
     conversation_id = None
     if not ask_request.new_conversation:
         assert ask_request.conversation_id is not None
         conversation_id = ask_request.conversation_id
-        conversation = await _get_conversation_by_id(ask_request.conversation_id, user)
+        conversation = await _get_conversation_by_id(ask_request.conversation_id, user_db)
 
     # 判断是否能使用该模型
-    if ask_request.model not in user.setting.revchatgpt_available_models:
+    if ask_request.type == ChatSourceTypes.rev and ask_request.model not in user.setting.revchatgpt_available_models or \
+            ask_request.type == ChatSourceTypes.api and ask_request.model not in user.setting.openai_api_available_models:
         await websocket.close(1007, "errors.userNotAllowToUseModel")
         return
 
     # 判断是否能新建对话，以及是否能继续提问
-    async with get_async_session_context() as session:
-        user_conversations_count = await session.execute(
-            select(func.count(RevConversation.id)).filter(
-                and_(RevConversation.user_id == user.id, RevConversation.is_valid)))
-        user_conversations_count = user_conversations_count.scalar()
+    if ask_request.type == ChatSourceTypes.rev:
+        async with get_async_session_context() as session:
+            rev_conv_count = await session.execute(
+                select(func.count(RevConversation.id)).filter(
+                    and_(RevConversation.user_id == user.id, RevConversation.is_valid)))
+            rev_conv_count = rev_conv_count.scalar()
 
-        # user_setting = UserSettingSchema.from_orm(user.setting)
-        max_conv_count = user.setting.revchatgpt_ask_limits.max_conv_count
-        model_ask_count = user.setting.revchatgpt_ask_limits.per_model_count.get(ask_request.model, -1)
-        total_ask_count = user.setting.revchatgpt_ask_limits.total_count
-        if ask_request.new_conversation and max_conv_count != -1 and user_conversations_count >= max_conv_count:
-            await websocket.close(1008, "errors.maxConversationCountReached")
-            return
-        if total_ask_count != -1 and total_ask_count <= 0:
-            await websocket.close(1008, "errors.noAvailableTotalAskCount")
-            return
-        if model_ask_count != -1 and model_ask_count <= 0:
-            await websocket.close(1008, "errors.noAvailableModelAskCount")
-            return
+            # user_setting = UserSettingSchema.from_orm(user.setting)
+            max_conv_count = user.setting.revchatgpt_ask_limits.max_conv_count
+            model_ask_count = user.setting.revchatgpt_ask_limits.per_model_ask_count.get(ask_request.model, -1)
+            total_ask_count = user.setting.revchatgpt_ask_limits.total_ask_count
+            if ask_request.new_conversation and max_conv_count != -1 and rev_conv_count >= max_conv_count:
+                await websocket.close(1008, "errors.maxConversationCountReached")
+                return
+            if total_ask_count != -1 and total_ask_count <= 0:
+                await websocket.close(1008, "errors.noAvailableTotalAskCount")
+                return
+            if model_ask_count != -1 and model_ask_count <= 0:
+                await websocket.close(1008, "errors.noAvailableModelAskCount")
+                return
 
     if manager.is_busy():
         await reply(AskResponse(
@@ -295,10 +306,10 @@ async def ask_revchatgpt(websocket: WebSocket):
                     user = await session.get(User, user.id)
                     if total_ask_count != -1:
                         assert total_ask_count > 0
-                        user.setting.revchatgpt_ask_limits.total_count -= 1
+                        user.setting.revchatgpt_ask_limits.total_ask_count -= 1
                     if model_ask_count != -1:
                         assert model_ask_count > 0
-                        user.setting.revchatgpt_ask_limits.per_model_count[ask_request.model] -= 1
+                        user.setting.revchatgpt_ask_limits.per_model_ask_count[ask_request.model] -= 1
                     session.add(user.setting)
                 await session.commit()
 

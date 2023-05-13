@@ -14,9 +14,9 @@ model_name_to_code_mapping = {
 
 
 class RevChatStatus(StrEnum):
-    asking = "asking"
-    queueing = "queueing"
-    idling = "idling"
+    asking = auto()
+    queueing = auto()
+    idling = auto()
 
 
 class ChatSourceTypes(StrEnum):
