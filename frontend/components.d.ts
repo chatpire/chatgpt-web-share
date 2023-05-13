@@ -9,6 +9,11 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ChatGPTIcon: typeof import('./src/components/icons/ChatGPTIcon.vue')['default']
+    ChatGPTIconBlack: typeof import('./src/components/icons/ChatGPTIconBlack.vue')['default']
+    CheckGroup: typeof import('./src/components/form/CheckGroup.vue')['default']
+    EditableDataTable: typeof import('./src/components/EditableDataTable.vue')['default']
+    GPT3Icon: typeof import('./src/components/icons/GPT3Icon.vue')['default']
     HelpTooltip: typeof import('./src/components/HelpTooltip.vue')['default']
     NAutoComplete: typeof import('naive-ui')['NAutoComplete']
     NAvatar: typeof import('naive-ui')['NAvatar']

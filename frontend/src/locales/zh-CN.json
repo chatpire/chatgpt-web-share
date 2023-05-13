@@ -129,9 +129,9 @@
     "updateUserBasic": "更新用户基本信息",
     "updateUserSetting": "更新用户设置",
     "openaiApiSettings": "OpenAI API 选项",
-    "gpt3TurboModel": "GPT-3.5",
     "configSetting": "配置选项",
-    "credentialsSetting": "凭据选项"
+    "credentialsSetting": "凭据选项",
+    "total": "总"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -235,6 +235,14 @@
     "revchatgpt_available_models": "可用模型",
     "can_use_openai_api": "允许使用 OpenAI API",
     "openai_api_credits": "OpenAI API 积分余额",
-    "openai_api_available_models": "可用模型"
+    "openai_api_available_models": "可用模型",
+    "rev": "Chat",
+    "api": "API",
+    "allow_chat_type": "允许使用",
+    "available_models": "允许使用的模型"
+  },
+  "models": {
+    "gpt_3_5": "GPT-3.5",
+    "gpt_4": "GPT-4"
   }
 }

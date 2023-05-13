@@ -12,10 +12,10 @@ from api.models.json_models import AskLimitSetting, AskTimeLimits
 class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
-    allow_chat_type: ChatTypeDict[bool]
-    available_models: ChatTypeDict[list[ChatModel]]
-    ask_count_limits: ChatTypeDict[AskLimitSetting]
-    ask_time_limits: ChatTypeDict[AskTimeLimits]
+    allow_chat_type: ChatTypeDict[bool] = Field(title="allow_chat_type")
+    available_models: ChatTypeDict[list[ChatModel]] = Field(title="available_models")
+    ask_count_limits: ChatTypeDict[AskLimitSetting] = Field(title="ask_count_limits")
+    ask_time_limits: ChatTypeDict[AskTimeLimits] = Field(title="ask_time_limits")
     api_credits: float = Field(default=0.0, description="Credits for OpenAI API, not support unlimited (-1)")
     allow_custom_openai_api: bool
     custom_openai_api_url: str | None

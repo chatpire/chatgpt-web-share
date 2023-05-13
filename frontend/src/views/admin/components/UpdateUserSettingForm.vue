@@ -1,108 +1,59 @@
 <template>
-  <n-tabs type="line">
-    <n-tab-pane name="revchatgpt" :tab="t('commons.revchatgptSettings')">
-      <n-form
-        v-if="userSetting"
-        :rules="rules"
-        label-placement="left"
-        label-align="left"
-        :label-width="sm ? '180px' : '120px'"
-        class="mt-2"
-      >
-        <n-form-item :label="t('labels.can_use_revchatgpt')" path="can_use_revchatgpt">
-          <n-switch v-model:value="userSetting.can_use_revchatgpt" placeholder="" />
-        </n-form-item>
-        <n-form-item :label="t('labels.revchatgpt_ask_limits.max_conv_count')" path="max_conv_count">
-          <n-input-number
-            v-model:value="userSetting.revchatgpt_ask_limits!.max_conv_count"
-            :parse="parseValue"
-            :format="formatValue"
-          />
-        </n-form-item>
-        <n-form-item :label="t('labels.revchatgpt_ask_limits.total_count')" path="revchatgpt_ask_limits.total_count">
-          <n-input-number
-            v-model:value="userSetting.revchatgpt_ask_limits!.total_count"
-            :parse="parseValue"
-            :format="formatValue"
-          />
-        </n-form-item>
-        <n-form-item :label="t('labels.revchatgpt_available_models')" path="revchatgpt_available_models">
-          <n-checkbox-group v-model:value="userSetting.revchatgpt_available_models">
-            <n-space item-style="display: flex;">
-              <n-checkbox v-for="m in userSetting.revchatgpt_available_models" :key="m" :value="m" :label="getChatModelNameTrans(m)" />
-            </n-space>
-          </n-checkbox-group>
-        </n-form-item>
-        <n-form-item
-          v-for="m in userSetting.revchatgpt_available_models"
-          :key="m"
-          :label="t('labels.revchatgpt_ask_limits.per_model_count', [getChatModelNameTrans(m)])"
-        >
-          <n-input-number
-            v-model:value="userSetting.revchatgpt_ask_limits!.per_model_count[m]"
-            :disabled="!userSetting.revchatgpt_available_models?.includes(m)"
-            :parse="parseValue"
-            :format="formatValue"
-          />
-        </n-form-item>
-      </n-form>
-    </n-tab-pane>
-    <n-tab-pane name="api" :tab="t('commons.openaiApiSettings')">
-      <n-form
-        v-if="userSetting"
-        :rules="rules"
-        label-placement="left"
-        label-align="left"
-        :label-width="sm ? '180px' : '120px'"
-        class="mt-2"
-      >
-        <n-form-item :label="t('labels.can_use_openai_api')" path="can_use_openai_api">
-          <n-switch v-model:value="userSetting.can_use_openai_api" placeholder="" />
-        </n-form-item>
-        <n-form-item path="openai_api_credits">
-          <template #label>
-            {{ t('labels.openai_api_credits') }}
-            <!-- <HelpTooltip>
-              {{ t('helps.openai_api_credits') }}
-            </HelpTooltip> -->
-          </template>
-          <n-input-number
-            v-model:value="userSetting.openai_api_credits"
-            :parse="parseValue"
-            :format="formatValue"
-            :step="10"
-          />
-        </n-form-item>
-        <n-form-item :label="t('labels.openai_api_available_models')" path="openai_api_available_models">
-          <n-checkbox-group v-model:value="userSetting.openai_api_available_models">
-            <n-space item-style="display: flex;">
-              <n-checkbox v-for="m in userSetting.openai_api_available_models" :key="m" :value="m" :label="getChatModelNameTrans(m)" />
-            </n-space>
-          </n-checkbox-group>
-        </n-form-item>
-      </n-form>
-    </n-tab-pane>
-  </n-tabs>
-  <div class="flex flex-row space-x-4">
-    <n-button type="primary" @click="handleSave">
-      {{ t('commons.submit') }}
-    </n-button>
-  </div>
+  <n-space vertical>
+    <vue-form
+      v-model="settingModel"
+      :ui-schema="uiSchema"
+      :schema="userSettingJsonSchema"
+      :form-props="{
+        labelPosition: 'left',
+        labelWidth: 'auto',
+      }"
+      :form-footer="{
+        show: false,
+      }"
+    />
+    <div>
+      <n-button type="primary" @click="handleSave">
+        {{ t('commons.save') }}
+      </n-button>
+    </div>
+  </n-space>
 </template>
 
 <script setup lang="ts">
-import { HelpRound } from '@vicons/material';
-import { FormRules } from 'naive-ui';
+import VueForm, { modelValueComponent } from '@lljj/vue3-form-naive';
+import { NDynamicTags } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import HelpTooltip from '@/components/HelpTooltip.vue';
-import { i18n } from '@/i18n';
+import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
 import { UserReadAdmin, UserSettingSchema } from '@/types/schema';
-import { getChatModelNameTrans } from '@/utils/chat';
-import { screenWidthGreaterThan } from '@/utils/screen';
-const t = i18n.global.t as any;
+import schemasJson from '@/types/schemas.json';
+import { Dialog, Message } from '@/utils/tips';
 
-const sm = screenWidthGreaterThan('sm');
+const { t } = useI18n();
+const settingModel = ref<UserSettingSchema | null>(null);
+
+// 对于 enum array 需要设置 uniqueItems 才能渲染为复选框
+const setUniqueItemsForEnumProperties = (obj: any) => {
+  if (obj['type'] == 'array' && obj['items'] && obj['items']['enum']) {
+    obj['uniqueItems'] = true;
+  }
+  if (obj['properties'] != undefined) {
+    // 递归遍历
+    for (let key in obj['properties']) {
+      setUniqueItemsForEnumProperties(obj['properties'][key]);
+    }
+  }
+};
+
+const userSettingJsonSchema = computed(() => {
+  const result = schemasJson.UserSettingSchema;
+  setUniqueItemsForEnumProperties(result);
+  return result;
+});
+
+// console.log(configJsonSchema, credentialsJsonSchema);
 const props = defineProps<{
   user: UserReadAdmin | null;
 }>();
@@ -111,63 +62,150 @@ const emits = defineEmits<{
   (e: 'save', userSetting: Partial<UserSettingSchema>): void;
 }>();
 
-const userSetting = ref<Partial<UserSettingSchema> | null>(null);
-
-// getUserByIdApi(props.userId)
-//   .then((res) => {
-//     userSetting.value = res.data.setting;
-
-//     // 对于允许使用的模型，如果没有设置限制，则设置为默认值. 防止缺失key
-//     for (const m of revChatModelNames) {
-//       if (userSetting.value.revchatgpt_available_models!.includes(m)) {
-//         if (userSetting.value.revchatgpt_ask_limits!.per_model_count[m] == undefined) {
-//           userSetting.value.revchatgpt_ask_limits!.per_model_count[m] = 0;
-//         }
-//       }
-//     }
-//   })
-//   .catch((err) => {
-//     Message.error(err);
-//   });
 watch(
   () => props.user,
   async (user) => {
     if (!user) {
       return;
     }
-    userSetting.value = user.setting;
-    // 对于允许使用的模型，如果没有设置限制，则设置为默认值. 防止缺失key
-    for (const m of userSetting.value.revchatgpt_available_models!) {
-      if (userSetting.value.revchatgpt_available_models!.includes(m)) {
-        if (userSetting.value.revchatgpt_ask_limits!.per_model_count[m] == undefined) {
-          userSetting.value.revchatgpt_ask_limits!.per_model_count[m] = 0;
-        }
-      }
-    }
+    settingModel.value = user.setting;
   },
   { immediate: true }
 );
 
-const revChatModelLimitNames = computed(() => {
-  if (!userSetting.value) return [];
-  const result = [];
-  for (const m of userSetting.value.revchatgpt_available_models!) {
-    if (userSetting.value.revchatgpt_available_models?.includes(m)) {
-      result.push(m);
-    }
-  }
-  return result;
-});
+const DynamicTags = modelValueComponent(NDynamicTags, { model: 'value' });
 
-const rules: FormRules = {};
-
-const formatValue = (value: number | null) => (value == -1 ? t('commons.unlimited') : value);
-const parseValue = (value: string) => (value == t('commons.unlimited') ? -1 : parseInt(value));
+const uiSchema = {
+  'ui:title': '',
+  id: {
+    'ui:hidden': true,
+  },
+  user_id: {
+    'ui:hidden': true,
+  },
+  allow_chat_type: {
+    'ui:title': t('labels.allow_chat_type'),
+    rev: {
+      'ui:title': t('labels.rev'),
+    },
+    api: {
+      'ui:title': t('labels.api'),
+    },
+  },
+  available_models: {
+    'ui:title': t('labels.available_models'),
+    rev: {
+      'ui:title': t('labels.rev'),
+      'uniqueItems': true
+    },
+    api: {
+      'ui:title': t('labels.api'),
+      'uniqueItems': true
+    },
+  },
+  ask_count_limits: {
+    'ui:title': t('labels.ask_count_limits'),
+    rev: {
+      'ui:title': t('labels.rev'),
+      max_conv_count: {
+        'ui:title': t('labels.max_conv_count'),
+      },
+      total_ask_count: {
+        'ui:title': t('labels.total_ask_count'),
+      },
+      per_model_ask_count: {
+        'ui:title': '',
+        gpt_3_5: {
+          'ui:title': t('models.gpt_3_5'),
+        },
+        gpt_4: {
+          'ui:title': t('models.gpt_4'),
+        },
+      },
+    },
+    api: {
+      'ui:title': t('labels.api'),
+      max_conv_count: {
+        'ui:title': t('labels.max_conv_count'),
+      },
+      total_ask_count: {
+        'ui:title': t('labels.total_ask_count'),
+      },
+      per_model_ask_count: {
+        'ui:title': '',
+        gpt_3_5: {
+          'ui:title': t('models.gpt_3_5'),
+        },
+        gpt_4: {
+          'ui:title': t('models.gpt_4'),
+        },
+      },
+    },
+  },
+  ask_time_limits: {  // TODO 暂不支持
+    'ui:title': t('labels.ask_time_limits'),
+    'ui:hidden': true,
+    rev: {
+      'ui:title': t('labels.rev'),
+      time_window_limits: {
+        'ui:title': t('labels.time_window_limits'),
+        gpt_3_5: {
+          'ui:title': t('models.gpt_3_5'),
+        },
+        gpt_4: {
+          'ui:title': t('models.gpt_4'),
+        },
+      },
+      available_time_range_in_day: {
+        'ui:title': t('labels.available_time_range_in_day'),
+        gpt_3_5: {
+          'ui:title': t('models.gpt_3_5'),
+        },
+        gpt_4: {
+          'ui:title': t('models.gpt_4'),
+        },
+      },
+    },
+    api: {
+      'ui:title': t('labels.api'),
+      time_window_limits: {
+        'ui:title': t('labels.time_window_limits'),
+        gpt_3_5: {
+          'ui:title': t('models.gpt_3_5'),
+        },
+        gpt_4: {
+          'ui:title': t('models.gpt_4'),
+        },
+      },
+      available_time_range_in_day: {
+        'ui:title': t('labels.available_time_range_in_day'),
+        gpt_3_5: {
+          'ui:title': t('models.gpt_3_5'),
+        },
+        gpt_4: {
+          'ui:title': t('models.gpt_4'),
+        },
+      },
+    },
+  },
+  api_credits: {
+    'ui:title': t('labels.api_credits'),
+  },
+  allow_custom_openai_api: {
+    'ui:title': t('labels.allow_custom_openai_api'),
+  },
+  custom_openai_api_url: {
+    'ui:title': t('labels.custom_openai_api_url'),
+  },
+  custom_openai_api_key: {
+    'ui:title': t('labels.custom_openai_api_key'),
+  },
+};
 
 const handleSave = () => {
-  if (!userSetting.value) {
+  if (!settingModel.value) {
     return;
   }
-  emits('save', userSetting.value);
+  emits('save', settingModel.value);
 };
 </script>

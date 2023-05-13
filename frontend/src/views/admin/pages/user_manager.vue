@@ -48,10 +48,13 @@ import { useI18n } from 'vue-i18n';
 import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
+import schemasJson from '@/types/schemas.json';
 import { chatModelNames, getChatModelNameTrans, getCountTrans } from '@/utils/chat';
 import { screenWidthGreaterThan } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
+import ChatModelTagInfoCell from '../components/ChatModelTagInfoCell.vue';
+import ChatTagInfoCell from '../components/ChatTypeTagInfoCell.vue';
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';
 import UpdateUserSettingForm from '../components/UpdateUserSettingForm.vue';
@@ -74,6 +77,7 @@ const refreshData = () => {
 getAllUserApi().then((res) => {
   data.value = res.data;
 });
+
 
 const columns: DataTableColumns<UserReadAdmin> = [
   { title: '#', key: 'id' },
@@ -99,44 +103,38 @@ const columns: DataTableColumns<UserReadAdmin> = [
     },
   },
   {
-    title: t('commons.maxConversationCount'),
-    key: 'max_conv_count',
+    title: `${t('labels.max_conv_count')}`,
+    key: 'ask_count_limits',
     render(row) {
-      return row.setting.revchatgpt_ask_limits
-        ? getCountTrans(row.setting.revchatgpt_ask_limits.max_conv_count)
-        : t('commons.unlimited');
+      return h(ChatTagInfoCell, {
+        value: {
+          rev: getCountTrans(row.setting.ask_count_limits.rev.max_conv_count),
+          api: getCountTrans(row.setting.ask_count_limits.api.max_conv_count)
+        }
+      });
     },
   },
   {
-    title: t('commons.availableTotalAskCount'),
+    title: t('labels.available_ask_count'),
     key: 'available_ask_count',
     render(row) {
       // return getCountTrans(row.available_ask_count!);
-      return row.setting.revchatgpt_ask_limits
-        ? getCountTrans(row.setting.revchatgpt_ask_limits.total_count)
-        : t('commons.unlimited');
-    },
-  },
-  {
-    title: t('commons.availableAskCountPerModel'),
-    key: 'availableAskCountPerModel',
-    render(row) {
-      if (row.setting.revchatgpt_available_models && row.setting.revchatgpt_ask_limits) {
-        const per_model_count = row.setting.revchatgpt_ask_limits.per_model_count;
-        return chatModelNames
-          .map((modelName) => {
-            if (row.setting.revchatgpt_available_models.includes(modelName)) {
-              return `${getChatModelNameTrans(modelName)}: ${getCountTrans(per_model_count[modelName])}`;
-            } else {
-              return `${getChatModelNameTrans(modelName)}: ${t('commons.disabled')}`;
-            }
-          })
-          .join(', ');
-      } else {
-        return t('commons.unlimited');
+      const value = {} as any;
+      for (const k of ['rev', 'api']) {
+        const key = k as keyof typeof row.setting.ask_count_limits;
+        value[key] = h(ChatModelTagInfoCell, {
+          value: {
+            gpt_3_5: getCountTrans(row.setting.ask_count_limits[key].per_model_ask_count.gpt_3_5),
+            gpt_4: getCountTrans(row.setting.ask_count_limits[key].per_model_ask_count.gpt_4),
+          }
+        });
       }
+      return h(ChatTagInfoCell, {
+        value
+      });
     },
   },
+  // TODO
   { title: t('commons.email'), key: 'email' },
   {
     title: t('commons.isSuperuser'),

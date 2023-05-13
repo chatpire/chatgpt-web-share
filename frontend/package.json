@@ -32,6 +32,7 @@
     "vue-router": "4"
   },
   "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "^10.1.0",
     "@types/file-saver": "^2.0.5",
     "@types/markdown-it": "^12.2.3",
     "@types/node": "^18.14.0",

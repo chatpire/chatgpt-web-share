@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import VueForm, { modelValueComponent } from '@lljj/vue3-form-naive';
 import { NDynamicTags } from 'naive-ui';
-import { computed, Ref, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';

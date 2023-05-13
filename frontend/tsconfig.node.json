@@ -9,5 +9,6 @@
     "config/vite.config.base.ts",
     "config/vite.config.dev.ts",
     "config/vite.config.prod.ts",
+    "script/*.js",
   ]
 }

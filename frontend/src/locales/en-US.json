@@ -212,6 +212,8 @@
     "is_plus_account": "is_plus_account",
     "ask_timeout": "ask_timeout",
     "can_use_revchatgpt": "Allow using revChatGPT",
-    "remark": "remark"
+    "remark": "remark",
+    "rev": "Chat",
+    "api": "APIs"
   }
 }

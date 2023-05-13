@@ -1,0 +1,3076 @@
+{
+  "APISetting": {
+    "title": "APISetting",
+    "type": "object",
+    "properties": {
+      "openai_base_url": {
+        "title": "Openai Base Url",
+        "type": "string",
+        "default": "https://api.openai.com/v1/"
+      },
+      "connect_timeout": {
+        "title": "Connect Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 10
+      },
+      "read_timeout": {
+        "title": "Read Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 10
+      }
+    }
+  },
+  "ApiChatMessageMetadata": {
+    "title": "ApiChatMessageMetadata",
+    "type": "object",
+    "properties": {
+      "prompt_tokens": {
+        "title": "Prompt Tokens",
+        "type": "integer"
+      },
+      "completion_tokens": {
+        "title": "Completion Tokens",
+        "type": "integer"
+      },
+      "finish_reason": {
+        "title": "Finish Reason",
+        "type": "string"
+      }
+    }
+  },
+  "ApiConversationSchema": {
+    "title": "ApiConversationSchema",
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "integer",
+        "default": -1
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "api"
+        ],
+        "type": "string",
+        "default": "api"
+      },
+      "conversation_id": {
+        "title": "Conversation Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "user_id": {
+        "title": "User Id",
+        "type": "integer"
+      },
+      "is_valid": {
+        "title": "Is Valid",
+        "type": "boolean",
+        "default": true
+      },
+      "current_model": {
+        "title": "ChatModel",
+        "enum": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "AskLimitSetting": {
+    "title": "AskLimitSetting",
+    "required": [
+      "max_conv_count",
+      "total_ask_count",
+      "per_model_ask_count"
+    ],
+    "type": "object",
+    "properties": {
+      "max_conv_count": {
+        "title": "Max Conv Count",
+        "type": "integer"
+      },
+      "total_ask_count": {
+        "title": "Total Ask Count",
+        "type": "integer"
+      },
+      "per_model_ask_count": {
+        "title": "ChatModelDict[int]",
+        "required": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "object",
+        "properties": {
+          "gpt_3_5": {
+            "title": "Gpt 3 5",
+            "type": "integer"
+          },
+          "gpt_4": {
+            "title": "Gpt 4",
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "AskRequest": {
+    "title": "AskRequest",
+    "required": [
+      "type",
+      "new_conversation",
+      "model",
+      "content"
+    ],
+    "type": "object",
+    "properties": {
+      "type": {
+        "title": "ChatSourceTypes",
+        "enum": [
+          "rev",
+          "api"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "new_conversation": {
+        "title": "New Conversation",
+        "type": "boolean"
+      },
+      "new_title": {
+        "title": "New Title",
+        "type": "string"
+      },
+      "conversation_id": {
+        "title": "Conversation Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "parent": {
+        "title": "Parent",
+        "type": "string",
+        "format": "uuid"
+      },
+      "model": {
+        "title": "ChatModel",
+        "enum": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "api_context_message_count": {
+        "title": "Api Context Message Count",
+        "type": "integer",
+        "default": -1
+      },
+      "content": {
+        "title": "Content",
+        "type": "string"
+      }
+    }
+  },
+  "AskResponse": {
+    "title": "AskResponse",
+    "required": [
+      "type"
+    ],
+    "type": "object",
+    "properties": {
+      "type": {
+        "title": "AskResponseType",
+        "enum": [
+          "waiting",
+          "queueing",
+          "message",
+          "error"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "tip": {
+        "title": "Tip",
+        "type": "string"
+      },
+      "conversation_id": {
+        "title": "Conversation Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "message": {
+        "title": "ChatMessage",
+        "required": [
+          "role",
+          "children",
+          "content"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "anyOf": [
+              {
+                "title": "ChatModel",
+                "enum": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "create_time": {
+            "title": "Create Time",
+            "type": "string",
+            "format": "date-time"
+          },
+          "parent": {
+            "title": "Parent",
+            "type": "string",
+            "format": "uuid"
+          },
+          "children": {
+            "title": "Children",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "rev_metadata": {
+            "title": "RevChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "finish_details": {
+                "title": "Finish Details",
+                "type": "object"
+              },
+              "weight": {
+                "title": "Weight",
+                "type": "number"
+              },
+              "end_turn": {
+                "title": "End Turn",
+                "type": "boolean"
+              }
+            }
+          },
+          "api_metadata": {
+            "title": "ApiChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "prompt_tokens": {
+                "title": "Prompt Tokens",
+                "type": "integer"
+              },
+              "completion_tokens": {
+                "title": "Completion Tokens",
+                "type": "integer"
+              },
+              "finish_reason": {
+                "title": "Finish Reason",
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "error_detail": {
+        "title": "Error Detail",
+        "type": "string"
+      }
+    }
+  },
+  "AskResponseType": {
+    "title": "AskResponseType",
+    "enum": [
+      "waiting",
+      "queueing",
+      "message",
+      "error"
+    ],
+    "type": "string",
+    "description": "An enumeration."
+  },
+  "AskTimeLimits": {
+    "title": "AskTimeLimits",
+    "required": [
+      "time_window_limits",
+      "available_time_range_in_day"
+    ],
+    "type": "object",
+    "properties": {
+      "time_window_limits": {
+        "title": "ChatModelDict[list[list[int]]]",
+        "required": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "object",
+        "properties": {
+          "gpt_3_5": {
+            "title": "Gpt 3 5",
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          "gpt_4": {
+            "title": "Gpt 4",
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "available_time_range_in_day": {
+        "title": "ChatModelDict[Union[list[int], NoneType]]",
+        "type": "object",
+        "properties": {
+          "gpt_3_5": {
+            "title": "Gpt 3 5",
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "gpt_4": {
+            "title": "Gpt 4",
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "AuthSetting": {
+    "title": "AuthSetting",
+    "type": "object",
+    "properties": {
+      "jwt_secret": {
+        "title": "Jwt Secret",
+        "type": "string",
+        "default": "MODIFY_THIS_TO_RANDOM_SECRET"
+      },
+      "jwt_lifetime_seconds": {
+        "title": "Jwt Lifetime Seconds",
+        "minimum": 1,
+        "type": "integer",
+        "default": 86400
+      },
+      "cookie_max_age": {
+        "title": "Cookie Max Age",
+        "minimum": 1,
+        "type": "integer",
+        "default": 86400
+      },
+      "cookie_name": {
+        "title": "Cookie Name",
+        "type": "string",
+        "default": "user_auth"
+      },
+      "user_secret": {
+        "title": "User Secret",
+        "type": "string",
+        "default": "MODIFY_THIS_TO_RANDOM_SECRET"
+      }
+    }
+  },
+  "BaseConversationSchema": {
+    "title": "BaseConversationSchema",
+    "required": [
+      "type"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "integer",
+        "default": -1
+      },
+      "type": {
+        "title": "ChatSourceTypes",
+        "enum": [
+          "rev",
+          "api"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "conversation_id": {
+        "title": "Conversation Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "user_id": {
+        "title": "User Id",
+        "type": "integer"
+      },
+      "is_valid": {
+        "title": "Is Valid",
+        "type": "boolean",
+        "default": true
+      },
+      "current_model": {
+        "title": "ChatModel",
+        "enum": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "Body_auth_jwt_login_auth_login_post": {
+    "title": "Body_auth_jwt_login_auth_login_post",
+    "required": [
+      "username",
+      "password"
+    ],
+    "type": "object",
+    "properties": {
+      "grant_type": {
+        "title": "Grant Type",
+        "pattern": "password",
+        "type": "string"
+      },
+      "username": {
+        "title": "Username",
+        "type": "string"
+      },
+      "password": {
+        "title": "Password",
+        "type": "string"
+      },
+      "scope": {
+        "title": "Scope",
+        "type": "string",
+        "default": ""
+      },
+      "client_id": {
+        "title": "Client Id",
+        "type": "string"
+      },
+      "client_secret": {
+        "title": "Client Secret",
+        "type": "string"
+      }
+    }
+  },
+  "ChatMessage": {
+    "title": "ChatMessage",
+    "required": [
+      "role",
+      "children",
+      "content"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "role": {
+        "title": "Role",
+        "type": "string"
+      },
+      "model": {
+        "title": "Model",
+        "anyOf": [
+          {
+            "title": "ChatModel",
+            "enum": [
+              "gpt_3_5",
+              "gpt_4"
+            ],
+            "type": "string",
+            "description": "An enumeration."
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "parent": {
+        "title": "Parent",
+        "type": "string",
+        "format": "uuid"
+      },
+      "children": {
+        "title": "Children",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "content": {
+        "title": "Content",
+        "type": "string"
+      },
+      "rev_metadata": {
+        "title": "RevChatMessageMetadata",
+        "type": "object",
+        "properties": {
+          "finish_details": {
+            "title": "Finish Details",
+            "type": "object"
+          },
+          "weight": {
+            "title": "Weight",
+            "type": "number"
+          },
+          "end_turn": {
+            "title": "End Turn",
+            "type": "boolean"
+          }
+        }
+      },
+      "api_metadata": {
+        "title": "ApiChatMessageMetadata",
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "title": "Prompt Tokens",
+            "type": "integer"
+          },
+          "completion_tokens": {
+            "title": "Completion Tokens",
+            "type": "integer"
+          },
+          "finish_reason": {
+            "title": "Finish Reason",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "ChatModel": {
+    "title": "ChatModel",
+    "enum": [
+      "gpt_3_5",
+      "gpt_4"
+    ],
+    "type": "string",
+    "description": "An enumeration."
+  },
+  "ChatModelDict_Union_list_int___NoneType__": {
+    "title": "ChatModelDict[Union[list[int], NoneType]]",
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "ChatModelDict_int_": {
+    "title": "ChatModelDict[int]",
+    "required": [
+      "gpt_3_5",
+      "gpt_4"
+    ],
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "integer"
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "integer"
+      }
+    }
+  },
+  "ChatModelDict_list_list_int___": {
+    "title": "ChatModelDict[list[list[int]]]",
+    "required": [
+      "gpt_3_5",
+      "gpt_4"
+    ],
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "ChatSourceTypes": {
+    "title": "ChatSourceTypes",
+    "enum": [
+      "rev",
+      "api"
+    ],
+    "type": "string",
+    "description": "An enumeration."
+  },
+  "ChatTypeDict_AskLimitSetting_": {
+    "title": "ChatTypeDict[AskLimitSetting]",
+    "required": [
+      "rev",
+      "api"
+    ],
+    "type": "object",
+    "properties": {
+      "rev": {
+        "title": "AskLimitSetting",
+        "required": [
+          "max_conv_count",
+          "total_ask_count",
+          "per_model_ask_count"
+        ],
+        "type": "object",
+        "properties": {
+          "max_conv_count": {
+            "title": "Max Conv Count",
+            "type": "integer"
+          },
+          "total_ask_count": {
+            "title": "Total Ask Count",
+            "type": "integer"
+          },
+          "per_model_ask_count": {
+            "title": "ChatModelDict[int]",
+            "required": [
+              "gpt_3_5",
+              "gpt_4"
+            ],
+            "type": "object",
+            "properties": {
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
+                "type": "integer"
+              },
+              "gpt_4": {
+                "title": "Gpt 4",
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "api": {
+        "title": "AskLimitSetting",
+        "required": [
+          "max_conv_count",
+          "total_ask_count",
+          "per_model_ask_count"
+        ],
+        "type": "object",
+        "properties": {
+          "max_conv_count": {
+            "title": "Max Conv Count",
+            "type": "integer"
+          },
+          "total_ask_count": {
+            "title": "Total Ask Count",
+            "type": "integer"
+          },
+          "per_model_ask_count": {
+            "title": "ChatModelDict[int]",
+            "required": [
+              "gpt_3_5",
+              "gpt_4"
+            ],
+            "type": "object",
+            "properties": {
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
+                "type": "integer"
+              },
+              "gpt_4": {
+                "title": "Gpt 4",
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "ChatTypeDict_AskTimeLimits_": {
+    "title": "ChatTypeDict[AskTimeLimits]",
+    "required": [
+      "rev",
+      "api"
+    ],
+    "type": "object",
+    "properties": {
+      "rev": {
+        "title": "AskTimeLimits",
+        "required": [
+          "time_window_limits",
+          "available_time_range_in_day"
+        ],
+        "type": "object",
+        "properties": {
+          "time_window_limits": {
+            "title": "ChatModelDict[list[list[int]]]",
+            "required": [
+              "gpt_3_5",
+              "gpt_4"
+            ],
+            "type": "object",
+            "properties": {
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "gpt_4": {
+                "title": "Gpt 4",
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "available_time_range_in_day": {
+            "title": "ChatModelDict[Union[list[int], NoneType]]",
+            "type": "object",
+            "properties": {
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "gpt_4": {
+                "title": "Gpt 4",
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "api": {
+        "title": "AskTimeLimits",
+        "required": [
+          "time_window_limits",
+          "available_time_range_in_day"
+        ],
+        "type": "object",
+        "properties": {
+          "time_window_limits": {
+            "title": "ChatModelDict[list[list[int]]]",
+            "required": [
+              "gpt_3_5",
+              "gpt_4"
+            ],
+            "type": "object",
+            "properties": {
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "gpt_4": {
+                "title": "Gpt 4",
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "available_time_range_in_day": {
+            "title": "ChatModelDict[Union[list[int], NoneType]]",
+            "type": "object",
+            "properties": {
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "gpt_4": {
+                "title": "Gpt 4",
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "ChatTypeDict_bool_": {
+    "title": "ChatTypeDict[bool]",
+    "required": [
+      "rev",
+      "api"
+    ],
+    "type": "object",
+    "properties": {
+      "rev": {
+        "title": "Rev",
+        "type": "boolean"
+      },
+      "api": {
+        "title": "Api",
+        "type": "boolean"
+      }
+    }
+  },
+  "ChatTypeDict_list_api.enums.ChatModel__": {
+    "title": "ChatTypeDict[list[api.enums.ChatModel]]",
+    "required": [
+      "rev",
+      "api"
+    ],
+    "type": "object",
+    "properties": {
+      "rev": {
+        "type": "array",
+        "items": {
+          "title": "ChatModel",
+          "enum": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        }
+      },
+      "api": {
+        "type": "array",
+        "items": {
+          "title": "ChatModel",
+          "enum": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        }
+      }
+    }
+  },
+  "CommonSetting": {
+    "title": "CommonSetting",
+    "type": "object",
+    "properties": {
+      "print_sql": {
+        "title": "Print Sql",
+        "type": "boolean",
+        "default": false
+      },
+      "create_initial_admin_user": {
+        "title": "Create Initial Admin User",
+        "type": "boolean",
+        "default": true
+      },
+      "initial_admin_user_username": {
+        "title": "Initial Admin User Username",
+        "type": "string",
+        "default": "admin"
+      },
+      "initial_admin_user_password": {
+        "title": "Initial Admin User Password",
+        "type": "string",
+        "default": "password"
+      },
+      "sync_conversations_on_startup": {
+        "title": "Sync Conversations On Startup",
+        "type": "boolean",
+        "default": true
+      },
+      "sync_conversations_regularly": {
+        "title": "Sync Conversations Regularly",
+        "type": "boolean",
+        "default": true
+      }
+    }
+  },
+  "ConfigModel": {
+    "title": "ConfigModel",
+    "type": "object",
+    "properties": {
+      "common": {
+        "title": "Common",
+        "allOf": [
+          {
+            "title": "CommonSetting",
+            "type": "object",
+            "properties": {
+              "print_sql": {
+                "title": "Print Sql",
+                "type": "boolean",
+                "default": false
+              },
+              "create_initial_admin_user": {
+                "title": "Create Initial Admin User",
+                "type": "boolean",
+                "default": true
+              },
+              "initial_admin_user_username": {
+                "title": "Initial Admin User Username",
+                "type": "string",
+                "default": "admin"
+              },
+              "initial_admin_user_password": {
+                "title": "Initial Admin User Password",
+                "type": "string",
+                "default": "password"
+              },
+              "sync_conversations_on_startup": {
+                "title": "Sync Conversations On Startup",
+                "type": "boolean",
+                "default": true
+              },
+              "sync_conversations_regularly": {
+                "title": "Sync Conversations Regularly",
+                "type": "boolean",
+                "default": true
+              }
+            }
+          }
+        ],
+        "default": {
+          "print_sql": false,
+          "create_initial_admin_user": true,
+          "initial_admin_user_username": "admin",
+          "initial_admin_user_password": "password",
+          "sync_conversations_on_startup": true,
+          "sync_conversations_regularly": true
+        }
+      },
+      "http": {
+        "title": "Http",
+        "allOf": [
+          {
+            "title": "HttpSetting",
+            "type": "object",
+            "properties": {
+              "host": {
+                "title": "Host",
+                "type": "string",
+                "default": "127.0.0.1"
+              },
+              "port": {
+                "title": "Port",
+                "maximum": 65535,
+                "minimum": 1,
+                "type": "integer",
+                "default": 8000
+              },
+              "cors_allow_origins": {
+                "title": "Cors Allow Origins",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "http://localhost",
+                  "http://127.0.0.1"
+                ]
+              }
+            }
+          }
+        ],
+        "default": {
+          "host": "127.0.0.1",
+          "port": 8000,
+          "cors_allow_origins": [
+            "http://localhost",
+            "http://127.0.0.1"
+          ]
+        }
+      },
+      "data": {
+        "title": "Data",
+        "allOf": [
+          {
+            "title": "DataSetting",
+            "type": "object",
+            "properties": {
+              "data_dir": {
+                "title": "Data Dir",
+                "type": "string",
+                "default": "./data"
+              },
+              "database_url": {
+                "title": "Database Url",
+                "type": "string",
+                "default": "sqlite+aiosqlite:///data/database.db"
+              },
+              "mongodb_url": {
+                "title": "Mongodb Url",
+                "type": "string",
+                "default": "mongodb://cws:password@localhost:27017"
+              },
+              "run_migration": {
+                "title": "Run Migration",
+                "type": "boolean",
+                "default": false
+              }
+            }
+          }
+        ],
+        "default": {
+          "data_dir": "./data",
+          "database_url": "sqlite+aiosqlite:///data/database.db",
+          "mongodb_url": "mongodb://cws:password@localhost:27017",
+          "run_migration": false
+        }
+      },
+      "auth": {
+        "title": "Auth",
+        "allOf": [
+          {
+            "title": "AuthSetting",
+            "type": "object",
+            "properties": {
+              "jwt_secret": {
+                "title": "Jwt Secret",
+                "type": "string",
+                "default": "MODIFY_THIS_TO_RANDOM_SECRET"
+              },
+              "jwt_lifetime_seconds": {
+                "title": "Jwt Lifetime Seconds",
+                "minimum": 1,
+                "type": "integer",
+                "default": 86400
+              },
+              "cookie_max_age": {
+                "title": "Cookie Max Age",
+                "minimum": 1,
+                "type": "integer",
+                "default": 86400
+              },
+              "cookie_name": {
+                "title": "Cookie Name",
+                "type": "string",
+                "default": "user_auth"
+              },
+              "user_secret": {
+                "title": "User Secret",
+                "type": "string",
+                "default": "MODIFY_THIS_TO_RANDOM_SECRET"
+              }
+            }
+          }
+        ],
+        "default": {
+          "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECRET",
+          "jwt_lifetime_seconds": 86400,
+          "cookie_max_age": 86400,
+          "cookie_name": "user_auth",
+          "user_secret": "MODIFY_THIS_TO_RANDOM_SECRET"
+        }
+      },
+      "revchatgpt": {
+        "title": "Revchatgpt",
+        "allOf": [
+          {
+            "title": "RevChatGPTSetting",
+            "type": "object",
+            "properties": {
+              "is_plus_account": {
+                "title": "Is Plus Account",
+                "type": "boolean",
+                "default": false
+              },
+              "chatgpt_base_url": {
+                "title": "Chatgpt Base Url",
+                "type": "string"
+              },
+              "ask_timeout": {
+                "title": "Ask Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 600
+              }
+            }
+          }
+        ],
+        "default": {
+          "is_plus_account": false,
+          "ask_timeout": 600
+        }
+      },
+      "api": {
+        "title": "Api",
+        "allOf": [
+          {
+            "title": "APISetting",
+            "type": "object",
+            "properties": {
+              "openai_base_url": {
+                "title": "Openai Base Url",
+                "type": "string",
+                "default": "https://api.openai.com/v1/"
+              },
+              "connect_timeout": {
+                "title": "Connect Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 10
+              },
+              "read_timeout": {
+                "title": "Read Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 10
+              }
+            }
+          }
+        ],
+        "default": {
+          "openai_base_url": "https://api.openai.com/v1/",
+          "connect_timeout": 10,
+          "read_timeout": 10
+        }
+      },
+      "log": {
+        "title": "Log",
+        "allOf": [
+          {
+            "title": "LogSetting",
+            "type": "object",
+            "properties": {
+              "log_dir": {
+                "title": "Log Dir",
+                "type": "string",
+                "default": "logs"
+              },
+              "console_log_level": {
+                "title": "Console Log Level",
+                "enum": [
+                  "INFO",
+                  "DEBUG",
+                  "WARNING"
+                ],
+                "type": "string",
+                "default": "INFO"
+              }
+            }
+          }
+        ],
+        "default": {
+          "log_dir": "logs",
+          "console_log_level": "INFO"
+        }
+      },
+      "stats": {
+        "title": "Stats",
+        "allOf": [
+          {
+            "title": "StatsSetting",
+            "type": "object",
+            "properties": {
+              "request_counter_time_window": {
+                "title": "Request Counter Time Window",
+                "type": "integer",
+                "default": 2592000
+              },
+              "request_counts_interval": {
+                "title": "Request Counts Interval",
+                "type": "integer",
+                "default": 1800
+              },
+              "ask_log_time_window": {
+                "title": "Ask Log Time Window",
+                "type": "integer",
+                "default": 604800
+              }
+            }
+          }
+        ],
+        "default": {
+          "request_counter_time_window": 2592000,
+          "request_counts_interval": 1800,
+          "ask_log_time_window": 604800
+        }
+      }
+    }
+  },
+  "ConversationHistoryDocument": {
+    "title": "ConversationHistoryDocument",
+    "required": [
+      "type",
+      "title",
+      "create_time",
+      "update_time",
+      "mapping",
+      "current_node"
+    ],
+    "type": "object",
+    "properties": {
+      "_id": {
+        "title": " Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev",
+          "api"
+        ],
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "mapping": {
+        "title": "Mapping",
+        "type": "object",
+        "additionalProperties": {
+          "title": "ChatMessage",
+          "required": [
+            "role",
+            "children",
+            "content"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "role": {
+              "title": "Role",
+              "type": "string"
+            },
+            "model": {
+              "title": "Model",
+              "anyOf": [
+                {
+                  "title": "ChatModel",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "create_time": {
+              "title": "Create Time",
+              "type": "string",
+              "format": "date-time"
+            },
+            "parent": {
+              "title": "Parent",
+              "type": "string",
+              "format": "uuid"
+            },
+            "children": {
+              "title": "Children",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "content": {
+              "title": "Content",
+              "type": "string"
+            },
+            "rev_metadata": {
+              "title": "RevChatMessageMetadata",
+              "type": "object",
+              "properties": {
+                "finish_details": {
+                  "title": "Finish Details",
+                  "type": "object"
+                },
+                "weight": {
+                  "title": "Weight",
+                  "type": "number"
+                },
+                "end_turn": {
+                  "title": "End Turn",
+                  "type": "boolean"
+                }
+              }
+            },
+            "api_metadata": {
+              "title": "ApiChatMessageMetadata",
+              "type": "object",
+              "properties": {
+                "prompt_tokens": {
+                  "title": "Prompt Tokens",
+                  "type": "integer"
+                },
+                "completion_tokens": {
+                  "title": "Completion Tokens",
+                  "type": "integer"
+                },
+                "finish_reason": {
+                  "title": "Finish Reason",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "current_node": {
+        "title": "Current Node",
+        "type": "string",
+        "format": "uuid"
+      },
+      "current_model": {
+        "title": "Current Model",
+        "anyOf": [
+          {
+            "title": "ChatModel",
+            "enum": [
+              "gpt_3_5",
+              "gpt_4"
+            ],
+            "type": "string",
+            "description": "An enumeration."
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
+  },
+  "CredentialsModel": {
+    "title": "CredentialsModel",
+    "type": "object",
+    "properties": {
+      "chatgpt_access_token": {
+        "title": "Chatgpt Access Token",
+        "type": "string"
+      },
+      "openai_api_key": {
+        "title": "Openai Api Key",
+        "type": "string"
+      }
+    }
+  },
+  "DataSetting": {
+    "title": "DataSetting",
+    "type": "object",
+    "properties": {
+      "data_dir": {
+        "title": "Data Dir",
+        "type": "string",
+        "default": "./data"
+      },
+      "database_url": {
+        "title": "Database Url",
+        "type": "string",
+        "default": "sqlite+aiosqlite:///data/database.db"
+      },
+      "mongodb_url": {
+        "title": "Mongodb Url",
+        "type": "string",
+        "default": "mongodb://cws:password@localhost:27017"
+      },
+      "run_migration": {
+        "title": "Run Migration",
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "ErrorModel": {
+    "title": "ErrorModel",
+    "required": [
+      "detail"
+    ],
+    "type": "object",
+    "properties": {
+      "detail": {
+        "title": "Detail",
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "HTTPValidationError": {
+    "title": "HTTPValidationError",
+    "type": "object",
+    "properties": {
+      "detail": {
+        "title": "Detail",
+        "type": "array",
+        "items": {
+          "title": "ValidationError",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "type": "object",
+          "properties": {
+            "loc": {
+              "title": "Location",
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              }
+            },
+            "msg": {
+              "title": "Message",
+              "type": "string"
+            },
+            "type": {
+              "title": "Error Type",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "HttpSetting": {
+    "title": "HttpSetting",
+    "type": "object",
+    "properties": {
+      "host": {
+        "title": "Host",
+        "type": "string",
+        "default": "127.0.0.1"
+      },
+      "port": {
+        "title": "Port",
+        "maximum": 65535,
+        "minimum": 1,
+        "type": "integer",
+        "default": 8000
+      },
+      "cors_allow_origins": {
+        "title": "Cors Allow Origins",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [
+          "http://localhost",
+          "http://127.0.0.1"
+        ]
+      }
+    }
+  },
+  "LogFilterOptions": {
+    "title": "LogFilterOptions",
+    "type": "object",
+    "properties": {
+      "max_lines": {
+        "title": "Max Lines",
+        "type": "integer",
+        "default": 100
+      },
+      "exclude_keywords": {
+        "title": "Exclude Keywords",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "LogSetting": {
+    "title": "LogSetting",
+    "type": "object",
+    "properties": {
+      "log_dir": {
+        "title": "Log Dir",
+        "type": "string",
+        "default": "logs"
+      },
+      "console_log_level": {
+        "title": "Console Log Level",
+        "enum": [
+          "INFO",
+          "DEBUG",
+          "WARNING"
+        ],
+        "type": "string",
+        "default": "INFO"
+      }
+    }
+  },
+  "RequestStatistics": {
+    "title": "RequestStatistics",
+    "required": [
+      "request_counts_interval",
+      "request_counts",
+      "ask_records"
+    ],
+    "type": "object",
+    "properties": {
+      "request_counts_interval": {
+        "title": "Request Counts Interval",
+        "type": "integer"
+      },
+      "request_counts": {
+        "title": "Request Counts",
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "ask_records": {
+        "title": "Ask Records",
+        "type": "array",
+        "items": {}
+      }
+    }
+  },
+  "RevChatGPTSetting": {
+    "title": "RevChatGPTSetting",
+    "type": "object",
+    "properties": {
+      "is_plus_account": {
+        "title": "Is Plus Account",
+        "type": "boolean",
+        "default": false
+      },
+      "chatgpt_base_url": {
+        "title": "Chatgpt Base Url",
+        "type": "string"
+      },
+      "ask_timeout": {
+        "title": "Ask Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 600
+      }
+    }
+  },
+  "RevChatMessageMetadata": {
+    "title": "RevChatMessageMetadata",
+    "type": "object",
+    "properties": {
+      "finish_details": {
+        "title": "Finish Details",
+        "type": "object"
+      },
+      "weight": {
+        "title": "Weight",
+        "type": "number"
+      },
+      "end_turn": {
+        "title": "End Turn",
+        "type": "boolean"
+      }
+    }
+  },
+  "RevChatStatus": {
+    "title": "RevChatStatus",
+    "enum": [
+      "asking",
+      "queueing",
+      "idling"
+    ],
+    "type": "string",
+    "description": "An enumeration."
+  },
+  "RevConversationSchema": {
+    "title": "RevConversationSchema",
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "integer",
+        "default": -1
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev"
+        ],
+        "type": "string",
+        "default": "rev"
+      },
+      "conversation_id": {
+        "title": "Conversation Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "user_id": {
+        "title": "User Id",
+        "type": "integer"
+      },
+      "is_valid": {
+        "title": "Is Valid",
+        "type": "boolean",
+        "default": true
+      },
+      "current_model": {
+        "title": "ChatModel",
+        "enum": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "ServerStatusSchema": {
+    "title": "ServerStatusSchema",
+    "type": "object",
+    "properties": {
+      "active_user_in_5m": {
+        "title": "Active User In 5M",
+        "type": "integer"
+      },
+      "active_user_in_1h": {
+        "title": "Active User In 1H",
+        "type": "integer"
+      },
+      "active_user_in_1d": {
+        "title": "Active User In 1D",
+        "type": "integer"
+      },
+      "is_chatbot_busy": {
+        "title": "Is Chatbot Busy",
+        "type": "boolean"
+      },
+      "chatbot_waiting_count": {
+        "title": "Chatbot Waiting Count",
+        "type": "integer"
+      }
+    }
+  },
+  "StatsSetting": {
+    "title": "StatsSetting",
+    "type": "object",
+    "properties": {
+      "request_counter_time_window": {
+        "title": "Request Counter Time Window",
+        "type": "integer",
+        "default": 2592000
+      },
+      "request_counts_interval": {
+        "title": "Request Counts Interval",
+        "type": "integer",
+        "default": 1800
+      },
+      "ask_log_time_window": {
+        "title": "Ask Log Time Window",
+        "type": "integer",
+        "default": 604800
+      }
+    }
+  },
+  "SystemInfo": {
+    "title": "SystemInfo",
+    "required": [
+      "startup_time",
+      "total_user_count",
+      "total_conversation_count",
+      "valid_conversation_count"
+    ],
+    "type": "object",
+    "properties": {
+      "startup_time": {
+        "title": "Startup Time",
+        "type": "number"
+      },
+      "total_user_count": {
+        "title": "Total User Count",
+        "type": "integer"
+      },
+      "total_conversation_count": {
+        "title": "Total Conversation Count",
+        "type": "integer"
+      },
+      "valid_conversation_count": {
+        "title": "Valid Conversation Count",
+        "type": "integer"
+      }
+    }
+  },
+  "UserCreate": {
+    "title": "UserCreate",
+    "required": [
+      "email",
+      "password",
+      "username",
+      "nickname"
+    ],
+    "type": "object",
+    "properties": {
+      "email": {
+        "title": "Email",
+        "type": "string",
+        "format": "email"
+      },
+      "password": {
+        "title": "Password",
+        "type": "string"
+      },
+      "is_active": {
+        "title": "Is Active",
+        "type": "boolean",
+        "default": true
+      },
+      "is_superuser": {
+        "title": "Is Superuser",
+        "type": "boolean",
+        "default": false
+      },
+      "is_verified": {
+        "title": "Is Verified",
+        "type": "boolean",
+        "default": false
+      },
+      "username": {
+        "title": "Username",
+        "type": "string"
+      },
+      "nickname": {
+        "title": "Nickname",
+        "type": "string"
+      },
+      "avatar": {
+        "title": "Avatar",
+        "type": "string"
+      },
+      "remark": {
+        "title": "Remark",
+        "type": "string"
+      }
+    }
+  },
+  "UserRead": {
+    "title": "UserRead",
+    "required": [
+      "id",
+      "email",
+      "is_active",
+      "is_superuser",
+      "is_verified",
+      "username",
+      "nickname",
+      "rev_chat_status",
+      "create_time",
+      "setting"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "integer"
+      },
+      "email": {
+        "title": "Email",
+        "type": "string",
+        "format": "email"
+      },
+      "is_active": {
+        "title": "Is Active",
+        "type": "boolean"
+      },
+      "is_superuser": {
+        "title": "Is Superuser",
+        "type": "boolean"
+      },
+      "is_verified": {
+        "title": "Is Verified",
+        "type": "boolean"
+      },
+      "username": {
+        "title": "Username",
+        "type": "string"
+      },
+      "nickname": {
+        "title": "Nickname",
+        "type": "string"
+      },
+      "rev_chat_status": {
+        "title": "RevChatStatus",
+        "enum": [
+          "asking",
+          "queueing",
+          "idling"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "last_active_time": {
+        "title": "Last Active Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "avatar": {
+        "title": "Avatar",
+        "type": "string"
+      },
+      "setting": {
+        "title": "UserSettingSchema",
+        "required": [
+          "allow_chat_type",
+          "available_models",
+          "ask_count_limits",
+          "ask_time_limits",
+          "allow_custom_openai_api"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          },
+          "allow_chat_type": {
+            "title": "ChatTypeDict[bool]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "title": "Rev",
+                "type": "boolean"
+              },
+              "api": {
+                "title": "Api",
+                "type": "boolean"
+              }
+            }
+          },
+          "available_models": {
+            "title": "ChatTypeDict[list[api.enums.ChatModel]]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "type": "array",
+                "items": {
+                  "title": "ChatModel",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                }
+              },
+              "api": {
+                "type": "array",
+                "items": {
+                  "title": "ChatModel",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                }
+              }
+            }
+          },
+          "ask_count_limits": {
+            "title": "ChatTypeDict[AskLimitSetting]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "title": "AskLimitSetting",
+                "required": [
+                  "max_conv_count",
+                  "total_ask_count",
+                  "per_model_ask_count"
+                ],
+                "type": "object",
+                "properties": {
+                  "max_conv_count": {
+                    "title": "Max Conv Count",
+                    "type": "integer"
+                  },
+                  "total_ask_count": {
+                    "title": "Total Ask Count",
+                    "type": "integer"
+                  },
+                  "per_model_ask_count": {
+                    "title": "ChatModelDict[int]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "integer"
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "api": {
+                "title": "AskLimitSetting",
+                "required": [
+                  "max_conv_count",
+                  "total_ask_count",
+                  "per_model_ask_count"
+                ],
+                "type": "object",
+                "properties": {
+                  "max_conv_count": {
+                    "title": "Max Conv Count",
+                    "type": "integer"
+                  },
+                  "total_ask_count": {
+                    "title": "Total Ask Count",
+                    "type": "integer"
+                  },
+                  "per_model_ask_count": {
+                    "title": "ChatModelDict[int]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "integer"
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ask_time_limits": {
+            "title": "ChatTypeDict[AskTimeLimits]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "title": "AskTimeLimits",
+                "required": [
+                  "time_window_limits",
+                  "available_time_range_in_day"
+                ],
+                "type": "object",
+                "properties": {
+                  "time_window_limits": {
+                    "title": "ChatModelDict[list[list[int]]]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "available_time_range_in_day": {
+                    "title": "ChatModelDict[Union[list[int], NoneType]]",
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "api": {
+                "title": "AskTimeLimits",
+                "required": [
+                  "time_window_limits",
+                  "available_time_range_in_day"
+                ],
+                "type": "object",
+                "properties": {
+                  "time_window_limits": {
+                    "title": "ChatModelDict[list[list[int]]]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "available_time_range_in_day": {
+                    "title": "ChatModelDict[Union[list[int], NoneType]]",
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "api_credits": {
+            "title": "Api Credits",
+            "type": "number",
+            "description": "Credits for OpenAI API, not support unlimited (-1)",
+            "default": 0
+          },
+          "allow_custom_openai_api": {
+            "title": "Allow Custom Openai Api",
+            "type": "boolean"
+          },
+          "custom_openai_api_url": {
+            "title": "Custom Openai Api Url",
+            "type": "string"
+          },
+          "custom_openai_api_key": {
+            "title": "Custom Openai Api Key",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "description": "Base User model."
+  },
+  "UserReadAdmin": {
+    "title": "UserReadAdmin",
+    "required": [
+      "id",
+      "email",
+      "is_active",
+      "is_superuser",
+      "is_verified",
+      "username",
+      "nickname",
+      "rev_chat_status",
+      "create_time",
+      "setting"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "integer"
+      },
+      "email": {
+        "title": "Email",
+        "type": "string",
+        "format": "email"
+      },
+      "is_active": {
+        "title": "Is Active",
+        "type": "boolean"
+      },
+      "is_superuser": {
+        "title": "Is Superuser",
+        "type": "boolean"
+      },
+      "is_verified": {
+        "title": "Is Verified",
+        "type": "boolean"
+      },
+      "username": {
+        "title": "Username",
+        "type": "string"
+      },
+      "nickname": {
+        "title": "Nickname",
+        "type": "string"
+      },
+      "rev_chat_status": {
+        "title": "RevChatStatus",
+        "enum": [
+          "asking",
+          "queueing",
+          "idling"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "last_active_time": {
+        "title": "Last Active Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "avatar": {
+        "title": "Avatar",
+        "type": "string"
+      },
+      "setting": {
+        "title": "UserSettingSchema",
+        "required": [
+          "allow_chat_type",
+          "available_models",
+          "ask_count_limits",
+          "ask_time_limits",
+          "allow_custom_openai_api"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          },
+          "allow_chat_type": {
+            "title": "ChatTypeDict[bool]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "title": "Rev",
+                "type": "boolean"
+              },
+              "api": {
+                "title": "Api",
+                "type": "boolean"
+              }
+            }
+          },
+          "available_models": {
+            "title": "ChatTypeDict[list[api.enums.ChatModel]]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "type": "array",
+                "items": {
+                  "title": "ChatModel",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                }
+              },
+              "api": {
+                "type": "array",
+                "items": {
+                  "title": "ChatModel",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                }
+              }
+            }
+          },
+          "ask_count_limits": {
+            "title": "ChatTypeDict[AskLimitSetting]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "title": "AskLimitSetting",
+                "required": [
+                  "max_conv_count",
+                  "total_ask_count",
+                  "per_model_ask_count"
+                ],
+                "type": "object",
+                "properties": {
+                  "max_conv_count": {
+                    "title": "Max Conv Count",
+                    "type": "integer"
+                  },
+                  "total_ask_count": {
+                    "title": "Total Ask Count",
+                    "type": "integer"
+                  },
+                  "per_model_ask_count": {
+                    "title": "ChatModelDict[int]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "integer"
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "api": {
+                "title": "AskLimitSetting",
+                "required": [
+                  "max_conv_count",
+                  "total_ask_count",
+                  "per_model_ask_count"
+                ],
+                "type": "object",
+                "properties": {
+                  "max_conv_count": {
+                    "title": "Max Conv Count",
+                    "type": "integer"
+                  },
+                  "total_ask_count": {
+                    "title": "Total Ask Count",
+                    "type": "integer"
+                  },
+                  "per_model_ask_count": {
+                    "title": "ChatModelDict[int]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "integer"
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ask_time_limits": {
+            "title": "ChatTypeDict[AskTimeLimits]",
+            "required": [
+              "rev",
+              "api"
+            ],
+            "type": "object",
+            "properties": {
+              "rev": {
+                "title": "AskTimeLimits",
+                "required": [
+                  "time_window_limits",
+                  "available_time_range_in_day"
+                ],
+                "type": "object",
+                "properties": {
+                  "time_window_limits": {
+                    "title": "ChatModelDict[list[list[int]]]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "available_time_range_in_day": {
+                    "title": "ChatModelDict[Union[list[int], NoneType]]",
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "api": {
+                "title": "AskTimeLimits",
+                "required": [
+                  "time_window_limits",
+                  "available_time_range_in_day"
+                ],
+                "type": "object",
+                "properties": {
+                  "time_window_limits": {
+                    "title": "ChatModelDict[list[list[int]]]",
+                    "required": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "available_time_range_in_day": {
+                    "title": "ChatModelDict[Union[list[int], NoneType]]",
+                    "type": "object",
+                    "properties": {
+                      "gpt_3_5": {
+                        "title": "Gpt 3 5",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "gpt_4": {
+                        "title": "Gpt 4",
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "api_credits": {
+            "title": "Api Credits",
+            "type": "number",
+            "description": "Credits for OpenAI API, not support unlimited (-1)",
+            "default": 0
+          },
+          "allow_custom_openai_api": {
+            "title": "Allow Custom Openai Api",
+            "type": "boolean"
+          },
+          "custom_openai_api_url": {
+            "title": "Custom Openai Api Url",
+            "type": "string"
+          },
+          "custom_openai_api_key": {
+            "title": "Custom Openai Api Key",
+            "type": "string"
+          }
+        }
+      },
+      "remark": {
+        "title": "Remark",
+        "type": "string"
+      }
+    },
+    "description": "Base User model."
+  },
+  "UserSettingSchema": {
+    "title": "UserSettingSchema",
+    "required": [
+      "allow_chat_type",
+      "available_models",
+      "ask_count_limits",
+      "ask_time_limits",
+      "allow_custom_openai_api"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "integer"
+      },
+      "user_id": {
+        "title": "User Id",
+        "type": "integer"
+      },
+      "allow_chat_type": {
+        "title": "ChatTypeDict[bool]",
+        "required": [
+          "rev",
+          "api"
+        ],
+        "type": "object",
+        "properties": {
+          "rev": {
+            "title": "Rev",
+            "type": "boolean"
+          },
+          "api": {
+            "title": "Api",
+            "type": "boolean"
+          }
+        }
+      },
+      "available_models": {
+        "title": "ChatTypeDict[list[api.enums.ChatModel]]",
+        "required": [
+          "rev",
+          "api"
+        ],
+        "type": "object",
+        "properties": {
+          "rev": {
+            "type": "array",
+            "items": {
+              "title": "ChatModel",
+              "enum": [
+                "gpt_3_5",
+                "gpt_4"
+              ],
+              "type": "string",
+              "description": "An enumeration."
+            }
+          },
+          "api": {
+            "type": "array",
+            "items": {
+              "title": "ChatModel",
+              "enum": [
+                "gpt_3_5",
+                "gpt_4"
+              ],
+              "type": "string",
+              "description": "An enumeration."
+            }
+          }
+        }
+      },
+      "ask_count_limits": {
+        "title": "ChatTypeDict[AskLimitSetting]",
+        "required": [
+          "rev",
+          "api"
+        ],
+        "type": "object",
+        "properties": {
+          "rev": {
+            "title": "AskLimitSetting",
+            "required": [
+              "max_conv_count",
+              "total_ask_count",
+              "per_model_ask_count"
+            ],
+            "type": "object",
+            "properties": {
+              "max_conv_count": {
+                "title": "Max Conv Count",
+                "type": "integer"
+              },
+              "total_ask_count": {
+                "title": "Total Ask Count",
+                "type": "integer"
+              },
+              "per_model_ask_count": {
+                "title": "ChatModelDict[int]",
+                "required": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ],
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "integer"
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "api": {
+            "title": "AskLimitSetting",
+            "required": [
+              "max_conv_count",
+              "total_ask_count",
+              "per_model_ask_count"
+            ],
+            "type": "object",
+            "properties": {
+              "max_conv_count": {
+                "title": "Max Conv Count",
+                "type": "integer"
+              },
+              "total_ask_count": {
+                "title": "Total Ask Count",
+                "type": "integer"
+              },
+              "per_model_ask_count": {
+                "title": "ChatModelDict[int]",
+                "required": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ],
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "integer"
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ask_time_limits": {
+        "title": "ChatTypeDict[AskTimeLimits]",
+        "required": [
+          "rev",
+          "api"
+        ],
+        "type": "object",
+        "properties": {
+          "rev": {
+            "title": "AskTimeLimits",
+            "required": [
+              "time_window_limits",
+              "available_time_range_in_day"
+            ],
+            "type": "object",
+            "properties": {
+              "time_window_limits": {
+                "title": "ChatModelDict[list[list[int]]]",
+                "required": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ],
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "available_time_range_in_day": {
+                "title": "ChatModelDict[Union[list[int], NoneType]]",
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "api": {
+            "title": "AskTimeLimits",
+            "required": [
+              "time_window_limits",
+              "available_time_range_in_day"
+            ],
+            "type": "object",
+            "properties": {
+              "time_window_limits": {
+                "title": "ChatModelDict[list[list[int]]]",
+                "required": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ],
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "available_time_range_in_day": {
+                "title": "ChatModelDict[Union[list[int], NoneType]]",
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "api_credits": {
+        "title": "Api Credits",
+        "type": "number",
+        "description": "Credits for OpenAI API, not support unlimited (-1)",
+        "default": 0
+      },
+      "allow_custom_openai_api": {
+        "title": "Allow Custom Openai Api",
+        "type": "boolean"
+      },
+      "custom_openai_api_url": {
+        "title": "Custom Openai Api Url",
+        "type": "string"
+      },
+      "custom_openai_api_key": {
+        "title": "Custom Openai Api Key",
+        "type": "string"
+      }
+    }
+  },
+  "UserUpdate": {
+    "title": "UserUpdate",
+    "type": "object",
+    "properties": {
+      "password": {
+        "title": "Password",
+        "type": "string"
+      },
+      "email": {
+        "title": "Email",
+        "type": "string"
+      },
+      "is_active": {
+        "title": "Is Active",
+        "type": "boolean"
+      },
+      "is_superuser": {
+        "title": "Is Superuser",
+        "type": "boolean"
+      },
+      "is_verified": {
+        "title": "Is Verified",
+        "type": "boolean"
+      },
+      "nickname": {
+        "title": "Nickname",
+        "type": "string"
+      },
+      "avatar": {
+        "title": "Avatar",
+        "type": "string"
+      }
+    }
+  },
+  "UserUpdateAdmin": {
+    "title": "UserUpdateAdmin",
+    "type": "object",
+    "properties": {
+      "password": {
+        "title": "Password",
+        "type": "string"
+      },
+      "email": {
+        "title": "Email",
+        "type": "string"
+      },
+      "is_active": {
+        "title": "Is Active",
+        "type": "boolean"
+      },
+      "is_superuser": {
+        "title": "Is Superuser",
+        "type": "boolean"
+      },
+      "is_verified": {
+        "title": "Is Verified",
+        "type": "boolean"
+      },
+      "nickname": {
+        "title": "Nickname",
+        "type": "string"
+      },
+      "avatar": {
+        "title": "Avatar",
+        "type": "string"
+      },
+      "username": {
+        "title": "Username",
+        "type": "string"
+      },
+      "remark": {
+        "title": "Remark",
+        "type": "string"
+      }
+    }
+  },
+  "ValidationError": {
+    "title": "ValidationError",
+    "required": [
+      "loc",
+      "msg",
+      "type"
+    ],
+    "type": "object",
+    "properties": {
+      "loc": {
+        "title": "Location",
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        }
+      },
+      "msg": {
+        "title": "Message",
+        "type": "string"
+      },
+      "type": {
+        "title": "Error Type",
+        "type": "string"
+      }
+    }
+  }
+}
