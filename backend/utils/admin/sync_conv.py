@@ -1,20 +1,24 @@
 import dateutil.parser
+from dateutil.tz import tzutc
 from httpx import HTTPError
 from sqlalchemy import select
 
 import api.globals as g
 from api.database import get_async_session_context
 from api.models import RevConversation
+from api.sources import RevChatGPTManager
 from utils.logger import get_logger
 from revChatGPT.typings import Error as revChatGPTError
 
 logger = get_logger(__name__)
 
+manager = RevChatGPTManager()
+
 
 async def sync_conversations():
     try:
         logger.info("Syncing conversations...")
-        result = await g.chatgpt_manager.get_conversations()
+        result = await manager.get_conversations()
         logger.info(f"Fetched {len(result)} conversations from ChatGPT account.")
         openai_conversations_map = {conv['id']: conv for conv in result}
         async with get_async_session_context() as session:
@@ -22,20 +26,20 @@ async def sync_conversations():
             results = r.scalars().all()
 
             for conv_db in results:
-                openai_conv = openai_conversations_map.get(conv_db.conversation_id, None)
+                openai_conv = openai_conversations_map.get(str(conv_db.conversation_id), None)
                 if openai_conv:
                     # 同步标题
                     if openai_conv["title"] != conv_db.title:
                         conv_db.title = openai_conv["title"]
                         logger.info(f"Conversation {conv_db.conversation_id} title changed: {conv_db.title}")
                     # 同步时间
-                    create_time = dateutil.parser.isoparse(openai_conv["create_time"])
+                    create_time = dateutil.parser.isoparse(openai_conv["create_time"]).astimezone(tzutc())
                     if create_time != conv_db.create_time:
                         conv_db.create_time = create_time
                         logger.info(
                             f"Conversation {conv_db.conversation_id} create time changed：{conv_db.create_time}")
                     session.add(conv_db)
-                    openai_conversations_map.pop(conv_db.conversation_id)
+                    openai_conversations_map.pop(str(conv_db.conversation_id))
                 else:
                     if conv_db.is_valid:  # 数据库中存在，但 ChatGPT 中（可能）不存在
                         # conv_db.is_valid = False

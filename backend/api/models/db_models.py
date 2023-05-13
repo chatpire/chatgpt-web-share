@@ -3,10 +3,10 @@ from datetime import datetime
 from typing import List, Optional
 
 from fastapi_users_db_sqlalchemy import Integer
-from sqlalchemy import String, DateTime, Enum, Boolean, Float, ForeignKey, JSON, func
+from sqlalchemy import String, Enum, Boolean, Float, ForeignKey, JSON, func
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
-from api.database.custom_types import GUID, Pydantic
+from api.database.custom_types import GUID, Pydantic, UTCDateTime
 from api.enums import RevChatStatus, ChatModel, ChatSourceTypes
 from api.models.json_models import RevChatAskLimits, RevChatTimeLimits
 
@@ -27,11 +27,11 @@ class User(Base):
     email: Mapped[str]
     rev_chat_status: Mapped[RevChatStatus] = mapped_column(Enum(RevChatStatus), default=RevChatStatus.idling,
                                                            comment="对话状态")
-    last_active_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="最后活跃时间")
-    create_time: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+    last_active_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="最后活跃时间")
+    create_time: Mapped[datetime] = mapped_column(UTCDateTime(timezone=True),
                                                   server_default=func.now(), comment="创建时间")
     avatar: Mapped[Optional[str]] = mapped_column(comment="头像")
-    valid_until: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="用户有效期")
+    valid_until: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="用户有效期")
     remark: Mapped[Optional[str]] = mapped_column(String(256), comment="仅管理员可见的备注")
     is_superuser: Mapped[bool] = mapped_column(Boolean, comment="是否是管理员")
     is_active: Mapped[bool] = mapped_column(Boolean, comment="启用/禁用用户")
@@ -88,8 +88,8 @@ class BaseConversation(Base):
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
     user: Mapped["User"] = relationship(back_populates="rev_conversations")
     is_valid: Mapped[bool] = mapped_column(Boolean, comment="是否有效")
-    create_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="创建时间")
-    update_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), comment="最后更新时间")
+    create_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="创建时间")
+    update_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="最后更新时间")
 
 
 class RevConversation(BaseConversation):

@@ -62,12 +62,12 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
 def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, ChatMessage]) -> ChatModel:
     model_name = None
     try:
-        current = mapping.get(current_node_uuid)
-        while current:
-            if current.rev_metadata and current.rev_metadata.model:
-                model_name = current.rev_metadata.model
+        msg: ChatMessage = mapping.get(current_node_uuid)
+        while msg:
+            if msg.model:
+                model_name = msg.model
                 break
-            current = mapping.get(str(current.parent))
+            msg = mapping.get(str(msg.parent))
     finally:
         return ChatModel.from_code(model_name)
 
