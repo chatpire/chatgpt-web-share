@@ -28,6 +28,9 @@ class OpenAIChatException(Exception):
         self.message = message
         self.code = code
 
+    def __str__(self):
+        return f"{self.source} {self.code} error: {self.message}"
+
 
 async def _check_response(response: httpx.Response) -> None:
     # 改成自带的错误处理
@@ -112,10 +115,12 @@ class OpenAIChatManager:
         }
 
         reply_message = None
+        content = ""
+
         async with self.client.stream(
                 method="POST",
                 url=f"{base_url}chat/completions",
-                data=json.dumps(data),
+                json=data,
                 headers={"Authorization": f"Bearer {credentials.openai_api_key}"},
                 timeout=timeout
         ) as response:
@@ -131,6 +136,11 @@ class OpenAIChatManager:
                 try:
                     line = json.loads(line)
                     resp = OpenAIChatResponse(**line)
+
+                    if resp.choices[0].message is not None:
+                        content = resp.choices[0].message.get("content")
+                    if resp.choices[0].delta is not None:
+                        content += resp.choices[0].delta.get("content", "")
                     if reply_message is None:
                         reply_message = ChatMessage(
                             id=uuid.uuid4(),
@@ -139,13 +149,13 @@ class OpenAIChatManager:
                             create_time=datetime.now().astimezone(tz=timezone.utc),
                             parent=message_id,
                             children=[],
-                            content=resp.choices[0].message["content"],
+                            content=content,
                             api_metadata=ApiChatMessageMetadata(
                                 finish_reason=resp.choices[0].finish_reason,
                             )
                         )
                     else:
-                        reply_message.content = resp.choices[0].message["content"]
+                        reply_message.content = content
 
                     if resp.usage:
                         reply_message.api_metadata.usage = resp.usage

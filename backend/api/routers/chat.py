@@ -17,7 +17,7 @@ from websockets.exceptions import ConnectionClosed
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels
+from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels, ApiChatModels
 from api.exceptions import InternalException
 from api.models.db import RevConversation, User, BaseConversation
 from api.models.doc import ChatMessage, ConversationHistoryDocument
@@ -114,8 +114,6 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     if ask_request.new_conversation and max_conv_count != -1 and conv_count >= max_conv_count:
         # await websocket.close(1008, "errors.maxConversationCountReached")
         raise WebsocketInvalidAskException("errors.maxConversationCountReached")
-
-
 
 
 def check_message(msg: str):
@@ -224,15 +222,17 @@ async def chat(websocket: WebSocket):
         # 设置 timeout
         if ask_request.type == ChatSourceTypes.rev:
             timeout = Config().revchatgpt.ask_timeout  # TODO: 完善超时机制
+            model = RevChatModels(ask_request.model)
         else:
             timeout = httpx.Timeout(config.api.read_timeout, connect=config.api.connect_timeout)
+            model = ApiChatModels(ask_request.model)
 
         # stream 传输
         async for data in manager.ask(content=ask_request.content,
                                       conversation_id=ask_request.conversation_id,
                                       parent_id=ask_request.parent,
                                       timeout=timeout,
-                                      model=RevChatModels(ask_request.model)):
+                                      model=model):
             has_got_reply = True
 
             # 解析 message
@@ -349,7 +349,8 @@ async def chat(websocket: WebSocket):
 
     if has_got_reply:
         assert message is not None, "has_got_reply but message is None"
-        assert message.parent is not None, "message.parent is None"
+        if ask_request.type == ChatSourceTypes.api:
+            assert message.parent is not None, "message.parent is None"
 
         # 对于api新对话，添加历史记录到mongodb
         if ask_request.type == ChatSourceTypes.api and ask_request.new_conversation:
@@ -393,13 +394,18 @@ async def chat(websocket: WebSocket):
                     except Exception as e:
                         logger.warning(e)
 
-                current_time = datetime.utcnow()
+                current_time = datetime.now().astimezone(tz=timezone.utc)
                 new_conv = BaseConversationSchema(
                     type=ask_request.type,
-                    conversation_id=conversation_id, title=ask_request.new_title, user_id=user.id,
-                    current_model=ask_request.model, create_time=current_time, update_time=current_time
+                    is_valid=True,
+                    conversation_id=conversation_id,
+                    title=ask_request.new_title,
+                    user_id=user.id,
+                    current_model=ask_request.model,
+                    create_time=current_time,
+                    update_time=current_time
                 )
-                conversation = BaseConversation(**new_conv.dict())
+                conversation = BaseConversation(**new_conv.dict(exclude_unset=True))
                 session.add(conversation)
 
             else:

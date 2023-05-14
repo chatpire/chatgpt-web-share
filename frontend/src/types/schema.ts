@@ -7,8 +7,8 @@ export type UserUpdate = components['schemas']['UserUpdate'];
 export type UserUpdateAdmin = components['schemas']['UserUpdateAdmin'];
 
 export type UserSettingSchema = components['schemas']['UserSettingSchema'];
-export type RevSourceSettingSchema = components['schemas']['SourceSettingSchema_RevChatModels_'];
-export type ApiSourceSettingSchema = components['schemas']['SourceSettingSchema_ApiChatModels_'];
+export type RevSourceSettingSchema = components['schemas']['RevSourceSettingSchema'];
+export type ApiSourceSettingSchema = components['schemas']['ApiSourceSettingSchema'];
 
 export type ServerStatusSchema = components['schemas']['ServerStatusSchema'];
 export type RevChatStatus = components['schemas']['RevChatStatus'];

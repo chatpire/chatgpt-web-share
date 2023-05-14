@@ -111,9 +111,6 @@ async def on_startup():
         except Exception as e:
             raise e
 
-    if not config.common.sync_conversations_on_startup:
-        return
-
     # 重置所有用户chat_status
     async with get_async_session_context() as session:
         r = await session.execute(select(User))
@@ -125,6 +122,9 @@ async def on_startup():
 
     logger.info(
         f"Using {config.revchatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
+
+    if not config.common.sync_conversations_on_startup:
+        return
 
     # 获取 ChatGPT 对话，并同步数据库
     if not config.common.sync_conversations_on_startup:

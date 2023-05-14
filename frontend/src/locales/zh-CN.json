@@ -250,7 +250,10 @@
     "credits": "余额",
     "allow_custom_openai_api": "允许使用自定义OpenAI API",
     "custom_openai_api_settings": "自定义OpenAI API设置",
-    "username": "用户名"
+    "username": "用户名",
+    "title": "标题",
+    "type": "类型",
+    "model": "模型"
   },
   "models": {
     "gpt_3_5": "GPT-3.5",

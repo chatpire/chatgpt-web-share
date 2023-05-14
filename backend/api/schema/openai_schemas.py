@@ -1,19 +1,20 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel
 
 
 class OpenAIChatResponseChoice(BaseModel):
-    index: int
-    message: dict[Literal["role", "content"], str]
-    finish_reason: str
+    index: Optional[int]
+    message: Optional[dict[Literal["role", "content"], str]]
+    delta: Optional[dict[Literal["role", "content"], str]]
+    finish_reason: Optional[str]
 
 
 class OpenAIChatResponseUsage(BaseModel):
-    prompt_tokens: int
-    completion_tokens: int
+    prompt_tokens: Optional[int]
+    completion_tokens: Optional[int]
 
 
 class OpenAIChatResponse(BaseModel):
-    choices: list[OpenAIChatResponseChoice]
-    usage: OpenAIChatResponseUsage
+    choices: Optional[list[OpenAIChatResponseChoice]]
+    usage: Optional[OpenAIChatResponseUsage]

@@ -33,8 +33,8 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> ChatMessag
         id=message_id,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
         role=item["message"]["author"]["role"],
         create_time=item["message"].get("create_time"),
-        parent=item.get("parent"),
-        children=item.get("children", []),
+        parent=item["message"].get("parent_id"),
+        children=item["message"].get("children", []),
         content=content
     )
     if "metadata" in item["message"] and item["message"]["metadata"] != {}:

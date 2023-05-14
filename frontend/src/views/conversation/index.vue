@@ -120,9 +120,11 @@ import { useI18n } from 'vue-i18n';
 
 import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 import { useAppStore, useConversationStore, useUserStore } from '@/store';
+import {NewConversationInfo} from '@/types/custom';
 import { AskRequest, AskResponse, BaseConversationSchema, ChatMessage, ConversationHistoryDocument,RevConversationSchema  } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getMessageListFromHistory } from '@/utils/conversation';
+import { popupNewConversationDialog } from '@/utils/renders';
 // import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
@@ -234,18 +236,19 @@ const sendDisabled = computed(() => {
   );
 });
 
+
 const makeNewConversation = () => {
   if (newConversation.value) return;
-  // popupNewConversationDialog(async (title: string, current_model: any) => {
-  //   newConversation.value = {
-  //     conversation_id: 'new_conversation',
-  //     // 默认标题格式：MMDD - username
-  //     title: title || 'New Chat',
-  //     current_model: current_model || 'gpt_3_5',
-  //     create_time: new Date().toISOString(), // 仅用于当前排序到顶部
-  //   } as BaseConversationSchema;
-  //   currentConversationId.value = 'new_conversation';
-  // });
+  popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
+    newConversation.value = {
+      conversation_id: 'new_conversation',
+      type: newConversationInfo.type,
+      title: newConversationInfo.title,
+      current_model: newConversationInfo.model,
+      create_time: new Date().toISOString(), // 仅用于当前排序到顶部
+    } as BaseConversationSchema;
+    currentConversationId.value = 'new_conversation';
+  });
 };
 
 const abortRequest = () => {
@@ -282,7 +285,7 @@ const sendMsg = async () => {
   let hasGotReply = false;
 
   const askRequest: AskRequest = {
-    type: 'rev',
+    type: currentConversation.value!.type,
     new_conversation: newConversation.value != null,
     model: currentConversation.value!.current_model!,
     content: message,

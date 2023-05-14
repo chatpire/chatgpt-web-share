@@ -4,9 +4,11 @@ import { h } from 'vue';
 
 import { i18n } from '@/i18n';
 import useUserStore from '@/store/modules/user';
+import {NewConversationInfo} from '@/types/custom';
 import { BaseConversationSchema } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
-import { Dialog } from '@/utils/tips';
+import { Dialog, Message } from '@/utils/tips';
+import NewConversationForm from '@/views/conversation/components/NewConversationForm.vue';
 
 const t = i18n.global.t as any;
 
@@ -103,4 +105,46 @@ export const popupResetUserPasswordDialog = (
   fail: () => void
 ) => {
   popupInputDialog(t('commons.resetPassword'), t('tips.resetPassword'), callback, success, fail);
+};
+
+// export interface NewConversationInfo {
+//   title: string;
+//   type: 'rev' | 'api';
+//   model: string;
+// }
+export const popupNewConversationDialog = (callback: (newConversationInfo: NewConversationInfo) => Promise<void>) => {
+  let input = null as NewConversationInfo | null;
+  const d = Dialog.info({
+    title: t('commons.newConversation'),
+    positiveText: t('commons.confirm'),
+    negativeText: t('commons.cancel'),
+    content: () =>
+      h(NewConversationForm, {
+        onInput: (newConversationInfo) => {
+          input = newConversationInfo;
+        },
+      }),
+    onPositiveClick() {
+      d.loading = true;
+      return new Promise((resolve, reject) => {
+        if (input === null) {
+          resolve(false);
+        }
+        if (input?.model === null) {
+          Message.error(t('tips.modelRequired'));
+          resolve(false);
+        }
+        callback(input!)
+          .then(() => {
+            resolve(true);
+          })
+          .catch(() => {
+            resolve(true);
+          })
+          .finally(() => {
+            d.loading = false;
+          });
+      });
+    },
+  });
 };
