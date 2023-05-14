@@ -58,17 +58,17 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
     return {str(key): value for key, value in result.items()}
 
 
-def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, ChatMessage]) -> RevChatModels:
-    model_name = None
+def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, ChatMessage]) -> RevChatModels | None:
+    model = None
     try:
         msg: ChatMessage = mapping.get(current_node_uuid)
         while msg:
             if msg.model:
-                model_name = msg.model
+                model = msg.model
                 break
             msg = mapping.get(str(msg.parent))
     finally:
-        return RevChatModels.from_code(model_name)
+        return model
 
 
 def _check_fields(data: dict) -> bool:

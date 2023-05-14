@@ -76,6 +76,11 @@ async def get_conversation_history(refresh: bool = False,
                                    conversation: BaseConversation = Depends(_get_conversation_by_id)):
     try:
         result = await manager.get_conversation_history(conversation.conversation_id, refresh=refresh)
+        if result.current_model != conversation.current_model:
+            async with get_async_session_context() as session:
+                conversation = await session.get(BaseConversation, conversation.id)
+                conversation.current_model = result.current_model
+                await session.commit()
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 404:
             raise InvalidParamsException("errors.conversationNotFound")
