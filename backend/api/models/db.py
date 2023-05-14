@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic, UTCDateTime
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels, ChatSourceTypes
-from api.schema import SourceSettingSchema
+from api.schema import SourceSettingSchema, UserSettingSchema
 
 
 # declarative base class
@@ -39,7 +39,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(1024))
 
     setting: Mapped["UserSetting"] = relationship("UserSetting", back_populates="user", lazy="joined")
-    rev_conversations: Mapped[List["RevConversation"]] = relationship("RevConversation", back_populates="user")
+    conversations: Mapped[List["BaseConversation"]] = relationship("BaseConversation", back_populates="user")
 
 
 class UserSetting(Base):
@@ -73,7 +73,7 @@ class BaseConversation(Base):
     current_model: Mapped[Optional[str]] = mapped_column(default=None, use_existing_column=True)
     title: Mapped[Optional[str]] = mapped_column(comment="对话标题")
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
-    user: Mapped["User"] = relationship(back_populates="rev_conversations")
+    user: Mapped["User"] = relationship(back_populates="conversations")
     is_valid: Mapped[bool] = mapped_column(Boolean, comment="是否有效")
     create_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="创建时间")
     update_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="最后更新时间")

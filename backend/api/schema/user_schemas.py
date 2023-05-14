@@ -84,6 +84,9 @@ class UserSettingSchema(BaseModel):
             api=SourceSettingSchema.unlimited(ApiChatModels)
         )
 
+    class Config:
+        orm_mode = True
+
 
 class UserCreate(schemas.BaseUserCreate):
     username: str
@@ -106,7 +109,7 @@ class UserRead(schemas.BaseUser[int]):
     is_superuser: bool
     is_active: bool
     is_verified: bool
-    setting: "UserSettingSchema"
+    setting: UserSettingSchema
 
 
 class UserReadAdmin(UserRead):

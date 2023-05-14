@@ -1,6 +1,6 @@
 import contextlib
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional, Union
 
 from fastapi import Depends, Request
@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID
 from fastapi_users.authentication import CookieTransport, AuthenticationBackend, JWTStrategy
 from fastapi_users.models import UP
-from sqlalchemy import select, Integer
+from sqlalchemy import select, Integer, inspect
 from starlette.websockets import WebSocket
 
 import api.exceptions
@@ -191,12 +191,11 @@ __current_active_user = fastapi_users.current_user(active=True)
 
 
 async def current_active_user(request: Request, user: User = Depends(__current_active_user)):
-    current_time = datetime.utcnow()
-    user.last_active_time = current_time
+
     try:
         async with get_async_session_context() as session:
             user_update = await session.get(User, user.id)
-            user_update.last_active_time = current_time
+            user_update.last_active_time = datetime.now().astimezone(tz=timezone.utc)
             session.add(user_update)
             await session.commit()
         request.scope["auth_user"] = user
