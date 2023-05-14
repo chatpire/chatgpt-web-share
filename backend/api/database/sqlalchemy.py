@@ -11,7 +11,7 @@ from alembic.config import Config as AlembicConfig
 from alembic import command
 
 from api.conf import Config
-from api.models import Base, User
+from api.models.db import Base, User
 
 from utils.logger import get_logger
 

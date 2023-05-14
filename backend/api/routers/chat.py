@@ -1,9 +1,8 @@
 import time
-import uuid
 from datetime import datetime
 
 import requests
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from pydantic import ValidationError
@@ -11,16 +10,17 @@ from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, func, and_
 from starlette.websockets import WebSocket
 from websockets.exceptions import ConnectionClosed
+
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import RevChatStatus, ChatModel, ChatSourceTypes
+from api.enums import RevChatStatus, ChatSourceTypes
 from api.exceptions import InternalException
-from api.models import RevConversation, User, ApiConversation
+from api.models.db import RevConversation, User
 from api.routers.conv import _get_conversation_by_id
 from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin
 from api.sources import RevChatGPTManager, convert_revchatgpt_message
-from api.users import websocket_auth, current_active_user
+from api.users import websocket_auth
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

@@ -2,9 +2,8 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.conf import Config
-from api.models import ConversationHistoryDocument
+from api.models.doc import ConversationHistoryDocument
 from utils.logger import get_logger
-from motor.core import AgnosticClient
 
 logger = get_logger(__name__)
 

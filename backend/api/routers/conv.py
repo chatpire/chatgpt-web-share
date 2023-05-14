@@ -7,14 +7,14 @@ from fastapi.encoders import jsonable_encoder
 from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, and_, delete
 
-import api.globals as g
 from api.database import get_async_session_context
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
-from api.models import User, RevConversation, ConversationHistoryDocument, BaseConversation
+from api.models.db import User, RevConversation, BaseConversation
+from api.models.doc import ConversationHistoryDocument
 from api.response import response
 from api.schema import RevConversationSchema, BaseConversationSchema, ApiConversationSchema
-from api.users import current_active_user, current_super_user
 from api.sources import RevChatGPTManager
+from api.users import current_active_user, current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

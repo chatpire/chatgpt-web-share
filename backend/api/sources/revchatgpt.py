@@ -1,8 +1,7 @@
 import asyncio
 import json
 import uuid
-from typing import Dict, Generator, AsyncGenerator
-from uuid import UUID
+from typing import AsyncGenerator
 
 import httpx
 import revChatGPT
@@ -10,9 +9,9 @@ from fastapi.encoders import jsonable_encoder
 from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
-from api.enums import ChatModel, ChatSourceTypes
+from api.enums import RevChatModels, ChatSourceTypes
 from api.exceptions import InvalidParamsException
-from api.models import RevChatMessageMetadata, ConversationHistoryDocument, ChatMessage
+from api.models.doc import RevChatMessageMetadata, ConversationHistoryDocument, ChatMessage
 from utils.common import singleton_with_lock
 
 config = Config()
@@ -39,7 +38,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> ChatMessag
         content=content
     )
     if "metadata" in item["message"] and item["message"]["metadata"] != {}:
-        result.model = ChatModel.from_code(item["message"]["metadata"].get("model_slug"))
+        result.model = RevChatModels.from_code(item["message"]["metadata"].get("model_slug"))
         result.rev_metadata = RevChatMessageMetadata(
             finish_details=item["message"]["metadata"].get("finish_details"),
             weight=item["message"].get("weight"),
@@ -59,7 +58,7 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
     return {str(key): value for key, value in result.items()}
 
 
-def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, ChatMessage]) -> ChatModel:
+def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, ChatMessage]) -> RevChatModels:
     model_name = None
     try:
         msg: ChatMessage = mapping.get(current_node_uuid)
@@ -69,7 +68,7 @@ def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, Cha
                 break
             msg = mapping.get(str(msg.parent))
     finally:
-        return ChatModel.from_code(model_name)
+        return RevChatModels.from_code(model_name)
 
 
 def _check_fields(data: dict) -> bool:
@@ -148,9 +147,9 @@ class RevChatGPTManager:
         await self.chatbot.clear_conversations()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  timeout=360, model: ChatModel = None) -> AsyncGenerator[ChatMessage, None]:
+                  timeout=360, model: RevChatModels = None) -> AsyncGenerator[ChatMessage, None]:
 
-        model = model or ChatModel.gpt_3_5
+        model = model or RevChatModels.gpt_3_5
         # return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id,
         #                         model=model.code(ChatSourceTypes.rev),
         #                         timeout=timeout)

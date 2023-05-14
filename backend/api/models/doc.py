@@ -1,11 +1,9 @@
 import datetime
 import uuid
-from typing import Optional, Union, Any, Literal
+from typing import Optional, Any, Literal
 
 from beanie import Document
 from pydantic import BaseModel, Field
-
-from api.enums import ChatModel
 
 
 class RevChatMessageMetadata(BaseModel):
@@ -25,7 +23,7 @@ class ApiChatMessageMetadata(BaseModel):
 class ChatMessage(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     role: str  # rev: mapping[id].message.author.role: system, user, assistant
-    model: Optional[Union[ChatModel, str]]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
+    model: Optional[str]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
     create_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
     parent: Optional[uuid.UUID]
     children: list[uuid.UUID]
@@ -52,7 +50,7 @@ class ConversationHistoryDocument(Document):
     update_time: datetime.datetime
     mapping: dict[str, ChatMessage]
     current_node: uuid.UUID
-    current_model: Optional[Union[ChatModel, str]]
+    current_model: Optional[str]
 
     class Settings:
         name = "conversation_history"

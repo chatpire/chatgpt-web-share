@@ -1,8 +1,5 @@
 from pydantic import BaseModel, validator
 
-from api.conf.config import RevChatGPTSetting
-from api.conf.credentials import CredentialsModel
-
 
 class ServerStatusSchema(BaseModel):
     active_user_in_5m: int = None

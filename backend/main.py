@@ -19,7 +19,7 @@ from api.database import create_db_and_tables, get_async_session_context, get_us
 from api.enums import RevChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
-from api.models import User
+from api.models.db import User
 from api.response import CustomJSONResponse, handle_exception_response
 from api.routers import users, conv, chat, system, status
 from api.schema import UserCreate, UserSettingSchema

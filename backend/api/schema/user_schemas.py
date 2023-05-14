@@ -1,56 +1,88 @@
 import datetime
-from typing import TypeVar
+from typing import TypeVar, Generic, Type, Optional
 
 from fastapi_users import schemas
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
+from pydantic.generics import GenericModel
 
-from api.enums import RevChatStatus, ChatModel
-from api.models import ChatTypeDict
-from api.models.json_models import AskLimitSetting, AskTimeLimits
+from api.enums import RevChatStatus, RevChatModels, ApiChatModels
+from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot
+
+ModelT = TypeVar('ModelT', bound=RevChatModels | ApiChatModels)
 
 
-class UserSettingSchema(BaseModel):
-    id: int | None
-    user_id: int | None
-    allow_chat_type: ChatTypeDict[bool] = Field(title="allow_chat_type")
-    available_models: ChatTypeDict[list[ChatModel]] = Field(title="available_models")
-    ask_count_limits: ChatTypeDict[AskLimitSetting] = Field(title="ask_count_limits")
-    ask_time_limits: ChatTypeDict[AskTimeLimits] = Field(title="ask_time_limits")
-    api_credits: float = Field(default=0.0, description="Credits for OpenAI API, not support unlimited (-1)")
+class SourceSettingSchema(GenericModel, Generic[ModelT]):
+    allow_to_use: bool
+    valid_until: Optional[datetime.datetime]  # None 表示永久有效
+    available_models: list[ModelT]
+    max_conv_count: int
+    total_ask_count: int
+    per_model_ask_count: dict[ModelT, int]  # 除非明确指定-1（无限制），不存在的模型默认为0
+    rate_limits: list[TimeWindowRateLimit]
+    daily_available_time_slots: list[DailyTimeSlot]
+    api_credits: float
     allow_custom_openai_api: bool
-    custom_openai_api_url: str | None
-    custom_openai_api_key: str | None
+    custom_openai_api_settings: CustomOpenaiApiSettings
 
     @staticmethod
-    def default():
-        return UserSettingSchema(
-            allow_chat_type=ChatTypeDict[bool](rev=True, api=True),
-            available_models=ChatTypeDict[list[ChatModel]](rev=[ChatModel.gpt_3_5],
-                                                           api=[ChatModel.gpt_3_5, ChatModel.gpt_4]),
-            ask_count_limits=ChatTypeDict[AskLimitSetting](rev=AskLimitSetting.default(),
-                                                           api=AskLimitSetting.default()),
-            ask_time_limits=ChatTypeDict[AskTimeLimits](rev=AskTimeLimits.default(), api=AskTimeLimits.default()),
-            api_credits=0.0,
-            allow_custom_openai_api=True,
+    def default(model_cls: Type[ModelT]):  # TODO: 从配置文件读取
+        return SourceSettingSchema(
+            allow_to_use=True,
+            valid_until=None,
+            available_models=list(model_cls),
+            max_conv_count=10,
+            total_ask_count=0,
+            per_model_ask_count={model: 0 for model in model_cls},
+            rate_limits=[],
+            daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),
+                                                      end_time=datetime.time(23, 59, 59))],
+            api_credits=0,
+            allow_custom_openai_api=False,
+            custom_openai_api_settings=CustomOpenaiApiSettings(url=None, key=None)
         )
 
     @staticmethod
-    def unlimited():
-        return UserSettingSchema(
-            allow_chat_type=ChatTypeDict[bool](rev=True, api=True),
-            available_models=ChatTypeDict[list[ChatModel]](rev=[ChatModel.gpt_3_5, ChatModel.gpt_4],
-                                                           api=[ChatModel.gpt_3_5, ChatModel.gpt_4]),
-            ask_count_limits=ChatTypeDict[AskLimitSetting](rev=AskLimitSetting.unlimited(),
-                                                           api=AskLimitSetting.unlimited()),
-            ask_time_limits=ChatTypeDict[AskTimeLimits](rev=AskTimeLimits.unlimited(),
-                                                        api=AskTimeLimits.unlimited()),
+    def unlimited(model_cls: Type[ModelT]):
+        return SourceSettingSchema(
+            allow_to_use=True,
+            valid_until=None,
+            available_models=list(model_cls),
+            max_conv_count=-1,
+            total_ask_count=-1,
+            per_model_ask_count={model: -1 for model in model_cls},
+            rate_limits=[],
+            daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),
+                                                      end_time=datetime.time(23, 59, 59))],
             api_credits=-1,
-            allow_custom_openai_api=True,
+            allow_custom_openai_api=False,
+            custom_openai_api_settings=CustomOpenaiApiSettings(url=None, key=None)
         )
 
     class Config:
         orm_mode = True
         # getter_dict = UserSettingGetterDict
+
+
+class UserSettingSchema(BaseModel):
+    id: int | None
+    user_id: int | None
+
+    rev: SourceSettingSchema[RevChatModels]
+    api: SourceSettingSchema[ApiChatModels]
+
+    @staticmethod
+    def default():
+        return UserSettingSchema(
+            rev=SourceSettingSchema.default(RevChatModels),
+            api=SourceSettingSchema.default(ApiChatModels)
+        )
+
+    @staticmethod
+    def unlimited():
+        return UserSettingSchema(
+            rev=SourceSettingSchema.unlimited(RevChatModels),
+            api=SourceSettingSchema.unlimited(ApiChatModels)
+        )
 
 
 class UserCreate(schemas.BaseUserCreate):

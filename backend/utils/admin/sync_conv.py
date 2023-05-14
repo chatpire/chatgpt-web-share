@@ -1,14 +1,13 @@
 import dateutil.parser
 from dateutil.tz import tzutc
 from httpx import HTTPError
+from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 
-import api.globals as g
 from api.database import get_async_session_context
-from api.models import RevConversation
+from api.models.db import RevConversation
 from api.sources import RevChatGPTManager
 from utils.logger import get_logger
-from revChatGPT.typings import Error as revChatGPTError
 
 logger = get_logger(__name__)
 

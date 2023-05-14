@@ -1,11 +1,11 @@
-import re
 import contextlib
+import re
 from datetime import datetime
 from typing import Any, Optional, Union
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID, schemas
+from fastapi_users import BaseUserManager, FastAPIUsers, models, IntegerIDMixin, InvalidID
 from fastapi_users.authentication import CookieTransport, AuthenticationBackend, JWTStrategy
 from fastapi_users.models import UP
 from sqlalchemy import select, Integer
@@ -14,7 +14,7 @@ from starlette.websockets import WebSocket
 import api.exceptions
 from api.conf import Config
 from api.database import get_user_db, get_async_session_context, get_user_db_context
-from api.models import User, UserSetting
+from api.models.db import User, UserSetting
 from api.schema import UserCreate, UserSettingSchema, UserUpdate, UserUpdateAdmin
 from utils.logger import get_logger
 

@@ -1,4 +1,3 @@
-import json
 import random
 from datetime import datetime, timedelta
 
@@ -12,7 +11,7 @@ from api.conf.config import ConfigModel
 from api.conf.credentials import CredentialsModel
 from api.database import get_async_session_context
 from api.enums import RevChatStatus
-from api.models import User, RevConversation
+from api.models.db import User, RevConversation
 from api.schema import LogFilterOptions, SystemInfo, RequestStatistics
 from api.users import current_super_user
 from utils.logger import get_logger
@@ -97,7 +96,7 @@ def make_fake_requests_count(total=100, max=500):
 
 def make_fake_ask_records(total=100, days=2):
     result = []
-    model_names = list(api.enums.ChatModel)
+    model_names = list(api.enums.models.RevChatModels)
     for i in range(total):
         ask_time = random.random() * 60 + 1
         total_time = ask_time + random.random() * 30

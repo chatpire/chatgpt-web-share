@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter
 
-from api.models import User
+from api.models.db import User
 from api.routers.conv import manager
 from api.routers.system import check_users
 from api.schema import ServerStatusSchema
