@@ -281,7 +281,7 @@ async def chat(websocket: WebSocket):
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.openaiResponseError",
-            error_detail=content
+            error_detail=str(e)
         ))
     except HTTPError as e:
         logger.error(str(e))
@@ -349,35 +349,56 @@ async def chat(websocket: WebSocket):
 
     if has_got_reply:
         assert message is not None, "has_got_reply but message is None"
+
         if ask_request.type == ChatSourceTypes.api:
             assert message.parent is not None, "message.parent is None"
 
-        # 对于api新对话，添加历史记录到mongodb
-        if ask_request.type == ChatSourceTypes.api and ask_request.new_conversation:
             ask_message = ChatMessage(
                 id=message.parent,
                 role="user",
                 create_time=request_start_time.astimezone(tz=timezone.utc),
+                parent=ask_request.parent,
                 children=[message.id],
                 content=ask_request.content
             )
 
-            new_conv_history = ConversationHistoryDocument(
-                id=conversation_id,
-                type=ask_request.type,
-                title=ask_request.new_title or "New Chat",
-                create_time=request_start_time.astimezone(tz=timezone.utc),
-                update_time=datetime.now().astimezone(tz=timezone.utc),
-                mapping={
-                    str(ask_message.id): ask_message,
-                    str(message.id): message
-                },
-                current_node=str(message.id),
-                current_model=message.model
-            )
+            # 对于api新对话，添加历史记录到mongodb
+            if ask_request.new_conversation:
+                new_conv_history = ConversationHistoryDocument(
+                    id=conversation_id,
+                    type=ask_request.type,
+                    title=ask_request.new_title or "New Chat",
+                    create_time=request_start_time.astimezone(tz=timezone.utc),
+                    update_time=datetime.now().astimezone(tz=timezone.utc),
+                    mapping={
+                        str(ask_message.id): ask_message,
+                        str(message.id): message
+                    },
+                    current_node=str(message.id),
+                    current_model=message.model
+                )
 
-            await new_conv_history.save()
-            logger.debug(f"saved new api conversation history {conversation_id} to mongodb")
+                await new_conv_history.save()
+                logger.debug(f"saved new api conversation history {conversation_id} to mongodb")
+            else:
+                # 更新mongodb历史记录
+                conv_history = await ConversationHistoryDocument.get(conversation_id)
+                assert conv_history is not None, f"update api: conversation history {conversation_id} is None"
+                conv_history.update_time = datetime.now().astimezone(tz=timezone.utc)
+
+                conv_history.mapping[str(ask_message.id)] = ask_message
+                conv_history.mapping[str(message.id)] = message
+                conv_history.current_node = str(message.id)
+                conv_history.current_model = message.model
+
+                if ask_message.parent is not None:
+                    parent_message = conv_history.mapping.get(str(ask_message.parent))
+                    assert parent_message is not None, f"update api: parent message {ask_message.parent} is None"
+                    parent_message.children.append(message.id)
+                    conv_history.mapping[str(ask_message.parent)] = parent_message
+                await conv_history.save()
+
+                logger.debug(f"updated api conversation history {conversation_id} to mongodb")
 
         # TODO: 扣除 credits
 

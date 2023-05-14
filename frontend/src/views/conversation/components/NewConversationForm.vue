@@ -76,4 +76,11 @@ watch(
   },
   { immediate: true }
 );
+
+watch(
+  () => newConversationInfo.value.type,
+  () => {
+    newConversationInfo.value.model = null;
+  }
+);
 </script>

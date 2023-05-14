@@ -69,7 +69,10 @@
                 class="flex justify-center py-4 px-4 max-w-full relative"
                 :style="{ backgroundColor: themeVars.baseColor }"
               >
-                <n-text>{{ $t('commons.currentConversationModel') }}: {{ getChatModelNameTrans(currentConversation?.current_model || null) }}</n-text>
+                <n-text>
+                  {{ $t('commons.currentConversationModel') }}: 
+                  {{ getChatModelNameTrans(currentConversation?.current_model || null) }} {{ t(`labels.${currentConversation?.type}`) }}
+                </n-text>
               </div>
             </template>
           </HistoryContent>

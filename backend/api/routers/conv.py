@@ -19,7 +19,7 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-manager = RevChatGPTManager()
+rev_manager = RevChatGPTManager()
 
 
 async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User = Depends(current_active_user)):
@@ -74,18 +74,24 @@ async def delete_all_conversations(user: User = Depends(current_active_user)):
 @router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistoryDocument)
 async def get_conversation_history(refresh: bool = False,
                                    conversation: BaseConversation = Depends(_get_conversation_by_id)):
-    try:
-        result = await manager.get_conversation_history(conversation.conversation_id, refresh=refresh)
-        if result.current_model != conversation.current_model:
-            async with get_async_session_context() as session:
-                conversation = await session.get(BaseConversation, conversation.id)
-                conversation.current_model = result.current_model
-                await session.commit()
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 404:
+    if conversation.type == "rev":
+        try:
+            result = await rev_manager.get_conversation_history(conversation.conversation_id, refresh=refresh)
+            if result.current_model != conversation.current_model:
+                async with get_async_session_context() as session:
+                    conversation = await session.get(BaseConversation, conversation.id)
+                    conversation.current_model = result.current_model
+                    await session.commit()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise InvalidParamsException("errors.conversationNotFound")
+            raise InternalException()
+        return result
+    else:
+        doc = await ConversationHistoryDocument.get(conversation.conversation_id)
+        if doc is None:
             raise InvalidParamsException("errors.conversationNotFound")
-        raise InternalException()
-    return result
+        return doc
 
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
@@ -97,7 +103,7 @@ async def delete_conversation(conversation: BaseConversation = Depends(_get_conv
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
     if conversation.type == "rev":
         try:
-            await manager.delete_conversation(conversation.conversation_id)
+            await rev_manager.delete_conversation(conversation.conversation_id)
         except revChatGPTError as e:
             logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
         except httpx.HTTPStatusError as e:
@@ -131,8 +137,8 @@ async def vanish_conversation(conversation: BaseConversation = Depends(_get_conv
 @router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=BaseConversationSchema)
 async def update_conversation_title(title: str, conversation: BaseConversation = Depends(_get_conversation_by_id)):
     if conversation.type == "rev":
-        await manager.set_conversation_title(conversation.conversation_id,
-                                             title)
+        await rev_manager.set_conversation_title(conversation.conversation_id,
+                                                 title)
     else:
         doc = await ConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:
@@ -164,7 +170,7 @@ async def assign_conversation(username: str, conversation: BaseConversation = De
 
 @router.delete("/conv", tags=["conversation"])
 async def delete_all_conversation(_user: User = Depends(current_super_user)):
-    await manager.clear_conversations()
+    await rev_manager.clear_conversations()
     async with get_async_session_context() as session:
         await session.execute(delete(RevConversation))
         await session.commit()
@@ -177,7 +183,7 @@ async def generate_conversation_title(message_id: str,
     if conversation.title is not None:
         raise InvalidParamsException("errors.conversationTitleAlreadyGenerated")
     async with get_async_session_context() as session:
-        result = await manager.generate_conversation_title(conversation.id, message_id)
+        result = await rev_manager.generate_conversation_title(conversation.id, message_id)
         if result["title"]:
             conversation.title = result["title"]
             session.add(conversation)

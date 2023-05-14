@@ -118,6 +118,13 @@ const columns: DataTableColumns<BaseConversationSchema> = [
     },
   },
   {
+    title: t('labels.type'),
+    key: 'type',
+    render: (row) => {
+      return t(`labels.${row.type}`);
+    },
+  },
+  {
     title: t('commons.title'),
     key: 'title',
     sorter: 'default',
