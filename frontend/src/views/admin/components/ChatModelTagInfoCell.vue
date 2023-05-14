@@ -1,25 +1,24 @@
 <template>
   <div class="inline-flex flex-row space-x-2">
-    <n-tag v-for="(val, key) of props.value" :key="key" round>
-      {{ val }}
-      <template #avatar>
-        <n-avatar :src="getChatModelIconSVG(key)" />
+    <n-tooltip v-for="(val, key) of props.value" :key="key" trigger="hover">
+      <template #trigger>
+        <n-tag round>
+          {{ val }}
+          <template #avatar>
+            <ChatGPTAvatar :color="getChatModelColor(key)" />
+          </template>
+        </n-tag>
       </template>
-    </n-tag>
+      {{ $t(`models.${key}`) }}
+    </n-tooltip>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ChatModel } from '@/types/schema';
-import { getChatModelIconSVG } from '@/utils/chat';
+import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
+import { getChatModelColor } from '@/utils/chat';
 
 const props = defineProps<{
-  value: Record<ChatModel, string>;
+  value: Record<string, string>;
 }>();
-
-const getIcon = (key: string) => {
-  console.log(getChatModelIconSVG(key as ChatModel));
-  return getChatModelIconSVG(key as ChatModel);
-};
-
 </script>

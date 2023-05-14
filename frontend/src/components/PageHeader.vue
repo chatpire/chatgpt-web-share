@@ -16,7 +16,13 @@
       </n-space>
     </template>
     <template #avatar>
-      <n-avatar :src="chatgptIcon" />
+      <!-- <n-avatar :src="chatgptIcon" /> -->
+      <!-- <n-avatar>
+        <n-icon size="46">
+          <ChatGPTIcon color="green" />
+        </n-icon>
+      </n-avatar> -->
+      <ChatGPTAvatar color="green" />
     </template>
     <template #extra>
       <n-space>
@@ -60,6 +66,7 @@ import { useRoute } from 'vue-router';
 // eslint-disable-next-line import/no-unresolved
 import chatgptIcon from '/chatgpt-icon.svg';
 import { updateUserMeApi } from '@/api/user';
+import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import router from '@/router';
 import { useAppStore, useUserStore } from '@/store';
 import { Preference } from '@/store/types';

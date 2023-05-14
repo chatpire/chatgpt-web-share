@@ -8,16 +8,16 @@ import { ApiChatModels, RevChatModels } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
-export const chatModelIconMap: Record<string, any> = {
-  gpt_3_5: chatgptIcon,
-  gpt_4: chatgptIconBlack,
+export const chatModelColorMap: Record<string, string> = {
+  gpt_3_5: 'green',
+  gpt_4: 'purple',
+  gpt_4_browsing: 'blue'
 };
 
-export const getChatModelIconSVG = (model_name: RevChatModels | ApiChatModels | string | null) => {
-  if (model_name == null) return chatgptIcon;
-  if (chatModelIconMap[model_name as keyof typeof chatModelIconMap])
-    return chatModelIconMap[model_name as keyof typeof chatModelIconMap];
-  else return chatgptIcon;
+export const getChatModelColor = (model_name: RevChatModels | ApiChatModels | string | null) => {
+  if (model_name == null) return 'black';
+  if (chatModelColorMap[model_name]) return chatModelColorMap[model_name];
+  else return 'black';
 };
 
 export const getChatModelNameTrans = (model_name: RevChatModels | ApiChatModels | string | null) => {
