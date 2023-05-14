@@ -211,7 +211,8 @@
     "pleaseCheckInput": "请检查输入内容",
     "registerSuccess": "注册成功",
     "createSuccess": "创建成功",
-    "updateSuccess": "更新成功"
+    "updateSuccess": "更新成功",
+    "seperate_settings": "以下内容将分别设置使用revChatGPT和API的选项"
   },
   "labels": {
     "nickname": "昵称",
@@ -248,7 +249,8 @@
     "daily_available_time_slots": "日可用时间段",
     "credits": "余额",
     "allow_custom_openai_api": "允许使用自定义OpenAI API",
-    "custom_openai_api_settings": "自定义OpenAI API设置"
+    "custom_openai_api_settings": "自定义OpenAI API设置",
+    "username": "用户名"
   },
   "models": {
     "gpt_3_5": "GPT-3.5",

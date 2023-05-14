@@ -4,10 +4,25 @@
     :label-align="'left'"
     label-width="240px"
   >
+    <n-form-item :label="'ID'">
+      <n-text strong>
+        {{ props.user?.id }}
+      </n-text>
+    </n-form-item>
+    <n-form-item :label="$t('labels.username')">
+      <n-text strong>
+        {{ props.user?.username }}
+      </n-text>
+    </n-form-item>
     <n-form-item :label="$t('labels.credits')">
       <n-input-number v-model:value="credits" />
     </n-form-item>
   </n-form>
+  <div class="my-2">
+    <n-text depth="3">
+      {{ $t("tips.seperate_settings") }}
+    </n-text>
+  </div>
   <UpdateChatSourceSettingForm :user="props.user" @save="handleSave" />
 </template>
 

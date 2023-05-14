@@ -1,6 +1,6 @@
 <template>
   <n-tabs type="segment">
-    <n-tab-pane v-for="g in chatSourceSettingGroup" :key="g.type" :name="g.type" :tab="g.type">
+    <n-tab-pane v-for="g in chatSourceSettingGroup" :key="g.type" :name="g.type" :tab="$t(`labels.${g.type}`)">
       <n-space vertical>
         <vue-form
           v-model="g.model.value"
