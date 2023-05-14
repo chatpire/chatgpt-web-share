@@ -322,6 +322,8 @@ const sendMsg = async () => {
   console.log('Connecting to', wsUrl, askRequest);
   const webSocket = new WebSocket(wsUrl);
 
+  let respConversationId = null as string | null;
+
   webSocket.onopen = (_event: Event) => {
     // console.log('WebSocket connection is open', askInfo);
     webSocket.send(JSON.stringify(askRequest));
@@ -342,6 +344,7 @@ const sendMsg = async () => {
       // console.log(reply)
       hasGotReply = true;
       currentRecvMessage.value = response.message!;
+      respConversationId = response.conversation_id || null;
       canAbort.value = true;
     } else if (response.type === 'error') {
       currentRecvMessage.value!.content = `${t(response.tip || 'error')}: ${response.error_detail}}`;
@@ -364,7 +367,7 @@ const sendMsg = async () => {
           // 解析 ISO string 为 小数时间戳
           const create_time = new Date(newConversation.value.create_time!).getTime() / 1000;
           const newConvHistory = {
-            _id: currentConversationId.value,
+            _id: respConversationId!,
             type: 'rev',
             title: newConversation.value!.title,
             current_model: newConversation.value!.current_model,
@@ -375,17 +378,19 @@ const sendMsg = async () => {
           } as ConversationHistoryDocument;
           conversationStore.$patch({
             conversationHistoryMap: {
-              [newConversation.value.conversation_id!]: newConvHistory,
+              [respConversationId!]: newConvHistory,
             },
           });
+
           const msgSend = currentSendMessage.value;
           const msgRecv = currentRecvMessage.value;
           currentSendMessage.value = null;
           currentRecvMessage.value = null;
-          conversationStore.addMessageToConversation(currentConversationId.value!, msgSend!, msgRecv!);
-          currentConversationId.value = newConversation.value.conversation_id!; // 这里将会导致 currentConversation 切换
+          conversationStore.addMessageToConversation(respConversationId!, msgSend!, msgRecv!);
+          currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
           await conversationStore.fetchAllConversations();
           newConversation.value = null;
+          
           console.log('done', newConvHistory, msgSend, msgRecv, currentConversationId.value);
         } else {
           // 将新消息存入 store
