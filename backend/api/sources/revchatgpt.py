@@ -168,8 +168,8 @@ class RevChatGPTManager:
         data = {
             "action": "next",
             "messages": messages,
-            "conversation_id": conversation_id,
-            "parent_message_id": parent_id,
+            "conversation_id": str(conversation_id) if conversation_id else None,
+            "parent_message_id": str(parent_id) if parent_id else None,
             "model": model.code()
         }
 

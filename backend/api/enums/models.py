@@ -12,7 +12,7 @@ chat_model_definitions = {
     "rev": {
         "gpt_3_5": "text-davinci-002-render-sha",
         "gpt_4": "gpt-4",
-        "gpt_4_browsing": "__to_be_supported__"
+        "gpt_4_browsing": "gpt-4-browsing"
     },
     "api": {
         "gpt_3_5": "gpt-3.5-turbo",
