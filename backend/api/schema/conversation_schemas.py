@@ -3,7 +3,7 @@ import uuid
 from enum import auto
 from typing import Literal, Optional
 
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, root_validator, validator, Field
 from strenum import StrEnum
 
 from api.enums import ChatSourceTypes, RevChatModels, ApiChatModels
@@ -28,7 +28,7 @@ class AskRequest(BaseModel):
     new_title: Optional[str] = None
     conversation_id: Optional[uuid.UUID] = None
     parent: Optional[uuid.UUID] = None
-    api_context_message_count: int = -1
+    api_context_message_count: int = Field(-1, ge=-1)
     content: str
 
     @root_validator

@@ -1,6 +1,9 @@
 import time
-from datetime import datetime
+import uuid
+from datetime import datetime, timezone
+from typing import Optional, Any
 
+import httpx
 import requests
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
@@ -8,24 +11,28 @@ from httpx import HTTPError
 from pydantic import ValidationError
 from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, func, and_
-from starlette.websockets import WebSocket
+from starlette.websockets import WebSocket, WebSocketState
 from websockets.exceptions import ConnectionClosed
 
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import RevChatStatus, ChatSourceTypes
+from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels
 from api.exceptions import InternalException
-from api.models.db import RevConversation, User
+from api.models.db import RevConversation, User, BaseConversation
+from api.models.doc import ChatMessage, ConversationHistoryDocument
 from api.routers.conv import _get_conversation_by_id
-from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin
-from api.sources import RevChatGPTManager, convert_revchatgpt_message
+from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
+    BaseConversationSchema
+from api.sources import RevChatGPTManager, convert_revchatgpt_message, OpenAIChatManager, OpenAIChatException
 from api.users import websocket_auth
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-manager = RevChatGPTManager()
+rev_manager = RevChatGPTManager()
+api_manager = OpenAIChatManager()
+config = Config()
 
 
 async def change_user_chat_status(user_id: int, status: RevChatStatus):
@@ -38,16 +45,84 @@ async def change_user_chat_status(user_id: int, status: RevChatStatus):
     return user
 
 
-# @router.get("/chat/avaliable-models", tags=["chat"])
-# async def get_avaliable_models(_user: User = Depends(current_active_user)):
-#     return [model.value for model in RevChatModels]
-
 @router.get("/chat/__schema_types", tags=["chat"], response_model=AskResponse)
 async def _predict_schema_types(_request: AskRequest):
     """
     只用来让 openapi 自动生成 schema，并不实际调用
     """
     raise InternalException()
+
+
+class WebsocketException(Exception):
+    def __init__(self, code: int, tip: str, error_detail: Optional[Any] = None):
+        self.code = code
+        self.tip = tip
+        self.error_detail = error_detail
+
+
+class WebsocketInvalidAskException(WebsocketException):
+    def __init__(self, tip: str, error_detail: Optional[Any] = None):
+        super().__init__(1008, tip, error_detail)
+
+
+async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
+    source_setting = user.setting.rev if ask_request.type == ChatSourceTypes.rev else user.setting.api
+
+    # 是否允许使用当前提问类型
+    if not source_setting.allow_to_use:
+        raise WebsocketInvalidAskException("errors.userNotAllowToUseChatType")
+
+    # 是否到期
+    current_datetime = datetime.now().astimezone(tz=timezone.utc)
+    if source_setting.valid_until is not None and current_datetime > source_setting.valid_until:
+        raise WebsocketInvalidAskException("errors.userChatTypeExpired")
+
+    # 当前时间是否允许请求
+    time_slots = source_setting.daily_available_time_slots  # list of {start_time, end_time} datetime.time
+    if time_slots is not None:
+        now_time = datetime.now().time()  # TODO: 时区处理
+        if not any(time_slot.start_time <= now_time <= time_slot.end_time for time_slot in time_slots):
+            raise WebsocketInvalidAskException("errors.userNotAllowToAskAtThisTime")
+
+    # TODO: 时间窗口频率限制
+
+    # 判断是否能使用该模型
+    if ask_request.type == ChatSourceTypes.rev and ask_request.model not in user.setting.rev.available_models or \
+            ask_request.type == ChatSourceTypes.api and ask_request.model not in user.setting.api.available_models:
+        # await websocket.close(1007, "errors.userNotAllowToUseModel")
+        raise WebsocketInvalidAskException("errors.userNotAllowToUseModel")
+
+    # 对话次数判断
+    model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model, -1)
+    total_ask_count = source_setting.total_ask_count
+    if total_ask_count != -1 and total_ask_count <= 0:
+        # await websocket.close(1008, "errors.noAvailableTotalAskCount")
+        raise WebsocketInvalidAskException("errors.noAvailableTotalAskCount")
+    if model_ask_count != -1 and model_ask_count <= 0:
+        # await websocket.close(1008, "errors.noAvailableModelAskCount")
+        raise WebsocketInvalidAskException("errors.noAvailableModelAskCount")
+
+    # 判断是否能新建对话
+    async with get_async_session_context() as session:
+        conv_count = await session.execute(
+            select(func.count(BaseConversation.id)).filter(
+                and_(BaseConversation.user_id == user.id, BaseConversation.is_valid,
+                     BaseConversation.type == ask_request.type)))
+        conv_count = conv_count.scalar()
+
+    max_conv_count = source_setting.max_conv_count
+    if ask_request.new_conversation and max_conv_count != -1 and conv_count >= max_conv_count:
+        # await websocket.close(1008, "errors.maxConversationCountReached")
+        raise WebsocketInvalidAskException("errors.maxConversationCountReached")
+
+
+
+
+def check_message(msg: str):
+    # 检查消息中的敏感信息
+    url = Config().revchatgpt.chatgpt_base_url
+    if url and url in msg:
+        return msg.replace(url, "<chatgpt_base_url>")
 
 
 @router.websocket("/chat")
@@ -74,9 +149,8 @@ async def chat(websocket: WebSocket):
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
         return
 
-    # 读取用户输入
     params = await websocket.receive_json()
-    timeout = Config().revchatgpt.ask_timeout  # TODO: 完善超时机制
+
     try:
         ask_request = AskRequest(**params)
     except ValidationError as e:
@@ -84,12 +158,15 @@ async def chat(websocket: WebSocket):
         await websocket.close(1007, "errors.invalidAskRequest")
         return
 
-    # 是否允许使用当前提问类型
-    if ask_request.type == ChatSourceTypes.rev and not user.setting.can_use_revchatgpt \
-            or ask_request.type == ChatSourceTypes.api and not user.setting.can_use_openai_api:
-        await websocket.close(1007, "errors.userNotAllowToUseChatType")
+    # 检查限制
+    try:
+        await check_limits(user, ask_request)
+    except WebsocketException as e:
+        await reply(AskResponse(type=AskResponseType.error, error_detail=str(e)))
+        await websocket.close(e.code, e.tip)
         return
 
+    # 如果并非新建对话，则获取对话
     conversation = None
     conversation_id = None
     if not ask_request.new_conversation:
@@ -97,39 +174,7 @@ async def chat(websocket: WebSocket):
         conversation_id = ask_request.conversation_id
         conversation = await _get_conversation_by_id(ask_request.conversation_id, user_db)
 
-    # 判断是否能使用该模型
-    if ask_request.type == ChatSourceTypes.rev and ask_request.model not in user.setting.revchatgpt_available_models or \
-            ask_request.type == ChatSourceTypes.api and ask_request.model not in user.setting.openai_api_available_models:
-        await websocket.close(1007, "errors.userNotAllowToUseModel")
-        return
-
-    # 判断是否能新建对话，以及是否能继续提问
-    if ask_request.type == ChatSourceTypes.rev:
-        async with get_async_session_context() as session:
-            rev_conv_count = await session.execute(
-                select(func.count(RevConversation.id)).filter(
-                    and_(RevConversation.user_id == user.id, RevConversation.is_valid)))
-            rev_conv_count = rev_conv_count.scalar()
-
-            # user_setting = UserSettingSchema.from_orm(user.setting)
-            max_conv_count = user.setting.revchatgpt_ask_limits.max_conv_count
-            model_ask_count = user.setting.revchatgpt_ask_limits.per_model_ask_count.get(ask_request.model, -1)
-            total_ask_count = user.setting.revchatgpt_ask_limits.total_ask_count
-            if ask_request.new_conversation and max_conv_count != -1 and rev_conv_count >= max_conv_count:
-                await websocket.close(1008, "errors.maxConversationCountReached")
-                return
-            if total_ask_count != -1 and total_ask_count <= 0:
-                await websocket.close(1008, "errors.noAvailableTotalAskCount")
-                return
-            if model_ask_count != -1 and model_ask_count <= 0:
-                await websocket.close(1008, "errors.noAvailableModelAskCount")
-                return
-
-    if manager.is_busy():
-        await reply(AskResponse(
-            type=AskResponseType.queueing,
-            tip="tips.queueing"
-        ))
+    request_start_time = datetime.now()
 
     websocket_code = 1001
     websocket_reason = "tips.terminated"
@@ -139,53 +184,80 @@ async def chat(websocket: WebSocket):
     has_got_reply = False
     ask_start_time = None
     queueing_start_time = None
+    queueing_end_time = None
 
-    def check_message(msg: str):
-        url = Config().revchatgpt.chatgpt_base_url
-        if url and url in msg:
-            return msg.replace(url, "<chatgpt_base_url>")
-
-    try:
-        # 标记用户为 queueing
+    # rev: 排队
+    if ask_request.type == ChatSourceTypes.rev:
+        if rev_manager.is_busy():
+            await reply(AskResponse(
+                type=AskResponseType.queueing,
+                tip="tips.queueing"
+            ))
         await change_user_chat_status(user.id, RevChatStatus.queueing)
         queueing_start_time = time.time()
-        async with manager.semaphore:
-            is_queueing = False
-            try:
-                await change_user_chat_status(user.id, RevChatStatus.asking)
-                await reply(AskResponse(
-                    type=AskResponseType.waiting,
-                    tip="tips.waiting"
-                ))
-                ask_start_time = time.time()
-                manager.reset_chat()
-                async for data in manager.ask(content=ask_request.content, conversation_id=ask_request.conversation_id,
-                                              parent_id=ask_request.parent,
-                                              timeout=timeout,
-                                              model=ask_request.model):
-                    has_got_reply = True
-                    message = convert_revchatgpt_message(data)
-                    if conversation_id is None:
-                        conversation_id = data.get("conversation_id", None)
-                    await reply(AskResponse(
-                        type=AskResponseType.message,
-                        conversation_id=conversation_id,
-                        message=message
-                    ))
-                is_completed = True
-            except Exception as e:
-                # 修复 message 为 None 时的错误
-                if str(e).startswith("Field missing"):
-                    logger.warning(str(e))
-                else:
-                    raise e
-            finally:
-                manager.reset_chat()
+        await rev_manager.semaphore.acquire()
+        queueing_end_time = time.time()
+        # 如果 websocket 关闭了，则直接退出
+        if websocket.state == WebSocketState.DISCONNECTED:
+            await change_user_chat_status(user.id, RevChatStatus.idling)
+            logger.debug(f"{user.username} websocket disconnected while queueing")
+            return
 
+    # 在此之前应当没有任何副作用
+    message = None
+
+    try:
+        # rev: 更改状态为 asking
+        if ask_request.type == ChatSourceTypes.rev:
+            await change_user_chat_status(user.id, RevChatStatus.asking)
+            rev_manager.reset_chat()
+
+        await reply(AskResponse(
+            type=AskResponseType.waiting,
+            tip="tips.waiting"
+        ))
+
+        ask_start_time = time.time()
+
+        manager = rev_manager if ask_request.type == ChatSourceTypes.rev else api_manager
+
+        # 设置 timeout
+        if ask_request.type == ChatSourceTypes.rev:
+            timeout = Config().revchatgpt.ask_timeout  # TODO: 完善超时机制
+        else:
+            timeout = httpx.Timeout(config.api.read_timeout, connect=config.api.connect_timeout)
+
+        # stream 传输
+        async for data in manager.ask(content=ask_request.content,
+                                      conversation_id=ask_request.conversation_id,
+                                      parent_id=ask_request.parent,
+                                      timeout=timeout,
+                                      model=RevChatModels(ask_request.model)):
+            has_got_reply = True
+
+            # 解析 message
+            if ask_request.type == ChatSourceTypes.rev:
+                message = convert_revchatgpt_message(data)
+                if conversation_id is None:
+                    conversation_id = data["conversation_id"]
+            else:
+                assert isinstance(data, ChatMessage)
+                message = data
+                if conversation_id is None:
+                    assert ask_request.new_conversation
+                    conversation_id = uuid.uuid4()
+
+            await reply(AskResponse(
+                type=AskResponseType.message,
+                conversation_id=conversation_id,
+                message=message
+            ))
+
+        is_completed = True
     except ConnectionClosed:
         # print("websocket aborted", e.code)
         is_canceled = True
-    except requests.exceptions.Timeout:
+    except httpx.TimeoutException as e:
         logger.warning(str(e))
         await reply(AskResponse(
             type=AskResponseType.error,
@@ -196,11 +268,6 @@ async def chat(websocket: WebSocket):
     except revChatGPTError as e:
         logger.error(str(e))
         content = check_message(f"{e.source} {e.code}: {e.message}")
-        # await websocket.send_json({
-        #     "type": "error",
-        #     "tip": "errors.chatgptResponseError",
-        #     "message": content
-        # })
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.chatgptResponseError",
@@ -208,14 +275,17 @@ async def chat(websocket: WebSocket):
         ))
         websocket_code = 1001
         websocket_reason = "errors.chatgptResponseError"
+    except OpenAIChatException as e:
+        logger.error(str(e))
+        content = check_message(str(e))
+        await reply(AskResponse(
+            type=AskResponseType.error,
+            tip="errors.openaiResponseError",
+            error_detail=content
+        ))
     except HTTPError as e:
         logger.error(str(e))
         content = check_message(str(e))
-        # await websocket.send_json({
-        #     "type": "error",
-        #     "tip": "errors.httpError",
-        #     "message": content
-        # })
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.httpError",
@@ -223,14 +293,15 @@ async def chat(websocket: WebSocket):
         ))
         websocket_code = 1014
         websocket_reason = "errors.httpError"
+    except ValueError as e:
+        # 修复 message 为 None 时的错误
+        if str(e).startswith("Field missing"):
+            logger.warning(str(e))
+        else:
+            raise e
     except Exception as e:
         logger.error(str(e))
         content = check_message(str(e))
-        # await websocket.send_json({
-        #     "type": "error",
-        #     "tip": "errors.unknownError",
-        #     "message": content
-        # })
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.unknownError",
@@ -239,85 +310,125 @@ async def chat(websocket: WebSocket):
         websocket_code = 1011
         websocket_reason = "errors.unknownError"
 
-    ask_stop_time = time.time()
+    finally:
+        if ask_request.type == ChatSourceTypes.rev:
+            rev_manager.semaphore.release()
+            await change_user_chat_status(user.id, RevChatStatus.idling)
+        rev_manager.reset_chat()
 
-    queueing_time = ask_stop_time - queueing_start_time
-    queueing_time = round(queueing_time, 3)
+    ask_stop_time = time.time()
+    queueing_time = 0
+    if queueing_start_time is not None:
+        queueing_time = queueing_end_time - queueing_start_time
+        queueing_time = round(queueing_time, 3)
     if ask_start_time is not None:
         ask_time = ask_stop_time - ask_start_time
         ask_time = round(ask_time, 3)
     else:
         ask_time = None
+    total_time = queueing_time + ask_time
 
     if is_completed:
         logger.debug(
             f"finished ask {conversation_id} ({ask_request.model}), user: {user.id}, "
-            f"ask: {ask_time}s, total: {queueing_time}s")
+            f"ask: {ask_time}s, total: {total_time}s")
         websocket_code = 1000
         websocket_reason = "tips.finished"
     elif is_canceled:
         if has_got_reply:
             logger.debug(
                 f"canceled ask {conversation_id} ({ask_request.model}) while replying, user: {user.id}, "
-                f"ask: {ask_time}s, total: {queueing_time}s")
-        elif is_queueing:
-            logger.debug(
-                f"canceled ask {conversation_id} ({ask_request.model}) while queueing, user: {user.id}, "
-                f"total: {queueing_time}s")
+                f"ask: {ask_time}s, total: {total_time}s")
         else:
             logger.debug(
                 f"canceled ask {conversation_id} ({ask_request.model}) before replying, user: {user.id}, "
-                f"total: {queueing_time}s")
+                f"total: {total_time}s")
     else:
         logger.debug(
             f"terminated ask {conversation_id} ({ask_request.model}) because of error")
 
-    try:
-        if has_got_reply:
-            async with get_async_session_context() as session:
-                # 若新建了对话，则添加到数据库
-                if ask_request.new_conversation and conversation_id is not None:
-                    # 设置默认标题
+    if has_got_reply:
+        assert message is not None, "has_got_reply but message is None"
+        assert message.parent is not None, "message.parent is None"
+
+        # 对于api新对话，添加历史记录到mongodb
+        if ask_request.type == ChatSourceTypes.api and ask_request.new_conversation:
+            ask_message = ChatMessage(
+                id=message.parent,
+                role="user",
+                create_time=request_start_time.astimezone(tz=timezone.utc),
+                children=[message.id],
+                content=ask_request.content
+            )
+
+            new_conv_history = ConversationHistoryDocument(
+                id=conversation_id,
+                type=ask_request.type,
+                title=ask_request.new_title or "New Chat",
+                create_time=request_start_time.astimezone(tz=timezone.utc),
+                update_time=datetime.now().astimezone(tz=timezone.utc),
+                mapping={
+                    str(ask_message.id): ask_message,
+                    str(message.id): message
+                },
+                current_node=str(message.id),
+                current_model=message.model
+            )
+
+            await new_conv_history.save()
+            logger.debug(f"saved new api conversation history {conversation_id} to mongodb")
+
+        # TODO: 扣除 credits
+
+        async with get_async_session_context() as session:
+            # 若新建了对话，则添加到数据库
+            if ask_request.new_conversation:
+                assert conversation_id is not None, "has_got_reply but conversation_id is None"
+
+                # rev设置默认标题
+                if ask_request.type == ChatSourceTypes.rev:
                     try:
                         if ask_request.new_title is not None:
-                            await manager.set_conversation_title(str(conversation_id), ask_request.new_title)
+                            await rev_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
                     except Exception as e:
                         logger.warning(e)
-                    finally:
-                        current_time = datetime.utcnow()
-                        rev_conversation = RevConversationSchema(
-                            conversation_id=conversation_id, title=ask_request.new_title, user_id=user.id,
-                            current_model=ask_request.model, create_time=current_time, update_time=current_time
-                        )
-                        conversation = RevConversation(**rev_conversation.dict())
-                        session.add(conversation)
-                # 更新 conversation
-                if not ask_request.new_conversation:
-                    conversation = await session.get(RevConversation, conversation.id)  # 此前的 conversation 属于另一个session
-                    conversation.update_time = datetime.utcnow()
-                    if conversation.current_model != ask_request.model:
-                        conversation.current_model = ask_request.model
-                    session.add(conversation)
 
-                # 扣除对话次数
-                # total_ask_count = user.setting.revchatgpt_ask_limits.total_count
-                # model_ask_count = user.setting.revchatgpt_ask_limits.per_model_count.get(model_name.value, -1)
-                if total_ask_count != -1 or model_ask_count != -1:
-                    user = await session.get(User, user.id)
-                    if total_ask_count != -1:
-                        assert total_ask_count > 0
-                        user.setting.revchatgpt_ask_limits.total_ask_count -= 1
-                    if model_ask_count != -1:
-                        assert model_ask_count > 0
-                        user.setting.revchatgpt_ask_limits.per_model_ask_count[ask_request.model] -= 1
-                    session.add(user.setting)
-                await session.commit()
+                current_time = datetime.utcnow()
+                new_conv = BaseConversationSchema(
+                    type=ask_request.type,
+                    conversation_id=conversation_id, title=ask_request.new_title, user_id=user.id,
+                    current_model=ask_request.model, create_time=current_time, update_time=current_time
+                )
+                conversation = BaseConversation(**new_conv.dict())
+                session.add(conversation)
 
-                # 写入到 scope 中，供统计
-                g.ask_log_queue.enqueue(
-                    (user.id, ask_request.model.value, ask_time, queueing_time))
-    except Exception as e:
-        raise e
-    finally:
-        await change_user_chat_status(user.id, RevChatStatus.idling)
+            else:
+                conversation = await session.get(BaseConversation, conversation.id)
+                conversation.update_time = datetime.now().astimezone(tz=timezone.utc)
+                # 更新当前模型
+                if conversation.current_model != ask_request.model:
+                    conversation.current_model = ask_request.model
+                session.add(conversation)
+
+            # 扣除对话次数
+            source_setting = user.setting.rev if ask_request.type == ChatSourceTypes.rev else user.setting.api
+
+            total_ask_count = source_setting.total_ask_count
+            model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model, -1)
+            if total_ask_count != -1 or model_ask_count != -1:
+                user = await session.get(User, user.id)
+                if total_ask_count != -1:
+                    assert total_ask_count > 0
+                    source_setting.total_ask_count -= 1
+                if model_ask_count != -1:
+                    assert model_ask_count > 0
+                    setattr(source_setting.per_model_ask_count, ask_request.model, model_ask_count - 1)
+                session.add(user.setting)
+
+            await session.commit()
+
+            # 写入到 scope 中，供统计
+            g.ask_log_queue.enqueue(
+                (user.id, ask_request.model, ask_time, queueing_time))
+
         await websocket.close(websocket_code, websocket_reason)

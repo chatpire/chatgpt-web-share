@@ -5,6 +5,8 @@ from typing import Optional, Any, Literal
 from beanie import Document
 from pydantic import BaseModel, Field
 
+from api.schema.openai_schemas import OpenAIChatResponseUsage
+
 
 class RevChatMessageMetadata(BaseModel):
     # mapping[id].message.metadata 中的内容 加上 mapping[id].message 中的 weight, end_turn
@@ -15,16 +17,15 @@ class RevChatMessageMetadata(BaseModel):
 
 
 class ApiChatMessageMetadata(BaseModel):
-    prompt_tokens: Optional[int]
-    completion_tokens: Optional[int]
+    usage: Optional[OpenAIChatResponseUsage]
     finish_reason: Optional[str]
 
 
 class ChatMessage(BaseModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    id: uuid.UUID
     role: str  # rev: mapping[id].message.author.role: system, user, assistant
     model: Optional[str]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
-    create_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    create_time: datetime.datetime
     parent: Optional[uuid.UUID]
     children: list[uuid.UUID]
     content: str  # rev: mapping[id].message.content.parts[0]; mapping[id].message.content.content_type 为 text

@@ -147,12 +147,9 @@ class RevChatGPTManager:
         await self.chatbot.clear_conversations()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  timeout=360, model: RevChatModels = None) -> AsyncGenerator[ChatMessage, None]:
+                  timeout=360, model: RevChatModels = None):
 
         model = model or RevChatModels.gpt_3_5
-        # return self.chatbot.ask(message, conversation_id=conversation_id, parent_id=parent_id,
-        #                         model=model.code(ChatSourceTypes.rev),
-        #                         timeout=timeout)
 
         if conversation_id or parent_id:
             assert parent_id and conversation_id, "parent_id must be set with conversation_id"
@@ -173,7 +170,7 @@ class RevChatGPTManager:
             "messages": messages,
             "conversation_id": conversation_id,
             "parent_message_id": parent_id,
-            "model": model.code(ChatSourceTypes.rev)
+            "model": model.code()
         }
 
         async with self.chatbot.session.stream(
