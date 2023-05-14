@@ -40,6 +40,15 @@
       }
     }
   },
+  "ApiChatModels": {
+    "title": "ApiChatModels",
+    "enum": [
+      "gpt_3_5",
+      "gpt_4"
+    ],
+    "type": "string",
+    "description": "An enumeration."
+  },
   "ApiConversationSchema": {
     "title": "ApiConversationSchema",
     "type": "object",
@@ -76,13 +85,8 @@
         "default": true
       },
       "current_model": {
-        "title": "ChatModel",
-        "enum": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
-        "type": "string",
-        "description": "An enumeration."
+        "title": "Current Model",
+        "type": "string"
       },
       "create_time": {
         "title": "Create Time",
@@ -96,15 +100,49 @@
       }
     }
   },
-  "AskLimitSetting": {
-    "title": "AskLimitSetting",
+  "ApiPerModelAskCount": {
+    "title": "ApiPerModelAskCount",
     "required": [
+      "gpt_3_5",
+      "gpt_4"
+    ],
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "integer"
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "integer"
+      }
+    }
+  },
+  "ApiSourceSettingSchema": {
+    "title": "ApiSourceSettingSchema",
+    "required": [
+      "allow_to_use",
       "max_conv_count",
       "total_ask_count",
+      "rate_limits",
+      "daily_available_time_slots",
+      "api_credits",
+      "allow_custom_openai_api",
+      "custom_openai_api_settings",
+      "available_models",
       "per_model_ask_count"
     ],
     "type": "object",
     "properties": {
+      "allow_to_use": {
+        "title": "Allow To Use",
+        "type": "boolean"
+      },
+      "valid_until": {
+        "title": "Valid Until",
+        "type": "string",
+        "format": "date-time"
+      },
       "max_conv_count": {
         "title": "Max Conv Count",
         "type": "integer"
@@ -113,8 +151,92 @@
         "title": "Total Ask Count",
         "type": "integer"
       },
+      "rate_limits": {
+        "title": "Rate Limits",
+        "type": "array",
+        "items": {
+          "title": "TimeWindowRateLimit",
+          "required": [
+            "window_seconds",
+            "max_requests"
+          ],
+          "type": "object",
+          "properties": {
+            "window_seconds": {
+              "title": "Window Seconds",
+              "type": "integer",
+              "description": "时间窗口大小，单位为秒"
+            },
+            "max_requests": {
+              "title": "Max Requests",
+              "type": "integer",
+              "description": "在给定时间窗口内最多的请求次数"
+            }
+          }
+        }
+      },
+      "daily_available_time_slots": {
+        "title": "Daily Available Time Slots",
+        "type": "array",
+        "items": {
+          "title": "DailyTimeSlot",
+          "required": [
+            "start_time",
+            "end_time"
+          ],
+          "type": "object",
+          "properties": {
+            "start_time": {
+              "title": "Start Time",
+              "type": "string",
+              "description": "每天可使用的开始时间",
+              "format": "time"
+            },
+            "end_time": {
+              "title": "End Time",
+              "type": "string",
+              "description": "每天可使用的结束时间",
+              "format": "time"
+            }
+          }
+        }
+      },
+      "api_credits": {
+        "title": "Api Credits",
+        "type": "number"
+      },
+      "allow_custom_openai_api": {
+        "title": "Allow Custom Openai Api",
+        "type": "boolean"
+      },
+      "custom_openai_api_settings": {
+        "title": "CustomOpenaiApiSettings",
+        "type": "object",
+        "properties": {
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        }
+      },
+      "available_models": {
+        "type": "array",
+        "items": {
+          "title": "ApiChatModels",
+          "enum": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        }
+      },
       "per_model_ask_count": {
-        "title": "ChatModelDict[int]",
+        "title": "ApiPerModelAskCount",
         "required": [
           "gpt_3_5",
           "gpt_4"
@@ -137,8 +259,8 @@
     "title": "AskRequest",
     "required": [
       "type",
-      "new_conversation",
       "model",
+      "new_conversation",
       "content"
     ],
     "type": "object",
@@ -151,6 +273,10 @@
         ],
         "type": "string",
         "description": "An enumeration."
+      },
+      "model": {
+        "title": "Model",
+        "type": "string"
       },
       "new_conversation": {
         "title": "New Conversation",
@@ -169,15 +295,6 @@
         "title": "Parent",
         "type": "string",
         "format": "uuid"
-      },
-      "model": {
-        "title": "ChatModel",
-        "enum": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
-        "type": "string",
-        "description": "An enumeration."
       },
       "api_context_message_count": {
         "title": "Api Context Message Count",
@@ -237,20 +354,7 @@
           },
           "model": {
             "title": "Model",
-            "anyOf": [
-              {
-                "title": "ChatModel",
-                "enum": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
-                "type": "string",
-                "description": "An enumeration."
-              },
-              {
-                "type": "string"
-              }
-            ]
+            "type": "string"
           },
           "create_time": {
             "title": "Create Time",
@@ -329,66 +433,6 @@
     "type": "string",
     "description": "An enumeration."
   },
-  "AskTimeLimits": {
-    "title": "AskTimeLimits",
-    "required": [
-      "time_window_limits",
-      "available_time_range_in_day"
-    ],
-    "type": "object",
-    "properties": {
-      "time_window_limits": {
-        "title": "ChatModelDict[list[list[int]]]",
-        "required": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
-        "type": "object",
-        "properties": {
-          "gpt_3_5": {
-            "title": "Gpt 3 5",
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            }
-          },
-          "gpt_4": {
-            "title": "Gpt 4",
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            }
-          }
-        }
-      },
-      "available_time_range_in_day": {
-        "title": "ChatModelDict[Union[list[int], NoneType]]",
-        "type": "object",
-        "properties": {
-          "gpt_3_5": {
-            "title": "Gpt 3 5",
-            "type": "array",
-            "items": {
-              "type": "integer"
-            }
-          },
-          "gpt_4": {
-            "title": "Gpt 4",
-            "type": "array",
-            "items": {
-              "type": "integer"
-            }
-          }
-        }
-      }
-    }
-  },
   "AuthSetting": {
     "title": "AuthSetting",
     "type": "object",
@@ -462,13 +506,8 @@
         "default": true
       },
       "current_model": {
-        "title": "ChatModel",
-        "enum": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
-        "type": "string",
-        "description": "An enumeration."
+        "title": "Current Model",
+        "type": "string"
       },
       "create_time": {
         "title": "Create Time",
@@ -538,20 +577,7 @@
       },
       "model": {
         "title": "Model",
-        "anyOf": [
-          {
-            "title": "ChatModel",
-            "enum": [
-              "gpt_3_5",
-              "gpt_4"
-            ],
-            "type": "string",
-            "description": "An enumeration."
-          },
-          {
-            "type": "string"
-          }
-        ]
+        "type": "string"
       },
       "create_time": {
         "title": "Create Time",
@@ -613,83 +639,6 @@
       }
     }
   },
-  "ChatModel": {
-    "title": "ChatModel",
-    "enum": [
-      "gpt_3_5",
-      "gpt_4"
-    ],
-    "type": "string",
-    "description": "An enumeration."
-  },
-  "ChatModelDict_Union_list_int___NoneType__": {
-    "title": "ChatModelDict[Union[list[int], NoneType]]",
-    "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "array",
-        "items": {
-          "type": "integer"
-        }
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "array",
-        "items": {
-          "type": "integer"
-        }
-      }
-    }
-  },
-  "ChatModelDict_int_": {
-    "title": "ChatModelDict[int]",
-    "required": [
-      "gpt_3_5",
-      "gpt_4"
-    ],
-    "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "integer"
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "integer"
-      }
-    }
-  },
-  "ChatModelDict_list_list_int___": {
-    "title": "ChatModelDict[list[list[int]]]",
-    "required": [
-      "gpt_3_5",
-      "gpt_4"
-    ],
-    "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "array",
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        }
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "array",
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        }
-      }
-    }
-  },
   "ChatSourceTypes": {
     "title": "ChatSourceTypes",
     "enum": [
@@ -698,272 +647,6 @@
     ],
     "type": "string",
     "description": "An enumeration."
-  },
-  "ChatTypeDict_AskLimitSetting_": {
-    "title": "ChatTypeDict[AskLimitSetting]",
-    "required": [
-      "rev",
-      "api"
-    ],
-    "type": "object",
-    "properties": {
-      "rev": {
-        "title": "AskLimitSetting",
-        "required": [
-          "max_conv_count",
-          "total_ask_count",
-          "per_model_ask_count"
-        ],
-        "type": "object",
-        "properties": {
-          "max_conv_count": {
-            "title": "Max Conv Count",
-            "type": "integer"
-          },
-          "total_ask_count": {
-            "title": "Total Ask Count",
-            "type": "integer"
-          },
-          "per_model_ask_count": {
-            "title": "ChatModelDict[int]",
-            "required": [
-              "gpt_3_5",
-              "gpt_4"
-            ],
-            "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "integer"
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "integer"
-              }
-            }
-          }
-        }
-      },
-      "api": {
-        "title": "AskLimitSetting",
-        "required": [
-          "max_conv_count",
-          "total_ask_count",
-          "per_model_ask_count"
-        ],
-        "type": "object",
-        "properties": {
-          "max_conv_count": {
-            "title": "Max Conv Count",
-            "type": "integer"
-          },
-          "total_ask_count": {
-            "title": "Total Ask Count",
-            "type": "integer"
-          },
-          "per_model_ask_count": {
-            "title": "ChatModelDict[int]",
-            "required": [
-              "gpt_3_5",
-              "gpt_4"
-            ],
-            "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "integer"
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "integer"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "ChatTypeDict_AskTimeLimits_": {
-    "title": "ChatTypeDict[AskTimeLimits]",
-    "required": [
-      "rev",
-      "api"
-    ],
-    "type": "object",
-    "properties": {
-      "rev": {
-        "title": "AskTimeLimits",
-        "required": [
-          "time_window_limits",
-          "available_time_range_in_day"
-        ],
-        "type": "object",
-        "properties": {
-          "time_window_limits": {
-            "title": "ChatModelDict[list[list[int]]]",
-            "required": [
-              "gpt_3_5",
-              "gpt_4"
-            ],
-            "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                }
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                }
-              }
-            }
-          },
-          "available_time_range_in_day": {
-            "title": "ChatModelDict[Union[list[int], NoneType]]",
-            "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "array",
-                "items": {
-                  "type": "integer"
-                }
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "array",
-                "items": {
-                  "type": "integer"
-                }
-              }
-            }
-          }
-        }
-      },
-      "api": {
-        "title": "AskTimeLimits",
-        "required": [
-          "time_window_limits",
-          "available_time_range_in_day"
-        ],
-        "type": "object",
-        "properties": {
-          "time_window_limits": {
-            "title": "ChatModelDict[list[list[int]]]",
-            "required": [
-              "gpt_3_5",
-              "gpt_4"
-            ],
-            "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                }
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                }
-              }
-            }
-          },
-          "available_time_range_in_day": {
-            "title": "ChatModelDict[Union[list[int], NoneType]]",
-            "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "array",
-                "items": {
-                  "type": "integer"
-                }
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "array",
-                "items": {
-                  "type": "integer"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "ChatTypeDict_bool_": {
-    "title": "ChatTypeDict[bool]",
-    "required": [
-      "rev",
-      "api"
-    ],
-    "type": "object",
-    "properties": {
-      "rev": {
-        "title": "Rev",
-        "type": "boolean"
-      },
-      "api": {
-        "title": "Api",
-        "type": "boolean"
-      }
-    }
-  },
-  "ChatTypeDict_list_api.enums.ChatModel__": {
-    "title": "ChatTypeDict[list[api.enums.ChatModel]]",
-    "required": [
-      "rev",
-      "api"
-    ],
-    "type": "object",
-    "properties": {
-      "rev": {
-        "type": "array",
-        "items": {
-          "title": "ChatModel",
-          "enum": [
-            "gpt_3_5",
-            "gpt_4"
-          ],
-          "type": "string",
-          "description": "An enumeration."
-        }
-      },
-      "api": {
-        "type": "array",
-        "items": {
-          "title": "ChatModel",
-          "enum": [
-            "gpt_3_5",
-            "gpt_4"
-          ],
-          "type": "string",
-          "description": "An enumeration."
-        }
-      }
-    }
   },
   "CommonSetting": {
     "title": "CommonSetting",
@@ -1366,20 +1049,7 @@
             },
             "model": {
               "title": "Model",
-              "anyOf": [
-                {
-                  "title": "ChatModel",
-                  "enum": [
-                    "gpt_3_5",
-                    "gpt_4"
-                  ],
-                  "type": "string",
-                  "description": "An enumeration."
-                },
-                {
-                  "type": "string"
-                }
-              ]
+              "type": "string"
             },
             "create_time": {
               "title": "Create Time",
@@ -1449,20 +1119,7 @@
       },
       "current_model": {
         "title": "Current Model",
-        "anyOf": [
-          {
-            "title": "ChatModel",
-            "enum": [
-              "gpt_3_5",
-              "gpt_4"
-            ],
-            "type": "string",
-            "description": "An enumeration."
-          },
-          {
-            "type": "string"
-          }
-        ]
+        "type": "string"
       }
     },
     "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
@@ -1478,6 +1135,42 @@
       "openai_api_key": {
         "title": "Openai Api Key",
         "type": "string"
+      }
+    }
+  },
+  "CustomOpenaiApiSettings": {
+    "title": "CustomOpenaiApiSettings",
+    "type": "object",
+    "properties": {
+      "url": {
+        "title": "Url",
+        "type": "string"
+      },
+      "key": {
+        "title": "Key",
+        "type": "string"
+      }
+    }
+  },
+  "DailyTimeSlot": {
+    "title": "DailyTimeSlot",
+    "required": [
+      "start_time",
+      "end_time"
+    ],
+    "type": "object",
+    "properties": {
+      "start_time": {
+        "title": "Start Time",
+        "type": "string",
+        "description": "每天可使用的开始时间",
+        "format": "time"
+      },
+      "end_time": {
+        "title": "End Time",
+        "type": "string",
+        "description": "每天可使用的结束时间",
+        "format": "time"
       }
     }
   },
@@ -1708,6 +1401,16 @@
       }
     }
   },
+  "RevChatModels": {
+    "title": "RevChatModels",
+    "enum": [
+      "gpt_3_5",
+      "gpt_4",
+      "gpt_4_browsing"
+    ],
+    "type": "string",
+    "description": "An enumeration."
+  },
   "RevChatStatus": {
     "title": "RevChatStatus",
     "enum": [
@@ -1754,13 +1457,8 @@
         "default": true
       },
       "current_model": {
-        "title": "ChatModel",
-        "enum": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
-        "type": "string",
-        "description": "An enumeration."
+        "title": "Current Model",
+        "type": "string"
       },
       "create_time": {
         "title": "Create Time",
@@ -1771,6 +1469,172 @@
         "title": "Update Time",
         "type": "string",
         "format": "date-time"
+      }
+    }
+  },
+  "RevPerModelAskCount": {
+    "title": "RevPerModelAskCount",
+    "required": [
+      "gpt_3_5",
+      "gpt_4",
+      "gpt_4_browsing"
+    ],
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "integer"
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "integer"
+      },
+      "gpt_4_browsing": {
+        "title": "Gpt 4 Browsing",
+        "type": "integer"
+      }
+    }
+  },
+  "RevSourceSettingSchema": {
+    "title": "RevSourceSettingSchema",
+    "required": [
+      "allow_to_use",
+      "max_conv_count",
+      "total_ask_count",
+      "rate_limits",
+      "daily_available_time_slots",
+      "api_credits",
+      "allow_custom_openai_api",
+      "custom_openai_api_settings",
+      "available_models",
+      "per_model_ask_count"
+    ],
+    "type": "object",
+    "properties": {
+      "allow_to_use": {
+        "title": "Allow To Use",
+        "type": "boolean"
+      },
+      "valid_until": {
+        "title": "Valid Until",
+        "type": "string",
+        "format": "date-time"
+      },
+      "max_conv_count": {
+        "title": "Max Conv Count",
+        "type": "integer"
+      },
+      "total_ask_count": {
+        "title": "Total Ask Count",
+        "type": "integer"
+      },
+      "rate_limits": {
+        "title": "Rate Limits",
+        "type": "array",
+        "items": {
+          "title": "TimeWindowRateLimit",
+          "required": [
+            "window_seconds",
+            "max_requests"
+          ],
+          "type": "object",
+          "properties": {
+            "window_seconds": {
+              "title": "Window Seconds",
+              "type": "integer",
+              "description": "时间窗口大小，单位为秒"
+            },
+            "max_requests": {
+              "title": "Max Requests",
+              "type": "integer",
+              "description": "在给定时间窗口内最多的请求次数"
+            }
+          }
+        }
+      },
+      "daily_available_time_slots": {
+        "title": "Daily Available Time Slots",
+        "type": "array",
+        "items": {
+          "title": "DailyTimeSlot",
+          "required": [
+            "start_time",
+            "end_time"
+          ],
+          "type": "object",
+          "properties": {
+            "start_time": {
+              "title": "Start Time",
+              "type": "string",
+              "description": "每天可使用的开始时间",
+              "format": "time"
+            },
+            "end_time": {
+              "title": "End Time",
+              "type": "string",
+              "description": "每天可使用的结束时间",
+              "format": "time"
+            }
+          }
+        }
+      },
+      "api_credits": {
+        "title": "Api Credits",
+        "type": "number"
+      },
+      "allow_custom_openai_api": {
+        "title": "Allow Custom Openai Api",
+        "type": "boolean"
+      },
+      "custom_openai_api_settings": {
+        "title": "CustomOpenaiApiSettings",
+        "type": "object",
+        "properties": {
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        }
+      },
+      "available_models": {
+        "type": "array",
+        "items": {
+          "title": "RevChatModels",
+          "enum": [
+            "gpt_3_5",
+            "gpt_4",
+            "gpt_4_browsing"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        }
+      },
+      "per_model_ask_count": {
+        "title": "RevPerModelAskCount",
+        "required": [
+          "gpt_3_5",
+          "gpt_4",
+          "gpt_4_browsing"
+        ],
+        "type": "object",
+        "properties": {
+          "gpt_3_5": {
+            "title": "Gpt 3 5",
+            "type": "integer"
+          },
+          "gpt_4": {
+            "title": "Gpt 4",
+            "type": "integer"
+          },
+          "gpt_4_browsing": {
+            "title": "Gpt 4 Browsing",
+            "type": "integer"
+          }
+        }
       }
     }
   },
@@ -1846,6 +1710,26 @@
       "valid_conversation_count": {
         "title": "Valid Conversation Count",
         "type": "integer"
+      }
+    }
+  },
+  "TimeWindowRateLimit": {
+    "title": "TimeWindowRateLimit",
+    "required": [
+      "window_seconds",
+      "max_requests"
+    ],
+    "type": "object",
+    "properties": {
+      "window_seconds": {
+        "title": "Window Seconds",
+        "type": "integer",
+        "description": "时间窗口大小，单位为秒"
+      },
+      "max_requests": {
+        "title": "Max Requests",
+        "type": "integer",
+        "description": "在给定时间窗口内最多的请求次数"
       }
     }
   },
@@ -1973,11 +1857,8 @@
       "setting": {
         "title": "UserSettingSchema",
         "required": [
-          "allow_chat_type",
-          "available_models",
-          "ask_count_limits",
-          "ask_time_limits",
-          "allow_custom_openai_api"
+          "rev",
+          "api"
         ],
         "type": "object",
         "properties": {
@@ -1989,36 +1870,258 @@
             "title": "User Id",
             "type": "integer"
           },
-          "allow_chat_type": {
-            "title": "ChatTypeDict[bool]",
+          "rev": {
+            "title": "RevSourceSettingSchema",
             "required": [
-              "rev",
-              "api"
+              "allow_to_use",
+              "max_conv_count",
+              "total_ask_count",
+              "rate_limits",
+              "daily_available_time_slots",
+              "api_credits",
+              "allow_custom_openai_api",
+              "custom_openai_api_settings",
+              "available_models",
+              "per_model_ask_count"
             ],
             "type": "object",
             "properties": {
-              "rev": {
-                "title": "Rev",
+              "allow_to_use": {
+                "title": "Allow To Use",
                 "type": "boolean"
               },
-              "api": {
-                "title": "Api",
+              "valid_until": {
+                "title": "Valid Until",
+                "type": "string",
+                "format": "date-time"
+              },
+              "max_conv_count": {
+                "title": "Max Conv Count",
+                "type": "integer"
+              },
+              "total_ask_count": {
+                "title": "Total Ask Count",
+                "type": "integer"
+              },
+              "rate_limits": {
+                "title": "Rate Limits",
+                "type": "array",
+                "items": {
+                  "title": "TimeWindowRateLimit",
+                  "required": [
+                    "window_seconds",
+                    "max_requests"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "window_seconds": {
+                      "title": "Window Seconds",
+                      "type": "integer",
+                      "description": "时间窗口大小，单位为秒"
+                    },
+                    "max_requests": {
+                      "title": "Max Requests",
+                      "type": "integer",
+                      "description": "在给定时间窗口内最多的请求次数"
+                    }
+                  }
+                }
+              },
+              "daily_available_time_slots": {
+                "title": "Daily Available Time Slots",
+                "type": "array",
+                "items": {
+                  "title": "DailyTimeSlot",
+                  "required": [
+                    "start_time",
+                    "end_time"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "start_time": {
+                      "title": "Start Time",
+                      "type": "string",
+                      "description": "每天可使用的开始时间",
+                      "format": "time"
+                    },
+                    "end_time": {
+                      "title": "End Time",
+                      "type": "string",
+                      "description": "每天可使用的结束时间",
+                      "format": "time"
+                    }
+                  }
+                }
+              },
+              "api_credits": {
+                "title": "Api Credits",
+                "type": "number"
+              },
+              "allow_custom_openai_api": {
+                "title": "Allow Custom Openai Api",
                 "type": "boolean"
+              },
+              "custom_openai_api_settings": {
+                "title": "CustomOpenaiApiSettings",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Key",
+                    "type": "string"
+                  }
+                }
+              },
+              "available_models": {
+                "type": "array",
+                "items": {
+                  "title": "RevChatModels",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4",
+                    "gpt_4_browsing"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                }
+              },
+              "per_model_ask_count": {
+                "title": "RevPerModelAskCount",
+                "required": [
+                  "gpt_3_5",
+                  "gpt_4",
+                  "gpt_4_browsing"
+                ],
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "integer"
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "integer"
+                  },
+                  "gpt_4_browsing": {
+                    "title": "Gpt 4 Browsing",
+                    "type": "integer"
+                  }
+                }
               }
             }
           },
-          "available_models": {
-            "title": "ChatTypeDict[list[api.enums.ChatModel]]",
+          "api": {
+            "title": "ApiSourceSettingSchema",
             "required": [
-              "rev",
-              "api"
+              "allow_to_use",
+              "max_conv_count",
+              "total_ask_count",
+              "rate_limits",
+              "daily_available_time_slots",
+              "api_credits",
+              "allow_custom_openai_api",
+              "custom_openai_api_settings",
+              "available_models",
+              "per_model_ask_count"
             ],
             "type": "object",
             "properties": {
-              "rev": {
+              "allow_to_use": {
+                "title": "Allow To Use",
+                "type": "boolean"
+              },
+              "valid_until": {
+                "title": "Valid Until",
+                "type": "string",
+                "format": "date-time"
+              },
+              "max_conv_count": {
+                "title": "Max Conv Count",
+                "type": "integer"
+              },
+              "total_ask_count": {
+                "title": "Total Ask Count",
+                "type": "integer"
+              },
+              "rate_limits": {
+                "title": "Rate Limits",
                 "type": "array",
                 "items": {
-                  "title": "ChatModel",
+                  "title": "TimeWindowRateLimit",
+                  "required": [
+                    "window_seconds",
+                    "max_requests"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "window_seconds": {
+                      "title": "Window Seconds",
+                      "type": "integer",
+                      "description": "时间窗口大小，单位为秒"
+                    },
+                    "max_requests": {
+                      "title": "Max Requests",
+                      "type": "integer",
+                      "description": "在给定时间窗口内最多的请求次数"
+                    }
+                  }
+                }
+              },
+              "daily_available_time_slots": {
+                "title": "Daily Available Time Slots",
+                "type": "array",
+                "items": {
+                  "title": "DailyTimeSlot",
+                  "required": [
+                    "start_time",
+                    "end_time"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "start_time": {
+                      "title": "Start Time",
+                      "type": "string",
+                      "description": "每天可使用的开始时间",
+                      "format": "time"
+                    },
+                    "end_time": {
+                      "title": "End Time",
+                      "type": "string",
+                      "description": "每天可使用的结束时间",
+                      "format": "time"
+                    }
+                  }
+                }
+              },
+              "api_credits": {
+                "title": "Api Credits",
+                "type": "number"
+              },
+              "allow_custom_openai_api": {
+                "title": "Allow Custom Openai Api",
+                "type": "boolean"
+              },
+              "custom_openai_api_settings": {
+                "title": "CustomOpenaiApiSettings",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Key",
+                    "type": "string"
+                  }
+                }
+              },
+              "available_models": {
+                "type": "array",
+                "items": {
+                  "title": "ApiChatModels",
                   "enum": [
                     "gpt_3_5",
                     "gpt_4"
@@ -2027,251 +2130,25 @@
                   "description": "An enumeration."
                 }
               },
-              "api": {
-                "type": "array",
-                "items": {
-                  "title": "ChatModel",
-                  "enum": [
-                    "gpt_3_5",
-                    "gpt_4"
-                  ],
-                  "type": "string",
-                  "description": "An enumeration."
-                }
-              }
-            }
-          },
-          "ask_count_limits": {
-            "title": "ChatTypeDict[AskLimitSetting]",
-            "required": [
-              "rev",
-              "api"
-            ],
-            "type": "object",
-            "properties": {
-              "rev": {
-                "title": "AskLimitSetting",
+              "per_model_ask_count": {
+                "title": "ApiPerModelAskCount",
                 "required": [
-                  "max_conv_count",
-                  "total_ask_count",
-                  "per_model_ask_count"
+                  "gpt_3_5",
+                  "gpt_4"
                 ],
                 "type": "object",
                 "properties": {
-                  "max_conv_count": {
-                    "title": "Max Conv Count",
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
                     "type": "integer"
                   },
-                  "total_ask_count": {
-                    "title": "Total Ask Count",
+                  "gpt_4": {
+                    "title": "Gpt 4",
                     "type": "integer"
-                  },
-                  "per_model_ask_count": {
-                    "title": "ChatModelDict[int]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "integer"
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "integer"
-                      }
-                    }
-                  }
-                }
-              },
-              "api": {
-                "title": "AskLimitSetting",
-                "required": [
-                  "max_conv_count",
-                  "total_ask_count",
-                  "per_model_ask_count"
-                ],
-                "type": "object",
-                "properties": {
-                  "max_conv_count": {
-                    "title": "Max Conv Count",
-                    "type": "integer"
-                  },
-                  "total_ask_count": {
-                    "title": "Total Ask Count",
-                    "type": "integer"
-                  },
-                  "per_model_ask_count": {
-                    "title": "ChatModelDict[int]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "integer"
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "integer"
-                      }
-                    }
                   }
                 }
               }
             }
-          },
-          "ask_time_limits": {
-            "title": "ChatTypeDict[AskTimeLimits]",
-            "required": [
-              "rev",
-              "api"
-            ],
-            "type": "object",
-            "properties": {
-              "rev": {
-                "title": "AskTimeLimits",
-                "required": [
-                  "time_window_limits",
-                  "available_time_range_in_day"
-                ],
-                "type": "object",
-                "properties": {
-                  "time_window_limits": {
-                    "title": "ChatModelDict[list[list[int]]]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "available_time_range_in_day": {
-                    "title": "ChatModelDict[Union[list[int], NoneType]]",
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "api": {
-                "title": "AskTimeLimits",
-                "required": [
-                  "time_window_limits",
-                  "available_time_range_in_day"
-                ],
-                "type": "object",
-                "properties": {
-                  "time_window_limits": {
-                    "title": "ChatModelDict[list[list[int]]]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "available_time_range_in_day": {
-                    "title": "ChatModelDict[Union[list[int], NoneType]]",
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "api_credits": {
-            "title": "Api Credits",
-            "type": "number",
-            "description": "Credits for OpenAI API, not support unlimited (-1)",
-            "default": 0
-          },
-          "allow_custom_openai_api": {
-            "title": "Allow Custom Openai Api",
-            "type": "boolean"
-          },
-          "custom_openai_api_url": {
-            "title": "Custom Openai Api Url",
-            "type": "string"
-          },
-          "custom_openai_api_key": {
-            "title": "Custom Openai Api Key",
-            "type": "string"
           }
         }
       }
@@ -2350,11 +2227,8 @@
       "setting": {
         "title": "UserSettingSchema",
         "required": [
-          "allow_chat_type",
-          "available_models",
-          "ask_count_limits",
-          "ask_time_limits",
-          "allow_custom_openai_api"
+          "rev",
+          "api"
         ],
         "type": "object",
         "properties": {
@@ -2366,36 +2240,258 @@
             "title": "User Id",
             "type": "integer"
           },
-          "allow_chat_type": {
-            "title": "ChatTypeDict[bool]",
+          "rev": {
+            "title": "RevSourceSettingSchema",
             "required": [
-              "rev",
-              "api"
+              "allow_to_use",
+              "max_conv_count",
+              "total_ask_count",
+              "rate_limits",
+              "daily_available_time_slots",
+              "api_credits",
+              "allow_custom_openai_api",
+              "custom_openai_api_settings",
+              "available_models",
+              "per_model_ask_count"
             ],
             "type": "object",
             "properties": {
-              "rev": {
-                "title": "Rev",
+              "allow_to_use": {
+                "title": "Allow To Use",
                 "type": "boolean"
               },
-              "api": {
-                "title": "Api",
+              "valid_until": {
+                "title": "Valid Until",
+                "type": "string",
+                "format": "date-time"
+              },
+              "max_conv_count": {
+                "title": "Max Conv Count",
+                "type": "integer"
+              },
+              "total_ask_count": {
+                "title": "Total Ask Count",
+                "type": "integer"
+              },
+              "rate_limits": {
+                "title": "Rate Limits",
+                "type": "array",
+                "items": {
+                  "title": "TimeWindowRateLimit",
+                  "required": [
+                    "window_seconds",
+                    "max_requests"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "window_seconds": {
+                      "title": "Window Seconds",
+                      "type": "integer",
+                      "description": "时间窗口大小，单位为秒"
+                    },
+                    "max_requests": {
+                      "title": "Max Requests",
+                      "type": "integer",
+                      "description": "在给定时间窗口内最多的请求次数"
+                    }
+                  }
+                }
+              },
+              "daily_available_time_slots": {
+                "title": "Daily Available Time Slots",
+                "type": "array",
+                "items": {
+                  "title": "DailyTimeSlot",
+                  "required": [
+                    "start_time",
+                    "end_time"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "start_time": {
+                      "title": "Start Time",
+                      "type": "string",
+                      "description": "每天可使用的开始时间",
+                      "format": "time"
+                    },
+                    "end_time": {
+                      "title": "End Time",
+                      "type": "string",
+                      "description": "每天可使用的结束时间",
+                      "format": "time"
+                    }
+                  }
+                }
+              },
+              "api_credits": {
+                "title": "Api Credits",
+                "type": "number"
+              },
+              "allow_custom_openai_api": {
+                "title": "Allow Custom Openai Api",
                 "type": "boolean"
+              },
+              "custom_openai_api_settings": {
+                "title": "CustomOpenaiApiSettings",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Key",
+                    "type": "string"
+                  }
+                }
+              },
+              "available_models": {
+                "type": "array",
+                "items": {
+                  "title": "RevChatModels",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4",
+                    "gpt_4_browsing"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                }
+              },
+              "per_model_ask_count": {
+                "title": "RevPerModelAskCount",
+                "required": [
+                  "gpt_3_5",
+                  "gpt_4",
+                  "gpt_4_browsing"
+                ],
+                "type": "object",
+                "properties": {
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
+                    "type": "integer"
+                  },
+                  "gpt_4": {
+                    "title": "Gpt 4",
+                    "type": "integer"
+                  },
+                  "gpt_4_browsing": {
+                    "title": "Gpt 4 Browsing",
+                    "type": "integer"
+                  }
+                }
               }
             }
           },
-          "available_models": {
-            "title": "ChatTypeDict[list[api.enums.ChatModel]]",
+          "api": {
+            "title": "ApiSourceSettingSchema",
             "required": [
-              "rev",
-              "api"
+              "allow_to_use",
+              "max_conv_count",
+              "total_ask_count",
+              "rate_limits",
+              "daily_available_time_slots",
+              "api_credits",
+              "allow_custom_openai_api",
+              "custom_openai_api_settings",
+              "available_models",
+              "per_model_ask_count"
             ],
             "type": "object",
             "properties": {
-              "rev": {
+              "allow_to_use": {
+                "title": "Allow To Use",
+                "type": "boolean"
+              },
+              "valid_until": {
+                "title": "Valid Until",
+                "type": "string",
+                "format": "date-time"
+              },
+              "max_conv_count": {
+                "title": "Max Conv Count",
+                "type": "integer"
+              },
+              "total_ask_count": {
+                "title": "Total Ask Count",
+                "type": "integer"
+              },
+              "rate_limits": {
+                "title": "Rate Limits",
                 "type": "array",
                 "items": {
-                  "title": "ChatModel",
+                  "title": "TimeWindowRateLimit",
+                  "required": [
+                    "window_seconds",
+                    "max_requests"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "window_seconds": {
+                      "title": "Window Seconds",
+                      "type": "integer",
+                      "description": "时间窗口大小，单位为秒"
+                    },
+                    "max_requests": {
+                      "title": "Max Requests",
+                      "type": "integer",
+                      "description": "在给定时间窗口内最多的请求次数"
+                    }
+                  }
+                }
+              },
+              "daily_available_time_slots": {
+                "title": "Daily Available Time Slots",
+                "type": "array",
+                "items": {
+                  "title": "DailyTimeSlot",
+                  "required": [
+                    "start_time",
+                    "end_time"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "start_time": {
+                      "title": "Start Time",
+                      "type": "string",
+                      "description": "每天可使用的开始时间",
+                      "format": "time"
+                    },
+                    "end_time": {
+                      "title": "End Time",
+                      "type": "string",
+                      "description": "每天可使用的结束时间",
+                      "format": "time"
+                    }
+                  }
+                }
+              },
+              "api_credits": {
+                "title": "Api Credits",
+                "type": "number"
+              },
+              "allow_custom_openai_api": {
+                "title": "Allow Custom Openai Api",
+                "type": "boolean"
+              },
+              "custom_openai_api_settings": {
+                "title": "CustomOpenaiApiSettings",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Key",
+                    "type": "string"
+                  }
+                }
+              },
+              "available_models": {
+                "type": "array",
+                "items": {
+                  "title": "ApiChatModels",
                   "enum": [
                     "gpt_3_5",
                     "gpt_4"
@@ -2404,251 +2500,25 @@
                   "description": "An enumeration."
                 }
               },
-              "api": {
-                "type": "array",
-                "items": {
-                  "title": "ChatModel",
-                  "enum": [
-                    "gpt_3_5",
-                    "gpt_4"
-                  ],
-                  "type": "string",
-                  "description": "An enumeration."
-                }
-              }
-            }
-          },
-          "ask_count_limits": {
-            "title": "ChatTypeDict[AskLimitSetting]",
-            "required": [
-              "rev",
-              "api"
-            ],
-            "type": "object",
-            "properties": {
-              "rev": {
-                "title": "AskLimitSetting",
+              "per_model_ask_count": {
+                "title": "ApiPerModelAskCount",
                 "required": [
-                  "max_conv_count",
-                  "total_ask_count",
-                  "per_model_ask_count"
+                  "gpt_3_5",
+                  "gpt_4"
                 ],
                 "type": "object",
                 "properties": {
-                  "max_conv_count": {
-                    "title": "Max Conv Count",
+                  "gpt_3_5": {
+                    "title": "Gpt 3 5",
                     "type": "integer"
                   },
-                  "total_ask_count": {
-                    "title": "Total Ask Count",
+                  "gpt_4": {
+                    "title": "Gpt 4",
                     "type": "integer"
-                  },
-                  "per_model_ask_count": {
-                    "title": "ChatModelDict[int]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "integer"
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "integer"
-                      }
-                    }
-                  }
-                }
-              },
-              "api": {
-                "title": "AskLimitSetting",
-                "required": [
-                  "max_conv_count",
-                  "total_ask_count",
-                  "per_model_ask_count"
-                ],
-                "type": "object",
-                "properties": {
-                  "max_conv_count": {
-                    "title": "Max Conv Count",
-                    "type": "integer"
-                  },
-                  "total_ask_count": {
-                    "title": "Total Ask Count",
-                    "type": "integer"
-                  },
-                  "per_model_ask_count": {
-                    "title": "ChatModelDict[int]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "integer"
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "integer"
-                      }
-                    }
                   }
                 }
               }
             }
-          },
-          "ask_time_limits": {
-            "title": "ChatTypeDict[AskTimeLimits]",
-            "required": [
-              "rev",
-              "api"
-            ],
-            "type": "object",
-            "properties": {
-              "rev": {
-                "title": "AskTimeLimits",
-                "required": [
-                  "time_window_limits",
-                  "available_time_range_in_day"
-                ],
-                "type": "object",
-                "properties": {
-                  "time_window_limits": {
-                    "title": "ChatModelDict[list[list[int]]]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "available_time_range_in_day": {
-                    "title": "ChatModelDict[Union[list[int], NoneType]]",
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "api": {
-                "title": "AskTimeLimits",
-                "required": [
-                  "time_window_limits",
-                  "available_time_range_in_day"
-                ],
-                "type": "object",
-                "properties": {
-                  "time_window_limits": {
-                    "title": "ChatModelDict[list[list[int]]]",
-                    "required": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "available_time_range_in_day": {
-                    "title": "ChatModelDict[Union[list[int], NoneType]]",
-                    "type": "object",
-                    "properties": {
-                      "gpt_3_5": {
-                        "title": "Gpt 3 5",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      },
-                      "gpt_4": {
-                        "title": "Gpt 4",
-                        "type": "array",
-                        "items": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "api_credits": {
-            "title": "Api Credits",
-            "type": "number",
-            "description": "Credits for OpenAI API, not support unlimited (-1)",
-            "default": 0
-          },
-          "allow_custom_openai_api": {
-            "title": "Allow Custom Openai Api",
-            "type": "boolean"
-          },
-          "custom_openai_api_url": {
-            "title": "Custom Openai Api Url",
-            "type": "string"
-          },
-          "custom_openai_api_key": {
-            "title": "Custom Openai Api Key",
-            "type": "string"
           }
         }
       },
@@ -2662,11 +2532,8 @@
   "UserSettingSchema": {
     "title": "UserSettingSchema",
     "required": [
-      "allow_chat_type",
-      "available_models",
-      "ask_count_limits",
-      "ask_time_limits",
-      "allow_custom_openai_api"
+      "rev",
+      "api"
     ],
     "type": "object",
     "properties": {
@@ -2678,36 +2545,258 @@
         "title": "User Id",
         "type": "integer"
       },
-      "allow_chat_type": {
-        "title": "ChatTypeDict[bool]",
+      "rev": {
+        "title": "RevSourceSettingSchema",
         "required": [
-          "rev",
-          "api"
+          "allow_to_use",
+          "max_conv_count",
+          "total_ask_count",
+          "rate_limits",
+          "daily_available_time_slots",
+          "api_credits",
+          "allow_custom_openai_api",
+          "custom_openai_api_settings",
+          "available_models",
+          "per_model_ask_count"
         ],
         "type": "object",
         "properties": {
-          "rev": {
-            "title": "Rev",
+          "allow_to_use": {
+            "title": "Allow To Use",
             "type": "boolean"
           },
-          "api": {
-            "title": "Api",
+          "valid_until": {
+            "title": "Valid Until",
+            "type": "string",
+            "format": "date-time"
+          },
+          "max_conv_count": {
+            "title": "Max Conv Count",
+            "type": "integer"
+          },
+          "total_ask_count": {
+            "title": "Total Ask Count",
+            "type": "integer"
+          },
+          "rate_limits": {
+            "title": "Rate Limits",
+            "type": "array",
+            "items": {
+              "title": "TimeWindowRateLimit",
+              "required": [
+                "window_seconds",
+                "max_requests"
+              ],
+              "type": "object",
+              "properties": {
+                "window_seconds": {
+                  "title": "Window Seconds",
+                  "type": "integer",
+                  "description": "时间窗口大小，单位为秒"
+                },
+                "max_requests": {
+                  "title": "Max Requests",
+                  "type": "integer",
+                  "description": "在给定时间窗口内最多的请求次数"
+                }
+              }
+            }
+          },
+          "daily_available_time_slots": {
+            "title": "Daily Available Time Slots",
+            "type": "array",
+            "items": {
+              "title": "DailyTimeSlot",
+              "required": [
+                "start_time",
+                "end_time"
+              ],
+              "type": "object",
+              "properties": {
+                "start_time": {
+                  "title": "Start Time",
+                  "type": "string",
+                  "description": "每天可使用的开始时间",
+                  "format": "time"
+                },
+                "end_time": {
+                  "title": "End Time",
+                  "type": "string",
+                  "description": "每天可使用的结束时间",
+                  "format": "time"
+                }
+              }
+            }
+          },
+          "api_credits": {
+            "title": "Api Credits",
+            "type": "number"
+          },
+          "allow_custom_openai_api": {
+            "title": "Allow Custom Openai Api",
             "type": "boolean"
+          },
+          "custom_openai_api_settings": {
+            "title": "CustomOpenaiApiSettings",
+            "type": "object",
+            "properties": {
+              "url": {
+                "title": "Url",
+                "type": "string"
+              },
+              "key": {
+                "title": "Key",
+                "type": "string"
+              }
+            }
+          },
+          "available_models": {
+            "type": "array",
+            "items": {
+              "title": "RevChatModels",
+              "enum": [
+                "gpt_3_5",
+                "gpt_4",
+                "gpt_4_browsing"
+              ],
+              "type": "string",
+              "description": "An enumeration."
+            }
+          },
+          "per_model_ask_count": {
+            "title": "RevPerModelAskCount",
+            "required": [
+              "gpt_3_5",
+              "gpt_4",
+              "gpt_4_browsing"
+            ],
+            "type": "object",
+            "properties": {
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
+                "type": "integer"
+              },
+              "gpt_4": {
+                "title": "Gpt 4",
+                "type": "integer"
+              },
+              "gpt_4_browsing": {
+                "title": "Gpt 4 Browsing",
+                "type": "integer"
+              }
+            }
           }
         }
       },
-      "available_models": {
-        "title": "ChatTypeDict[list[api.enums.ChatModel]]",
+      "api": {
+        "title": "ApiSourceSettingSchema",
         "required": [
-          "rev",
-          "api"
+          "allow_to_use",
+          "max_conv_count",
+          "total_ask_count",
+          "rate_limits",
+          "daily_available_time_slots",
+          "api_credits",
+          "allow_custom_openai_api",
+          "custom_openai_api_settings",
+          "available_models",
+          "per_model_ask_count"
         ],
         "type": "object",
         "properties": {
-          "rev": {
+          "allow_to_use": {
+            "title": "Allow To Use",
+            "type": "boolean"
+          },
+          "valid_until": {
+            "title": "Valid Until",
+            "type": "string",
+            "format": "date-time"
+          },
+          "max_conv_count": {
+            "title": "Max Conv Count",
+            "type": "integer"
+          },
+          "total_ask_count": {
+            "title": "Total Ask Count",
+            "type": "integer"
+          },
+          "rate_limits": {
+            "title": "Rate Limits",
             "type": "array",
             "items": {
-              "title": "ChatModel",
+              "title": "TimeWindowRateLimit",
+              "required": [
+                "window_seconds",
+                "max_requests"
+              ],
+              "type": "object",
+              "properties": {
+                "window_seconds": {
+                  "title": "Window Seconds",
+                  "type": "integer",
+                  "description": "时间窗口大小，单位为秒"
+                },
+                "max_requests": {
+                  "title": "Max Requests",
+                  "type": "integer",
+                  "description": "在给定时间窗口内最多的请求次数"
+                }
+              }
+            }
+          },
+          "daily_available_time_slots": {
+            "title": "Daily Available Time Slots",
+            "type": "array",
+            "items": {
+              "title": "DailyTimeSlot",
+              "required": [
+                "start_time",
+                "end_time"
+              ],
+              "type": "object",
+              "properties": {
+                "start_time": {
+                  "title": "Start Time",
+                  "type": "string",
+                  "description": "每天可使用的开始时间",
+                  "format": "time"
+                },
+                "end_time": {
+                  "title": "End Time",
+                  "type": "string",
+                  "description": "每天可使用的结束时间",
+                  "format": "time"
+                }
+              }
+            }
+          },
+          "api_credits": {
+            "title": "Api Credits",
+            "type": "number"
+          },
+          "allow_custom_openai_api": {
+            "title": "Allow Custom Openai Api",
+            "type": "boolean"
+          },
+          "custom_openai_api_settings": {
+            "title": "CustomOpenaiApiSettings",
+            "type": "object",
+            "properties": {
+              "url": {
+                "title": "Url",
+                "type": "string"
+              },
+              "key": {
+                "title": "Key",
+                "type": "string"
+              }
+            }
+          },
+          "available_models": {
+            "type": "array",
+            "items": {
+              "title": "ApiChatModels",
               "enum": [
                 "gpt_3_5",
                 "gpt_4"
@@ -2716,251 +2805,25 @@
               "description": "An enumeration."
             }
           },
-          "api": {
-            "type": "array",
-            "items": {
-              "title": "ChatModel",
-              "enum": [
-                "gpt_3_5",
-                "gpt_4"
-              ],
-              "type": "string",
-              "description": "An enumeration."
-            }
-          }
-        }
-      },
-      "ask_count_limits": {
-        "title": "ChatTypeDict[AskLimitSetting]",
-        "required": [
-          "rev",
-          "api"
-        ],
-        "type": "object",
-        "properties": {
-          "rev": {
-            "title": "AskLimitSetting",
+          "per_model_ask_count": {
+            "title": "ApiPerModelAskCount",
             "required": [
-              "max_conv_count",
-              "total_ask_count",
-              "per_model_ask_count"
+              "gpt_3_5",
+              "gpt_4"
             ],
             "type": "object",
             "properties": {
-              "max_conv_count": {
-                "title": "Max Conv Count",
+              "gpt_3_5": {
+                "title": "Gpt 3 5",
                 "type": "integer"
               },
-              "total_ask_count": {
-                "title": "Total Ask Count",
+              "gpt_4": {
+                "title": "Gpt 4",
                 "type": "integer"
-              },
-              "per_model_ask_count": {
-                "title": "ChatModelDict[int]",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
-                "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "integer"
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "integer"
-                  }
-                }
-              }
-            }
-          },
-          "api": {
-            "title": "AskLimitSetting",
-            "required": [
-              "max_conv_count",
-              "total_ask_count",
-              "per_model_ask_count"
-            ],
-            "type": "object",
-            "properties": {
-              "max_conv_count": {
-                "title": "Max Conv Count",
-                "type": "integer"
-              },
-              "total_ask_count": {
-                "title": "Total Ask Count",
-                "type": "integer"
-              },
-              "per_model_ask_count": {
-                "title": "ChatModelDict[int]",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
-                "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "integer"
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "integer"
-                  }
-                }
               }
             }
           }
         }
-      },
-      "ask_time_limits": {
-        "title": "ChatTypeDict[AskTimeLimits]",
-        "required": [
-          "rev",
-          "api"
-        ],
-        "type": "object",
-        "properties": {
-          "rev": {
-            "title": "AskTimeLimits",
-            "required": [
-              "time_window_limits",
-              "available_time_range_in_day"
-            ],
-            "type": "object",
-            "properties": {
-              "time_window_limits": {
-                "title": "ChatModelDict[list[list[int]]]",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
-                "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "array",
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "type": "integer"
-                      }
-                    }
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "array",
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "type": "integer"
-                      }
-                    }
-                  }
-                }
-              },
-              "available_time_range_in_day": {
-                "title": "ChatModelDict[Union[list[int], NoneType]]",
-                "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "api": {
-            "title": "AskTimeLimits",
-            "required": [
-              "time_window_limits",
-              "available_time_range_in_day"
-            ],
-            "type": "object",
-            "properties": {
-              "time_window_limits": {
-                "title": "ChatModelDict[list[list[int]]]",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
-                "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "array",
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "type": "integer"
-                      }
-                    }
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "array",
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "type": "integer"
-                      }
-                    }
-                  }
-                }
-              },
-              "available_time_range_in_day": {
-                "title": "ChatModelDict[Union[list[int], NoneType]]",
-                "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "api_credits": {
-        "title": "Api Credits",
-        "type": "number",
-        "description": "Credits for OpenAI API, not support unlimited (-1)",
-        "default": 0
-      },
-      "allow_custom_openai_api": {
-        "title": "Allow Custom Openai Api",
-        "type": "boolean"
-      },
-      "custom_openai_api_url": {
-        "title": "Custom Openai Api Url",
-        "type": "string"
-      },
-      "custom_openai_api_key": {
-        "title": "Custom Openai Api Key",
-        "type": "string"
       }
     }
   },

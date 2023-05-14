@@ -198,6 +198,38 @@ export interface components {
        */
       update_time?: string;
     };
+    /** ApiPerModelAskCount */
+    ApiPerModelAskCount: {
+      /** Gpt 3 5 */
+      gpt_3_5: number;
+      /** Gpt 4 */
+      gpt_4: number;
+    };
+    /** ApiSourceSettingSchema */
+    ApiSourceSettingSchema: {
+      /** Allow To Use */
+      allow_to_use: boolean;
+      /**
+       * Valid Until 
+       * Format: date-time
+       */
+      valid_until?: string;
+      /** Max Conv Count */
+      max_conv_count: number;
+      /** Total Ask Count */
+      total_ask_count: number;
+      /** Rate Limits */
+      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      /** Daily Available Time Slots */
+      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
+      /** Api Credits */
+      api_credits: number;
+      /** Allow Custom Openai Api */
+      allow_custom_openai_api: boolean;
+      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
+      available_models: (components["schemas"]["ApiChatModels"])[];
+      per_model_ask_count: components["schemas"]["ApiPerModelAskCount"];
+    };
     /** AskRequest */
     AskRequest: {
       type: components["schemas"]["ChatSourceTypes"];
@@ -720,6 +752,40 @@ export interface components {
        */
       update_time?: string;
     };
+    /** RevPerModelAskCount */
+    RevPerModelAskCount: {
+      /** Gpt 3 5 */
+      gpt_3_5: number;
+      /** Gpt 4 */
+      gpt_4: number;
+      /** Gpt 4 Browsing */
+      gpt_4_browsing: number;
+    };
+    /** RevSourceSettingSchema */
+    RevSourceSettingSchema: {
+      /** Allow To Use */
+      allow_to_use: boolean;
+      /**
+       * Valid Until 
+       * Format: date-time
+       */
+      valid_until?: string;
+      /** Max Conv Count */
+      max_conv_count: number;
+      /** Total Ask Count */
+      total_ask_count: number;
+      /** Rate Limits */
+      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      /** Daily Available Time Slots */
+      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
+      /** Api Credits */
+      api_credits: number;
+      /** Allow Custom Openai Api */
+      allow_custom_openai_api: boolean;
+      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
+      available_models: (components["schemas"]["RevChatModels"])[];
+      per_model_ask_count: components["schemas"]["RevPerModelAskCount"];
+    };
     /** ServerStatusSchema */
     ServerStatusSchema: {
       /** Active User In 5M */
@@ -732,62 +798,6 @@ export interface components {
       is_chatbot_busy?: boolean;
       /** Chatbot Waiting Count */
       chatbot_waiting_count?: number;
-    };
-    /** SourceSettingSchema[ApiChatModels] */
-    SourceSettingSchema_ApiChatModels_: {
-      /** Allow To Use */
-      allow_to_use: boolean;
-      /**
-       * Valid Until 
-       * Format: date-time
-       */
-      valid_until?: string;
-      available_models: (components["schemas"]["ApiChatModels"])[];
-      /** Max Conv Count */
-      max_conv_count: number;
-      /** Total Ask Count */
-      total_ask_count: number;
-      /** Per Model Ask Count */
-      per_model_ask_count: {
-        [key: string]: number | undefined;
-      };
-      /** Rate Limits */
-      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
-      /** Daily Available Time Slots */
-      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      /** Api Credits */
-      api_credits: number;
-      /** Allow Custom Openai Api */
-      allow_custom_openai_api: boolean;
-      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
-    };
-    /** SourceSettingSchema[RevChatModels] */
-    SourceSettingSchema_RevChatModels_: {
-      /** Allow To Use */
-      allow_to_use: boolean;
-      /**
-       * Valid Until 
-       * Format: date-time
-       */
-      valid_until?: string;
-      available_models: (components["schemas"]["RevChatModels"])[];
-      /** Max Conv Count */
-      max_conv_count: number;
-      /** Total Ask Count */
-      total_ask_count: number;
-      /** Per Model Ask Count */
-      per_model_ask_count: {
-        [key: string]: number | undefined;
-      };
-      /** Rate Limits */
-      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
-      /** Daily Available Time Slots */
-      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      /** Api Credits */
-      api_credits: number;
-      /** Allow Custom Openai Api */
-      allow_custom_openai_api: boolean;
-      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
     };
     /** StatsSetting */
     StatsSetting: {
@@ -946,8 +956,8 @@ export interface components {
       id?: number;
       /** User Id */
       user_id?: number;
-      rev: components["schemas"]["SourceSettingSchema_RevChatModels_"];
-      api: components["schemas"]["SourceSettingSchema_ApiChatModels_"];
+      rev: components["schemas"]["RevSourceSettingSchema"];
+      api: components["schemas"]["ApiSourceSettingSchema"];
     };
     /** UserUpdate */
     UserUpdate: {

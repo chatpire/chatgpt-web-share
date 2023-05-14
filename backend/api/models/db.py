@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic, UTCDateTime
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels, ChatSourceTypes
-from api.schema import SourceSettingSchema, UserSettingSchema
+from api.schema import UserSettingSchema, RevSourceSettingSchema, ApiSourceSettingSchema
 
 
 # declarative base class
@@ -49,10 +49,8 @@ class UserSetting(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="用户id")
     user: Mapped[User] = relationship("User", back_populates="setting", lazy="joined")
 
-    rev: Mapped[SourceSettingSchema[RevChatModels]] = mapped_column(Pydantic(SourceSettingSchema[RevChatModels]),
-                                                                    comment="rev对话设置")
-    api: Mapped[SourceSettingSchema[ApiChatModels]] = mapped_column(Pydantic(SourceSettingSchema[ApiChatModels]),
-                                                                    comment="api对话设置")
+    rev: Mapped[RevSourceSettingSchema] = mapped_column(Pydantic(RevSourceSettingSchema), comment="rev对话设置")
+    api: Mapped[ApiSourceSettingSchema] = mapped_column(Pydantic(ApiSourceSettingSchema), comment="api对话设置")
 
 
 class BaseConversation(Base):

@@ -1,41 +1,45 @@
 <template>
-  <n-space vertical>
-    <vue-form
-      v-model="settingModel"
-      :ui-schema="uiSchema"
-      :schema="userSettingJsonSchema"
-      :form-props="{
-        labelPosition: gtsm() ? 'left' : 'top',
-        labelWidth: 'auto',
-      }"
-      :form-footer="{
-        show: false,
-      }"
-    />
-    <div>
-      <n-button type="primary" @click="handleSave">
-        {{ t('commons.save') }}
-      </n-button>
-    </div>
-  </n-space>
+  <n-tabs type="segment">
+    <n-tab-pane v-for="g in chatSourceSettingGroup" :key="g.type" :name="g.type" :tab="g.type">
+      <n-space vertical>
+        <vue-form
+          v-model="g.model.value"
+          :ui-schema="uiSchema"
+          :schema="g.schema"
+          :form-props="{
+            labelPosition: gtsm() ? 'left' : 'top',
+            labelWidth: 'auto',
+          }"
+          :form-footer="{
+            show: false,
+          }"
+        />
+        <div>
+          <n-button type="primary" @click="handleSave">
+            {{ t('commons.save') }}
+          </n-button>
+        </div>
+      </n-space>
+    </n-tab-pane>
+  </n-tabs>
 </template>
 
 <script setup lang="ts">
-import VueForm, { modelValueComponent } from '@lljj/vue3-form-naive';
-import { NDynamicTags } from 'naive-ui';
-import { computed, ref, watch } from 'vue';
+import VueForm from '@lljj/vue3-form-naive';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
-import { UserReadAdmin, UserSettingSchema } from '@/types/schema';
-import schemasJson from '@/types/schemas.json';
+import { jsonApiSourceSettingSchema, jsonRevSourceSettingSchema } from '@/types/json_schema';
+import { ApiSourceSettingSchema, RevSourceSettingSchema, UserReadAdmin, UserSettingSchema } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/screen';
-import { Dialog, Message } from '@/utils/tips';
 
 const gtsm = screenWidthGreaterThan('sm');
 
 const { t } = useI18n();
 const settingModel = ref<UserSettingSchema | null>(null);
+const revChatSourceSettingModel = ref<RevSourceSettingSchema | null>(null);
+const apiChatSourceSettingModel = ref<ApiSourceSettingSchema | null>(null);
+
 
 // 对于 enum array 需要设置 uniqueItems 才能渲染为复选框
 const setUniqueItemsForEnumProperties = (obj: any) => {
@@ -50,11 +54,13 @@ const setUniqueItemsForEnumProperties = (obj: any) => {
   }
 };
 
-const userSettingJsonSchema = computed(() => {
-  const result = schemasJson.UserSettingSchema;
-  setUniqueItemsForEnumProperties(result);
-  return result;
-});
+setUniqueItemsForEnumProperties(jsonRevSourceSettingSchema);
+setUniqueItemsForEnumProperties(jsonApiSourceSettingSchema);
+
+const chatSourceSettingGroup = [
+  {type: 'rev', model: revChatSourceSettingModel, schema: jsonRevSourceSettingSchema},
+  {type: 'api', model: apiChatSourceSettingModel, schema: jsonApiSourceSettingSchema}
+];
 
 // console.log(configJsonSchema, credentialsJsonSchema);
 const props = defineProps<{
@@ -72,137 +78,82 @@ watch(
       return;
     }
     settingModel.value = user.setting;
+    revChatSourceSettingModel.value = user.setting.rev;
+    apiChatSourceSettingModel.value = user.setting.api;
   },
   { immediate: true }
 );
 
-const DynamicTags = modelValueComponent(NDynamicTags, { model: 'value' });
 
 const uiSchema = {
   'ui:title': '',
-  id: {
-    'ui:hidden': true,
+  'allow_to_use': {
+    'ui:title': t('labels.allow_to_use')
   },
-  user_id: {
-    'ui:hidden': true,
+  'valid_until': {
+    'ui:title': t('labels.valid_until')
   },
-  allow_chat_type: {
-    'ui:title': t('labels.allow_chat_type'),
-    rev: {
-      'ui:title': t('labels.rev'),
-    },
-    api: {
-      'ui:title': t('labels.api'),
-    },
+  'available_models': {
+    'ui:title': t('labels.available_models')
   },
-  available_models: {
-    'ui:title': t('labels.available_models'),
-    rev: {
-      'ui:title': t('labels.rev'),
-      'uniqueItems': true
-    },
-    api: {
-      'ui:title': t('labels.api'),
-      'uniqueItems': true
-    },
+  'max_conv_count': {
+    'ui:title': t('labels.max_conv_count')
   },
-  ask_count_limits: {
-    'ui:title': t('labels.ask_count_limits'),
-    rev: {
-      'ui:title': t('labels.rev'),
-      max_conv_count: {
-        'ui:title': t('labels.max_conv_count'),
-      },
-      total_ask_count: {
-        'ui:title': t('labels.total_ask_count'),
-      },
-      per_model_ask_count: {
-        'ui:title': '',
-        gpt_3_5: {
-          'ui:title': t('models.gpt_3_5'),
-        },
-        gpt_4: {
-          'ui:title': t('models.gpt_4'),
-        },
-      },
-    },
-    api: {
-      'ui:title': t('labels.api'),
-      max_conv_count: {
-        'ui:title': t('labels.max_conv_count'),
-      },
-      total_ask_count: {
-        'ui:title': t('labels.total_ask_count'),
-      },
-      per_model_ask_count: {
-        'ui:title': '',
-        gpt_3_5: {
-          'ui:title': t('models.gpt_3_5'),
-        },
-        gpt_4: {
-          'ui:title': t('models.gpt_4'),
-        },
-      },
-    },
+  'total_ask_count': {
+    'ui:title': t('labels.total_ask_count')
   },
-  ask_time_limits: {  // TODO 暂不支持
-    'ui:title': t('labels.ask_time_limits'),
-    'ui:hidden': true,
-    rev: {
-      'ui:title': t('labels.rev'),
-      time_window_limits: {
-        'ui:title': t('labels.time_window_limits'),
-        gpt_3_5: {
-          'ui:title': t('models.gpt_3_5'),
-        },
-        gpt_4: {
-          'ui:title': t('models.gpt_4'),
-        },
-      },
-      available_time_range_in_day: {
-        'ui:title': t('labels.available_time_range_in_day'),
-        gpt_3_5: {
-          'ui:title': t('models.gpt_3_5'),
-        },
-        gpt_4: {
-          'ui:title': t('models.gpt_4'),
-        },
-      },
-    },
-    api: {
-      'ui:title': t('labels.api'),
-      time_window_limits: {
-        'ui:title': t('labels.time_window_limits'),
-        gpt_3_5: {
-          'ui:title': t('models.gpt_3_5'),
-        },
-        gpt_4: {
-          'ui:title': t('models.gpt_4'),
-        },
-      },
-      available_time_range_in_day: {
-        'ui:title': t('labels.available_time_range_in_day'),
-        gpt_3_5: {
-          'ui:title': t('models.gpt_3_5'),
-        },
-        gpt_4: {
-          'ui:title': t('models.gpt_4'),
-        },
-      },
-    },
+  'per_model_ask_count': {
+    'ui:title': t('labels.per_model_ask_count')
   },
-  api_credits: {
+  'rate_limits': {
+    'ui:title': t('labels.rate_limits'),
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'properties': {
+        'window_seconds': {
+          'type': 'integer',
+        },
+        'max_requests': {
+          'type': 'integer',
+        }
+      }
+    }
+  },
+  'daily_available_time_slots': {
+    'ui:title': t('labels.daily_available_time_slots'),
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'properties': {
+        'start_time': {
+          'type': 'string',
+          'format': 'time'
+        },
+        'end_time': {
+          'type': 'string',
+          'format': 'time'
+        }
+      }
+    }
+  },
+  'api_credits': {
     'ui:title': t('labels.api_credits'),
   },
-  allow_custom_openai_api: {
+  'allow_custom_openai_api': {
     'ui:title': t('labels.allow_custom_openai_api'),
   },
-  custom_openai_api_url: {
-    'ui:title': t('labels.custom_openai_api_url'),
-  },
-  custom_openai_api_key: {
-    'ui:title': t('labels.custom_openai_api_key'),
-  },
+  'custom_openai_api_settings': {
+    'ui:title': t('labels.custom_openai_api_settings'),
+    // 'properties': {
+    //   'url': {
+    //     'type': 'string'
+    //   },
+    //   'key': {
+    //     'type': 'string'
+    //   }
+    // }
+  }
 };
 
 const handleSave = () => {

@@ -5,4 +5,7 @@ cd ../backend;
 python manage.py get_config_schema > ../frontend/src/types/json/config_schema.json;
 python manage.py get_credentials_schema > ../frontend/src/types/json/credentials_schema.json;
 python manage.py get_model_definitions > ../frontend/src/types/json/model_definitions.json;
+
+cd ../frontend
+node scripts/dereference_openapi.js
 echo "Updated API schemas."

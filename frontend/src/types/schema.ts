@@ -5,10 +5,16 @@ export type UserReadAdmin = components['schemas']['UserReadAdmin'];
 export type UserCreate = components['schemas']['UserCreate'];
 export type UserUpdate = components['schemas']['UserUpdate'];
 export type UserUpdateAdmin = components['schemas']['UserUpdateAdmin'];
+
 export type UserSettingSchema = components['schemas']['UserSettingSchema'];
+export type RevSourceSettingSchema = components['schemas']['SourceSettingSchema_RevChatModels_'];
+export type ApiSourceSettingSchema = components['schemas']['SourceSettingSchema_ApiChatModels_'];
+
 export type ServerStatusSchema = components['schemas']['ServerStatusSchema'];
 export type RevChatStatus = components['schemas']['RevChatStatus'];
-export type ChatModel = components['schemas']['ChatModel'];
+
+export type RevChatModels = components['schemas']['RevChatModels'];
+export type ApiChatModels = components['schemas']['ApiChatModels'];
 
 export type ChatMessage = components['schemas']['ChatMessage'];
 export type BaseConversationSchema = components['schemas']['BaseConversationSchema'];

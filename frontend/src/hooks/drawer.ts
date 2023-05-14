@@ -13,7 +13,7 @@ export function useDrawer(options: UseDrawerOption[]) {
   const name = ref('');
   const _options = options;
 
-  console.log('useDrawer', options);
+  // console.log('useDrawer', options);
 
   function open(_name: string, row: any) {
     const opt = _options.find((option) => option.name === _name);

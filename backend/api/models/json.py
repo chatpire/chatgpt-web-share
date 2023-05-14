@@ -1,7 +1,39 @@
 import datetime
-from typing import Optional
+from typing import Optional, Generic, TypeVar, get_args
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, create_model
+from pydantic.generics import GenericModel
+
+from api.enums import RevChatModels, ApiChatModels
+
+ModelT = TypeVar('ModelT', bound=RevChatModels | ApiChatModels)
+
+
+class RevPerModelAskCount(BaseModel):
+    gpt_3_5: int
+    gpt_4: int
+    gpt_4_browsing: int
+
+    @staticmethod
+    def default():
+        return RevPerModelAskCount(gpt_3_5=0, gpt_4=0, gpt_4_browsing=0)
+
+    @staticmethod
+    def unlimited():
+        return RevPerModelAskCount(gpt_3_5=-1, gpt_4=-1, gpt_4_browsing=-1)
+
+
+class ApiPerModelAskCount(BaseModel):
+    gpt_3_5: int
+    gpt_4: int
+
+    @staticmethod
+    def default():
+        return ApiPerModelAskCount(gpt_3_5=0, gpt_4=0)
+
+    @staticmethod
+    def unlimited():
+        return ApiPerModelAskCount(gpt_3_5=-1, gpt_4=-1)
 
 
 class TimeWindowRateLimit(BaseModel):

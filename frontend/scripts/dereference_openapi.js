@@ -5,8 +5,8 @@ import path from 'path';
 const currentModulePath = new URL(import.meta.url).pathname;
 const currentDirectory = path.dirname(currentModulePath);
 
-const sourceFilePath = path.join(currentDirectory, '../src/types/openapi.json');
-const targetFilePath = path.join(currentDirectory, '../src/types/schemas.json');
+const sourceFilePath = path.join(currentDirectory, '../src/types/json/openapi.json');
+const targetFilePath = path.join(currentDirectory, '../src/types/json/schemas.json');
 
 dereference(sourceFilePath)
   .then((dereferencedSchema) => {

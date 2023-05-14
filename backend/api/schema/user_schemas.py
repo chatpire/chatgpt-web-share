@@ -6,18 +6,17 @@ from pydantic import BaseModel, EmailStr
 from pydantic.generics import GenericModel
 
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels
-from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot
+from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot, \
+    RevPerModelAskCount, ApiPerModelAskCount
 
 ModelT = TypeVar('ModelT', bound=RevChatModels | ApiChatModels)
 
 
-class SourceSettingSchema(GenericModel, Generic[ModelT]):
+class BaseSourceSettingSchema(BaseModel):
     allow_to_use: bool
     valid_until: Optional[datetime.datetime]  # None 表示永久有效
-    available_models: list[ModelT]
     max_conv_count: int
     total_ask_count: int
-    per_model_ask_count: dict[ModelT, int]  # 除非明确指定-1（无限制），不存在的模型默认为0
     rate_limits: list[TimeWindowRateLimit]
     daily_available_time_slots: list[DailyTimeSlot]
     api_credits: float
@@ -25,14 +24,12 @@ class SourceSettingSchema(GenericModel, Generic[ModelT]):
     custom_openai_api_settings: CustomOpenaiApiSettings
 
     @staticmethod
-    def default(model_cls: Type[ModelT]):  # TODO: 从配置文件读取
-        return SourceSettingSchema(
+    def default():  # TODO: 从配置文件读取
+        return BaseSourceSettingSchema(
             allow_to_use=True,
             valid_until=None,
-            available_models=list(model_cls),
             max_conv_count=10,
             total_ask_count=0,
-            per_model_ask_count={model: 0 for model in model_cls},
             rate_limits=[],
             daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),
                                                       end_time=datetime.time(23, 59, 59))],
@@ -42,14 +39,12 @@ class SourceSettingSchema(GenericModel, Generic[ModelT]):
         )
 
     @staticmethod
-    def unlimited(model_cls: Type[ModelT]):
-        return SourceSettingSchema(
+    def unlimited():
+        return BaseSourceSettingSchema(
             allow_to_use=True,
             valid_until=None,
-            available_models=list(model_cls),
             max_conv_count=-1,
             total_ask_count=-1,
-            per_model_ask_count={model: -1 for model in model_cls},
             rate_limits=[],
             daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),
                                                       end_time=datetime.time(23, 59, 59))],
@@ -58,30 +53,74 @@ class SourceSettingSchema(GenericModel, Generic[ModelT]):
             custom_openai_api_settings=CustomOpenaiApiSettings(url=None, key=None)
         )
 
+
+class RevSourceSettingSchema(BaseSourceSettingSchema):
+    available_models: list[RevChatModels]
+    per_model_ask_count: RevPerModelAskCount
+
+    @staticmethod
+    def default():
+        return RevSourceSettingSchema(
+            available_models=[RevChatModels(m) for m in RevChatModels],
+            per_model_ask_count=RevPerModelAskCount.default(),
+            **BaseSourceSettingSchema.default().dict()
+        )
+
+    @staticmethod
+    def unlimited():
+        return RevSourceSettingSchema(
+            available_models=[RevChatModels(m) for m in RevChatModels],
+            per_model_ask_count=RevPerModelAskCount.unlimited(),
+            **BaseSourceSettingSchema.unlimited().dict()
+        )
+
     class Config:
         orm_mode = True
-        # getter_dict = UserSettingGetterDict
+
+
+class ApiSourceSettingSchema(BaseSourceSettingSchema):
+    available_models: list[ApiChatModels]
+    per_model_ask_count: ApiPerModelAskCount
+
+    @staticmethod
+    def default():
+        return ApiSourceSettingSchema(
+            available_models=[ApiChatModels(m) for m in ApiChatModels],
+            per_model_ask_count=ApiPerModelAskCount.default(),
+            **BaseSourceSettingSchema.default().dict()
+        )
+
+    @staticmethod
+    def unlimited():
+        return ApiSourceSettingSchema(
+            available_models=[ApiChatModels(m) for m in ApiChatModels],
+            per_model_ask_count=ApiPerModelAskCount.unlimited(),
+            **BaseSourceSettingSchema.unlimited().dict()
+        )
+
+    class Config:
+        orm_mode = True
 
 
 class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
 
-    rev: SourceSettingSchema[RevChatModels]
-    api: SourceSettingSchema[ApiChatModels]
+    rev: RevSourceSettingSchema
+    api: ApiSourceSettingSchema
 
     @staticmethod
     def default():
         return UserSettingSchema(
-            rev=SourceSettingSchema.default(RevChatModels),
-            api=SourceSettingSchema.default(ApiChatModels)
+            rev=RevSourceSettingSchema.default(),
+            api=ApiSourceSettingSchema.default()
         )
 
     @staticmethod
     def unlimited():
         return UserSettingSchema(
-            rev=SourceSettingSchema.unlimited(RevChatModels),
-            api=SourceSettingSchema.unlimited(ApiChatModels)
+            rev=RevSourceSettingSchema.unlimited(),
+            api=ApiSourceSettingSchema.unlimited()
         )
 
     class Config:

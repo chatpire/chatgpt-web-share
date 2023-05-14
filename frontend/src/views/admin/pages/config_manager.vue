@@ -6,7 +6,7 @@
           <vue-form
             v-model="configModel"
             :ui-schema="configUiSchema"
-            :schema="configJsonSchema"
+            :schema="jsonConfigModelSchema"
             :form-props="{
               labelPosition: gtsm() ? 'left' : 'top',
               labelWidth: 'auto',
@@ -34,7 +34,7 @@
           <vue-form
             v-model="credentialsModel"
             :ui-schema="credentialsUiSchema"
-            :schema="credentialsJsonSchema"
+            :schema="jsonCredentialsModelSchema"
             :form-props="{
               labelPosition: 'left',
               labelWidth: 'auto',
@@ -66,10 +66,9 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
-import configJsonSchema from '@/types/config_schema.json';
-import credentialsJsonSchema from '@/types/credentials_schema.json';
+import { jsonConfigModelSchema, jsonCredentialsModelSchema } from '@/types/json_schema';
 import { ConfigModel, CredentialsModel } from '@/types/schema';
-import {screenWidthGreaterThan} from '@/utils/screen';
+import { screenWidthGreaterThan } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
 const { t } = useI18n();
