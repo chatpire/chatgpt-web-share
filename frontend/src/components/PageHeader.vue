@@ -75,7 +75,7 @@ const appStore = useAppStore();
 const route = useRoute();
 const version = 'v' + import.meta.env.PACKAGE_VERSION;
 
-console.log(route);
+// console.log(route);
 
 const isInAdmin = computed(() => {
   return route.path.startsWith('/admin');

@@ -162,7 +162,7 @@ const columns: DataTableColumns<BaseConversationSchema> = [
         NTooltip,
         { trigger: 'hover' },
         {
-          trigger: () => new Date(row.create_time! + 'Z').toLocaleString(),
+          trigger: () => new Date(row.create_time!).toLocaleString(),
           default: () => row.create_time,
         }
       );

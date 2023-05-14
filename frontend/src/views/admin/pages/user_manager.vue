@@ -94,7 +94,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
     title: t('commons.activeTime'),
     key: 'last_active_time',
     render(row) {
-      return row.last_active_time ? new Date(row.last_active_time + 'Z').toLocaleString() : t('commons.neverActive');
+      return row.last_active_time ? new Date(row.last_active_time).toLocaleString() : t('commons.neverActive');
     },
     sorter: (a, b) => {
       if (!a.last_active_time || !b.last_active_time) return 0;

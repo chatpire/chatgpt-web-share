@@ -10,7 +10,9 @@ from api.enums import ChatSourceTypes, RevChatModels, ApiChatModels
 from api.models.doc import ChatMessage
 
 
-def _validate_model(_type: ChatSourceTypes, model: str):
+def _validate_model(_type: ChatSourceTypes, model: str | None):
+    if model is None:
+        return None
     if _type == ChatSourceTypes.rev and model in list(RevChatModels):
         return RevChatModels(model)
     elif _type == ChatSourceTypes.api and model in list(ApiChatModels):
