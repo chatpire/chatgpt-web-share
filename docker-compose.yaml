@@ -21,17 +21,8 @@ services:
   go-chatgpt-api:
     container_name: go-chatgpt-api
     image: linweiyuan/go-chatgpt-api
-    # ports:
-      # - 8080:8080 # 如果你需要暴露端口如一带多，可以取消注释
+    ports:
+      - 8080:8080
     environment:
-      - GIN_MODE=release
-      - CHATGPT_PROXY_SERVER=http://chatgpt-proxy-server:9515
-#      - NETWORK_PROXY_SERVER=http://host:port
-    depends_on:
-      - chatgpt-proxy-server
-    restart: unless-stopped
-
-  chatgpt-proxy-server:
-    container_name: chatgpt-proxy-server
-    image: linweiyuan/chatgpt-proxy-server
+      - GO_CHATGPT_API_PROXY=
     restart: unless-stopped
