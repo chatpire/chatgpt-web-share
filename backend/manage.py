@@ -1,3 +1,4 @@
+import json
 import sys
 
 
@@ -15,10 +16,20 @@ def get_credentials_schema(args):
     print(CredentialsModel.schema_json(indent=2))
 
 
+def get_model_definitions(args):
+    from api.enums.models import RevChatModels, ApiChatModels
+    result = {
+        "rev": [model.__str__() for model in RevChatModels],
+        "api": [model.__str__() for model in ApiChatModels]
+    }
+    print(json.dumps(result))
+
+
 commands = {
     "init_config": init_config,
     "get_config_schema": get_config_schema,
     "get_credentials_schema": get_credentials_schema,
+    "get_model_definitions": get_model_definitions
 }
 
 if __name__ == "__main__":

@@ -152,6 +152,12 @@ export interface components {
       /** Finish Reason */
       finish_reason?: string;
     };
+    /**
+     * ApiChatModels 
+     * @description An enumeration. 
+     * @enum {string}
+     */
+    ApiChatModels: "gpt_3_5" | "gpt_4";
     /** ApiConversationSchema */
     ApiConversationSchema: {
       /**
@@ -179,7 +185,8 @@ export interface components {
        * @default true
        */
       is_valid?: boolean;
-      current_model?: components["schemas"]["ChatModel"];
+      /** Current Model */
+      current_model?: string;
       /**
        * Create Time 
        * Format: date-time
@@ -191,18 +198,11 @@ export interface components {
        */
       update_time?: string;
     };
-    /** AskLimitSetting */
-    AskLimitSetting: {
-      /** Max Conv Count */
-      max_conv_count: number;
-      /** Total Ask Count */
-      total_ask_count: number;
-      /** per_model_ask_count */
-      per_model_ask_count: components["schemas"]["ChatModelDict_int_"];
-    };
     /** AskRequest */
     AskRequest: {
       type: components["schemas"]["ChatSourceTypes"];
+      /** Model */
+      model: string;
       /** New Conversation */
       new_conversation: boolean;
       /** New Title */
@@ -217,7 +217,6 @@ export interface components {
        * Format: uuid
        */
       parent?: string;
-      model: components["schemas"]["ChatModel"];
       /**
        * Api Context Message Count 
        * @default -1
@@ -246,13 +245,6 @@ export interface components {
      * @enum {string}
      */
     AskResponseType: "waiting" | "queueing" | "message" | "error";
-    /** AskTimeLimits */
-    AskTimeLimits: {
-      /** time_window_limits */
-      time_window_limits: components["schemas"]["ChatModelDict_list_list_int___"];
-      /** available_time_range_in_day */
-      available_time_range_in_day: components["schemas"]["ChatModelDict_Union_list_int___NoneType__"];
-    };
     /** AuthSetting */
     AuthSetting: {
       /**
@@ -303,7 +295,8 @@ export interface components {
        * @default true
        */
       is_valid?: boolean;
-      current_model?: components["schemas"]["ChatModel"];
+      /** Current Model */
+      current_model?: string;
       /**
        * Create Time 
        * Format: date-time
@@ -343,7 +336,7 @@ export interface components {
       /** Role */
       role: string;
       /** Model */
-      model?: components["schemas"]["ChatModel"] | string;
+      model?: string;
       /**
        * Create Time 
        * Format: date-time
@@ -362,60 +355,11 @@ export interface components {
       api_metadata?: components["schemas"]["ApiChatMessageMetadata"];
     };
     /**
-     * ChatModel 
-     * @description An enumeration. 
-     * @enum {string}
-     */
-    ChatModel: "gpt_3_5" | "gpt_4";
-    /** ChatModelDict[Union[list[int], NoneType]] */
-    ChatModelDict_Union_list_int___NoneType__: {
-      /** Gpt 3 5 */
-      gpt_3_5?: (number)[];
-      /** Gpt 4 */
-      gpt_4?: (number)[];
-    };
-    /** ChatModelDict[int] */
-    ChatModelDict_int_: {
-      /** Gpt 3 5 */
-      gpt_3_5: number;
-      /** Gpt 4 */
-      gpt_4: number;
-    };
-    /** ChatModelDict[list[list[int]]] */
-    ChatModelDict_list_list_int___: {
-      /** Gpt 3 5 */
-      gpt_3_5: ((number)[])[];
-      /** Gpt 4 */
-      gpt_4: ((number)[])[];
-    };
-    /**
      * ChatSourceTypes 
      * @description An enumeration. 
      * @enum {string}
      */
     ChatSourceTypes: "rev" | "api";
-    /** ChatTypeDict[AskLimitSetting] */
-    ChatTypeDict_AskLimitSetting_: {
-      rev: components["schemas"]["AskLimitSetting"];
-      api: components["schemas"]["AskLimitSetting"];
-    };
-    /** ChatTypeDict[AskTimeLimits] */
-    ChatTypeDict_AskTimeLimits_: {
-      rev: components["schemas"]["AskTimeLimits"];
-      api: components["schemas"]["AskTimeLimits"];
-    };
-    /** ChatTypeDict[bool] */
-    ChatTypeDict_bool_: {
-      /** Rev */
-      rev: boolean;
-      /** Api */
-      api: boolean;
-    };
-    /** ChatTypeDict[list[api.enums.ChatModel]] */
-    "ChatTypeDict_list_api.enums.ChatModel__": {
-      rev: (components["schemas"]["ChatModel"])[];
-      api: (components["schemas"]["ChatModel"])[];
-    };
     /** CommonSetting */
     CommonSetting: {
       /**
@@ -578,7 +522,7 @@ export interface components {
        */
       current_node: string;
       /** Current Model */
-      current_model?: components["schemas"]["ChatModel"] | string;
+      current_model?: string;
     };
     /** CredentialsModel */
     CredentialsModel: {
@@ -586,6 +530,28 @@ export interface components {
       chatgpt_access_token?: string;
       /** Openai Api Key */
       openai_api_key?: string;
+    };
+    /** CustomOpenaiApiSettings */
+    CustomOpenaiApiSettings: {
+      /** Url */
+      url?: string;
+      /** Key */
+      key?: string;
+    };
+    /** DailyTimeSlot */
+    DailyTimeSlot: {
+      /**
+       * Start Time 
+       * Format: time 
+       * @description 每天可使用的开始时间
+       */
+      start_time: string;
+      /**
+       * End Time 
+       * Format: time 
+       * @description 每天可使用的结束时间
+       */
+      end_time: string;
     };
     /** DataSetting */
     DataSetting: {
@@ -703,6 +669,12 @@ export interface components {
       end_turn?: boolean;
     };
     /**
+     * RevChatModels 
+     * @description An enumeration. 
+     * @enum {string}
+     */
+    RevChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_browsing";
+    /**
      * RevChatStatus 
      * @description An enumeration. 
      * @enum {string}
@@ -735,7 +707,8 @@ export interface components {
        * @default true
        */
       is_valid?: boolean;
-      current_model?: components["schemas"]["ChatModel"];
+      /** Current Model */
+      current_model?: string;
       /**
        * Create Time 
        * Format: date-time
@@ -759,6 +732,62 @@ export interface components {
       is_chatbot_busy?: boolean;
       /** Chatbot Waiting Count */
       chatbot_waiting_count?: number;
+    };
+    /** SourceSettingSchema[ApiChatModels] */
+    SourceSettingSchema_ApiChatModels_: {
+      /** Allow To Use */
+      allow_to_use: boolean;
+      /**
+       * Valid Until 
+       * Format: date-time
+       */
+      valid_until?: string;
+      available_models: (components["schemas"]["ApiChatModels"])[];
+      /** Max Conv Count */
+      max_conv_count: number;
+      /** Total Ask Count */
+      total_ask_count: number;
+      /** Per Model Ask Count */
+      per_model_ask_count: {
+        [key: string]: number | undefined;
+      };
+      /** Rate Limits */
+      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      /** Daily Available Time Slots */
+      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
+      /** Api Credits */
+      api_credits: number;
+      /** Allow Custom Openai Api */
+      allow_custom_openai_api: boolean;
+      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
+    };
+    /** SourceSettingSchema[RevChatModels] */
+    SourceSettingSchema_RevChatModels_: {
+      /** Allow To Use */
+      allow_to_use: boolean;
+      /**
+       * Valid Until 
+       * Format: date-time
+       */
+      valid_until?: string;
+      available_models: (components["schemas"]["RevChatModels"])[];
+      /** Max Conv Count */
+      max_conv_count: number;
+      /** Total Ask Count */
+      total_ask_count: number;
+      /** Per Model Ask Count */
+      per_model_ask_count: {
+        [key: string]: number | undefined;
+      };
+      /** Rate Limits */
+      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      /** Daily Available Time Slots */
+      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
+      /** Api Credits */
+      api_credits: number;
+      /** Allow Custom Openai Api */
+      allow_custom_openai_api: boolean;
+      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
     };
     /** StatsSetting */
     StatsSetting: {
@@ -788,6 +817,19 @@ export interface components {
       total_conversation_count: number;
       /** Valid Conversation Count */
       valid_conversation_count: number;
+    };
+    /** TimeWindowRateLimit */
+    TimeWindowRateLimit: {
+      /**
+       * Window Seconds 
+       * @description 时间窗口大小，单位为秒
+       */
+      window_seconds: number;
+      /**
+       * Max Requests 
+       * @description 在给定时间窗口内最多的请求次数
+       */
+      max_requests: number;
     };
     /** UserCreate */
     UserCreate: {
@@ -904,26 +946,8 @@ export interface components {
       id?: number;
       /** User Id */
       user_id?: number;
-      /** allow_chat_type */
-      allow_chat_type: components["schemas"]["ChatTypeDict_bool_"];
-      /** available_models */
-      available_models: components["schemas"]["ChatTypeDict_list_api.enums.ChatModel__"];
-      /** ask_count_limits */
-      ask_count_limits: components["schemas"]["ChatTypeDict_AskLimitSetting_"];
-      /** ask_time_limits */
-      ask_time_limits: components["schemas"]["ChatTypeDict_AskTimeLimits_"];
-      /**
-       * Api Credits 
-       * @description Credits for OpenAI API, not support unlimited (-1) 
-       * @default 0
-       */
-      api_credits?: number;
-      /** Allow Custom Openai Api */
-      allow_custom_openai_api: boolean;
-      /** Custom Openai Api Url */
-      custom_openai_api_url?: string;
-      /** Custom Openai Api Key */
-      custom_openai_api_key?: string;
+      rev: components["schemas"]["SourceSettingSchema_RevChatModels_"];
+      api: components["schemas"]["SourceSettingSchema_ApiChatModels_"];
     };
     /** UserUpdate */
     UserUpdate: {
