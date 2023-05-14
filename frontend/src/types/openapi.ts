@@ -222,13 +222,11 @@ export interface components {
       rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
       /** Daily Available Time Slots */
       daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      /** Api Credits */
-      api_credits: number;
+      available_models: (components["schemas"]["ApiChatModels"])[];
+      per_model_ask_count: components["schemas"]["ApiPerModelAskCount"];
       /** Allow Custom Openai Api */
       allow_custom_openai_api: boolean;
       custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
-      available_models: (components["schemas"]["ApiChatModels"])[];
-      per_model_ask_count: components["schemas"]["ApiPerModelAskCount"];
     };
     /** AskRequest */
     AskRequest: {
@@ -778,11 +776,6 @@ export interface components {
       rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
       /** Daily Available Time Slots */
       daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      /** Api Credits */
-      api_credits: number;
-      /** Allow Custom Openai Api */
-      allow_custom_openai_api: boolean;
-      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
       available_models: (components["schemas"]["RevChatModels"])[];
       per_model_ask_count: components["schemas"]["RevPerModelAskCount"];
     };
@@ -956,6 +949,8 @@ export interface components {
       id?: number;
       /** User Id */
       user_id?: number;
+      /** Credits */
+      credits: number;
       rev: components["schemas"]["RevSourceSettingSchema"];
       api: components["schemas"]["ApiSourceSettingSchema"];
     };

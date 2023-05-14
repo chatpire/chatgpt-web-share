@@ -19,9 +19,6 @@ class BaseSourceSettingSchema(BaseModel):
     total_ask_count: int
     rate_limits: list[TimeWindowRateLimit]
     daily_available_time_slots: list[DailyTimeSlot]
-    api_credits: float
-    allow_custom_openai_api: bool
-    custom_openai_api_settings: CustomOpenaiApiSettings
 
     @staticmethod
     def default():  # TODO: 从配置文件读取
@@ -32,10 +29,7 @@ class BaseSourceSettingSchema(BaseModel):
             total_ask_count=0,
             rate_limits=[],
             daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),
-                                                      end_time=datetime.time(23, 59, 59))],
-            api_credits=0,
-            allow_custom_openai_api=False,
-            custom_openai_api_settings=CustomOpenaiApiSettings(url=None, key=None)
+                                                      end_time=datetime.time(23, 59, 59))]
         )
 
     @staticmethod
@@ -47,10 +41,7 @@ class BaseSourceSettingSchema(BaseModel):
             total_ask_count=-1,
             rate_limits=[],
             daily_available_time_slots=[DailyTimeSlot(start_time=datetime.time(0, 0, 0),
-                                                      end_time=datetime.time(23, 59, 59))],
-            api_credits=-1,
-            allow_custom_openai_api=False,
-            custom_openai_api_settings=CustomOpenaiApiSettings(url=None, key=None)
+                                                      end_time=datetime.time(23, 59, 59))]
         )
 
 
@@ -81,13 +72,17 @@ class RevSourceSettingSchema(BaseSourceSettingSchema):
 class ApiSourceSettingSchema(BaseSourceSettingSchema):
     available_models: list[ApiChatModels]
     per_model_ask_count: ApiPerModelAskCount
+    allow_custom_openai_api: bool
+    custom_openai_api_settings: CustomOpenaiApiSettings
 
     @staticmethod
     def default():
         return ApiSourceSettingSchema(
             available_models=[ApiChatModels(m) for m in ApiChatModels],
             per_model_ask_count=ApiPerModelAskCount.default(),
-            **BaseSourceSettingSchema.default().dict()
+            **BaseSourceSettingSchema.default().dict(),
+            allow_custom_openai_api=False,
+            custom_openai_api_settings=CustomOpenaiApiSettings()
         )
 
     @staticmethod
@@ -95,7 +90,9 @@ class ApiSourceSettingSchema(BaseSourceSettingSchema):
         return ApiSourceSettingSchema(
             available_models=[ApiChatModels(m) for m in ApiChatModels],
             per_model_ask_count=ApiPerModelAskCount.unlimited(),
-            **BaseSourceSettingSchema.unlimited().dict()
+            **BaseSourceSettingSchema.unlimited().dict(),
+            allow_custom_openai_api=True,
+            custom_openai_api_settings=CustomOpenaiApiSettings()
         )
 
     class Config:
@@ -105,13 +102,14 @@ class ApiSourceSettingSchema(BaseSourceSettingSchema):
 class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
-
+    credits: float
     rev: RevSourceSettingSchema
     api: ApiSourceSettingSchema
 
     @staticmethod
     def default():
         return UserSettingSchema(
+            credits=0,
             rev=RevSourceSettingSchema.default(),
             api=ApiSourceSettingSchema.default()
         )
@@ -119,6 +117,7 @@ class UserSettingSchema(BaseModel):
     @staticmethod
     def unlimited():
         return UserSettingSchema(
+            credits=-1,
             rev=RevSourceSettingSchema.unlimited(),
             api=ApiSourceSettingSchema.unlimited()
         )

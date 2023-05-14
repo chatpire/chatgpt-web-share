@@ -126,11 +126,10 @@
       "total_ask_count",
       "rate_limits",
       "daily_available_time_slots",
-      "api_credits",
-      "allow_custom_openai_api",
-      "custom_openai_api_settings",
       "available_models",
-      "per_model_ask_count"
+      "per_model_ask_count",
+      "allow_custom_openai_api",
+      "custom_openai_api_settings"
     ],
     "type": "object",
     "properties": {
@@ -201,28 +200,6 @@
           }
         }
       },
-      "api_credits": {
-        "title": "Api Credits",
-        "type": "number"
-      },
-      "allow_custom_openai_api": {
-        "title": "Allow Custom Openai Api",
-        "type": "boolean"
-      },
-      "custom_openai_api_settings": {
-        "title": "CustomOpenaiApiSettings",
-        "type": "object",
-        "properties": {
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "key": {
-            "title": "Key",
-            "type": "string"
-          }
-        }
-      },
       "available_models": {
         "type": "array",
         "items": {
@@ -250,6 +227,24 @@
           "gpt_4": {
             "title": "Gpt 4",
             "type": "integer"
+          }
+        }
+      },
+      "allow_custom_openai_api": {
+        "title": "Allow Custom Openai Api",
+        "type": "boolean"
+      },
+      "custom_openai_api_settings": {
+        "title": "CustomOpenaiApiSettings",
+        "type": "object",
+        "properties": {
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
           }
         }
       }
@@ -1503,9 +1498,6 @@
       "total_ask_count",
       "rate_limits",
       "daily_available_time_slots",
-      "api_credits",
-      "allow_custom_openai_api",
-      "custom_openai_api_settings",
       "available_models",
       "per_model_ask_count"
     ],
@@ -1575,28 +1567,6 @@
               "description": "每天可使用的结束时间",
               "format": "time"
             }
-          }
-        }
-      },
-      "api_credits": {
-        "title": "Api Credits",
-        "type": "number"
-      },
-      "allow_custom_openai_api": {
-        "title": "Allow Custom Openai Api",
-        "type": "boolean"
-      },
-      "custom_openai_api_settings": {
-        "title": "CustomOpenaiApiSettings",
-        "type": "object",
-        "properties": {
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "key": {
-            "title": "Key",
-            "type": "string"
           }
         }
       },
@@ -1857,6 +1827,7 @@
       "setting": {
         "title": "UserSettingSchema",
         "required": [
+          "credits",
           "rev",
           "api"
         ],
@@ -1870,6 +1841,10 @@
             "title": "User Id",
             "type": "integer"
           },
+          "credits": {
+            "title": "Credits",
+            "type": "number"
+          },
           "rev": {
             "title": "RevSourceSettingSchema",
             "required": [
@@ -1878,9 +1853,6 @@
               "total_ask_count",
               "rate_limits",
               "daily_available_time_slots",
-              "api_credits",
-              "allow_custom_openai_api",
-              "custom_openai_api_settings",
               "available_models",
               "per_model_ask_count"
             ],
@@ -1950,28 +1922,6 @@
                       "description": "每天可使用的结束时间",
                       "format": "time"
                     }
-                  }
-                }
-              },
-              "api_credits": {
-                "title": "Api Credits",
-                "type": "number"
-              },
-              "allow_custom_openai_api": {
-                "title": "Allow Custom Openai Api",
-                "type": "boolean"
-              },
-              "custom_openai_api_settings": {
-                "title": "CustomOpenaiApiSettings",
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "title": "Url",
-                    "type": "string"
-                  },
-                  "key": {
-                    "title": "Key",
-                    "type": "string"
                   }
                 }
               },
@@ -2021,11 +1971,10 @@
               "total_ask_count",
               "rate_limits",
               "daily_available_time_slots",
-              "api_credits",
-              "allow_custom_openai_api",
-              "custom_openai_api_settings",
               "available_models",
-              "per_model_ask_count"
+              "per_model_ask_count",
+              "allow_custom_openai_api",
+              "custom_openai_api_settings"
             ],
             "type": "object",
             "properties": {
@@ -2096,28 +2045,6 @@
                   }
                 }
               },
-              "api_credits": {
-                "title": "Api Credits",
-                "type": "number"
-              },
-              "allow_custom_openai_api": {
-                "title": "Allow Custom Openai Api",
-                "type": "boolean"
-              },
-              "custom_openai_api_settings": {
-                "title": "CustomOpenaiApiSettings",
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "title": "Url",
-                    "type": "string"
-                  },
-                  "key": {
-                    "title": "Key",
-                    "type": "string"
-                  }
-                }
-              },
               "available_models": {
                 "type": "array",
                 "items": {
@@ -2145,6 +2072,24 @@
                   "gpt_4": {
                     "title": "Gpt 4",
                     "type": "integer"
+                  }
+                }
+              },
+              "allow_custom_openai_api": {
+                "title": "Allow Custom Openai Api",
+                "type": "boolean"
+              },
+              "custom_openai_api_settings": {
+                "title": "CustomOpenaiApiSettings",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Key",
+                    "type": "string"
                   }
                 }
               }
@@ -2227,6 +2172,7 @@
       "setting": {
         "title": "UserSettingSchema",
         "required": [
+          "credits",
           "rev",
           "api"
         ],
@@ -2240,6 +2186,10 @@
             "title": "User Id",
             "type": "integer"
           },
+          "credits": {
+            "title": "Credits",
+            "type": "number"
+          },
           "rev": {
             "title": "RevSourceSettingSchema",
             "required": [
@@ -2248,9 +2198,6 @@
               "total_ask_count",
               "rate_limits",
               "daily_available_time_slots",
-              "api_credits",
-              "allow_custom_openai_api",
-              "custom_openai_api_settings",
               "available_models",
               "per_model_ask_count"
             ],
@@ -2320,28 +2267,6 @@
                       "description": "每天可使用的结束时间",
                       "format": "time"
                     }
-                  }
-                }
-              },
-              "api_credits": {
-                "title": "Api Credits",
-                "type": "number"
-              },
-              "allow_custom_openai_api": {
-                "title": "Allow Custom Openai Api",
-                "type": "boolean"
-              },
-              "custom_openai_api_settings": {
-                "title": "CustomOpenaiApiSettings",
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "title": "Url",
-                    "type": "string"
-                  },
-                  "key": {
-                    "title": "Key",
-                    "type": "string"
                   }
                 }
               },
@@ -2391,11 +2316,10 @@
               "total_ask_count",
               "rate_limits",
               "daily_available_time_slots",
-              "api_credits",
-              "allow_custom_openai_api",
-              "custom_openai_api_settings",
               "available_models",
-              "per_model_ask_count"
+              "per_model_ask_count",
+              "allow_custom_openai_api",
+              "custom_openai_api_settings"
             ],
             "type": "object",
             "properties": {
@@ -2466,28 +2390,6 @@
                   }
                 }
               },
-              "api_credits": {
-                "title": "Api Credits",
-                "type": "number"
-              },
-              "allow_custom_openai_api": {
-                "title": "Allow Custom Openai Api",
-                "type": "boolean"
-              },
-              "custom_openai_api_settings": {
-                "title": "CustomOpenaiApiSettings",
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "title": "Url",
-                    "type": "string"
-                  },
-                  "key": {
-                    "title": "Key",
-                    "type": "string"
-                  }
-                }
-              },
               "available_models": {
                 "type": "array",
                 "items": {
@@ -2517,6 +2419,24 @@
                     "type": "integer"
                   }
                 }
+              },
+              "allow_custom_openai_api": {
+                "title": "Allow Custom Openai Api",
+                "type": "boolean"
+              },
+              "custom_openai_api_settings": {
+                "title": "CustomOpenaiApiSettings",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Key",
+                    "type": "string"
+                  }
+                }
               }
             }
           }
@@ -2532,6 +2452,7 @@
   "UserSettingSchema": {
     "title": "UserSettingSchema",
     "required": [
+      "credits",
       "rev",
       "api"
     ],
@@ -2545,6 +2466,10 @@
         "title": "User Id",
         "type": "integer"
       },
+      "credits": {
+        "title": "Credits",
+        "type": "number"
+      },
       "rev": {
         "title": "RevSourceSettingSchema",
         "required": [
@@ -2553,9 +2478,6 @@
           "total_ask_count",
           "rate_limits",
           "daily_available_time_slots",
-          "api_credits",
-          "allow_custom_openai_api",
-          "custom_openai_api_settings",
           "available_models",
           "per_model_ask_count"
         ],
@@ -2625,28 +2547,6 @@
                   "description": "每天可使用的结束时间",
                   "format": "time"
                 }
-              }
-            }
-          },
-          "api_credits": {
-            "title": "Api Credits",
-            "type": "number"
-          },
-          "allow_custom_openai_api": {
-            "title": "Allow Custom Openai Api",
-            "type": "boolean"
-          },
-          "custom_openai_api_settings": {
-            "title": "CustomOpenaiApiSettings",
-            "type": "object",
-            "properties": {
-              "url": {
-                "title": "Url",
-                "type": "string"
-              },
-              "key": {
-                "title": "Key",
-                "type": "string"
               }
             }
           },
@@ -2696,11 +2596,10 @@
           "total_ask_count",
           "rate_limits",
           "daily_available_time_slots",
-          "api_credits",
-          "allow_custom_openai_api",
-          "custom_openai_api_settings",
           "available_models",
-          "per_model_ask_count"
+          "per_model_ask_count",
+          "allow_custom_openai_api",
+          "custom_openai_api_settings"
         ],
         "type": "object",
         "properties": {
@@ -2771,28 +2670,6 @@
               }
             }
           },
-          "api_credits": {
-            "title": "Api Credits",
-            "type": "number"
-          },
-          "allow_custom_openai_api": {
-            "title": "Allow Custom Openai Api",
-            "type": "boolean"
-          },
-          "custom_openai_api_settings": {
-            "title": "CustomOpenaiApiSettings",
-            "type": "object",
-            "properties": {
-              "url": {
-                "title": "Url",
-                "type": "string"
-              },
-              "key": {
-                "title": "Key",
-                "type": "string"
-              }
-            }
-          },
           "available_models": {
             "type": "array",
             "items": {
@@ -2820,6 +2697,24 @@
               "gpt_4": {
                 "title": "Gpt 4",
                 "type": "integer"
+              }
+            }
+          },
+          "allow_custom_openai_api": {
+            "title": "Allow Custom Openai Api",
+            "type": "boolean"
+          },
+          "custom_openai_api_settings": {
+            "title": "CustomOpenaiApiSettings",
+            "type": "object",
+            "properties": {
+              "url": {
+                "title": "Url",
+                "type": "string"
+              },
+              "key": {
+                "title": "Key",
+                "type": "string"
               }
             }
           }

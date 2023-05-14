@@ -3,11 +3,12 @@ from datetime import datetime
 from typing import List, Optional
 
 from fastapi_users_db_sqlalchemy import Integer
-from sqlalchemy import String, Enum, Boolean, ForeignKey, func
+from sqlalchemy import String, Enum, Boolean, ForeignKey, func, Float
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic, UTCDateTime
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels, ChatSourceTypes
+from api.models.json import CustomOpenaiApiSettings
 from api.schema import UserSettingSchema, RevSourceSettingSchema, ApiSourceSettingSchema
 
 
@@ -48,7 +49,7 @@ class UserSetting(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="用户id")
     user: Mapped[User] = relationship("User", back_populates="setting", lazy="joined")
-
+    credits: Mapped[float] = mapped_column(Float, default=0, comment="积分")
     rev: Mapped[RevSourceSettingSchema] = mapped_column(Pydantic(RevSourceSettingSchema), comment="rev对话设置")
     api: Mapped[ApiSourceSettingSchema] = mapped_column(Pydantic(ApiSourceSettingSchema), comment="api对话设置")
 
