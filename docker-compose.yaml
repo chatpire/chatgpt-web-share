@@ -14,7 +14,7 @@ services:
       - ./logs:/app/logs
     environment:
       - TZ=Asia/Shanghai
-      - CHATGPT_BASE_URL=http://go-chatgpt-api:8080
+      - CHATGPT_BASE_URL=http://go-chatgpt-api:8080/chatgpt/
     depends_on:
       - go-chatgpt-api
 
