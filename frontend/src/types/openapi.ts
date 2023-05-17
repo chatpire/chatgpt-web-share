@@ -145,10 +145,7 @@ export interface components {
     };
     /** ApiChatMessageMetadata */
     ApiChatMessageMetadata: {
-      /** Prompt Tokens */
-      prompt_tokens?: number;
-      /** Completion Tokens */
-      completion_tokens?: number;
+      usage?: components["schemas"]["OpenAIChatResponseUsage"];
       /** Finish Reason */
       finish_reason?: string;
     };
@@ -362,7 +359,7 @@ export interface components {
        * Id 
        * Format: uuid
        */
-      id?: string;
+      id: string;
       /** Role */
       role: string;
       /** Model */
@@ -381,6 +378,8 @@ export interface components {
       children: (string)[];
       /** Content */
       content: string;
+      /** Content Type */
+      content_type?: string;
       rev_metadata?: components["schemas"]["RevChatMessageMetadata"];
       api_metadata?: components["schemas"]["ApiChatMessageMetadata"];
     };
@@ -663,6 +662,13 @@ export interface components {
        */
       console_log_level?: "INFO" | "DEBUG" | "WARNING";
     };
+    /** OpenAIChatResponseUsage */
+    OpenAIChatResponseUsage: {
+      /** Prompt Tokens */
+      prompt_tokens?: number;
+      /** Completion Tokens */
+      completion_tokens?: number;
+    };
     /** RequestStatistics */
     RequestStatistics: {
       /** Request Counts Interval */
@@ -703,7 +709,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    RevChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_browsing";
+    RevChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_browsing" | "gpt_4_plugins";
     /**
      * RevChatStatus 
      * @description An enumeration. 

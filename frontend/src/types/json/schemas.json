@@ -26,13 +26,19 @@
     "title": "ApiChatMessageMetadata",
     "type": "object",
     "properties": {
-      "prompt_tokens": {
-        "title": "Prompt Tokens",
-        "type": "integer"
-      },
-      "completion_tokens": {
-        "title": "Completion Tokens",
-        "type": "integer"
+      "usage": {
+        "title": "OpenAIChatResponseUsage",
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "title": "Prompt Tokens",
+            "type": "integer"
+          },
+          "completion_tokens": {
+            "title": "Completion Tokens",
+            "type": "integer"
+          }
+        }
       },
       "finish_reason": {
         "title": "Finish Reason",
@@ -293,6 +299,7 @@
       },
       "api_context_message_count": {
         "title": "Api Context Message Count",
+        "minimum": -1,
         "type": "integer",
         "default": -1
       },
@@ -332,6 +339,7 @@
       "message": {
         "title": "ChatMessage",
         "required": [
+          "id",
           "role",
           "children",
           "content"
@@ -373,6 +381,10 @@
             "title": "Content",
             "type": "string"
           },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
           "rev_metadata": {
             "title": "RevChatMessageMetadata",
             "type": "object",
@@ -395,13 +407,19 @@
             "title": "ApiChatMessageMetadata",
             "type": "object",
             "properties": {
-              "prompt_tokens": {
-                "title": "Prompt Tokens",
-                "type": "integer"
-              },
-              "completion_tokens": {
-                "title": "Completion Tokens",
-                "type": "integer"
+              "usage": {
+                "title": "OpenAIChatResponseUsage",
+                "type": "object",
+                "properties": {
+                  "prompt_tokens": {
+                    "title": "Prompt Tokens",
+                    "type": "integer"
+                  },
+                  "completion_tokens": {
+                    "title": "Completion Tokens",
+                    "type": "integer"
+                  }
+                }
               },
               "finish_reason": {
                 "title": "Finish Reason",
@@ -555,6 +573,7 @@
   "ChatMessage": {
     "title": "ChatMessage",
     "required": [
+      "id",
       "role",
       "children",
       "content"
@@ -596,6 +615,10 @@
         "title": "Content",
         "type": "string"
       },
+      "content_type": {
+        "title": "Content Type",
+        "type": "string"
+      },
       "rev_metadata": {
         "title": "RevChatMessageMetadata",
         "type": "object",
@@ -618,13 +641,19 @@
         "title": "ApiChatMessageMetadata",
         "type": "object",
         "properties": {
-          "prompt_tokens": {
-            "title": "Prompt Tokens",
-            "type": "integer"
-          },
-          "completion_tokens": {
-            "title": "Completion Tokens",
-            "type": "integer"
+          "usage": {
+            "title": "OpenAIChatResponseUsage",
+            "type": "object",
+            "properties": {
+              "prompt_tokens": {
+                "title": "Prompt Tokens",
+                "type": "integer"
+              },
+              "completion_tokens": {
+                "title": "Completion Tokens",
+                "type": "integer"
+              }
+            }
           },
           "finish_reason": {
             "title": "Finish Reason",
@@ -1027,6 +1056,7 @@
         "additionalProperties": {
           "title": "ChatMessage",
           "required": [
+            "id",
             "role",
             "children",
             "content"
@@ -1068,6 +1098,10 @@
               "title": "Content",
               "type": "string"
             },
+            "content_type": {
+              "title": "Content Type",
+              "type": "string"
+            },
             "rev_metadata": {
               "title": "RevChatMessageMetadata",
               "type": "object",
@@ -1090,13 +1124,19 @@
               "title": "ApiChatMessageMetadata",
               "type": "object",
               "properties": {
-                "prompt_tokens": {
-                  "title": "Prompt Tokens",
-                  "type": "integer"
-                },
-                "completion_tokens": {
-                  "title": "Completion Tokens",
-                  "type": "integer"
+                "usage": {
+                  "title": "OpenAIChatResponseUsage",
+                  "type": "object",
+                  "properties": {
+                    "prompt_tokens": {
+                      "title": "Prompt Tokens",
+                      "type": "integer"
+                    },
+                    "completion_tokens": {
+                      "title": "Completion Tokens",
+                      "type": "integer"
+                    }
+                  }
                 },
                 "finish_reason": {
                   "title": "Finish Reason",
@@ -1329,6 +1369,20 @@
       }
     }
   },
+  "OpenAIChatResponseUsage": {
+    "title": "OpenAIChatResponseUsage",
+    "type": "object",
+    "properties": {
+      "prompt_tokens": {
+        "title": "Prompt Tokens",
+        "type": "integer"
+      },
+      "completion_tokens": {
+        "title": "Completion Tokens",
+        "type": "integer"
+      }
+    }
+  },
   "RequestStatistics": {
     "title": "RequestStatistics",
     "required": [
@@ -1401,7 +1455,8 @@
     "enum": [
       "gpt_3_5",
       "gpt_4",
-      "gpt_4_browsing"
+      "gpt_4_browsing",
+      "gpt_4_plugins"
     ],
     "type": "string",
     "description": "An enumeration."
@@ -1577,7 +1632,8 @@
           "enum": [
             "gpt_3_5",
             "gpt_4",
-            "gpt_4_browsing"
+            "gpt_4_browsing",
+            "gpt_4_plugins"
           ],
           "type": "string",
           "description": "An enumeration."
@@ -1932,7 +1988,8 @@
                   "enum": [
                     "gpt_3_5",
                     "gpt_4",
-                    "gpt_4_browsing"
+                    "gpt_4_browsing",
+                    "gpt_4_plugins"
                   ],
                   "type": "string",
                   "description": "An enumeration."
@@ -2277,7 +2334,8 @@
                   "enum": [
                     "gpt_3_5",
                     "gpt_4",
-                    "gpt_4_browsing"
+                    "gpt_4_browsing",
+                    "gpt_4_plugins"
                   ],
                   "type": "string",
                   "description": "An enumeration."
@@ -2557,7 +2615,8 @@
               "enum": [
                 "gpt_3_5",
                 "gpt_4",
-                "gpt_4_browsing"
+                "gpt_4_browsing",
+                "gpt_4_plugins"
               ],
               "type": "string",
               "description": "An enumeration."

@@ -12,7 +12,8 @@ chat_model_definitions = {
     "rev": {
         "gpt_3_5": "text-davinci-002-render-sha",
         "gpt_4": "gpt-4",
-        "gpt_4_browsing": "gpt-4-browsing"
+        "gpt_4_browsing": "gpt-4-browsing",
+        "gpt_4_plugins": "gpt-4-plugins",
     },
     "api": {
         "gpt_3_5": "gpt-3.5-turbo",
@@ -51,6 +52,7 @@ class RevChatModels(BaseChatModelEnum):
     gpt_3_5 = auto()
     gpt_4 = auto()
     gpt_4_browsing = auto()
+    gpt_4_plugins = auto()
 
 
 class ApiChatModels(BaseChatModelEnum):
