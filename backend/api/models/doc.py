@@ -54,6 +54,11 @@ class ChatMessage(BaseModel):
             content=content)
 
 
+class RevConversationHistoryExtra(BaseModel):
+    moderation_results: list[Any]
+    plugin_ids: list[str]
+
+
 class ConversationHistoryDocument(Document):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
     type: Literal["rev", "api"]
@@ -63,6 +68,7 @@ class ConversationHistoryDocument(Document):
     mapping: dict[str, ChatMessage]
     current_node: uuid.UUID
     current_model: Optional[str]
+    rev_extra: Optional[RevConversationHistoryExtra]
 
     class Settings:
         name = "conversation_history"

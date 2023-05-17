@@ -8,9 +8,11 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import EmailStr
 from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
 
 from api.conf import Config
 import api.globals as g
@@ -99,7 +101,7 @@ async def on_startup():
                         user = await user_manager.create(UserCreate(
                             username=config.common.initial_admin_user_username,
                             nickname="admin",
-                            email="admin@admin.com",
+                            email=EmailStr("admin@admin.com"),
                             password=config.common.initial_admin_user_password,
                             is_active=True,
                             is_verified=True,

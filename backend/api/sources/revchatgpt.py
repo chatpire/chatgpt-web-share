@@ -6,12 +6,14 @@ from typing import AsyncGenerator
 import httpx
 import revChatGPT
 from fastapi.encoders import jsonable_encoder
+from pydantic import parse_obj_as, ValidationError
 from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
 from api.enums import RevChatModels, ChatSourceTypes
 from api.exceptions import InvalidParamsException
-from api.models.doc import RevChatMessageMetadata, ConversationHistoryDocument, ChatMessage
+from api.models.doc import RevChatMessageMetadata, ConversationHistoryDocument, ChatMessage, RevConversationHistoryExtra
+from api.schema.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -147,6 +149,10 @@ class RevChatGPTManager:
             mapping=mapping,
             current_node=result.get("current_node"),
             current_model=current_model,
+            rev_extra=RevConversationHistoryExtra(
+                plugin_ids=result.get("plugin_ids"),
+                moderation_results=result.get("moderation_results"),
+            )
         )
         await doc.save()
         return doc
@@ -155,7 +161,7 @@ class RevChatGPTManager:
         await self.chatbot.clear_conversations()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  timeout=360, model: RevChatModels = None):
+                  timeout=360, model: RevChatModels = None, plugin_ids: list[str] = None):
 
         model = model or RevChatModels.gpt_3_5
 
@@ -163,6 +169,9 @@ class RevChatGPTManager:
             assert parent_id and conversation_id, "parent_id must be set with conversation_id"
         else:
             parent_id = str(uuid.uuid4())
+
+        if plugin_ids is not None and model != RevChatModels.gpt_4_plugins:
+            raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
         messages = [
             {
@@ -178,8 +187,11 @@ class RevChatGPTManager:
             "messages": messages,
             "conversation_id": str(conversation_id) if conversation_id else None,
             "parent_message_id": str(parent_id) if parent_id else None,
-            "model": model.code()
+            "model": model.code(),
+            "history_and_training_disabled": False
         }
+        if plugin_ids:
+            data["plugin_ids"] = plugin_ids
 
         async with self.chatbot.session.stream(
                 method="POST",
@@ -218,3 +230,33 @@ class RevChatGPTManager:
 
     def reset_chat(self):
         self.chatbot.reset_chat()
+
+    async def get_plugin_manifests(self, statuses="approved", is_installed=None, offset=0, limit=250):
+        params = {
+            "statuses": statuses,
+            "offset": offset,
+            "limit": limit,
+        }
+        if is_installed is not None:
+            params["is_installed"] = is_installed
+        response = await self.chatbot.session.get(
+            url=f"{self.chatbot.base_url}aip/p",
+            params=params,
+            timeout=config.revchatgpt.ask_timeout
+        )
+        await _check_response(response)
+        return parse_obj_as(list[OpenAIChatPlugin], response.json().get("items"))
+
+    async def change_plugin_user_settings(self, plugin_id: str, setting: OpenAIChatPluginUserSettings):
+        response = await self.chatbot.session.patch(
+            url=f"{self.chatbot.base_url}aip/p/{plugin_id}/user-settings",
+            json=setting.dict(exclude_unset=True, exclude_none=True),
+        )
+        await _check_response(response)
+        try:
+            result = OpenAIChatPlugin.parse_obj(response.json())
+            return result
+        except ValidationError as e:
+            logger.warning(f"Failed to parse plugin: {e}")
+            raise e
+

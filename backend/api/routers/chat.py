@@ -5,7 +5,7 @@ from typing import Optional, Any
 
 import httpx
 import requests
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from pydantic import ValidationError
@@ -18,14 +18,15 @@ from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
 from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels, ApiChatModels
-from api.exceptions import InternalException
+from api.exceptions import InternalException, InvalidParamsException
 from api.models.db import RevConversation, User, BaseConversation
 from api.models.doc import ChatMessage, ConversationHistoryDocument
 from api.routers.conv import _get_conversation_by_id
 from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
+from api.schema.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from api.sources import RevChatGPTManager, convert_revchatgpt_message, OpenAIChatManager, OpenAIChatException
-from api.users import websocket_auth
+from api.users import websocket_auth, current_active_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -43,6 +44,39 @@ async def change_user_chat_status(user_id: int, status: RevChatStatus):
         await session.commit()
         await session.refresh(user)
     return user
+
+
+_plugins_result: list[OpenAIChatPlugin] | None = None
+_plugins_result_last_update_time = None
+
+
+@router.get("/chat/openai-plugins", tags=["chat"], response_model=list[OpenAIChatPlugin])
+async def get_chat_plugins(_user: User = Depends(current_active_user)):
+    # result = await rev_manager.get_plugin_manifests()
+    # return result
+    global _plugins_result, _plugins_result_last_update_time
+    if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600:
+        _plugins_result = await rev_manager.get_plugin_manifests()
+        _plugins_result_last_update_time = time.time()
+    return _plugins_result
+
+
+@router.patch("/chat/openai-plugins/{plugin_id}/user-settings", tags=["chat"], response_model=OpenAIChatPlugin)
+async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenAIChatPluginUserSettings,
+                                           _user: User = Depends(current_active_user)):
+    if settings.is_authenticated is not None:
+        raise InvalidParamsException("can not set is_authenticated")
+    result = await rev_manager.change_plugin_user_settings(plugin_id, settings)
+    assert isinstance(result, OpenAIChatPlugin)
+
+    global _plugins_result, _plugins_result_last_update_time
+    if _plugins_result is not None:
+        for plugin in _plugins_result:
+            if plugin.id == plugin_id:
+                plugin.user_settings = result.user_settings
+                break
+        _plugins_result_last_update_time = time.time()
+    return result
 
 
 @router.get("/chat/__schema_types", tags=["chat"], response_model=AskResponse)
