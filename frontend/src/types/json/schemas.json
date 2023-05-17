@@ -400,6 +400,46 @@
               "end_turn": {
                 "title": "End Turn",
                 "type": "boolean"
+              },
+              "status": {
+                "title": "Status",
+                "type": "string"
+              },
+              "recipient": {
+                "title": "Recipient",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "all"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "invoked_plugin": {
+                "title": "RevChatMessageMetadataPlugin",
+                "type": "object",
+                "properties": {
+                  "http_response_status": {
+                    "title": "Http Response Status",
+                    "type": "integer"
+                  },
+                  "namespace": {
+                    "title": "Namespace",
+                    "type": "string"
+                  },
+                  "plugin_id": {
+                    "title": "Plugin Id",
+                    "type": "string"
+                  },
+                  "type": {
+                    "title": "Type",
+                    "type": "string"
+                  }
+                }
               }
             }
           },
@@ -634,6 +674,46 @@
           "end_turn": {
             "title": "End Turn",
             "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "recipient": {
+            "title": "Recipient",
+            "anyOf": [
+              {
+                "enum": [
+                  "all"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "invoked_plugin": {
+            "title": "RevChatMessageMetadataPlugin",
+            "type": "object",
+            "properties": {
+              "http_response_status": {
+                "title": "Http Response Status",
+                "type": "integer"
+              },
+              "namespace": {
+                "title": "Namespace",
+                "type": "string"
+              },
+              "plugin_id": {
+                "title": "Plugin Id",
+                "type": "string"
+              },
+              "type": {
+                "title": "Type",
+                "type": "string"
+              }
+            }
           }
         }
       },
@@ -1117,6 +1197,46 @@
                 "end_turn": {
                   "title": "End Turn",
                   "type": "boolean"
+                },
+                "status": {
+                  "title": "Status",
+                  "type": "string"
+                },
+                "recipient": {
+                  "title": "Recipient",
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "all"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "invoked_plugin": {
+                  "title": "RevChatMessageMetadataPlugin",
+                  "type": "object",
+                  "properties": {
+                    "http_response_status": {
+                      "title": "Http Response Status",
+                      "type": "integer"
+                    },
+                    "namespace": {
+                      "title": "Namespace",
+                      "type": "string"
+                    },
+                    "plugin_id": {
+                      "title": "Plugin Id",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "type": "string"
+                    }
+                  }
                 }
               }
             },
@@ -1447,6 +1567,68 @@
       "end_turn": {
         "title": "End Turn",
         "type": "boolean"
+      },
+      "status": {
+        "title": "Status",
+        "type": "string"
+      },
+      "recipient": {
+        "title": "Recipient",
+        "anyOf": [
+          {
+            "enum": [
+              "all"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "invoked_plugin": {
+        "title": "RevChatMessageMetadataPlugin",
+        "type": "object",
+        "properties": {
+          "http_response_status": {
+            "title": "Http Response Status",
+            "type": "integer"
+          },
+          "namespace": {
+            "title": "Namespace",
+            "type": "string"
+          },
+          "plugin_id": {
+            "title": "Plugin Id",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "RevChatMessageMetadataPlugin": {
+    "title": "RevChatMessageMetadataPlugin",
+    "type": "object",
+    "properties": {
+      "http_response_status": {
+        "title": "Http Response Status",
+        "type": "integer"
+      },
+      "namespace": {
+        "title": "Namespace",
+        "type": "string"
+      },
+      "plugin_id": {
+        "title": "Plugin Id",
+        "type": "string"
+      },
+      "type": {
+        "title": "Type",
+        "type": "string"
       }
     }
   },

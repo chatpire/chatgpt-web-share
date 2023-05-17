@@ -8,12 +8,22 @@ from pydantic import BaseModel, Field
 from api.schema.openai_schemas import OpenAIChatResponseUsage
 
 
+class RevChatMessageMetadataPlugin(BaseModel):
+    http_response_status: Optional[int]
+    namespace: Optional[str]
+    plugin_id: Optional[str]
+    type: Optional[str]
+
+
 class RevChatMessageMetadata(BaseModel):
     # mapping[id].message.metadata 中的内容 加上 mapping[id].message 中的 weight, end_turn
     # 以下只有assistant有
     finish_details: Optional[dict[str, Any]]
     weight: Optional[float]
     end_turn: Optional[bool]
+    status: Optional[str]
+    recipient: Optional[Literal['all'] | str]
+    invoked_plugin: Optional[RevChatMessageMetadataPlugin]
 
 
 class ApiChatMessageMetadata(BaseModel):

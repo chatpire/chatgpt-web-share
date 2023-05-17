@@ -16,6 +16,7 @@ declare module '@vue/runtime-core' {
     EditableDataTable: typeof import('./src/components/EditableDataTable.vue')['default']
     GPT3Icon: typeof import('./src/components/icons/GPT3Icon.vue')['default']
     HelpTooltip: typeof import('./src/components/HelpTooltip.vue')['default']
+    NAlert: typeof import('naive-ui')['NAlert']
     NAutoComplete: typeof import('naive-ui')['NAutoComplete']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NButton: typeof import('naive-ui')['NButton']

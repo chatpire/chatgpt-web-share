@@ -703,6 +703,22 @@ export interface components {
       weight?: number;
       /** End Turn */
       end_turn?: boolean;
+      /** Status */
+      status?: string;
+      /** Recipient */
+      recipient?: "all" | string;
+      invoked_plugin?: components["schemas"]["RevChatMessageMetadataPlugin"];
+    };
+    /** RevChatMessageMetadataPlugin */
+    RevChatMessageMetadataPlugin: {
+      /** Http Response Status */
+      http_response_status?: number;
+      /** Namespace */
+      namespace?: string;
+      /** Plugin Id */
+      plugin_id?: string;
+      /** Type */
+      type?: string;
     };
     /**
      * RevChatModels 

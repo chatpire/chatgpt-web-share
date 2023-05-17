@@ -14,8 +14,21 @@
       <n-avatar v-else size="small" :src="chatgptIcon" />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
+      <div v-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">
+        {{ props.message.content }}
+      </div>
+      <div v-else-if="isPluginMessage" class="my-3">
+        <n-alert :title="t('commons.invoking_plugin', [props.message.rev_metadata?.recipient])" type="info" class="whitespace-pre-wrap">
+          {{ props.message.content }}
+        </n-alert>
+      </div>
+      <div v-else-if="isPluginResult" class="my-3">
+        <n-alert :title="props.message.rev_metadata?.invoked_plugin?.namespace" type="success" class="whitespace-pre-wrap">
+          {{ props.message.content }}
+        </n-alert>
+      </div>
       <div
-        v-if="!showRawContent && !renderPureText"
+        v-else-if="!showRawContent && !renderPureText"
         ref="contentRef"
         class="message-content w-full"
         v-html="renderedContent"
@@ -27,9 +40,7 @@
       >
         {{ renderedContent }}
       </div>
-      <div v-else-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">
-        {{ props.message.content }}
-      </div>
+      
       <div class="hide-in-print">
         <n-button
           text
@@ -98,6 +109,14 @@ const showRawContent = ref(false);
 
 const renderPureText = computed(() => {
   return appStore.preference.renderUserMessageInMd === false && props.message.role == 'user';
+});
+
+const isPluginMessage = computed(() => {
+  return props.message.rev_metadata?.recipient && props.message.rev_metadata?.recipient != 'all';
+});
+
+const isPluginResult = computed(() => {
+  return props.message.rev_metadata?.invoked_plugin != null;
 });
 
 const toggleShowRawContent = () => {

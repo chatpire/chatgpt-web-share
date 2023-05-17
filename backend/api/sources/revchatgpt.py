@@ -40,15 +40,18 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> ChatMessag
         children=item.get("children", []),
         content=content,
         content_type=content_type,
+        rev_metadata=RevChatMessageMetadata(
+            invoked_plugin=item["message"]["metadata"].get("invoked_plugin"),
+            finish_details=item["message"]["metadata"].get("finish_details"),
+            weight=item["message"].get("weight"),
+            end_turn=item["message"].get("end_turn"),
+            recipient=item["message"].get("recipient"),
+            status=item["message"].get("status"),
+        ),
     )
     if "metadata" in item["message"] and item["message"]["metadata"] != {}:
         model_code = item["message"]["metadata"].get("model_slug")
         result.model = RevChatModels.from_code(model_code) or model_code
-        result.rev_metadata = RevChatMessageMetadata(
-            finish_details=item["message"]["metadata"].get("finish_details"),
-            weight=item["message"].get("weight"),
-            end_turn=item["message"].get("end_turn"),
-        )
     return result
 
 
