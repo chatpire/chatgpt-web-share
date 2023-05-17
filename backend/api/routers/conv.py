@@ -86,6 +86,9 @@ async def get_conversation_history(refresh: bool = False,
             if e.response.status_code == 404:
                 raise InvalidParamsException("errors.conversationNotFound")
             raise InternalException()
+        except Exception as e:
+            logger.warning(f"{conversation.conversation_id} get conversation history failed: {e}")
+            raise e
         return result
     else:
         doc = await ConversationHistoryDocument.get(conversation.conversation_id)

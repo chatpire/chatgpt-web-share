@@ -13,29 +13,33 @@ from api.enums import RevChatModels, ChatSourceTypes
 from api.exceptions import InvalidParamsException
 from api.models.doc import RevChatMessageMetadata, ConversationHistoryDocument, ChatMessage
 from utils.common import singleton_with_lock
+from utils.logger import get_logger
 
 config = Config()
 credentials = Credentials()
+logger = get_logger(__name__)
 
 
 def convert_revchatgpt_message(item: dict, message_id: str = None) -> ChatMessage | None:
     if not item.get("message"):
         return None
     content = ""
+    content_type = None
     message_id = message_id or item["message"]["id"]
     if item["message"].get("content"):
-        if item["message"]["content"].get("content_type") == "text":
-            content = item["message"]["content"]["parts"][0]
-        else:
-            raise ValueError(
-                f"!! Unknown message content type: {item['message']['content']['content_type']} in message {message_id}")
+        content = item["message"]["content"]["parts"][0]
+        content_type = item["message"]["content"].get("content_type")
+        if content_type not in ["text", "code"]:
+            logger.debug(f"Parse message: Unknown content type {content_type} {item}")
+
     result = ChatMessage(
         id=message_id,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
         role=item["message"]["author"]["role"],
         create_time=item["message"].get("create_time"),
         parent=item.get("parent"),
         children=item.get("children", []),
-        content=content
+        content=content,
+        content_type=content_type,
     )
     if "metadata" in item["message"] and item["message"]["metadata"] != {}:
         result.model = RevChatModels.from_code(item["message"]["metadata"].get("model_slug"))
@@ -126,7 +130,7 @@ class RevChatGPTManager:
         try:
             mapping = convert_mapping(result.get("mapping"))
         except Exception as e:
-            raise InvalidParamsException(f"!! Failed to convert mapping: {e}")
+            raise InvalidParamsException(f"Failed to convert mapping: {e}")
         current_model = None
         if mapping.get(result.get("current_node")):
             current_model = get_latest_model_from_mapping(result["current_node"], mapping)

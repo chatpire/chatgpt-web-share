@@ -152,6 +152,7 @@ async def chat(websocket: WebSocket):
     try:
         ask_request = AskRequest(**params)
     except ValidationError as e:
+        logger.warning(f"Invalid ask request: {e}")
         await reply(AskResponse(type=AskResponseType.error, error_detail=str(e)))
         await websocket.close(1007, "errors.invalidAskRequest")
         return
@@ -235,17 +236,20 @@ async def chat(websocket: WebSocket):
                                       model=model):
             has_got_reply = True
 
-            # 解析 message
-            if ask_request.type == ChatSourceTypes.rev:
-                message = convert_revchatgpt_message(data)
-                if conversation_id is None:
-                    conversation_id = data["conversation_id"]
-            else:
-                assert isinstance(data, ChatMessage)
-                message = data
-                if conversation_id is None:
-                    assert ask_request.new_conversation
-                    conversation_id = uuid.uuid4()
+            try:
+                if ask_request.type == ChatSourceTypes.rev:
+                    message = convert_revchatgpt_message(data)
+                    if conversation_id is None:
+                        conversation_id = data["conversation_id"]
+                else:
+                    assert isinstance(data, ChatMessage)
+                    message = data
+                    if conversation_id is None:
+                        assert ask_request.new_conversation
+                        conversation_id = uuid.uuid4()
+            except Exception as e:
+                logger.warning(f"convert message error: {e}")
+                continue
 
             await reply(AskResponse(
                 type=AskResponseType.message,

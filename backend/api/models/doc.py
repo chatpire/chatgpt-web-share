@@ -25,10 +25,11 @@ class ChatMessage(BaseModel):
     id: uuid.UUID
     role: str  # rev: mapping[id].message.author.role: system, user, assistant
     model: Optional[str]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
-    create_time: datetime.datetime
+    create_time: Optional[datetime.datetime]
     parent: Optional[uuid.UUID]
     children: list[uuid.UUID]
     content: str  # rev: mapping[id].message.content.parts[0]; mapping[id].message.content.content_type 为 text
+    content_type: Optional[str]
     rev_metadata: Optional[RevChatMessageMetadata]  # rev only
     api_metadata: Optional[ApiChatMessageMetadata]  # api only
 
