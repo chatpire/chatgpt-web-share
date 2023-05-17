@@ -145,23 +145,15 @@ const uiSchema = {
   },
   'custom_openai_api_settings': {
     'ui:title': t('labels.custom_openai_api_settings'),
-    // 'properties': {
-    //   'url': {
-    //     'type': 'string'
-    //   },
-    //   'key': {
-    //     'type': 'string'
-    //   }
-    // }
   }
 };
 
 const handleSave = () => {
-  if (!settingModel.value) {
+  if (!settingModel.value || !revChatSourceSettingModel.value || ! apiChatSourceSettingModel.value) {
     return;
   }
-  settingModel.value.rev = revChatSourceSettingModel.value;
-  settingModel.value.api = apiChatSourceSettingModel.value;
+  settingModel.value!.rev = revChatSourceSettingModel.value;
+  settingModel.value!.api = apiChatSourceSettingModel.value;
   emits('save', settingModel.value);
 };
 </script>

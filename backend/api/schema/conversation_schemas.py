@@ -8,6 +8,9 @@ from strenum import StrEnum
 
 from api.enums import ChatSourceTypes, RevChatModels, ApiChatModels
 from api.models.doc import ChatMessage
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def _validate_model(_type: ChatSourceTypes, model: str | None):
@@ -18,7 +21,7 @@ def _validate_model(_type: ChatSourceTypes, model: str | None):
     elif _type == ChatSourceTypes.api and model in list(ApiChatModels):
         return ApiChatModels(model)
     else:
-        raise ValueError(f"invalid model {model} for type {_type}")
+        logger.warning(f"unknown model: {model} for type {_type}")
 
 
 class AskRequest(BaseModel):

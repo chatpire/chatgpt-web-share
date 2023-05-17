@@ -24,7 +24,9 @@ export const getChatModelNameTrans = (model_name: RevChatModels | ApiChatModels 
   if (model_name == null) return t('commons.unknown');
   if (allChatModelNames.includes(model_name))
     return t(`models.${model_name}`);
-  else return model_name;
+  else
+    return `${t('commons.unknown')}(${model_name})`;
+  // else return model_name;
 };
 
 export const getCountTrans = (count: number | undefined | null): string => {
