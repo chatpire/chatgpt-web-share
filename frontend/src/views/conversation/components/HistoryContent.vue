@@ -8,7 +8,12 @@
     @keyup.esc="toggleFullscreenHistory(true)"
   >
     <div v-if="!props.loading" class="relative">
-      <slot name="top" />
+      <div class="flex justify-center py-4 px-4 max-w-full relative" :style="{ backgroundColor: themeVars.baseColor }">
+        <n-text>
+          {{ $t('commons.currentConversationModel') }}: {{ getChatModelNameTrans(convHistory?.current_model || null) }}
+          {{ t(`labels.${convHistory?.type}`) }}
+        </n-text>
+      </div>
       <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
         <template #icon>
           <n-icon>
@@ -38,7 +43,10 @@ import { useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { ChatMessage } from '@/types/schema';
+import { useConversationStore } from '@/store';
+import { ChatMessage, ConversationHistoryDocument } from '@/types/schema';
+import { getChatModelNameTrans } from '@/utils/chat';
+import { getMessageListFromHistory } from '@/utils/conversation';
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';
@@ -46,9 +54,11 @@ import MessageRow from './MessageRow.vue';
 const { t } = useI18n();
 
 const themeVars = useThemeVars();
+const conversationStore = useConversationStore();
 
 const props = defineProps<{
-  messages: ChatMessage[];
+  conversationId: string;
+  extraMessages: ChatMessage[];
   fullscreen: boolean; // 初始状态下是否全屏
   showTips: boolean;
   loading: boolean;
@@ -58,16 +68,28 @@ const contentRef = ref();
 const historyContentParent = ref<HTMLElement>();
 const _fullscreen = ref(false);
 
+const convHistory = computed<ConversationHistoryDocument | null>(() => {
+  const conversationId = props.conversationId;
+  if (!conversationId) return null;
+  return conversationStore.conversationHistoryMap[conversationId];
+});
+
+const messages = computed<ChatMessage[]>(() => {
+  let result = convHistory.value ? getMessageListFromHistory(convHistory.value) : [];
+  result = result.concat(props.extraMessages || []);
+  return result;
+});
+
+const filteredMessages = computed<ChatMessage[]>(() => {
+  return messages.value ? messages.value.filter((message) => message.role !== 'system') : [];
+});
+
 watch(
   () => props.fullscreen,
   () => {
     toggleFullscreenHistory(props.showTips);
   }
 );
-
-const filteredMessages = computed<ChatMessage[]>(() => {
-  return props.messages.filter((message) => message.role !== 'system');
-});
 
 const toggleFullscreenHistory = (showTips: boolean) => {
   // fullscreenHistory.value = !fullscreenHistory.value;

@@ -1098,8 +1098,7 @@
       "title",
       "create_time",
       "update_time",
-      "mapping",
-      "current_node"
+      "mapping"
     ],
     "type": "object",
     "properties": {
@@ -1275,6 +1274,24 @@
       "current_model": {
         "title": "Current Model",
         "type": "string"
+      },
+      "rev_extra": {
+        "title": "RevConversationHistoryExtra",
+        "type": "object",
+        "properties": {
+          "moderation_results": {
+            "title": "Moderation Results",
+            "type": "array",
+            "items": {}
+          },
+          "plugin_ids": {
+            "title": "Plugin Ids",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       }
     },
     "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
@@ -1489,6 +1506,187 @@
       }
     }
   },
+  "OpenAIChatPlugin": {
+    "title": "OpenAIChatPlugin",
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "namespace": {
+        "title": "Namespace",
+        "type": "string"
+      },
+      "manifest": {
+        "title": "OpenAIChatPluginManifest",
+        "type": "object",
+        "properties": {
+          "api": {
+            "title": "Api",
+            "type": "object"
+          },
+          "auth": {
+            "title": "Auth",
+            "type": "object"
+          },
+          "logo_url": {
+            "title": "Logo Url",
+            "type": "string"
+          },
+          "contact_email": {
+            "title": "Contact Email",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "name_for_model": {
+            "title": "Name For Model",
+            "type": "string"
+          },
+          "name_for_human": {
+            "title": "Name For Human",
+            "type": "string"
+          },
+          "description_for_model": {
+            "title": "Description For Model",
+            "type": "string"
+          },
+          "description_for_human": {
+            "title": "Description For Human",
+            "type": "string"
+          },
+          "legal_info_url": {
+            "title": "Legal Info Url",
+            "type": "string"
+          }
+        }
+      },
+      "categories": {
+        "title": "Categories",
+        "type": "array",
+        "items": {
+          "title": "OpenAIChatPluginCategory",
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "title": {
+              "title": "Title",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "domain": {
+        "title": "Domain",
+        "type": "string"
+      },
+      "status": {
+        "title": "Status",
+        "anyOf": [
+          {
+            "enum": [
+              "approved"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "user_settings": {
+        "title": "User Settings",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "oauth_client_id": {
+        "title": "Oauth Client Id",
+        "type": "string"
+      }
+    }
+  },
+  "OpenAIChatPluginCategory": {
+    "title": "OpenAIChatPluginCategory",
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      }
+    }
+  },
+  "OpenAIChatPluginManifest": {
+    "title": "OpenAIChatPluginManifest",
+    "type": "object",
+    "properties": {
+      "api": {
+        "title": "Api",
+        "type": "object"
+      },
+      "auth": {
+        "title": "Auth",
+        "type": "object"
+      },
+      "logo_url": {
+        "title": "Logo Url",
+        "type": "string"
+      },
+      "contact_email": {
+        "title": "Contact Email",
+        "type": "string"
+      },
+      "schema_version": {
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "name_for_model": {
+        "title": "Name For Model",
+        "type": "string"
+      },
+      "name_for_human": {
+        "title": "Name For Human",
+        "type": "string"
+      },
+      "description_for_model": {
+        "title": "Description For Model",
+        "type": "string"
+      },
+      "description_for_human": {
+        "title": "Description For Human",
+        "type": "string"
+      },
+      "legal_info_url": {
+        "title": "Legal Info Url",
+        "type": "string"
+      }
+    }
+  },
+  "OpenAIChatPluginUserSettings": {
+    "title": "OpenAIChatPluginUserSettings",
+    "type": "object",
+    "properties": {
+      "is_authenticated": {
+        "title": "Is Authenticated",
+        "type": "boolean"
+      },
+      "is_installed": {
+        "title": "Is Installed",
+        "type": "boolean"
+      }
+    }
+  },
   "OpenAIChatResponseUsage": {
     "title": "OpenAIChatResponseUsage",
     "type": "object",
@@ -1652,6 +1850,24 @@
     ],
     "type": "string",
     "description": "An enumeration."
+  },
+  "RevConversationHistoryExtra": {
+    "title": "RevConversationHistoryExtra",
+    "type": "object",
+    "properties": {
+      "moderation_results": {
+        "title": "Moderation Results",
+        "type": "array",
+        "items": {}
+      },
+      "plugin_ids": {
+        "title": "Plugin Ids",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
   },
   "RevConversationSchema": {
     "title": "RevConversationSchema",

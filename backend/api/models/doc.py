@@ -55,8 +55,8 @@ class ChatMessage(BaseModel):
 
 
 class RevConversationHistoryExtra(BaseModel):
-    moderation_results: list[Any]
-    plugin_ids: list[str]
+    moderation_results: Optional[list[Any]]
+    plugin_ids: Optional[list[str]]
 
 
 class ConversationHistoryDocument(Document):

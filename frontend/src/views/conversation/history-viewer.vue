@@ -1,23 +1,11 @@
 <template>
   <HistoryContent
-    :messages="messages"
+    :conversation-id="conversationId"
     :fullscreen="false"
     :show-tips="false"
-    :append-messages="[]"
+    :extra-messages="[]"
     :loading="loading"
-  >
-    <template #top>
-      <div
-        class="flex justify-center py-4 px-4 max-w-full relative"
-        :style="{ backgroundColor: themeVars.baseColor }"
-      >
-        <n-text>
-          {{ $t('commons.currentConversationModel') }}: 
-          {{ getChatModelNameTrans(convHistory?.current_model || null) }} ({{ t(`labels.${convHistory?.type}`) }})
-        </n-text>
-      </div>
-    </template>
-  </HistoryContent>
+  />
 </template>
 
 <script setup lang="ts">
@@ -54,15 +42,4 @@ conversationStore
   .finally(() => {
     loading.value = false;
   });
-
-
-const convHistory = computed(() => {
-  const result = conversationStore.conversationHistoryMap[conversationId];
-  if (!result) return null;
-  return result;
-});
-
-const messages = computed(() => {
-  return getMessageListFromHistory(convHistory.value);
-});
 </script>

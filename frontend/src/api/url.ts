@@ -8,6 +8,8 @@ enum ApiUrl {
   AllConversation = '/conv/all',
   UserList = '/user',
 
+  ChatPlugins = '/chat/openai-plugins',
+
   ServerStatus = '/status',
 
   SystemInfo = '/system/info',

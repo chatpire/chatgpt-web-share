@@ -22,6 +22,11 @@ export type RevConversationSchema = components['schemas']['RevConversationSchema
 // export type ApiConversationSchema = components['schemas']['ApiConversationSchema'];
 export type ConversationHistoryDocument = components['schemas']['ConversationHistoryDocument'];
 
+export type OpenAIChatPluginCategory = components['schemas']['OpenAIChatPluginCategory'];
+export type OpenAIChatPluginManifest = components['schemas']['OpenAIChatPluginManifest'];
+export type OpenAIChatPluginUserSettings = components['schemas']['OpenAIChatPluginUserSettings'];
+export type OpenAIChatPlugin = components['schemas']['OpenAIChatPlugin'];
+
 export type AskRequest = components['schemas']['AskRequest'];
 export type AskResponse = components['schemas']['AskResponse'];
 

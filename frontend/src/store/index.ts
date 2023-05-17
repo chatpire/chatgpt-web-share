@@ -7,4 +7,5 @@ import useUserStore from './modules/user';
 const pinia = createPinia();
 
 export { useAppStore, useConversationStore, useUserStore };
+
 export default pinia;

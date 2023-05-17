@@ -81,6 +81,14 @@ export interface paths {
     /** Generate Conversation Title */
     patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
   };
+  "/chat/openai-plugins": {
+    /** Get Chat Plugins */
+    get: operations["get_chat_plugins_chat_openai_plugins_get"];
+  };
+  "/chat/openai-plugins/{plugin_id}/user-settings": {
+    /** Update Chat Plugin User Settings */
+    patch: operations["update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch"];
+  };
   "/chat/__schema_types": {
     /**
      * Predict Schema Types 
@@ -549,9 +557,10 @@ export interface components {
        * Current Node 
        * Format: uuid
        */
-      current_node: string;
+      current_node?: string;
       /** Current Model */
       current_model?: string;
+      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
     };
     /** CredentialsModel */
     CredentialsModel: {
@@ -662,6 +671,63 @@ export interface components {
        */
       console_log_level?: "INFO" | "DEBUG" | "WARNING";
     };
+    /** OpenAIChatPlugin */
+    OpenAIChatPlugin: {
+      /** Id */
+      id?: string;
+      /** Namespace */
+      namespace?: string;
+      manifest?: components["schemas"]["OpenAIChatPluginManifest"];
+      /** Categories */
+      categories?: (components["schemas"]["OpenAIChatPluginCategory"])[];
+      /** Domain */
+      domain?: string;
+      /** Status */
+      status?: "approved" | string;
+      /** User Settings */
+      user_settings?: {
+        [key: string]: string | undefined;
+      };
+      /** Oauth Client Id */
+      oauth_client_id?: string;
+    };
+    /** OpenAIChatPluginCategory */
+    OpenAIChatPluginCategory: {
+      /** Id */
+      id?: string;
+      /** Title */
+      title?: string;
+    };
+    /** OpenAIChatPluginManifest */
+    OpenAIChatPluginManifest: {
+      /** Api */
+      api?: Record<string, never>;
+      /** Auth */
+      auth?: Record<string, never>;
+      /** Logo Url */
+      logo_url?: string;
+      /** Contact Email */
+      contact_email?: string;
+      /** Schema Version */
+      schema_version?: string;
+      /** Name For Model */
+      name_for_model?: string;
+      /** Name For Human */
+      name_for_human?: string;
+      /** Description For Model */
+      description_for_model?: string;
+      /** Description For Human */
+      description_for_human?: string;
+      /** Legal Info Url */
+      legal_info_url?: string;
+    };
+    /** OpenAIChatPluginUserSettings */
+    OpenAIChatPluginUserSettings: {
+      /** Is Authenticated */
+      is_authenticated?: boolean;
+      /** Is Installed */
+      is_installed?: boolean;
+    };
     /** OpenAIChatResponseUsage */
     OpenAIChatResponseUsage: {
       /** Prompt Tokens */
@@ -732,6 +798,13 @@ export interface components {
      * @enum {string}
      */
     RevChatStatus: "asking" | "queueing" | "idling";
+    /** RevConversationHistoryExtra */
+    RevConversationHistoryExtra: {
+      /** Moderation Results */
+      moderation_results?: (Record<string, never>)[];
+      /** Plugin Ids */
+      plugin_ids?: (string)[];
+    };
     /** RevConversationSchema */
     RevConversationSchema: {
       /**
@@ -1425,6 +1498,44 @@ export interface operations {
       };
       path: {
         conversation_id: string | string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_chat_plugins_chat_openai_plugins_get: {
+    /** Get Chat Plugins */
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+    };
+  };
+  update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch: {
+    /** Update Chat Plugin User Settings */
+    parameters: {
+      path: {
+        plugin_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OpenAIChatPluginUserSettings"];
       };
     };
     responses: {

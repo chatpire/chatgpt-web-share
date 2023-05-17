@@ -6,14 +6,18 @@ import {
   getConversationHistoryApi,
   setConversationTitleApi,
 } from '@/api/conv';
-import { ChatMessage, RevConversationSchema } from '@/types/schema';
+import { NewConversationInfo } from '@/types/custom';
+import { BaseConversationSchema, ChatMessage, ConversationHistoryDocument, RevConversationSchema } from '@/types/schema';
 
 import { ConversationState } from '../types';
+
+export const newConversationId = 'new_conversation';
 
 const useConversationStore = defineStore('conversation', {
   state: (): ConversationState => ({
     conversations: [],
     conversationHistoryMap: {},
+    newConversation: null,
   }),
   getters: {},
   actions: {
@@ -35,7 +39,39 @@ const useConversationStore = defineStore('conversation', {
       });
     },
 
-    addConversation(conversation: RevConversationSchema) {
+    createNewConversation(info: NewConversationInfo) {
+      if (!info.title || !info.type || !info.model || !(info.type === 'api' || info.type === 'rev')) {
+        throw new Error('Invalid conversation info');
+      }
+      const currentTime = new Date().toISOString();
+      this.newConversation = {
+        type: info.type,
+        conversation_id: newConversationId,
+        title: info.title,
+        current_model: info.model,
+        create_time: currentTime,
+        update_time: currentTime,
+      };
+      this.conversationHistoryMap[newConversationId] = {
+        _id: newConversationId,
+        type: info.type,
+        title: info.title,
+        current_model: info.model,
+        create_time: currentTime,
+        update_time: currentTime,
+        mapping: {},
+      };
+    },
+
+    removeNewConversation() {
+      if (!this.newConversation) {
+        return;
+      }
+      delete this.conversationHistoryMap[this.newConversation!.conversation_id!];
+      this.newConversation = null;
+    },
+
+    addConversation(conversation: BaseConversationSchema) {
       this.conversations.push(conversation);
     },
 
@@ -70,7 +106,7 @@ const useConversationStore = defineStore('conversation', {
       if (convHistory.current_node === null) {
         convHistory.current_node = recvMessage.id;
       } else {
-        const lastTopMessage = convHistory.mapping[convHistory.current_node];
+        const lastTopMessage = convHistory.mapping[convHistory.current_node!];
         sendMessage.parent = lastTopMessage?.id;
         lastTopMessage?.children.push(sendMessage.id);
         convHistory.current_node = recvMessage.id;

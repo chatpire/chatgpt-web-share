@@ -47,7 +47,6 @@ const conversationStore = useConversationStore();
 const props = defineProps<{
   loading: boolean;
   value: string | null;
-  newConv: BaseConversationSchema | null;
 }>();
 
 const emits = defineEmits<{
@@ -85,10 +84,10 @@ const menuOptions = computed<MenuOption[]>(() => {
       extra: () => dropdownRenderer(conversation, handleDeleteConversation, handleChangeConversationTitle),
     } as MenuOption;
   });
-  if (results && props.newConv) {
+  if (results && conversationStore.newConversation) {
     results.unshift({
-      label: () => props.newConv?.title || '',
-      key: props.newConv.conversation_id,
+      label: () => conversationStore.newConversation?.title || '',
+      key: conversationStore.newConversation.conversation_id,
       disabled: props.loading == true,
     });
   }
