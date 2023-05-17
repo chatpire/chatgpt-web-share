@@ -68,8 +68,10 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, ChatMessage]:
     return {str(key): value for key, value in result.items()}
 
 
-def get_latest_model_from_mapping(current_node_uuid: str, mapping: dict[str, ChatMessage]) -> RevChatModels | None:
+def get_latest_model_from_mapping(current_node_uuid: str | None, mapping: dict[str, ChatMessage]) -> RevChatModels | None:
     model = None
+    if not current_node_uuid:
+        return model
     try:
         msg: ChatMessage = mapping.get(current_node_uuid)
         while msg:

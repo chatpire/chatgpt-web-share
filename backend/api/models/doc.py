@@ -66,7 +66,7 @@ class ConversationHistoryDocument(Document):
     create_time: datetime.datetime
     update_time: datetime.datetime
     mapping: dict[str, ChatMessage]
-    current_node: uuid.UUID
+    current_node: Optional[uuid.UUID]
     current_model: Optional[str]
     rev_extra: Optional[RevConversationHistoryExtra]
 

@@ -85,6 +85,9 @@ class OpenAIChatManager:
                 raise ValueError(f"{parent_id} is not a valid parent of {conversation_id}")
 
             # 从 current_node 开始往前找 context_message_count 个 message
+            if not conv_history.current_node:
+                raise ValueError(f"{conversation_id} current_node is None")
+
             msg = conv_history.mapping.get(str(conv_history.current_node))
             assert msg, f"{conv_history.id} current_node({conv_history.current_node}) not found in mapping"
 
