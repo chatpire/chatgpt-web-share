@@ -36,7 +36,7 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
 });
 
 const newConversationInfo = ref<NewConversationInfo>({
-  title: 'New Chat',
+  title: null,
   type: availableChatSourceTypes.value.length > 0 ? availableChatSourceTypes.value[0].value as string : null,
   model: null,
 });

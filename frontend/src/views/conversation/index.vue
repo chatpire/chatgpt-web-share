@@ -224,6 +224,8 @@ const sendDisabled = computed(() => {
 const makeNewConversation = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
+    if (!newConversationInfo.type || !newConversationInfo.model) return;
+    newConversationInfo.title = newConversationInfo.title || `New Chat (${t('labels.' + newConversationInfo.type)})`;
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
   });
@@ -320,7 +322,7 @@ const sendMsg = async () => {
     } else if (response.type === 'message') {
       // console.log(reply)
       hasGotReply = true;
-      currentRecvMessage.value = response.message!;
+      currentRecvMessage.value = response.message! as BaseChatMessage;
       respConversationId = response.conversation_id || null;
       canAbort.value = true;
     } else if (response.type === 'error') {
