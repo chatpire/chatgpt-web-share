@@ -39,7 +39,8 @@ class User(Base):
     is_verified: Mapped[bool] = mapped_column(Boolean, comment="是否已经验证")
     hashed_password: Mapped[str] = mapped_column(String(1024))
 
-    setting: Mapped["UserSetting"] = relationship("UserSetting", back_populates="user", lazy="joined")
+    setting: Mapped["UserSetting"] = relationship("UserSetting", back_populates="user", lazy="joined",
+                                                  cascade="save-update, merge, delete, delete-orphan")
     conversations: Mapped[List["BaseConversation"]] = relationship("BaseConversation", back_populates="user")
 
 

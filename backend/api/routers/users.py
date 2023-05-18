@@ -97,11 +97,10 @@ async def admin_update_user(user_update_admin: UserUpdateAdmin, request: Request
 @router.delete("/user/{user_id}", tags=["user"])
 async def admin_delete_user(user_id: int, _user: User = Depends(current_super_user)):
     async with get_async_session_context() as session:
-        async with get_user_db_context(session) as user_db:
-            async with get_user_manager_context(user_db) as user_manager:
-                user = await session.get(User, user_id)
-                await user_manager.delete(user)
-                return None
+        user = await session.get(User, user_id)
+        await session.delete(user)
+        await session.commit()
+        return None
 
 
 @router.patch("/user/{user_id}/setting", response_model=UserReadAdmin, tags=["user"])
