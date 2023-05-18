@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-share-frontend",
   "private": true,
-  "version": "0.3.15",
+  "version": "0.4.0-alpha1",
   "type": "module",
   "scripts": {
     "dev": "vite --config ./config/vite.config.dev.ts",
