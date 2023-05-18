@@ -50,9 +50,9 @@ import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
 import { getCountTrans } from '@/utils/chat';
-import { renderUserPerModelCounts} from '@/utils/renders';
 import { screenWidthGreaterThan } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
+import { renderUserPerModelCounts} from '@/utils/user';
 
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';

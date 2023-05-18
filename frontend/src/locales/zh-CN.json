@@ -222,7 +222,7 @@
     "chat_status": "当前状态",
     "can_use_paid": "是否可用付费模型",
     "can_use_gpt4": "是否可用GPT-4模型",
-    "max_conv_count": "最大对话数量",
+    "ask_count_limits": "最大对话数量",
     "available_ask_count": "剩余可询问次数",
     "available_gpt4_ask_count": "剩余GPT-4可询问次数",
     "is_plus_account": "是否为Plus账号",
@@ -254,7 +254,9 @@
     "username": "用户名",
     "title": "标题",
     "type": "类型",
-    "model": "模型"
+    "model": "模型",
+    "last_active_time": "最后活动时间",
+    "rev_chat_status": "Chat 状态"
   },
   "models": {
     "gpt_3_5": "GPT-3.5",

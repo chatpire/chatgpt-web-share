@@ -9,15 +9,17 @@
           </template>
         </n-tag>
       </template>
-      {{ $t(`models.${key}`) }}
+      {{ t(`models.${key}`) }}
     </n-tooltip>
   </div>
 </template>
 
 <script lang="ts" setup>
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
+import { i18n } from '@/i18n';
 import { getChatModelColor, getChatModelIconStyle } from '@/utils/chat';
 
+const t = i18n.global.t as any;
 const props = defineProps<{
   value: Record<string, string>;
 }>();
