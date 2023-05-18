@@ -479,16 +479,21 @@ async def chat(websocket: WebSocket):
             source_setting = user.setting.rev if ask_request.type == ChatSourceTypes.rev else user.setting.api
 
             total_ask_count = source_setting.total_ask_count
-            model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model, -1)
+            model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model)
+            assert model_ask_count, "model_ask_count is None"
             if total_ask_count != -1 or model_ask_count != -1:
-                user = await session.get(User, user.id)
+
                 if total_ask_count != -1:
                     assert total_ask_count > 0
                     source_setting.total_ask_count -= 1
                 if model_ask_count != -1:
                     assert model_ask_count > 0
                     setattr(source_setting.per_model_ask_count, ask_request.model, model_ask_count - 1)
-                session.add(user.setting)
+
+                user_db = await session.get(User, user.id)
+                setattr(user_db.setting, ask_request.type, source_setting)
+
+                session.add(user_db.setting)
 
             await session.commit()
 
