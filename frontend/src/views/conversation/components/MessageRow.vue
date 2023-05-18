@@ -15,16 +15,20 @@
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
       <div v-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">
-        {{ props.message.content }}
+        {{ content }}
       </div>
       <div v-else-if="isPluginMessage" class="my-3">
-        <n-alert :title="t('commons.invoking_plugin', [props.message.rev_metadata?.recipient])" type="info" class="whitespace-pre-wrap">
-          {{ props.message.content }}
+        <n-alert
+          :title="t('commons.invoking_plugin', [revMetadata?.recipient])"
+          type="info"
+          class="whitespace-pre-wrap"
+        >
+          {{ content }}
         </n-alert>
       </div>
       <div v-else-if="isPluginResult" class="my-3">
-        <n-alert :title="props.message.rev_metadata?.invoked_plugin?.namespace" type="success" class="whitespace-pre-wrap">
-          {{ props.message.content }}
+        <n-alert :title="revMetadata?.invoked_plugin?.namespace" type="success" class="whitespace-pre-wrap">
+          {{ content }}
         </n-alert>
       </div>
       <div
@@ -40,7 +44,7 @@
       >
         {{ renderedContent }}
       </div>
-      
+
       <div class="hide-in-print">
         <n-button
           text
@@ -79,13 +83,14 @@ import { useThemeVars } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// eslint-disable-next-line import/no-unresolved
-import chatgptIcon from '/chatgpt-icon.svg';
-// eslint-disable-next-line import/no-unresolved
-import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useAppStore } from '@/store';
-import { ChatMessage } from '@/types/schema';
+import {
+  ApiChatMessageMetadata,
+  BaseChatMessage,
+  RevChatMessageMetadata,
+} from '@/types/schema';
+import {getContentRawText} from '@/utils/chat';
 import md from '@/utils/markdown';
 import { Message } from '@/utils/tips';
 // let md: any;
@@ -108,29 +113,39 @@ let observer = null;
 const contentRef = ref<HTMLDivElement>();
 const showRawContent = ref(false);
 
-const renderPureText = computed(() => {
-  return appStore.preference.renderUserMessageInMd === false && props.message.role == 'user';
+const props = defineProps<{
+  message: BaseChatMessage;
+}>();
+
+const revMetadata = computed<RevChatMessageMetadata | null>(() => {
+  if (props.message.type == 'rev') {
+    return props.message.metadata as RevChatMessageMetadata;
+  }
+  return null;
+});
+
+const apiMetadata = computed<ApiChatMessageMetadata | null>(() => {
+  if (props.message.type == 'api') {
+    return props.message.metadata as ApiChatMessageMetadata;
+  }
+  return null;
 });
 
 const isPluginMessage = computed(() => {
-  return props.message.rev_metadata?.recipient && props.message.rev_metadata?.recipient != 'all';
+  return revMetadata.value && revMetadata.value.recipient && revMetadata.value.recipient != 'all';
 });
 
 const isPluginResult = computed(() => {
-  return props.message.rev_metadata?.invoked_plugin != null;
+  return revMetadata.value && revMetadata.value.invoked_plugin != null;
+});
+
+const renderPureText = computed(() => {
+  return appStore.preference.renderUserMessageInMd === false && props.message.role == 'user';
 });
 
 const toggleShowRawContent = () => {
   showRawContent.value = !showRawContent.value;
 };
-
-const props = defineProps<{
-  message: ChatMessage;
-}>();
-
-const isGpt4 = computed(() => {
-  return props.message.model == 'gpt-4';
-});
 
 const backgroundColor = computed(() => {
   if (props.message.role == 'user') {
@@ -140,6 +155,11 @@ const backgroundColor = computed(() => {
   }
 });
 
+const content = computed(() => {
+  const message = props.message;
+  return getContentRawText(message);
+});
+
 const renderedContent = computed(() => {
   // if (!mdLoaded.value) {
   //   return '';
@@ -147,7 +167,7 @@ const renderedContent = computed(() => {
   if (renderPureText.value) {
     return props.message.content;
   }
-  const result = md.render(props.message.content || '');
+  const result = md.render(content.value || '');
   return addButtonsToPreTags(result);
 });
 
@@ -259,7 +279,7 @@ const copyMessageContent = () => {
       Message.success(t('commons.copiedToClipboard'))
     }
     ).then(); */
-  const messageContent = props.message.content || '';
+  const messageContent = content.value || '';
   clipboard
     .writeText(messageContent)
     .then(() => {

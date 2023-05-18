@@ -7,7 +7,7 @@ import {
   setConversationTitleApi,
 } from '@/api/conv';
 import { NewConversationInfo } from '@/types/custom';
-import { BaseConversationSchema, ChatMessage, ConversationHistoryDocument, RevConversationSchema } from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory, BaseConversationSchema, RevConversationSchema } from '@/types/schema';
 
 import { ConversationState } from '../types';
 
@@ -90,7 +90,7 @@ const useConversationStore = defineStore('conversation', {
     },
 
     // 仅当收到新信息时调用，为了避免重复获取整个对话历史
-    addMessageToConversation(conversation_id: string, sendMessage: ChatMessage, recvMessage: ChatMessage) {
+    addMessageToConversation(conversation_id: string, sendMessage: BaseChatMessage, recvMessage: BaseChatMessage) {
       if (!this.conversationHistoryMap[conversation_id]) {
         return;
       }

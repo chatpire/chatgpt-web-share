@@ -118,7 +118,7 @@ import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
 import { useAppStore, useConversationStore, useUserStore } from '@/store';
 import { newConversationId } from '@/store/modules/conversation';
 import {NewConversationInfo} from '@/types/custom';
-import { AskRequest, AskResponse, BaseConversationSchema, ChatMessage, ConversationHistoryDocument,RevConversationSchema  } from '@/types/schema';
+import { AskRequest, AskResponse, BaseChatMessage, BaseConversationHistory, BaseConversationSchema, RevConversationSchema  } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getMessageListFromHistory } from '@/utils/conversation';
 import { popupNewConversationDialog } from '@/utils/renders';
@@ -159,18 +159,18 @@ const currentConversation = computed<BaseConversationSchema | null>(() => {
   });
   return conv || null;
 });
-const currentConvHistory = computed<ConversationHistoryDocument | null>(() => {
+const currentConvHistory = computed<BaseConversationHistory | null>(() => {
   if (!currentConversationId.value) return null;
   return conversationStore.conversationHistoryMap[currentConversationId.value] || null;
 });
 
 const inputValue = ref('');
-const currentSendMessage = ref<ChatMessage | null>(null);
-const currentRecvMessage = ref<ChatMessage | null>(null);
+const currentSendMessage = ref<BaseChatMessage | null>(null);
+const currentRecvMessage = ref<BaseChatMessage | null>(null);
 
 // 实际的 currentMessageList，加上当前正在发送的消息
-const currentActiveMessages = computed<Array<ChatMessage>>(() => {
-  const result: ChatMessage[] = [];
+const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
+  const result: BaseChatMessage[] = [];
   if (
     currentSendMessage.value &&
     result.findIndex((message) => message.id === currentSendMessage.value?.id) === -1
@@ -279,6 +279,7 @@ const sendMsg = async () => {
   const random_strid = Math.random().toString(36).substring(2, 16);
   currentSendMessage.value = {
     id: `send_${random_strid}`,
+    type: currentConversation.value!.type,
     content: message,
     role: 'user',
     parent: currentConvHistory.value?.current_node || undefined,
@@ -286,6 +287,7 @@ const sendMsg = async () => {
   };
   currentRecvMessage.value = {
     id: `recv_${random_strid}`,
+    type: currentConversation.value!.type,
     content: '',
     role: 'assistent',
     parent: `send_${random_strid}`,
@@ -348,7 +350,7 @@ const sendMsg = async () => {
             update_time: currentConvHistory.value!.update_time,
             mapping: {},
             current_node: '',
-          } as ConversationHistoryDocument;
+          } as BaseConversationHistory;
           conversationStore.$patch({
             conversationHistoryMap: {
               [respConversationId!]: newConvHistory,

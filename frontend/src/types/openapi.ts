@@ -151,11 +151,66 @@ export interface components {
        */
       read_timeout?: number;
     };
+    /** ApiChatMessage */
+    ApiChatMessage: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Type 
+       * @default api 
+       * @constant 
+       * @enum {string}
+       */
+      type?: api;
+      /** Role */
+      role: ("system" | "user" | "assistant" | "tool") | string;
+      /** Author Name */
+      author_name?: string;
+      /** Model */
+      model?: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time?: string;
+      /**
+       * Parent 
+       * Format: uuid
+       */
+      parent?: string;
+      /** Children */
+      children: (string)[];
+      content?: components["schemas"]["ApiChatMessageTextContent"];
+      /** Metadata */
+      metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
+    };
     /** ApiChatMessageMetadata */
     ApiChatMessageMetadata: {
+      /**
+       * Type 
+       * @default api 
+       * @constant 
+       * @enum {string}
+       */
+      type?: api;
       usage?: components["schemas"]["OpenAIChatResponseUsage"];
       /** Finish Reason */
       finish_reason?: string;
+    };
+    /** ApiChatMessageTextContent */
+    ApiChatMessageTextContent: {
+      /**
+       * Content Type 
+       * @default text 
+       * @constant 
+       * @enum {string}
+       */
+      content_type?: text;
+      /** Text */
+      text: string;
     };
     /**
      * ApiChatModels 
@@ -163,6 +218,58 @@ export interface components {
      * @enum {string}
      */
     ApiChatModels: "gpt_3_5" | "gpt_4";
+    /**
+     * ApiConversationHistoryDocument 
+     * @description Document Mapping class.
+     * 
+     * Fields:
+     * 
+     * - `id` - MongoDB document ObjectID "_id" field.
+     * Mapped to the PydanticObjectId class
+     * 
+     * Inherited from:
+     * 
+     * - Pydantic BaseModel
+     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+     */
+    ApiConversationHistoryDocument: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      _id?: string;
+      /**
+       * Type 
+       * @default api 
+       * @constant 
+       * @enum {string}
+       */
+      type?: api;
+      /** Title */
+      title: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time: string;
+      /** Mapping */
+      mapping: {
+        [key: string]: components["schemas"]["ApiChatMessage"] | undefined;
+      };
+      /**
+       * Current Node 
+       * Format: uuid
+       */
+      current_node?: string;
+      /** Current Model */
+      current_model?: string;
+      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
+    };
     /** ApiConversationSchema */
     ApiConversationSchema: {
       /**
@@ -276,7 +383,8 @@ export interface components {
        * Format: uuid
        */
       conversation_id?: string;
-      message?: components["schemas"]["ChatMessage"];
+      /** Message */
+      message?: components["schemas"]["RevChatMessage"] | components["schemas"]["ApiChatMessage"];
       /** Error Detail */
       error_detail?: string;
     };
@@ -313,6 +421,78 @@ export interface components {
        * @default MODIFY_THIS_TO_RANDOM_SECRET
        */
       user_secret?: string;
+    };
+    /** BaseChatMessage */
+    BaseChatMessage: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Type 
+       * @enum {string}
+       */
+      type: "rev" | "api";
+      /** Role */
+      role: ("system" | "user" | "assistant" | "tool") | string;
+      /** Author Name */
+      author_name?: string;
+      /** Model */
+      model?: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time?: string;
+      /**
+       * Parent 
+       * Format: uuid
+       */
+      parent?: string;
+      /** Children */
+      children: (string)[];
+      /** Content */
+      content?: (components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"]) | components["schemas"]["ApiChatMessageTextContent"] | string;
+      /** Metadata */
+      metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
+    };
+    /** BaseConversationHistory */
+    BaseConversationHistory: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      _id?: string;
+      /**
+       * Type 
+       * @enum {string}
+       */
+      type: "rev" | "api";
+      /** Title */
+      title: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time: string;
+      /** Mapping */
+      mapping: {
+        [key: string]: components["schemas"]["BaseChatMessage"] | undefined;
+      };
+      /**
+       * Current Node 
+       * Format: uuid
+       */
+      current_node?: string;
+      /** Current Model */
+      current_model?: string;
+      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
     };
     /** BaseConversationSchema */
     BaseConversationSchema: {
@@ -366,36 +546,6 @@ export interface components {
       client_id?: string;
       /** Client Secret */
       client_secret?: string;
-    };
-    /** ChatMessage */
-    ChatMessage: {
-      /**
-       * Id 
-       * Format: uuid
-       */
-      id: string;
-      /** Role */
-      role: string;
-      /** Model */
-      model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Parent 
-       * Format: uuid
-       */
-      parent?: string;
-      /** Children */
-      children: (string)[];
-      /** Content */
-      content: string;
-      /** Content Type */
-      content_type?: string;
-      rev_metadata?: components["schemas"]["RevChatMessageMetadata"];
-      api_metadata?: components["schemas"]["ApiChatMessageMetadata"];
     };
     /**
      * ChatSourceTypes 
@@ -517,56 +667,6 @@ export interface components {
        * }
        */
       stats?: components["schemas"]["StatsSetting"];
-    };
-    /**
-     * ConversationHistoryDocument 
-     * @description Document Mapping class.
-     * 
-     * Fields:
-     * 
-     * - `id` - MongoDB document ObjectID "_id" field.
-     * Mapped to the PydanticObjectId class
-     * 
-     * Inherited from:
-     * 
-     * - Pydantic BaseModel
-     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
-     */
-    ConversationHistoryDocument: {
-      /**
-       * Id 
-       * Format: uuid
-       */
-      _id?: string;
-      /**
-       * Type 
-       * @enum {string}
-       */
-      type: "rev" | "api";
-      /** Title */
-      title: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time: string;
-      /**
-       * Update Time 
-       * Format: date-time
-       */
-      update_time: string;
-      /** Mapping */
-      mapping: {
-        [key: string]: components["schemas"]["ChatMessage"] | undefined;
-      };
-      /**
-       * Current Node 
-       * Format: uuid
-       */
-      current_node?: string;
-      /** Current Model */
-      current_model?: string;
-      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
     };
     /** CredentialsModel */
     CredentialsModel: {
@@ -767,19 +867,102 @@ export interface components {
        */
       ask_timeout?: number;
     };
+    /** RevChatMessage */
+    RevChatMessage: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Type 
+       * @default rev 
+       * @constant 
+       * @enum {string}
+       */
+      type?: rev;
+      /** Role */
+      role: ("system" | "user" | "assistant" | "tool") | string;
+      /** Author Name */
+      author_name?: string;
+      /** Model */
+      model?: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time?: string;
+      /**
+       * Parent 
+       * Format: uuid
+       */
+      parent?: string;
+      /** Children */
+      children: (string)[];
+      /** Content */
+      content?: components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"];
+      /** Metadata */
+      metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
+    };
+    /** RevChatMessageCodeContent */
+    RevChatMessageCodeContent: {
+      /**
+       * Content Type 
+       * @default code 
+       * @constant 
+       * @enum {string}
+       */
+      content_type?: code;
+      /** Language */
+      language?: string;
+      /** Text */
+      text?: string;
+    };
     /** RevChatMessageMetadata */
     RevChatMessageMetadata: {
+      /**
+       * Type 
+       * @default rev 
+       * @constant 
+       * @enum {string}
+       */
+      type?: rev;
       /** Finish Details */
       finish_details?: Record<string, never>;
       /** Weight */
       weight?: number;
       /** End Turn */
       end_turn?: boolean;
-      /** Status */
-      status?: string;
+      /** Message Status */
+      message_status?: string;
       /** Recipient */
-      recipient?: "all" | string;
+      recipient?: ("all" | "browser") | string;
+      /** Fallback Content */
+      fallback_content?: Record<string, never>;
       invoked_plugin?: components["schemas"]["RevChatMessageMetadataPlugin"];
+      /** Command */
+      command?: "search" | string;
+      /** Args */
+      args?: (string)[];
+      /** Status */
+      status?: "finished" | string;
+      _cite_metadata?: components["schemas"]["RevChatMessageMetadataCite"];
+    };
+    /** RevChatMessageMetadataCite */
+    RevChatMessageMetadataCite: {
+      /** Citation Format */
+      citation_format?: Record<string, never>;
+      /** Metadata List */
+      metadata_list?: (components["schemas"]["RevChatMessageMetadataCiteData"])[];
+    };
+    /** RevChatMessageMetadataCiteData */
+    RevChatMessageMetadataCiteData: {
+      /** Title */
+      title?: string;
+      /** Url */
+      url?: string;
+      /** Text */
+      text?: string;
     };
     /** RevChatMessageMetadataPlugin */
     RevChatMessageMetadataPlugin: {
@@ -791,6 +974,48 @@ export interface components {
       plugin_id?: string;
       /** Type */
       type?: string;
+    };
+    /** RevChatMessageTetherBrowsingDisplayContent */
+    RevChatMessageTetherBrowsingDisplayContent: {
+      /**
+       * Content Type 
+       * @default tether_browsing_display 
+       * @constant 
+       * @enum {string}
+       */
+      content_type?: tether_browsing_display;
+      /** Result */
+      result?: string;
+    };
+    /** RevChatMessageTetherQuoteContent */
+    RevChatMessageTetherQuoteContent: {
+      /**
+       * Content Type 
+       * @default tether_quote 
+       * @constant 
+       * @enum {string}
+       */
+      content_type?: tether_quote;
+      /** Url */
+      url?: string;
+      /** Domain */
+      domain?: string;
+      /** Text */
+      text?: string;
+      /** Title */
+      title?: string;
+    };
+    /** RevChatMessageTextContent */
+    RevChatMessageTextContent: {
+      /**
+       * Content Type 
+       * @default text 
+       * @constant 
+       * @enum {string}
+       */
+      content_type?: text;
+      /** Parts */
+      parts?: (string)[];
     };
     /**
      * RevChatModels 
@@ -804,6 +1029,58 @@ export interface components {
      * @enum {string}
      */
     RevChatStatus: "asking" | "queueing" | "idling";
+    /**
+     * RevConversationHistoryDocument 
+     * @description Document Mapping class.
+     * 
+     * Fields:
+     * 
+     * - `id` - MongoDB document ObjectID "_id" field.
+     * Mapped to the PydanticObjectId class
+     * 
+     * Inherited from:
+     * 
+     * - Pydantic BaseModel
+     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+     */
+    RevConversationHistoryDocument: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      _id?: string;
+      /**
+       * Type 
+       * @default rev 
+       * @constant 
+       * @enum {string}
+       */
+      type?: rev;
+      /** Title */
+      title: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time: string;
+      /** Mapping */
+      mapping: {
+        [key: string]: components["schemas"]["RevChatMessage"] | undefined;
+      };
+      /**
+       * Current Node 
+       * Format: uuid
+       */
+      current_node?: string;
+      /** Current Model */
+      current_model?: string;
+      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
+    };
     /** RevConversationHistoryExtra */
     RevConversationHistoryExtra: {
       /** Moderation Results */

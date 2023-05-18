@@ -22,10 +22,285 @@
       }
     }
   },
+  "ApiChatMessage": {
+    "title": "ApiChatMessage",
+    "required": [
+      "id",
+      "role",
+      "children"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "api"
+        ],
+        "type": "string",
+        "default": "api",
+        "const": "api"
+      },
+      "role": {
+        "title": "Role",
+        "anyOf": [
+          {
+            "enum": [
+              "system",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "author_name": {
+        "title": "Author Name",
+        "type": "string"
+      },
+      "model": {
+        "title": "Model",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "parent": {
+        "title": "Parent",
+        "type": "string",
+        "format": "uuid"
+      },
+      "children": {
+        "title": "Children",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "content": {
+        "title": "ApiChatMessageTextContent",
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "content_type": {
+            "title": "Content Type",
+            "enum": [
+              "text"
+            ],
+            "type": "string",
+            "default": "text",
+            "const": "text"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        }
+      },
+      "metadata": {
+        "title": "Metadata",
+        "anyOf": [
+          {
+            "title": "RevChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "rev"
+                ],
+                "type": "string",
+                "default": "rev",
+                "const": "rev"
+              },
+              "finish_details": {
+                "title": "Finish Details",
+                "type": "object"
+              },
+              "weight": {
+                "title": "Weight",
+                "type": "number"
+              },
+              "end_turn": {
+                "title": "End Turn",
+                "type": "boolean"
+              },
+              "message_status": {
+                "title": "Message Status",
+                "type": "string"
+              },
+              "recipient": {
+                "title": "Recipient",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "all",
+                      "browser"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "fallback_content": {
+                "title": "Fallback Content"
+              },
+              "invoked_plugin": {
+                "title": "RevChatMessageMetadataPlugin",
+                "type": "object",
+                "properties": {
+                  "http_response_status": {
+                    "title": "Http Response Status",
+                    "type": "integer"
+                  },
+                  "namespace": {
+                    "title": "Namespace",
+                    "type": "string"
+                  },
+                  "plugin_id": {
+                    "title": "Plugin Id",
+                    "type": "string"
+                  },
+                  "type": {
+                    "title": "Type",
+                    "type": "string"
+                  }
+                }
+              },
+              "command": {
+                "title": "Command",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "search"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "args": {
+                "title": "Args",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "title": "Status",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "finished"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "_cite_metadata": {
+                "title": "RevChatMessageMetadataCite",
+                "type": "object",
+                "properties": {
+                  "citation_format": {
+                    "title": "Citation Format",
+                    "type": "object"
+                  },
+                  "metadata_list": {
+                    "title": "Metadata List",
+                    "type": "array",
+                    "items": {
+                      "title": "RevChatMessageMetadataCiteData",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "ApiChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "api"
+                ],
+                "type": "string",
+                "default": "api",
+                "const": "api"
+              },
+              "usage": {
+                "title": "OpenAIChatResponseUsage",
+                "type": "object",
+                "properties": {
+                  "prompt_tokens": {
+                    "title": "Prompt Tokens",
+                    "type": "integer"
+                  },
+                  "completion_tokens": {
+                    "title": "Completion Tokens",
+                    "type": "integer"
+                  }
+                }
+              },
+              "finish_reason": {
+                "title": "Finish Reason",
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
   "ApiChatMessageMetadata": {
     "title": "ApiChatMessageMetadata",
     "type": "object",
     "properties": {
+      "type": {
+        "title": "Type",
+        "enum": [
+          "api"
+        ],
+        "type": "string",
+        "default": "api",
+        "const": "api"
+      },
       "usage": {
         "title": "OpenAIChatResponseUsage",
         "type": "object",
@@ -46,6 +321,28 @@
       }
     }
   },
+  "ApiChatMessageTextContent": {
+    "title": "ApiChatMessageTextContent",
+    "required": [
+      "text"
+    ],
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "text"
+        ],
+        "type": "string",
+        "default": "text",
+        "const": "text"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      }
+    }
+  },
   "ApiChatModels": {
     "title": "ApiChatModels",
     "enum": [
@@ -54,6 +351,344 @@
     ],
     "type": "string",
     "description": "An enumeration."
+  },
+  "ApiConversationHistoryDocument": {
+    "title": "ApiConversationHistoryDocument",
+    "required": [
+      "title",
+      "create_time",
+      "update_time",
+      "mapping"
+    ],
+    "type": "object",
+    "properties": {
+      "_id": {
+        "title": " Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "api"
+        ],
+        "type": "string",
+        "default": "api",
+        "const": "api"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "mapping": {
+        "title": "Mapping",
+        "type": "object",
+        "additionalProperties": {
+          "title": "ApiChatMessage",
+          "required": [
+            "id",
+            "role",
+            "children"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "title": "Type",
+              "enum": [
+                "api"
+              ],
+              "type": "string",
+              "default": "api",
+              "const": "api"
+            },
+            "role": {
+              "title": "Role",
+              "anyOf": [
+                {
+                  "enum": [
+                    "system",
+                    "user",
+                    "assistant",
+                    "tool"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "author_name": {
+              "title": "Author Name",
+              "type": "string"
+            },
+            "model": {
+              "title": "Model",
+              "type": "string"
+            },
+            "create_time": {
+              "title": "Create Time",
+              "type": "string",
+              "format": "date-time"
+            },
+            "parent": {
+              "title": "Parent",
+              "type": "string",
+              "format": "uuid"
+            },
+            "children": {
+              "title": "Children",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "content": {
+              "title": "ApiChatMessageTextContent",
+              "required": [
+                "text"
+              ],
+              "type": "object",
+              "properties": {
+                "content_type": {
+                  "title": "Content Type",
+                  "enum": [
+                    "text"
+                  ],
+                  "type": "string",
+                  "default": "text",
+                  "const": "text"
+                },
+                "text": {
+                  "title": "Text",
+                  "type": "string"
+                }
+              }
+            },
+            "metadata": {
+              "title": "Metadata",
+              "anyOf": [
+                {
+                  "title": "RevChatMessageMetadata",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "rev"
+                      ],
+                      "type": "string",
+                      "default": "rev",
+                      "const": "rev"
+                    },
+                    "finish_details": {
+                      "title": "Finish Details",
+                      "type": "object"
+                    },
+                    "weight": {
+                      "title": "Weight",
+                      "type": "number"
+                    },
+                    "end_turn": {
+                      "title": "End Turn",
+                      "type": "boolean"
+                    },
+                    "message_status": {
+                      "title": "Message Status",
+                      "type": "string"
+                    },
+                    "recipient": {
+                      "title": "Recipient",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "all",
+                            "browser"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "fallback_content": {
+                      "title": "Fallback Content"
+                    },
+                    "invoked_plugin": {
+                      "title": "RevChatMessageMetadataPlugin",
+                      "type": "object",
+                      "properties": {
+                        "http_response_status": {
+                          "title": "Http Response Status",
+                          "type": "integer"
+                        },
+                        "namespace": {
+                          "title": "Namespace",
+                          "type": "string"
+                        },
+                        "plugin_id": {
+                          "title": "Plugin Id",
+                          "type": "string"
+                        },
+                        "type": {
+                          "title": "Type",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "command": {
+                      "title": "Command",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "search"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "args": {
+                      "title": "Args",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "status": {
+                      "title": "Status",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "finished"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "_cite_metadata": {
+                      "title": "RevChatMessageMetadataCite",
+                      "type": "object",
+                      "properties": {
+                        "citation_format": {
+                          "title": "Citation Format",
+                          "type": "object"
+                        },
+                        "metadata_list": {
+                          "title": "Metadata List",
+                          "type": "array",
+                          "items": {
+                            "title": "RevChatMessageMetadataCiteData",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "title": "Title",
+                                "type": "string"
+                              },
+                              "url": {
+                                "title": "Url",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "ApiChatMessageMetadata",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "api"
+                      ],
+                      "type": "string",
+                      "default": "api",
+                      "const": "api"
+                    },
+                    "usage": {
+                      "title": "OpenAIChatResponseUsage",
+                      "type": "object",
+                      "properties": {
+                        "prompt_tokens": {
+                          "title": "Prompt Tokens",
+                          "type": "integer"
+                        },
+                        "completion_tokens": {
+                          "title": "Completion Tokens",
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "finish_reason": {
+                      "title": "Finish Reason",
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "current_node": {
+        "title": "Current Node",
+        "type": "string",
+        "format": "uuid"
+      },
+      "current_model": {
+        "title": "Current Model",
+        "type": "string"
+      },
+      "rev_extra": {
+        "title": "RevConversationHistoryExtra",
+        "type": "object",
+        "properties": {
+          "moderation_results": {
+            "title": "Moderation Results",
+            "type": "array",
+            "items": {}
+          },
+          "plugin_ids": {
+            "title": "Plugin Ids",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
   },
   "ApiConversationSchema": {
     "title": "ApiConversationSchema",
@@ -333,80 +968,40 @@
         "format": "uuid"
       },
       "message": {
-        "title": "ChatMessage",
-        "required": [
-          "id",
-          "role",
-          "children",
-          "content"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string",
-            "format": "uuid"
-          },
-          "role": {
-            "title": "Role",
-            "type": "string"
-          },
-          "model": {
-            "title": "Model",
-            "type": "string"
-          },
-          "create_time": {
-            "title": "Create Time",
-            "type": "string",
-            "format": "date-time"
-          },
-          "parent": {
-            "title": "Parent",
-            "type": "string",
-            "format": "uuid"
-          },
-          "children": {
-            "title": "Children",
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          "content": {
-            "title": "Content",
-            "type": "string"
-          },
-          "content_type": {
-            "title": "Content Type",
-            "type": "string"
-          },
-          "rev_metadata": {
-            "title": "RevChatMessageMetadata",
+        "title": "Message",
+        "anyOf": [
+          {
+            "title": "RevChatMessage",
+            "required": [
+              "id",
+              "role",
+              "children"
+            ],
             "type": "object",
             "properties": {
-              "finish_details": {
-                "title": "Finish Details",
-                "type": "object"
+              "id": {
+                "title": "Id",
+                "type": "string",
+                "format": "uuid"
               },
-              "weight": {
-                "title": "Weight",
-                "type": "number"
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "rev"
+                ],
+                "type": "string",
+                "default": "rev",
+                "const": "rev"
               },
-              "end_turn": {
-                "title": "End Turn",
-                "type": "boolean"
-              },
-              "status": {
-                "title": "Status",
-                "type": "string"
-              },
-              "recipient": {
-                "title": "Recipient",
+              "role": {
+                "title": "Role",
                 "anyOf": [
                   {
                     "enum": [
-                      "all"
+                      "system",
+                      "user",
+                      "assistant",
+                      "tool"
                     ],
                     "type": "string"
                   },
@@ -415,55 +1010,577 @@
                   }
                 ]
               },
-              "invoked_plugin": {
-                "title": "RevChatMessageMetadataPlugin",
-                "type": "object",
-                "properties": {
-                  "http_response_status": {
-                    "title": "Http Response Status",
-                    "type": "integer"
-                  },
-                  "namespace": {
-                    "title": "Namespace",
-                    "type": "string"
-                  },
-                  "plugin_id": {
-                    "title": "Plugin Id",
-                    "type": "string"
-                  },
-                  "type": {
-                    "title": "Type",
-                    "type": "string"
-                  }
+              "author_name": {
+                "title": "Author Name",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "create_time": {
+                "title": "Create Time",
+                "type": "string",
+                "format": "date-time"
+              },
+              "parent": {
+                "title": "Parent",
+                "type": "string",
+                "format": "uuid"
+              },
+              "children": {
+                "title": "Children",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
                 }
+              },
+              "content": {
+                "title": "Content",
+                "anyOf": [
+                  {
+                    "title": "RevChatMessageTextContent",
+                    "type": "object",
+                    "properties": {
+                      "content_type": {
+                        "title": "Content Type",
+                        "enum": [
+                          "text"
+                        ],
+                        "type": "string",
+                        "default": "text",
+                        "const": "text"
+                      },
+                      "parts": {
+                        "title": "Parts",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "RevChatMessageCodeContent",
+                    "type": "object",
+                    "properties": {
+                      "content_type": {
+                        "title": "Content Type",
+                        "enum": [
+                          "code"
+                        ],
+                        "type": "string",
+                        "default": "code",
+                        "const": "code"
+                      },
+                      "language": {
+                        "title": "Language",
+                        "type": "string"
+                      },
+                      "text": {
+                        "title": "Text",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "RevChatMessageTetherBrowsingDisplayContent",
+                    "type": "object",
+                    "properties": {
+                      "content_type": {
+                        "title": "Content Type",
+                        "enum": [
+                          "tether_browsing_display"
+                        ],
+                        "type": "string",
+                        "default": "tether_browsing_display",
+                        "const": "tether_browsing_display"
+                      },
+                      "result": {
+                        "title": "Result",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "RevChatMessageTetherQuoteContent",
+                    "type": "object",
+                    "properties": {
+                      "content_type": {
+                        "title": "Content Type",
+                        "enum": [
+                          "tether_quote"
+                        ],
+                        "type": "string",
+                        "default": "tether_quote",
+                        "const": "tether_quote"
+                      },
+                      "url": {
+                        "title": "Url",
+                        "type": "string"
+                      },
+                      "domain": {
+                        "title": "Domain",
+                        "type": "string"
+                      },
+                      "text": {
+                        "title": "Text",
+                        "type": "string"
+                      },
+                      "title": {
+                        "title": "Title",
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
+              },
+              "metadata": {
+                "title": "Metadata",
+                "anyOf": [
+                  {
+                    "title": "RevChatMessageMetadata",
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "title": "Type",
+                        "enum": [
+                          "rev"
+                        ],
+                        "type": "string",
+                        "default": "rev",
+                        "const": "rev"
+                      },
+                      "finish_details": {
+                        "title": "Finish Details",
+                        "type": "object"
+                      },
+                      "weight": {
+                        "title": "Weight",
+                        "type": "number"
+                      },
+                      "end_turn": {
+                        "title": "End Turn",
+                        "type": "boolean"
+                      },
+                      "message_status": {
+                        "title": "Message Status",
+                        "type": "string"
+                      },
+                      "recipient": {
+                        "title": "Recipient",
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "all",
+                              "browser"
+                            ],
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "fallback_content": {
+                        "title": "Fallback Content"
+                      },
+                      "invoked_plugin": {
+                        "title": "RevChatMessageMetadataPlugin",
+                        "type": "object",
+                        "properties": {
+                          "http_response_status": {
+                            "title": "Http Response Status",
+                            "type": "integer"
+                          },
+                          "namespace": {
+                            "title": "Namespace",
+                            "type": "string"
+                          },
+                          "plugin_id": {
+                            "title": "Plugin Id",
+                            "type": "string"
+                          },
+                          "type": {
+                            "title": "Type",
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "command": {
+                        "title": "Command",
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "search"
+                            ],
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "args": {
+                        "title": "Args",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "status": {
+                        "title": "Status",
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "finished"
+                            ],
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "_cite_metadata": {
+                        "title": "RevChatMessageMetadataCite",
+                        "type": "object",
+                        "properties": {
+                          "citation_format": {
+                            "title": "Citation Format",
+                            "type": "object"
+                          },
+                          "metadata_list": {
+                            "title": "Metadata List",
+                            "type": "array",
+                            "items": {
+                              "title": "RevChatMessageMetadataCiteData",
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "title": "Title",
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "title": "Url",
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "title": "Text",
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "ApiChatMessageMetadata",
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "title": "Type",
+                        "enum": [
+                          "api"
+                        ],
+                        "type": "string",
+                        "default": "api",
+                        "const": "api"
+                      },
+                      "usage": {
+                        "title": "OpenAIChatResponseUsage",
+                        "type": "object",
+                        "properties": {
+                          "prompt_tokens": {
+                            "title": "Prompt Tokens",
+                            "type": "integer"
+                          },
+                          "completion_tokens": {
+                            "title": "Completion Tokens",
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "finish_reason": {
+                        "title": "Finish Reason",
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
-          "api_metadata": {
-            "title": "ApiChatMessageMetadata",
+          {
+            "title": "ApiChatMessage",
+            "required": [
+              "id",
+              "role",
+              "children"
+            ],
             "type": "object",
             "properties": {
-              "usage": {
-                "title": "OpenAIChatResponseUsage",
+              "id": {
+                "title": "Id",
+                "type": "string",
+                "format": "uuid"
+              },
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "api"
+                ],
+                "type": "string",
+                "default": "api",
+                "const": "api"
+              },
+              "role": {
+                "title": "Role",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "system",
+                      "user",
+                      "assistant",
+                      "tool"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "author_name": {
+                "title": "Author Name",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "create_time": {
+                "title": "Create Time",
+                "type": "string",
+                "format": "date-time"
+              },
+              "parent": {
+                "title": "Parent",
+                "type": "string",
+                "format": "uuid"
+              },
+              "children": {
+                "title": "Children",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "content": {
+                "title": "ApiChatMessageTextContent",
+                "required": [
+                  "text"
+                ],
                 "type": "object",
                 "properties": {
-                  "prompt_tokens": {
-                    "title": "Prompt Tokens",
-                    "type": "integer"
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "text"
+                    ],
+                    "type": "string",
+                    "default": "text",
+                    "const": "text"
                   },
-                  "completion_tokens": {
-                    "title": "Completion Tokens",
-                    "type": "integer"
+                  "text": {
+                    "title": "Text",
+                    "type": "string"
                   }
                 }
               },
-              "finish_reason": {
-                "title": "Finish Reason",
-                "type": "string"
+              "metadata": {
+                "title": "Metadata",
+                "anyOf": [
+                  {
+                    "title": "RevChatMessageMetadata",
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "title": "Type",
+                        "enum": [
+                          "rev"
+                        ],
+                        "type": "string",
+                        "default": "rev",
+                        "const": "rev"
+                      },
+                      "finish_details": {
+                        "title": "Finish Details",
+                        "type": "object"
+                      },
+                      "weight": {
+                        "title": "Weight",
+                        "type": "number"
+                      },
+                      "end_turn": {
+                        "title": "End Turn",
+                        "type": "boolean"
+                      },
+                      "message_status": {
+                        "title": "Message Status",
+                        "type": "string"
+                      },
+                      "recipient": {
+                        "title": "Recipient",
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "all",
+                              "browser"
+                            ],
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "fallback_content": {
+                        "title": "Fallback Content"
+                      },
+                      "invoked_plugin": {
+                        "title": "RevChatMessageMetadataPlugin",
+                        "type": "object",
+                        "properties": {
+                          "http_response_status": {
+                            "title": "Http Response Status",
+                            "type": "integer"
+                          },
+                          "namespace": {
+                            "title": "Namespace",
+                            "type": "string"
+                          },
+                          "plugin_id": {
+                            "title": "Plugin Id",
+                            "type": "string"
+                          },
+                          "type": {
+                            "title": "Type",
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "command": {
+                        "title": "Command",
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "search"
+                            ],
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "args": {
+                        "title": "Args",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "status": {
+                        "title": "Status",
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "finished"
+                            ],
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "_cite_metadata": {
+                        "title": "RevChatMessageMetadataCite",
+                        "type": "object",
+                        "properties": {
+                          "citation_format": {
+                            "title": "Citation Format",
+                            "type": "object"
+                          },
+                          "metadata_list": {
+                            "title": "Metadata List",
+                            "type": "array",
+                            "items": {
+                              "title": "RevChatMessageMetadataCiteData",
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "title": "Title",
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "title": "Url",
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "title": "Text",
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "ApiChatMessageMetadata",
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "title": "Type",
+                        "enum": [
+                          "api"
+                        ],
+                        "type": "string",
+                        "default": "api",
+                        "const": "api"
+                      },
+                      "usage": {
+                        "title": "OpenAIChatResponseUsage",
+                        "type": "object",
+                        "properties": {
+                          "prompt_tokens": {
+                            "title": "Prompt Tokens",
+                            "type": "integer"
+                          },
+                          "completion_tokens": {
+                            "title": "Completion Tokens",
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "finish_reason": {
+                        "title": "Finish Reason",
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
-        }
+        ]
       },
       "error_detail": {
         "title": "Error Detail",
@@ -512,6 +1629,823 @@
         "title": "User Secret",
         "type": "string",
         "default": "MODIFY_THIS_TO_RANDOM_SECRET"
+      }
+    }
+  },
+  "BaseChatMessage": {
+    "title": "BaseChatMessage",
+    "required": [
+      "id",
+      "type",
+      "role",
+      "children"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev",
+          "api"
+        ],
+        "type": "string"
+      },
+      "role": {
+        "title": "Role",
+        "anyOf": [
+          {
+            "enum": [
+              "system",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "author_name": {
+        "title": "Author Name",
+        "type": "string"
+      },
+      "model": {
+        "title": "Model",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "parent": {
+        "title": "Parent",
+        "type": "string",
+        "format": "uuid"
+      },
+      "children": {
+        "title": "Children",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "content": {
+        "title": "Content",
+        "anyOf": [
+          {
+            "oneOf": [
+              {
+                "title": "RevChatMessageTextContent",
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "text"
+                    ],
+                    "type": "string",
+                    "default": "text",
+                    "const": "text"
+                  },
+                  "parts": {
+                    "title": "Parts",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "title": "RevChatMessageCodeContent",
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "code"
+                    ],
+                    "type": "string",
+                    "default": "code",
+                    "const": "code"
+                  },
+                  "language": {
+                    "title": "Language",
+                    "type": "string"
+                  },
+                  "text": {
+                    "title": "Text",
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "title": "RevChatMessageTetherBrowsingDisplayContent",
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "tether_browsing_display"
+                    ],
+                    "type": "string",
+                    "default": "tether_browsing_display",
+                    "const": "tether_browsing_display"
+                  },
+                  "result": {
+                    "title": "Result",
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "title": "RevChatMessageTetherQuoteContent",
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "tether_quote"
+                    ],
+                    "type": "string",
+                    "default": "tether_quote",
+                    "const": "tether_quote"
+                  },
+                  "url": {
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "domain": {
+                    "title": "Domain",
+                    "type": "string"
+                  },
+                  "text": {
+                    "title": "Text",
+                    "type": "string"
+                  },
+                  "title": {
+                    "title": "Title",
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "title": "ApiChatMessageTextContent",
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "text"
+                ],
+                "type": "string",
+                "default": "text",
+                "const": "text"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "metadata": {
+        "title": "Metadata",
+        "anyOf": [
+          {
+            "title": "RevChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "rev"
+                ],
+                "type": "string",
+                "default": "rev",
+                "const": "rev"
+              },
+              "finish_details": {
+                "title": "Finish Details",
+                "type": "object"
+              },
+              "weight": {
+                "title": "Weight",
+                "type": "number"
+              },
+              "end_turn": {
+                "title": "End Turn",
+                "type": "boolean"
+              },
+              "message_status": {
+                "title": "Message Status",
+                "type": "string"
+              },
+              "recipient": {
+                "title": "Recipient",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "all",
+                      "browser"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "fallback_content": {
+                "title": "Fallback Content"
+              },
+              "invoked_plugin": {
+                "title": "RevChatMessageMetadataPlugin",
+                "type": "object",
+                "properties": {
+                  "http_response_status": {
+                    "title": "Http Response Status",
+                    "type": "integer"
+                  },
+                  "namespace": {
+                    "title": "Namespace",
+                    "type": "string"
+                  },
+                  "plugin_id": {
+                    "title": "Plugin Id",
+                    "type": "string"
+                  },
+                  "type": {
+                    "title": "Type",
+                    "type": "string"
+                  }
+                }
+              },
+              "command": {
+                "title": "Command",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "search"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "args": {
+                "title": "Args",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "title": "Status",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "finished"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "_cite_metadata": {
+                "title": "RevChatMessageMetadataCite",
+                "type": "object",
+                "properties": {
+                  "citation_format": {
+                    "title": "Citation Format",
+                    "type": "object"
+                  },
+                  "metadata_list": {
+                    "title": "Metadata List",
+                    "type": "array",
+                    "items": {
+                      "title": "RevChatMessageMetadataCiteData",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "ApiChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "api"
+                ],
+                "type": "string",
+                "default": "api",
+                "const": "api"
+              },
+              "usage": {
+                "title": "OpenAIChatResponseUsage",
+                "type": "object",
+                "properties": {
+                  "prompt_tokens": {
+                    "title": "Prompt Tokens",
+                    "type": "integer"
+                  },
+                  "completion_tokens": {
+                    "title": "Completion Tokens",
+                    "type": "integer"
+                  }
+                }
+              },
+              "finish_reason": {
+                "title": "Finish Reason",
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "BaseConversationHistory": {
+    "title": "BaseConversationHistory",
+    "required": [
+      "type",
+      "title",
+      "create_time",
+      "update_time",
+      "mapping"
+    ],
+    "type": "object",
+    "properties": {
+      "_id": {
+        "title": " Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev",
+          "api"
+        ],
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "mapping": {
+        "title": "Mapping",
+        "type": "object",
+        "additionalProperties": {
+          "title": "BaseChatMessage",
+          "required": [
+            "id",
+            "type",
+            "role",
+            "children"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "title": "Type",
+              "enum": [
+                "rev",
+                "api"
+              ],
+              "type": "string"
+            },
+            "role": {
+              "title": "Role",
+              "anyOf": [
+                {
+                  "enum": [
+                    "system",
+                    "user",
+                    "assistant",
+                    "tool"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "author_name": {
+              "title": "Author Name",
+              "type": "string"
+            },
+            "model": {
+              "title": "Model",
+              "type": "string"
+            },
+            "create_time": {
+              "title": "Create Time",
+              "type": "string",
+              "format": "date-time"
+            },
+            "parent": {
+              "title": "Parent",
+              "type": "string",
+              "format": "uuid"
+            },
+            "children": {
+              "title": "Children",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "content": {
+              "title": "Content",
+              "anyOf": [
+                {
+                  "oneOf": [
+                    {
+                      "title": "RevChatMessageTextContent",
+                      "type": "object",
+                      "properties": {
+                        "content_type": {
+                          "title": "Content Type",
+                          "enum": [
+                            "text"
+                          ],
+                          "type": "string",
+                          "default": "text",
+                          "const": "text"
+                        },
+                        "parts": {
+                          "title": "Parts",
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "title": "RevChatMessageCodeContent",
+                      "type": "object",
+                      "properties": {
+                        "content_type": {
+                          "title": "Content Type",
+                          "enum": [
+                            "code"
+                          ],
+                          "type": "string",
+                          "default": "code",
+                          "const": "code"
+                        },
+                        "language": {
+                          "title": "Language",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "title": "RevChatMessageTetherBrowsingDisplayContent",
+                      "type": "object",
+                      "properties": {
+                        "content_type": {
+                          "title": "Content Type",
+                          "enum": [
+                            "tether_browsing_display"
+                          ],
+                          "type": "string",
+                          "default": "tether_browsing_display",
+                          "const": "tether_browsing_display"
+                        },
+                        "result": {
+                          "title": "Result",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "title": "RevChatMessageTetherQuoteContent",
+                      "type": "object",
+                      "properties": {
+                        "content_type": {
+                          "title": "Content Type",
+                          "enum": [
+                            "tether_quote"
+                          ],
+                          "type": "string",
+                          "default": "tether_quote",
+                          "const": "tether_quote"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "domain": {
+                          "title": "Domain",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        },
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "title": "ApiChatMessageTextContent",
+                  "required": [
+                    "text"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "text"
+                      ],
+                      "type": "string",
+                      "default": "text",
+                      "const": "text"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "metadata": {
+              "title": "Metadata",
+              "anyOf": [
+                {
+                  "title": "RevChatMessageMetadata",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "rev"
+                      ],
+                      "type": "string",
+                      "default": "rev",
+                      "const": "rev"
+                    },
+                    "finish_details": {
+                      "title": "Finish Details",
+                      "type": "object"
+                    },
+                    "weight": {
+                      "title": "Weight",
+                      "type": "number"
+                    },
+                    "end_turn": {
+                      "title": "End Turn",
+                      "type": "boolean"
+                    },
+                    "message_status": {
+                      "title": "Message Status",
+                      "type": "string"
+                    },
+                    "recipient": {
+                      "title": "Recipient",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "all",
+                            "browser"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "fallback_content": {
+                      "title": "Fallback Content"
+                    },
+                    "invoked_plugin": {
+                      "title": "RevChatMessageMetadataPlugin",
+                      "type": "object",
+                      "properties": {
+                        "http_response_status": {
+                          "title": "Http Response Status",
+                          "type": "integer"
+                        },
+                        "namespace": {
+                          "title": "Namespace",
+                          "type": "string"
+                        },
+                        "plugin_id": {
+                          "title": "Plugin Id",
+                          "type": "string"
+                        },
+                        "type": {
+                          "title": "Type",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "command": {
+                      "title": "Command",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "search"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "args": {
+                      "title": "Args",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "status": {
+                      "title": "Status",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "finished"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "_cite_metadata": {
+                      "title": "RevChatMessageMetadataCite",
+                      "type": "object",
+                      "properties": {
+                        "citation_format": {
+                          "title": "Citation Format",
+                          "type": "object"
+                        },
+                        "metadata_list": {
+                          "title": "Metadata List",
+                          "type": "array",
+                          "items": {
+                            "title": "RevChatMessageMetadataCiteData",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "title": "Title",
+                                "type": "string"
+                              },
+                              "url": {
+                                "title": "Url",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "ApiChatMessageMetadata",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "api"
+                      ],
+                      "type": "string",
+                      "default": "api",
+                      "const": "api"
+                    },
+                    "usage": {
+                      "title": "OpenAIChatResponseUsage",
+                      "type": "object",
+                      "properties": {
+                        "prompt_tokens": {
+                          "title": "Prompt Tokens",
+                          "type": "integer"
+                        },
+                        "completion_tokens": {
+                          "title": "Completion Tokens",
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "finish_reason": {
+                      "title": "Finish Reason",
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "current_node": {
+        "title": "Current Node",
+        "type": "string",
+        "format": "uuid"
+      },
+      "current_model": {
+        "title": "Current Model",
+        "type": "string"
+      },
+      "rev_extra": {
+        "title": "RevConversationHistoryExtra",
+        "type": "object",
+        "properties": {
+          "moderation_results": {
+            "title": "Moderation Results",
+            "type": "array",
+            "items": {}
+          },
+          "plugin_ids": {
+            "title": "Plugin Ids",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       }
     }
   },
@@ -603,139 +2537,6 @@
       "client_secret": {
         "title": "Client Secret",
         "type": "string"
-      }
-    }
-  },
-  "ChatMessage": {
-    "title": "ChatMessage",
-    "required": [
-      "id",
-      "role",
-      "children",
-      "content"
-    ],
-    "type": "object",
-    "properties": {
-      "id": {
-        "title": "Id",
-        "type": "string",
-        "format": "uuid"
-      },
-      "role": {
-        "title": "Role",
-        "type": "string"
-      },
-      "model": {
-        "title": "Model",
-        "type": "string"
-      },
-      "create_time": {
-        "title": "Create Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "parent": {
-        "title": "Parent",
-        "type": "string",
-        "format": "uuid"
-      },
-      "children": {
-        "title": "Children",
-        "type": "array",
-        "items": {
-          "type": "string",
-          "format": "uuid"
-        }
-      },
-      "content": {
-        "title": "Content",
-        "type": "string"
-      },
-      "content_type": {
-        "title": "Content Type",
-        "type": "string"
-      },
-      "rev_metadata": {
-        "title": "RevChatMessageMetadata",
-        "type": "object",
-        "properties": {
-          "finish_details": {
-            "title": "Finish Details",
-            "type": "object"
-          },
-          "weight": {
-            "title": "Weight",
-            "type": "number"
-          },
-          "end_turn": {
-            "title": "End Turn",
-            "type": "boolean"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "recipient": {
-            "title": "Recipient",
-            "anyOf": [
-              {
-                "enum": [
-                  "all"
-                ],
-                "type": "string"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
-          "invoked_plugin": {
-            "title": "RevChatMessageMetadataPlugin",
-            "type": "object",
-            "properties": {
-              "http_response_status": {
-                "title": "Http Response Status",
-                "type": "integer"
-              },
-              "namespace": {
-                "title": "Namespace",
-                "type": "string"
-              },
-              "plugin_id": {
-                "title": "Plugin Id",
-                "type": "string"
-              },
-              "type": {
-                "title": "Type",
-                "type": "string"
-              }
-            }
-          }
-        }
-      },
-      "api_metadata": {
-        "title": "ApiChatMessageMetadata",
-        "type": "object",
-        "properties": {
-          "usage": {
-            "title": "OpenAIChatResponseUsage",
-            "type": "object",
-            "properties": {
-              "prompt_tokens": {
-                "title": "Prompt Tokens",
-                "type": "integer"
-              },
-              "completion_tokens": {
-                "title": "Completion Tokens",
-                "type": "integer"
-              }
-            }
-          },
-          "finish_reason": {
-            "title": "Finish Reason",
-            "type": "string"
-          }
-        }
       }
     }
   },
@@ -1086,211 +2887,6 @@
         }
       }
     }
-  },
-  "ConversationHistoryDocument": {
-    "title": "ConversationHistoryDocument",
-    "required": [
-      "type",
-      "title",
-      "create_time",
-      "update_time",
-      "mapping"
-    ],
-    "type": "object",
-    "properties": {
-      "_id": {
-        "title": " Id",
-        "type": "string",
-        "format": "uuid"
-      },
-      "type": {
-        "title": "Type",
-        "enum": [
-          "rev",
-          "api"
-        ],
-        "type": "string"
-      },
-      "title": {
-        "title": "Title",
-        "type": "string"
-      },
-      "create_time": {
-        "title": "Create Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "update_time": {
-        "title": "Update Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "mapping": {
-        "title": "Mapping",
-        "type": "object",
-        "additionalProperties": {
-          "title": "ChatMessage",
-          "required": [
-            "id",
-            "role",
-            "children",
-            "content"
-          ],
-          "type": "object",
-          "properties": {
-            "id": {
-              "title": "Id",
-              "type": "string",
-              "format": "uuid"
-            },
-            "role": {
-              "title": "Role",
-              "type": "string"
-            },
-            "model": {
-              "title": "Model",
-              "type": "string"
-            },
-            "create_time": {
-              "title": "Create Time",
-              "type": "string",
-              "format": "date-time"
-            },
-            "parent": {
-              "title": "Parent",
-              "type": "string",
-              "format": "uuid"
-            },
-            "children": {
-              "title": "Children",
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "uuid"
-              }
-            },
-            "content": {
-              "title": "Content",
-              "type": "string"
-            },
-            "content_type": {
-              "title": "Content Type",
-              "type": "string"
-            },
-            "rev_metadata": {
-              "title": "RevChatMessageMetadata",
-              "type": "object",
-              "properties": {
-                "finish_details": {
-                  "title": "Finish Details",
-                  "type": "object"
-                },
-                "weight": {
-                  "title": "Weight",
-                  "type": "number"
-                },
-                "end_turn": {
-                  "title": "End Turn",
-                  "type": "boolean"
-                },
-                "status": {
-                  "title": "Status",
-                  "type": "string"
-                },
-                "recipient": {
-                  "title": "Recipient",
-                  "anyOf": [
-                    {
-                      "enum": [
-                        "all"
-                      ],
-                      "type": "string"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ]
-                },
-                "invoked_plugin": {
-                  "title": "RevChatMessageMetadataPlugin",
-                  "type": "object",
-                  "properties": {
-                    "http_response_status": {
-                      "title": "Http Response Status",
-                      "type": "integer"
-                    },
-                    "namespace": {
-                      "title": "Namespace",
-                      "type": "string"
-                    },
-                    "plugin_id": {
-                      "title": "Plugin Id",
-                      "type": "string"
-                    },
-                    "type": {
-                      "title": "Type",
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "api_metadata": {
-              "title": "ApiChatMessageMetadata",
-              "type": "object",
-              "properties": {
-                "usage": {
-                  "title": "OpenAIChatResponseUsage",
-                  "type": "object",
-                  "properties": {
-                    "prompt_tokens": {
-                      "title": "Prompt Tokens",
-                      "type": "integer"
-                    },
-                    "completion_tokens": {
-                      "title": "Completion Tokens",
-                      "type": "integer"
-                    }
-                  }
-                },
-                "finish_reason": {
-                  "title": "Finish Reason",
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "current_node": {
-        "title": "Current Node",
-        "type": "string",
-        "format": "uuid"
-      },
-      "current_model": {
-        "title": "Current Model",
-        "type": "string"
-      },
-      "rev_extra": {
-        "title": "RevConversationHistoryExtra",
-        "type": "object",
-        "properties": {
-          "moderation_results": {
-            "title": "Moderation Results",
-            "type": "array",
-            "items": {}
-          },
-          "plugin_ids": {
-            "title": "Plugin Ids",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
   },
   "CredentialsModel": {
     "title": "CredentialsModel",
@@ -1746,10 +3342,386 @@
       }
     }
   },
+  "RevChatMessage": {
+    "title": "RevChatMessage",
+    "required": [
+      "id",
+      "role",
+      "children"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev"
+        ],
+        "type": "string",
+        "default": "rev",
+        "const": "rev"
+      },
+      "role": {
+        "title": "Role",
+        "anyOf": [
+          {
+            "enum": [
+              "system",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "author_name": {
+        "title": "Author Name",
+        "type": "string"
+      },
+      "model": {
+        "title": "Model",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "parent": {
+        "title": "Parent",
+        "type": "string",
+        "format": "uuid"
+      },
+      "children": {
+        "title": "Children",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "content": {
+        "title": "Content",
+        "anyOf": [
+          {
+            "title": "RevChatMessageTextContent",
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "text"
+                ],
+                "type": "string",
+                "default": "text",
+                "const": "text"
+              },
+              "parts": {
+                "title": "Parts",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "title": "RevChatMessageCodeContent",
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "code"
+                ],
+                "type": "string",
+                "default": "code",
+                "const": "code"
+              },
+              "language": {
+                "title": "Language",
+                "type": "string"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "RevChatMessageTetherBrowsingDisplayContent",
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "tether_browsing_display"
+                ],
+                "type": "string",
+                "default": "tether_browsing_display",
+                "const": "tether_browsing_display"
+              },
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "RevChatMessageTetherQuoteContent",
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "tether_quote"
+                ],
+                "type": "string",
+                "default": "tether_quote",
+                "const": "tether_quote"
+              },
+              "url": {
+                "title": "Url",
+                "type": "string"
+              },
+              "domain": {
+                "title": "Domain",
+                "type": "string"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "title": "Metadata",
+        "anyOf": [
+          {
+            "title": "RevChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "rev"
+                ],
+                "type": "string",
+                "default": "rev",
+                "const": "rev"
+              },
+              "finish_details": {
+                "title": "Finish Details",
+                "type": "object"
+              },
+              "weight": {
+                "title": "Weight",
+                "type": "number"
+              },
+              "end_turn": {
+                "title": "End Turn",
+                "type": "boolean"
+              },
+              "message_status": {
+                "title": "Message Status",
+                "type": "string"
+              },
+              "recipient": {
+                "title": "Recipient",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "all",
+                      "browser"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "fallback_content": {
+                "title": "Fallback Content"
+              },
+              "invoked_plugin": {
+                "title": "RevChatMessageMetadataPlugin",
+                "type": "object",
+                "properties": {
+                  "http_response_status": {
+                    "title": "Http Response Status",
+                    "type": "integer"
+                  },
+                  "namespace": {
+                    "title": "Namespace",
+                    "type": "string"
+                  },
+                  "plugin_id": {
+                    "title": "Plugin Id",
+                    "type": "string"
+                  },
+                  "type": {
+                    "title": "Type",
+                    "type": "string"
+                  }
+                }
+              },
+              "command": {
+                "title": "Command",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "search"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "args": {
+                "title": "Args",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "title": "Status",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "finished"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "_cite_metadata": {
+                "title": "RevChatMessageMetadataCite",
+                "type": "object",
+                "properties": {
+                  "citation_format": {
+                    "title": "Citation Format",
+                    "type": "object"
+                  },
+                  "metadata_list": {
+                    "title": "Metadata List",
+                    "type": "array",
+                    "items": {
+                      "title": "RevChatMessageMetadataCiteData",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "ApiChatMessageMetadata",
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "api"
+                ],
+                "type": "string",
+                "default": "api",
+                "const": "api"
+              },
+              "usage": {
+                "title": "OpenAIChatResponseUsage",
+                "type": "object",
+                "properties": {
+                  "prompt_tokens": {
+                    "title": "Prompt Tokens",
+                    "type": "integer"
+                  },
+                  "completion_tokens": {
+                    "title": "Completion Tokens",
+                    "type": "integer"
+                  }
+                }
+              },
+              "finish_reason": {
+                "title": "Finish Reason",
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "RevChatMessageCodeContent": {
+    "title": "RevChatMessageCodeContent",
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "code"
+        ],
+        "type": "string",
+        "default": "code",
+        "const": "code"
+      },
+      "language": {
+        "title": "Language",
+        "type": "string"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      }
+    }
+  },
   "RevChatMessageMetadata": {
     "title": "RevChatMessageMetadata",
     "type": "object",
     "properties": {
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev"
+        ],
+        "type": "string",
+        "default": "rev",
+        "const": "rev"
+      },
       "finish_details": {
         "title": "Finish Details",
         "type": "object"
@@ -1762,8 +3734,8 @@
         "title": "End Turn",
         "type": "boolean"
       },
-      "status": {
-        "title": "Status",
+      "message_status": {
+        "title": "Message Status",
         "type": "string"
       },
       "recipient": {
@@ -1771,7 +3743,8 @@
         "anyOf": [
           {
             "enum": [
-              "all"
+              "all",
+              "browser"
             ],
             "type": "string"
           },
@@ -1779,6 +3752,9 @@
             "type": "string"
           }
         ]
+      },
+      "fallback_content": {
+        "title": "Fallback Content"
       },
       "invoked_plugin": {
         "title": "RevChatMessageMetadataPlugin",
@@ -1801,6 +3777,123 @@
             "type": "string"
           }
         }
+      },
+      "command": {
+        "title": "Command",
+        "anyOf": [
+          {
+            "enum": [
+              "search"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "args": {
+        "title": "Args",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "status": {
+        "title": "Status",
+        "anyOf": [
+          {
+            "enum": [
+              "finished"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "_cite_metadata": {
+        "title": "RevChatMessageMetadataCite",
+        "type": "object",
+        "properties": {
+          "citation_format": {
+            "title": "Citation Format",
+            "type": "object"
+          },
+          "metadata_list": {
+            "title": "Metadata List",
+            "type": "array",
+            "items": {
+              "title": "RevChatMessageMetadataCiteData",
+              "type": "object",
+              "properties": {
+                "title": {
+                  "title": "Title",
+                  "type": "string"
+                },
+                "url": {
+                  "title": "Url",
+                  "type": "string"
+                },
+                "text": {
+                  "title": "Text",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "RevChatMessageMetadataCite": {
+    "title": "RevChatMessageMetadataCite",
+    "type": "object",
+    "properties": {
+      "citation_format": {
+        "title": "Citation Format",
+        "type": "object"
+      },
+      "metadata_list": {
+        "title": "Metadata List",
+        "type": "array",
+        "items": {
+          "title": "RevChatMessageMetadataCiteData",
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string"
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
+            },
+            "text": {
+              "title": "Text",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "RevChatMessageMetadataCiteData": {
+    "title": "RevChatMessageMetadataCiteData",
+    "type": "object",
+    "properties": {
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "url": {
+        "title": "Url",
+        "type": "string"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
       }
     }
   },
@@ -1826,6 +3919,78 @@
       }
     }
   },
+  "RevChatMessageTetherBrowsingDisplayContent": {
+    "title": "RevChatMessageTetherBrowsingDisplayContent",
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "tether_browsing_display"
+        ],
+        "type": "string",
+        "default": "tether_browsing_display",
+        "const": "tether_browsing_display"
+      },
+      "result": {
+        "title": "Result",
+        "type": "string"
+      }
+    }
+  },
+  "RevChatMessageTetherQuoteContent": {
+    "title": "RevChatMessageTetherQuoteContent",
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "tether_quote"
+        ],
+        "type": "string",
+        "default": "tether_quote",
+        "const": "tether_quote"
+      },
+      "url": {
+        "title": "Url",
+        "type": "string"
+      },
+      "domain": {
+        "title": "Domain",
+        "type": "string"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      }
+    }
+  },
+  "RevChatMessageTextContent": {
+    "title": "RevChatMessageTextContent",
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "text"
+        ],
+        "type": "string",
+        "default": "text",
+        "const": "text"
+      },
+      "parts": {
+        "title": "Parts",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
   "RevChatModels": {
     "title": "RevChatModels",
     "enum": [
@@ -1846,6 +4011,422 @@
     ],
     "type": "string",
     "description": "An enumeration."
+  },
+  "RevConversationHistoryDocument": {
+    "title": "RevConversationHistoryDocument",
+    "required": [
+      "title",
+      "create_time",
+      "update_time",
+      "mapping"
+    ],
+    "type": "object",
+    "properties": {
+      "_id": {
+        "title": " Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev"
+        ],
+        "type": "string",
+        "default": "rev",
+        "const": "rev"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "mapping": {
+        "title": "Mapping",
+        "type": "object",
+        "additionalProperties": {
+          "title": "RevChatMessage",
+          "required": [
+            "id",
+            "role",
+            "children"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "title": "Type",
+              "enum": [
+                "rev"
+              ],
+              "type": "string",
+              "default": "rev",
+              "const": "rev"
+            },
+            "role": {
+              "title": "Role",
+              "anyOf": [
+                {
+                  "enum": [
+                    "system",
+                    "user",
+                    "assistant",
+                    "tool"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "author_name": {
+              "title": "Author Name",
+              "type": "string"
+            },
+            "model": {
+              "title": "Model",
+              "type": "string"
+            },
+            "create_time": {
+              "title": "Create Time",
+              "type": "string",
+              "format": "date-time"
+            },
+            "parent": {
+              "title": "Parent",
+              "type": "string",
+              "format": "uuid"
+            },
+            "children": {
+              "title": "Children",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "content": {
+              "title": "Content",
+              "anyOf": [
+                {
+                  "title": "RevChatMessageTextContent",
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "text"
+                      ],
+                      "type": "string",
+                      "default": "text",
+                      "const": "text"
+                    },
+                    "parts": {
+                      "title": "Parts",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "RevChatMessageCodeContent",
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "code"
+                      ],
+                      "type": "string",
+                      "default": "code",
+                      "const": "code"
+                    },
+                    "language": {
+                      "title": "Language",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "title": "RevChatMessageTetherBrowsingDisplayContent",
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "tether_browsing_display"
+                      ],
+                      "type": "string",
+                      "default": "tether_browsing_display",
+                      "const": "tether_browsing_display"
+                    },
+                    "result": {
+                      "title": "Result",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "title": "RevChatMessageTetherQuoteContent",
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "tether_quote"
+                      ],
+                      "type": "string",
+                      "default": "tether_quote",
+                      "const": "tether_quote"
+                    },
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    },
+                    "domain": {
+                      "title": "Domain",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    },
+                    "title": {
+                      "title": "Title",
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            },
+            "metadata": {
+              "title": "Metadata",
+              "anyOf": [
+                {
+                  "title": "RevChatMessageMetadata",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "rev"
+                      ],
+                      "type": "string",
+                      "default": "rev",
+                      "const": "rev"
+                    },
+                    "finish_details": {
+                      "title": "Finish Details",
+                      "type": "object"
+                    },
+                    "weight": {
+                      "title": "Weight",
+                      "type": "number"
+                    },
+                    "end_turn": {
+                      "title": "End Turn",
+                      "type": "boolean"
+                    },
+                    "message_status": {
+                      "title": "Message Status",
+                      "type": "string"
+                    },
+                    "recipient": {
+                      "title": "Recipient",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "all",
+                            "browser"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "fallback_content": {
+                      "title": "Fallback Content"
+                    },
+                    "invoked_plugin": {
+                      "title": "RevChatMessageMetadataPlugin",
+                      "type": "object",
+                      "properties": {
+                        "http_response_status": {
+                          "title": "Http Response Status",
+                          "type": "integer"
+                        },
+                        "namespace": {
+                          "title": "Namespace",
+                          "type": "string"
+                        },
+                        "plugin_id": {
+                          "title": "Plugin Id",
+                          "type": "string"
+                        },
+                        "type": {
+                          "title": "Type",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "command": {
+                      "title": "Command",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "search"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "args": {
+                      "title": "Args",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "status": {
+                      "title": "Status",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "finished"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "_cite_metadata": {
+                      "title": "RevChatMessageMetadataCite",
+                      "type": "object",
+                      "properties": {
+                        "citation_format": {
+                          "title": "Citation Format",
+                          "type": "object"
+                        },
+                        "metadata_list": {
+                          "title": "Metadata List",
+                          "type": "array",
+                          "items": {
+                            "title": "RevChatMessageMetadataCiteData",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "title": "Title",
+                                "type": "string"
+                              },
+                              "url": {
+                                "title": "Url",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "ApiChatMessageMetadata",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "api"
+                      ],
+                      "type": "string",
+                      "default": "api",
+                      "const": "api"
+                    },
+                    "usage": {
+                      "title": "OpenAIChatResponseUsage",
+                      "type": "object",
+                      "properties": {
+                        "prompt_tokens": {
+                          "title": "Prompt Tokens",
+                          "type": "integer"
+                        },
+                        "completion_tokens": {
+                          "title": "Completion Tokens",
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "finish_reason": {
+                      "title": "Finish Reason",
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "current_node": {
+        "title": "Current Node",
+        "type": "string",
+        "format": "uuid"
+      },
+      "current_model": {
+        "title": "Current Model",
+        "type": "string"
+      },
+      "rev_extra": {
+        "title": "RevConversationHistoryExtra",
+        "type": "object",
+        "properties": {
+          "moderation_results": {
+            "title": "Moderation Results",
+            "type": "array",
+            "items": {}
+          },
+          "plugin_ids": {
+            "title": "Plugin Ids",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
   },
   "RevConversationHistoryExtra": {
     "title": "RevConversationHistoryExtra",

@@ -1,10 +1,10 @@
-import { ChatMessage, ConversationHistoryDocument } from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
 
 export function getMessageListFromHistory(
-  convHistory: ConversationHistoryDocument | undefined | null,
+  convHistory: BaseConversationHistory | undefined | null,
   lastNode: string | null = null
-): ChatMessage[] {
-  const result: ChatMessage[] = [];
+): BaseChatMessage[] {
+  const result: BaseChatMessage[] = [];
   if (!convHistory) return result;
   let x = lastNode || convHistory.current_node || undefined;
   while (x != undefined) {

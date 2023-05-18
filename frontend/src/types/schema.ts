@@ -16,11 +16,24 @@ export type RevChatStatus = components['schemas']['RevChatStatus'];
 export type RevChatModels = components['schemas']['RevChatModels'];
 export type ApiChatModels = components['schemas']['ApiChatModels'];
 
-export type ChatMessage = components['schemas']['ChatMessage'];
+export type RevChatMessageMetadata = components['schemas']['RevChatMessageMetadata'];
+export type ApiChatMessageMetadata = components['schemas']['ApiChatMessageMetadata'];
+export type RevChatMessageTextContent = components['schemas']['RevChatMessageTextContent'];
+export type RevChatMessageCodeContent = components['schemas']['RevChatMessageCodeContent'];
+export type RevChatMessageTetherBrowsingDisplayContent = components['schemas']['RevChatMessageTetherBrowsingDisplayContent'];
+export type RevChatMessageTetherQuoteContent = components['schemas']['RevChatMessageTetherQuoteContent'];
+export type ApiChatMessageTextContent  = components['schemas']['ApiChatMessageTextContent'];
+export type BaseChatMessage = components['schemas']['BaseChatMessage'];
+export type ApiChatMessage = components['schemas']['ApiChatMessage'];
+export type RevChatMessage = components['schemas']['RevChatMessage'];
+
 export type BaseConversationSchema = components['schemas']['BaseConversationSchema'];
 export type RevConversationSchema = components['schemas']['RevConversationSchema'];
-// export type ApiConversationSchema = components['schemas']['ApiConversationSchema'];
-export type ConversationHistoryDocument = components['schemas']['ConversationHistoryDocument'];
+export type ApiConversationSchema = components['schemas']['ApiConversationSchema'];
+
+export type BaseConversationHistory = components['schemas']['BaseConversationHistory'];
+export type ApiConversationHistoryDocument = components['schemas']['ApiConversationHistoryDocument'];
+export type RevConversationHistoryDocument = components['schemas']['RevConversationHistoryDocument'];
 
 export type OpenAIChatPluginCategory = components['schemas']['OpenAIChatPluginCategory'];
 export type OpenAIChatPluginManifest = components['schemas']['OpenAIChatPluginManifest'];

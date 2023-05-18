@@ -20,7 +20,7 @@ from api.database import get_async_session_context
 from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels, ApiChatModels
 from api.exceptions import InternalException, InvalidParamsException
 from api.models.db import RevConversation, User, BaseConversation
-from api.models.doc import ChatMessage, ConversationHistoryDocument
+from api.models.doc import RevChatMessage, ApiChatMessage, RevConversationHistoryDocument, ApiConversationHistoryDocument
 from api.routers.conv import _get_conversation_by_id
 from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
@@ -276,7 +276,7 @@ async def chat(websocket: WebSocket):
                     if conversation_id is None:
                         conversation_id = data["conversation_id"]
                 else:
-                    assert isinstance(data, ChatMessage)
+                    assert isinstance(data, ApiChatMessage)
                     message = data
                     if conversation_id is None:
                         assert ask_request.new_conversation
@@ -391,7 +391,7 @@ async def chat(websocket: WebSocket):
         if ask_request.type == ChatSourceTypes.api:
             assert message.parent is not None, "message.parent is None"
 
-            ask_message = ChatMessage(
+            ask_message = ApiChatMessage(
                 id=message.parent,
                 role="user",
                 create_time=request_start_time.astimezone(tz=timezone.utc),
@@ -402,7 +402,7 @@ async def chat(websocket: WebSocket):
 
             # 对于api新对话，添加历史记录到mongodb
             if ask_request.new_conversation:
-                new_conv_history = ConversationHistoryDocument(
+                new_conv_history = ApiConversationHistoryDocument(
                     id=conversation_id,
                     type=ask_request.type,
                     title=ask_request.new_title or "New Chat",
@@ -420,7 +420,7 @@ async def chat(websocket: WebSocket):
                 logger.debug(f"saved new api conversation history {conversation_id} to mongodb")
             else:
                 # 更新mongodb历史记录
-                conv_history = await ConversationHistoryDocument.get(conversation_id)
+                conv_history = await ApiConversationHistoryDocument.get(conversation_id)
                 assert conv_history is not None, f"update api: conversation history {conversation_id} is None"
                 conv_history.update_time = datetime.now().astimezone(tz=timezone.utc)
 

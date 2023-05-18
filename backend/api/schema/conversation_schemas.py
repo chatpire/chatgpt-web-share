@@ -1,13 +1,13 @@
 import datetime
 import uuid
 from enum import auto
-from typing import Literal, Optional
+from typing import Literal, Optional, Annotated, Union
 
 from pydantic import BaseModel, root_validator, validator, Field
 from strenum import StrEnum
 
 from api.enums import ChatSourceTypes, RevChatModels, ApiChatModels
-from api.models.doc import ChatMessage
+from api.models.doc import RevChatMessage, ApiChatMessage
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -57,7 +57,7 @@ class AskResponse(BaseModel):
     type: AskResponseType
     tip: str = None
     conversation_id: uuid.UUID = None
-    message: ChatMessage = None
+    message: Optional[Annotated[Union[RevChatMessage, ApiChatMessage], Field(discriminator='type')]] = None
     error_detail: str = None
 
 

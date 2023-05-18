@@ -1,15 +1,15 @@
 import json
 import uuid
 from datetime import datetime, timezone
-from typing import Optional, Literal
+from typing import Optional
 
 import httpx
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 
 from api.conf import Config, Credentials
 from api.enums import ApiChatModels
-from api.schema import ApiConversationSchema
-from api.models.doc import ChatMessage, ConversationHistoryDocument, ApiChatMessageMetadata
+from api.models.doc import ApiChatMessage, ApiConversationHistoryDocument, ApiChatMessageMetadata, \
+    ApiChatMessageTextContent
 from api.schema.openai_schemas import OpenAIChatResponse
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -61,13 +61,16 @@ class OpenAIChatManager:
 
         now_time = datetime.now().astimezone(tz=timezone.utc)
         message_id = uuid.uuid4()
-        new_message = ChatMessage(
+        new_message = ApiChatMessage(
             id=message_id,
             role="user",
             create_time=now_time,
             parent=parent_id,
             children=[],
-            content=content,
+            content=ApiChatMessageTextContent(text=content),
+            metadata=ApiChatMessageMetadata(
+                type="api",
+            )
         )
 
         messages = []
@@ -76,7 +79,7 @@ class OpenAIChatManager:
             assert parent_id is None, "parent_id must be None when conversation_id is None"
             messages = [new_message]
         else:
-            conv_history = await ConversationHistoryDocument.get(conversation_id)
+            conv_history = await ApiConversationHistoryDocument.get(conversation_id)
             if not conv_history:
                 raise ValueError("conversation_id not found")
             if conv_history.type != "api":
@@ -145,7 +148,7 @@ class OpenAIChatManager:
                     if resp.choices[0].delta is not None:
                         content += resp.choices[0].delta.get("content", "")
                     if reply_message is None:
-                        reply_message = ChatMessage(
+                        reply_message = ApiChatMessage(
                             id=uuid.uuid4(),
                             role="assistant",
                             model=model,
@@ -153,7 +156,7 @@ class OpenAIChatManager:
                             parent=message_id,
                             children=[],
                             content=content,
-                            api_metadata=ApiChatMessageMetadata(
+                            metadata=ApiChatMessageMetadata(
                                 finish_reason=resp.choices[0].finish_reason,
                             )
                         )
@@ -161,7 +164,7 @@ class OpenAIChatManager:
                         reply_message.content = content
 
                     if resp.usage:
-                        reply_message.api_metadata.usage = resp.usage
+                        reply_message.metadata.usage = resp.usage
 
                     yield reply_message
 

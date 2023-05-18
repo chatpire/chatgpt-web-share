@@ -2,7 +2,7 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.conf import Config
-from api.models.doc import ConversationHistoryDocument
+from api.models.doc import ApiConversationHistoryDocument, RevConversationHistoryDocument
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -14,5 +14,5 @@ async def init_mongodb():
         Config().data.mongodb_url
     )
 
-    await init_beanie(database=client.cws, document_models=[ConversationHistoryDocument])
+    await init_beanie(database=client.cws, document_models=[ApiConversationHistoryDocument, RevConversationHistoryDocument])
     logger.info("MongoDB initialized")

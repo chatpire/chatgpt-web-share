@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { BaseConversationSchema, ConversationHistoryDocument } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -15,7 +15,7 @@ export function getAdminAllConversationsApi(valid_only = true) {
 }
 
 export function getConversationHistoryApi(conversation_id: string, refresh = true) {
-  return axios.get<ConversationHistoryDocument>(ApiUrl.Conversation + '/' + conversation_id, {
+  return axios.get<BaseConversationHistory>(ApiUrl.Conversation + '/' + conversation_id, {
     params: { refresh },
   });
 }

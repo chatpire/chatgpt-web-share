@@ -44,7 +44,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useConversationStore } from '@/store';
-import { ChatMessage, ConversationHistoryDocument } from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getMessageListFromHistory } from '@/utils/conversation';
 import { Message } from '@/utils/tips';
@@ -58,7 +58,7 @@ const conversationStore = useConversationStore();
 
 const props = defineProps<{
   conversationId: string;
-  extraMessages: ChatMessage[];
+  extraMessages: BaseChatMessage[];
   fullscreen: boolean; // 初始状态下是否全屏
   showTips: boolean;
   loading: boolean;
@@ -68,19 +68,19 @@ const contentRef = ref();
 const historyContentParent = ref<HTMLElement>();
 const _fullscreen = ref(false);
 
-const convHistory = computed<ConversationHistoryDocument | null>(() => {
+const convHistory = computed<BaseConversationHistory | null>(() => {
   const conversationId = props.conversationId;
   if (!conversationId) return null;
   return conversationStore.conversationHistoryMap[conversationId];
 });
 
-const messages = computed<ChatMessage[]>(() => {
+const messages = computed<BaseChatMessage[]>(() => {
   let result = convHistory.value ? getMessageListFromHistory(convHistory.value) : [];
   result = result.concat(props.extraMessages || []);
   return result;
 });
 
-const filteredMessages = computed<ChatMessage[]>(() => {
+const filteredMessages = computed<BaseChatMessage[]>(() => {
   return messages.value ? messages.value.filter((message) => message.role !== 'system') : [];
 });
 

@@ -1,10 +1,10 @@
 import { saveAs } from 'file-saver';
 
-import { ConversationHistoryDocument } from '@/types/schema';
-import { getChatModelNameTrans } from '@/utils/chat';
+import { BaseConversationHistory } from '@/types/schema';
+import { getChatModelNameTrans, getContentRawText } from '@/utils/chat';
 import { getMessageListFromHistory } from '@/utils/conversation';
 
-export const saveAsMarkdown = (convHistory: ConversationHistoryDocument) => {
+export const saveAsMarkdown = (convHistory: BaseConversationHistory) => {
   const messageList = getMessageListFromHistory(convHistory);
   let content = `# ${convHistory.title}\n\n`;
   const create_time = new Date(convHistory.create_time ? convHistory.create_time + 'Z' : new Date()).toLocaleString();
@@ -15,7 +15,8 @@ export const saveAsMarkdown = (convHistory: ConversationHistoryDocument) => {
   for (const message of messageList) {
     if (message.role === 'user') {
       // 选取第一行作为标题，最多50个字符，如果有省略则加上...
-      let title = message.content!.trim().split('\n')[0];
+      // TODO 适配不同对话
+      let title = getContentRawText(message).trim().split('\n')[0];
       if (title.length >= 50) {
         title = title.slice(0, 47) + '...';
       }

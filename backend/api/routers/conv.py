@@ -10,7 +10,7 @@ from sqlalchemy import select, and_, delete
 from api.database import get_async_session_context
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
 from api.models.db import User, RevConversation, BaseConversation
-from api.models.doc import ConversationHistoryDocument
+from api.models.doc import ApiConversationHistoryDocument, RevConversationHistoryDocument, BaseConversationHistory
 from api.response import response
 from api.schema import RevConversationSchema, BaseConversationSchema, ApiConversationSchema
 from api.sources import RevChatGPTManager
@@ -24,7 +24,8 @@ rev_manager = RevChatGPTManager()
 
 async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User = Depends(current_active_user)):
     async with get_async_session_context() as session:
-        r = await session.execute(select(BaseConversation).where(BaseConversation.conversation_id == str(conversation_id)))
+        r = await session.execute(
+            select(BaseConversation).where(BaseConversation.conversation_id == str(conversation_id)))
         conversation = r.scalars().one_or_none()
         if conversation is None:
             raise InvalidParamsException("errors.conversationNotFound")
@@ -71,7 +72,8 @@ async def delete_all_conversations(user: User = Depends(current_active_user)):
         await session.commit()
 
 
-@router.get("/conv/{conversation_id}", tags=["conversation"], response_model=ConversationHistoryDocument)
+@router.get("/conv/{conversation_id}", tags=["conversation"],
+            response_model=ApiConversationHistoryDocument | RevConversationHistoryDocument | BaseConversationHistory)
 async def get_conversation_history(refresh: bool = False,
                                    conversation: BaseConversation = Depends(_get_conversation_by_id)):
     if conversation.type == "rev":
@@ -91,7 +93,7 @@ async def get_conversation_history(refresh: bool = False,
             raise e
         return result
     else:
-        doc = await ConversationHistoryDocument.get(conversation.conversation_id)
+        doc = await ApiConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:
             raise InvalidParamsException("errors.conversationNotFound")
         return doc
@@ -127,7 +129,10 @@ async def vanish_conversation(conversation: BaseConversation = Depends(_get_conv
     """
     if conversation.is_valid:
         await delete_conversation(conversation)
-    doc = await ConversationHistoryDocument.get(conversation.conversation_id)
+    if conversation.type == "rev":
+        doc = await RevConversationHistoryDocument.get(conversation.conversation_id)
+    else:  # api
+        doc = await ApiConversationHistoryDocument.get(conversation.conversation_id)
     if doc is not None:
         await doc.delete()
     async with get_async_session_context() as session:
@@ -142,8 +147,8 @@ async def update_conversation_title(title: str, conversation: BaseConversation =
     if conversation.type == "rev":
         await rev_manager.set_conversation_title(conversation.conversation_id,
                                                  title)
-    else:
-        doc = await ConversationHistoryDocument.get(conversation.conversation_id)
+    else:   # api
+        doc = await ApiConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:
             raise InvalidParamsException("errors.conversationNotFound")
         doc.title = title

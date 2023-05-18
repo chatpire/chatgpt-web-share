@@ -4,7 +4,7 @@ import chatgptIcon from '/chatgpt-icon.svg';
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import { i18n } from '@/i18n';
 import { allChatModelNames } from '@/types/json_schema';
-import { ApiChatModels, RevChatModels } from '@/types/schema';
+import { ApiChatModels, BaseChatMessage, RevChatMessageCodeContent, RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageTextContent, RevChatModels } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
@@ -38,4 +38,24 @@ export const getChatModelNameTrans = (model_name: RevChatModels | ApiChatModels 
 export const getCountTrans = (count: number | undefined | null): string => {
   if (count == undefined || count == null) return t('commons.unlimited');
   return count == -1 ? t('commons.unlimited') : `${count}`;
+};
+
+export const getContentRawText = (message: BaseChatMessage): string => {
+  if (!message.content) return '';
+  if (typeof message.content == 'string') return message.content;
+  else if (message.content.content_type == 'text') {
+    const content = message.content as RevChatMessageTextContent;
+    return content.parts![0];
+  } else if (message.content.content_type == 'code') {
+    const content = message.content as RevChatMessageCodeContent;
+    return content.text || '';
+  } else if (message.content.content_type == 'tether_browsing_display') {
+    const content = message.content as RevChatMessageTetherBrowsingDisplayContent;
+    return content.result || '';
+  } else if (message.content.content_type == 'tether_quote') {
+    const content = message.content as RevChatMessageTetherQuoteContent;
+    return content.text || ''; // TODO: more info
+  } else {
+    return `${message.content}`;
+  }
 };
