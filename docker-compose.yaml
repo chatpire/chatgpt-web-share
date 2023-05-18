@@ -5,7 +5,6 @@ services:
     image: ghcr.io/moeakwak/chatgpt-web-share:latest
     container_name: chatgpt-web-share
     restart: unless-stopped
-    # network_mode: bridge
     ports:
       - 8080:80
     volumes:
@@ -20,6 +19,8 @@ services:
   mongo:
     image: mongo:4.2-bionic
     restart: always
+    ports:
+      - 27012:27012
     environment:
       MONGO_INITDB_DATABASE: cws
       MONGO_INITDB_ROOT_USERNAME: cws

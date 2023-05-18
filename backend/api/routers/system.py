@@ -1,7 +1,8 @@
+import csv
 import random
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy import select
 
 import api.enums
@@ -9,11 +10,13 @@ import api.globals as g
 from api.conf import Config, Credentials
 from api.conf.config import ConfigModel
 from api.conf.credentials import CredentialsModel
-from api.database import get_async_session_context
+from api.database import get_async_session_context, get_user_db_context
 from api.enums import RevChatStatus
+from api.exceptions import InvalidParamsException
 from api.models.db import User, RevConversation
-from api.schema import LogFilterOptions, SystemInfo, RequestStatistics
-from api.users import current_super_user
+from api.schema import LogFilterOptions, SystemInfo, RequestStatistics, UserCreate, UserSettingSchema, \
+    RevSourceSettingSchema, ApiSourceSettingSchema
+from api.users import current_super_user, get_user_manager_context
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -176,3 +179,52 @@ async def update_credentials(credentials_model: CredentialsModel, _user: User = 
     credentials.update(credentials_model)
     credentials.save()
     return credentials.model()
+
+
+@router.post("/system/import-users", tags=["system"])
+async def import_users(file: UploadFile = File(...), _user: User = Depends(current_super_user)):
+    """
+    解析csv文件，导入用户
+    csv字段：
+    """
+    headers = ["id", "username", "nickname", "email", "active_time", "chat_status", "can_use_paid", "max_conv_count",
+               "available_ask_count", "is_superuser", "is_active", "is_verified", "hashed_password", "can_use_gpt4",
+               "available_gpt4_ask_count"]
+    content = await file.read()
+    content = content.decode("utf-8")
+    reader = csv.DictReader(content.splitlines())
+    # check headers
+    for field in headers:
+        if field not in reader.fieldnames:
+            raise InvalidParamsException(f"Invalid csv file, missing field: {field}")
+    async with get_async_session_context() as session:
+        async with get_user_db_context(session) as user_db:
+            async with get_user_manager_context(user_db) as user_manager:
+                for row in reader:
+                    user_create = UserCreate(
+                        username=row["username"],
+                        nickname=row["nickname"],
+                        email=f"{row['username']}@example.com",
+                        password="12345678",
+                        remark=row["email"]
+                    )
+                    await user_manager._check_username_unique(user_create.username)
+                    user_dict = user_create.dict()
+
+                    del user_dict["password"]
+                    user_dict["hashed_password"] = row["hashed_password"]
+
+                    user_setting = UserSettingSchema(
+                        credits=0,
+                        rev=RevSourceSettingSchema.default(),
+                        api=ApiSourceSettingSchema.default(),
+                    )
+                    user_setting.rev.available_models = ["gpt_3_5", "gpt_4"]
+                    if not row["can_use_gpt4"]:
+                        user_setting.rev.available_models = ["gpt_3_5"]
+                    user_setting.rev.per_model_ask_count.gpt_3_5 = max(
+                        int(row["available_ask_count"]) - int(row["available_gpt4_ask_count"]), 0)
+                    user_setting.rev.per_model_ask_count.gpt_4 = int(row["available_gpt4_ask_count"])
+                    user_setting.rev.max_conv_count = int(row["max_conv_count"])
+
+                    await user_manager.create_with_user_dict(user_dict, user_setting)

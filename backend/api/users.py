@@ -78,6 +78,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
 
     async def create(self, user_create: UserCreate, user_setting: Optional[UserSettingSchema] = None,
                      safe: bool = False, request: Optional[Request] = None) -> User:
+
         await self._check_username_unique(username=user_create.username)
         await self.validate_password(user_create.password, user_create)
 
@@ -89,6 +90,10 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
             user_dict["is_verified"] = False
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self.password_helper.hash(password)
+
+        await self.create_with_user_dict(user_dict, user_setting=user_setting)
+
+    async def create_with_user_dict(self, user_dict: dict, user_setting: Optional[UserSettingSchema] = None):
 
         user_setting = user_setting or UserSettingSchema.default()
 
@@ -191,7 +196,6 @@ __current_active_user = fastapi_users.current_user(active=True)
 
 
 async def current_active_user(request: Request, user: User = Depends(__current_active_user)):
-
     try:
         async with get_async_session_context() as session:
             user_update = await session.get(User, user.id)
