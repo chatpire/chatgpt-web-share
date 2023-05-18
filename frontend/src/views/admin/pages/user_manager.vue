@@ -46,14 +46,14 @@ import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
+import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
 import { getCountTrans } from '@/utils/chat';
+import { renderUserPerModelCounts} from '@/utils/renders';
 import { screenWidthGreaterThan } from '@/utils/screen';
 import { Dialog, Message } from '@/utils/tips';
 
-import ChatModelTagInfoCell from '../components/ChatModelTagInfoCell.vue';
-import ChatTagInfoCell from '../components/ChatTypeTagInfoCell.vue';
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';
 import UpdateUserSettingForm from '../components/UpdateUserSettingForm.vue';
@@ -105,7 +105,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
     title: `${t('labels.max_conv_count')}`,
     key: 'ask_count_limits',
     render(row) {
-      return h(ChatTagInfoCell, {
+      return h(ChatTypeTagInfoCell, {
         value: {
           rev: getCountTrans(row.setting.rev.max_conv_count),
           api: getCountTrans(row.setting.api.max_conv_count)
@@ -118,24 +118,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
     key: 'available_ask_count',
     render(row) {
       // return getCountTrans(row.available_ask_count!);
-      const value = {
-        rev: h(ChatModelTagInfoCell, {
-          value: {
-            gpt_3_5: getCountTrans(row.setting.rev.per_model_ask_count.gpt_3_5),
-            gpt_4: getCountTrans(row.setting.rev.per_model_ask_count.gpt_4),
-            gpt_4_browsing: getCountTrans(row.setting.rev.per_model_ask_count.gpt_4_browsing),
-          }
-        }),
-        api: h(ChatModelTagInfoCell, {
-          value: {
-            gpt_3_5: getCountTrans(row.setting.api.per_model_ask_count.gpt_3_5),
-            gpt_4: getCountTrans(row.setting.api.per_model_ask_count.gpt_4),
-          }
-        })
-      };
-      return h(ChatTagInfoCell, {
-        value
-      });
+      return renderUserPerModelCounts(row.setting);
     },
   },
   // TODO

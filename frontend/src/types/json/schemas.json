@@ -108,19 +108,17 @@
   },
   "ApiPerModelAskCount": {
     "title": "ApiPerModelAskCount",
-    "required": [
-      "gpt_3_5",
-      "gpt_4"
-    ],
     "type": "object",
     "properties": {
       "gpt_3_5": {
         "title": "Gpt 3 5",
-        "type": "integer"
+        "type": "integer",
+        "default": 0
       },
       "gpt_4": {
         "title": "Gpt 4",
-        "type": "integer"
+        "type": "integer",
+        "default": 0
       }
     }
   },
@@ -220,19 +218,17 @@
       },
       "per_model_ask_count": {
         "title": "ApiPerModelAskCount",
-        "required": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
         "type": "object",
         "properties": {
           "gpt_3_5": {
             "title": "Gpt 3 5",
-            "type": "integer"
+            "type": "integer",
+            "default": 0
           },
           "gpt_4": {
             "title": "Gpt 4",
-            "type": "integer"
+            "type": "integer",
+            "default": 0
           }
         }
       },
@@ -1922,24 +1918,27 @@
   },
   "RevPerModelAskCount": {
     "title": "RevPerModelAskCount",
-    "required": [
-      "gpt_3_5",
-      "gpt_4",
-      "gpt_4_browsing"
-    ],
     "type": "object",
     "properties": {
       "gpt_3_5": {
         "title": "Gpt 3 5",
-        "type": "integer"
+        "type": "integer",
+        "default": 0
       },
       "gpt_4": {
         "title": "Gpt 4",
-        "type": "integer"
+        "type": "integer",
+        "default": 0
       },
       "gpt_4_browsing": {
         "title": "Gpt 4 Browsing",
-        "type": "integer"
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4_plugins": {
+        "title": "Gpt 4 Plugins",
+        "type": "integer",
+        "default": 0
       }
     }
   },
@@ -2039,24 +2038,27 @@
       },
       "per_model_ask_count": {
         "title": "RevPerModelAskCount",
-        "required": [
-          "gpt_3_5",
-          "gpt_4",
-          "gpt_4_browsing"
-        ],
         "type": "object",
         "properties": {
           "gpt_3_5": {
             "title": "Gpt 3 5",
-            "type": "integer"
+            "type": "integer",
+            "default": 0
           },
           "gpt_4": {
             "title": "Gpt 4",
-            "type": "integer"
+            "type": "integer",
+            "default": 0
           },
           "gpt_4_browsing": {
             "title": "Gpt 4 Browsing",
-            "type": "integer"
+            "type": "integer",
+            "default": 0
+          },
+          "gpt_4_plugins": {
+            "title": "Gpt 4 Plugins",
+            "type": "integer",
+            "default": 0
           }
         }
       }
@@ -2395,24 +2397,27 @@
               },
               "per_model_ask_count": {
                 "title": "RevPerModelAskCount",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4",
-                  "gpt_4_browsing"
-                ],
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
                     "title": "Gpt 3 5",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   },
                   "gpt_4": {
                     "title": "Gpt 4",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   },
                   "gpt_4_browsing": {
                     "title": "Gpt 4 Browsing",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "gpt_4_plugins": {
+                    "title": "Gpt 4 Plugins",
+                    "type": "integer",
+                    "default": 0
                   }
                 }
               }
@@ -2514,19 +2519,17 @@
               },
               "per_model_ask_count": {
                 "title": "ApiPerModelAskCount",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
                     "title": "Gpt 3 5",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   },
                   "gpt_4": {
                     "title": "Gpt 4",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   }
                 }
               },
@@ -2741,24 +2744,27 @@
               },
               "per_model_ask_count": {
                 "title": "RevPerModelAskCount",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4",
-                  "gpt_4_browsing"
-                ],
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
                     "title": "Gpt 3 5",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   },
                   "gpt_4": {
                     "title": "Gpt 4",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   },
                   "gpt_4_browsing": {
                     "title": "Gpt 4 Browsing",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "gpt_4_plugins": {
+                    "title": "Gpt 4 Plugins",
+                    "type": "integer",
+                    "default": 0
                   }
                 }
               }
@@ -2860,19 +2866,17 @@
               },
               "per_model_ask_count": {
                 "title": "ApiPerModelAskCount",
-                "required": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
                     "title": "Gpt 3 5",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   },
                   "gpt_4": {
                     "title": "Gpt 4",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                   }
                 }
               },
@@ -3022,24 +3026,27 @@
           },
           "per_model_ask_count": {
             "title": "RevPerModelAskCount",
-            "required": [
-              "gpt_3_5",
-              "gpt_4",
-              "gpt_4_browsing"
-            ],
             "type": "object",
             "properties": {
               "gpt_3_5": {
                 "title": "Gpt 3 5",
-                "type": "integer"
+                "type": "integer",
+                "default": 0
               },
               "gpt_4": {
                 "title": "Gpt 4",
-                "type": "integer"
+                "type": "integer",
+                "default": 0
               },
               "gpt_4_browsing": {
                 "title": "Gpt 4 Browsing",
-                "type": "integer"
+                "type": "integer",
+                "default": 0
+              },
+              "gpt_4_plugins": {
+                "title": "Gpt 4 Plugins",
+                "type": "integer",
+                "default": 0
               }
             }
           }
@@ -3141,19 +3148,17 @@
           },
           "per_model_ask_count": {
             "title": "ApiPerModelAskCount",
-            "required": [
-              "gpt_3_5",
-              "gpt_4"
-            ],
             "type": "object",
             "properties": {
               "gpt_3_5": {
                 "title": "Gpt 3 5",
-                "type": "integer"
+                "type": "integer",
+                "default": 0
               },
               "gpt_4": {
                 "title": "Gpt 4",
-                "type": "integer"
+                "type": "integer",
+                "default": 0
               }
             }
           },

@@ -2,11 +2,13 @@ import { MdMore } from '@vicons/ionicons4';
 import { NButton, NDropdown, NIcon, NInput, NSelect, SelectOption } from 'naive-ui';
 import { h } from 'vue';
 
+import ChatModelTagsRow from '@/components/ChatModelTagsRow.vue';
+import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { i18n } from '@/i18n';
 import useUserStore from '@/store/modules/user';
 import {NewConversationInfo} from '@/types/custom';
-import { BaseConversationSchema } from '@/types/schema';
-import { getChatModelNameTrans } from '@/utils/chat';
+import { BaseConversationSchema, UserSettingSchema } from '@/types/schema';
+import { getChatModelNameTrans, getCountTrans } from '@/utils/chat';
 import { Dialog, Message } from '@/utils/tips';
 import NewConversationForm from '@/views/conversation/components/NewConversationForm.vue';
 
@@ -146,5 +148,27 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
           });
       });
     },
+  });
+};
+
+export const renderUserPerModelCounts = (setting: UserSettingSchema) => {
+  const value = {
+    rev: h(ChatModelTagsRow, {
+      value: {
+        gpt_3_5: getCountTrans(setting.rev.per_model_ask_count.gpt_3_5),
+        gpt_4: getCountTrans(setting.rev.per_model_ask_count.gpt_4),
+        gpt_4_browsing: getCountTrans(setting.rev.per_model_ask_count.gpt_4_browsing),
+        gpt_4_plugins: getCountTrans(setting.rev.per_model_ask_count.gpt_4_plugins),
+      }
+    }),
+    api: h(ChatModelTagsRow, {
+      value: {
+        gpt_3_5: getCountTrans(setting.api.per_model_ask_count.gpt_3_5),
+        gpt_4: getCountTrans(setting.api.per_model_ask_count.gpt_4),
+      }
+    })
+  };
+  return h(ChatTypeTagInfoCell, {
+    value
   });
 };

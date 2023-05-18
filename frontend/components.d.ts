@@ -12,6 +12,8 @@ declare module '@vue/runtime-core' {
     ChatGPTAvatar: typeof import('./src/components/ChatGPTAvatar.vue')['default']
     ChatGPTIcon: typeof import('./src/components/icons/ChatGPTIcon.vue')['default']
     ChatGPTIconBlack: typeof import('./src/components/icons/ChatGPTIconBlack.vue')['default']
+    ChatModelTagsRow: typeof import('./src/components/ChatModelTagsRow.vue')['default']
+    ChatTypeTagInfoCell: typeof import('./src/components/ChatTypeTagInfoCell.vue')['default']
     CheckGroup: typeof import('./src/components/form/CheckGroup.vue')['default']
     EditableDataTable: typeof import('./src/components/EditableDataTable.vue')['default']
     GPT3Icon: typeof import('./src/components/icons/GPT3Icon.vue')['default']

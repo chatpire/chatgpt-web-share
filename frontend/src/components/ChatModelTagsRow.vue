@@ -5,7 +5,7 @@
         <n-tag round>
           {{ val }}
           <template #avatar>
-            <ChatGPTAvatar :color="getChatModelColor(key)" />
+            <ChatGPTAvatar :icon-style="getChatModelIconStyle(key)" :color="getChatModelColor(key)" />
           </template>
         </n-tag>
       </template>
@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
-import { getChatModelColor } from '@/utils/chat';
+import { getChatModelColor, getChatModelIconStyle } from '@/utils/chat';
 
 const props = defineProps<{
   value: Record<string, string>;

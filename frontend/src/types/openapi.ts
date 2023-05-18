@@ -205,10 +205,16 @@ export interface components {
     };
     /** ApiPerModelAskCount */
     ApiPerModelAskCount: {
-      /** Gpt 3 5 */
-      gpt_3_5: number;
-      /** Gpt 4 */
-      gpt_4: number;
+      /**
+       * Gpt 3 5 
+       * @default 0
+       */
+      gpt_3_5?: number;
+      /**
+       * Gpt 4 
+       * @default 0
+       */
+      gpt_4?: number;
     };
     /** ApiSourceSettingSchema */
     ApiSourceSettingSchema: {
@@ -847,12 +853,26 @@ export interface components {
     };
     /** RevPerModelAskCount */
     RevPerModelAskCount: {
-      /** Gpt 3 5 */
-      gpt_3_5: number;
-      /** Gpt 4 */
-      gpt_4: number;
-      /** Gpt 4 Browsing */
-      gpt_4_browsing: number;
+      /**
+       * Gpt 3 5 
+       * @default 0
+       */
+      gpt_3_5?: number;
+      /**
+       * Gpt 4 
+       * @default 0
+       */
+      gpt_4?: number;
+      /**
+       * Gpt 4 Browsing 
+       * @default 0
+       */
+      gpt_4_browsing?: number;
+      /**
+       * Gpt 4 Plugins 
+       * @default 0
+       */
+      gpt_4_plugins?: number;
     };
     /** RevSourceSettingSchema */
     RevSourceSettingSchema: {

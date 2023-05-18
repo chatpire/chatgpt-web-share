@@ -10,8 +10,8 @@
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <n-avatar v-else-if="isGpt4" size="small" :src="chatgptIconBlack" />
-      <n-avatar v-else size="small" :src="chatgptIcon" />
+      <!-- <n-avatar v-else size="small" :src="chatgptIcon" /> -->
+      <ChatGPTAvatar v-else size="small" :model="props.message.model" />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
       <div v-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">
@@ -83,6 +83,7 @@ import { useI18n } from 'vue-i18n';
 import chatgptIcon from '/chatgpt-icon.svg';
 // eslint-disable-next-line import/no-unresolved
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
+import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useAppStore } from '@/store';
 import { ChatMessage } from '@/types/schema';
 import md from '@/utils/markdown';
