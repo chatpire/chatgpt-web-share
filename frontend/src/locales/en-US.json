@@ -122,7 +122,18 @@
     "disabled": "disabled",
     "createUser": "Create User",
     "configSetting": "Config Settings",
-    "credentialsSetting": "Credentials"
+    "credentialsSetting": "Credentials",
+    "expandResult": "Expand the results",
+    "invoking_plugin": "Invoking {0}...",
+    "openaiApiSettings": "OpenAI API options",
+    "revchatgptSettings": "ChatGPT Account Options",
+    "submit": "submit",
+    "total": "total",
+    "updateUser": "update user",
+    "updateUserBasic": "Update basic user information",
+    "updateUserSetting": "update user settings",
+    "userBasicInfo": "Basic user information",
+    "userSettings": "User Function Settings"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -152,7 +163,8 @@
     "noUserSelected": "No User Selected",
     "httpError": "HTTP Error",
     "internal": "Internal Error",
-    "invalidParams": "Invalid Params"
+    "invalidParams": "Invalid Params",
+    "noAvailableTotalAskCount": "The total number of conversations that are not available for this type of conversation"
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
@@ -197,7 +209,14 @@
     "alreadySet": "This item has been set, if it is left blank, it will not be modified",
     "confirmSaveConfig": "Are you sure you want to update the configuration? \nSome options may require a service restart to take effect.",
     "saveSuccess": "Saved successfully",
-    "invalidEmail": "Invalid Email"
+    "invalidEmail": "Invalid Email",
+    "createSuccess": "created successfully",
+    "invalidPassword": "Invalid password: must be more than 6 digits, letters or symbols, without spaces",
+    "modelRequired": "Please select a model",
+    "pleaseCheckInput": "Please check the input",
+    "registerSuccess": "registration success",
+    "seperate_settings": "The following will set options for using revChatGPT and API respectively",
+    "updateSuccess": "update completed"
   },
   "labels": {
     "nickname": "Nickname",
@@ -214,6 +233,39 @@
     "can_use_revchatgpt": "Allow using revChatGPT",
     "remark": "remark",
     "rev": "Chat",
-    "api": "APIs"
+    "api": "APIs",
+    "allow_chat_type": "with permission",
+    "allow_custom_openai_api": "Allows use of custom OpenAI APIs",
+    "allow_to_use": "with permission",
+    "ask_count_limits": "maximum number of conversations",
+    "available_models": "Allowed models",
+    "can_use_openai_api": "Allow use of OpenAI API",
+    "credits": "balance",
+    "custom_openai_api_settings": "Customize OpenAI API settings",
+    "daily_available_time_slots": "available time of day",
+    "last_active_time": "last activity time",
+    "model": "Model",
+    "openai_api_available_models": "available models",
+    "openai_api_credits": "OpenAI API credit balance",
+    "per_model_ask_count": "Limitation on the number of conversations per model",
+    "rate_limits": "Conversation rate limit",
+    "rev_chat_status": "Chat status",
+    "revchatgpt_ask_limits": {
+      "max_conv_count": "maximum number of conversations",
+      "per_model_count": "{0} model available times",
+      "total_count": "Total conversations available"
+    },
+    "revchatgpt_available_models": "available models",
+    "title": "title",
+    "total_ask_count": "Total conversation limit",
+    "type": "type",
+    "username": "username",
+    "valid_until": "validity period"
+  },
+  "models": {
+    "gpt_3_5": "GPT-3.5",
+    "gpt_4": "GPT-4",
+    "gpt_4_browsing": "GPT-4 Browsing",
+    "gpt_4_plugins": "GPT-4 Plugins (not currently supported)"
   }
 }

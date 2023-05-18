@@ -163,7 +163,8 @@
     "noUserSelected": "未选择用户",
     "httpError": "HTTP错误",
     "invalidParams": "参数不合法",
-    "internal": "内部错误"
+    "internal": "内部错误",
+    "noAvailableTotalAskCount": "该类型对话方式无可用总对话次数"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
@@ -214,7 +215,8 @@
     "registerSuccess": "注册成功",
     "createSuccess": "创建成功",
     "updateSuccess": "更新成功",
-    "seperate_settings": "以下内容将分别设置使用revChatGPT和API的选项"
+    "seperate_settings": "以下内容将分别设置使用revChatGPT和API的选项",
+    "modelRequired": "请选择模型"
   },
   "labels": {
     "nickname": "昵称",
