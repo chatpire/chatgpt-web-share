@@ -1,5 +1,5 @@
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -48,7 +48,7 @@ async def check_users(refresh_cache: bool = False):
     active_user_in_5m = 0
     active_user_in_1h = 0
     active_user_in_1d = 0
-    current_time = datetime.utcnow()
+    current_time = datetime.now().astimezone(tz=timezone.utc)
     for user in users:
         if not user.last_active_time:
             continue
