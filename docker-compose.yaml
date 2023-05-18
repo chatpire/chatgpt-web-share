@@ -9,29 +9,28 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./data:/data
-      - ./config.yaml:/app/backend/api/config/config.yaml
-      - ./logs:/app/logs
+      - ./data:/app/backend/data
     environment:
       - TZ=Asia/Shanghai
       - CHATGPT_BASE_URL=http://go-chatgpt-api:8080
+      - CWS_CONFIG_DIR=/app/backend/data/config
     depends_on:
       - go-chatgpt-api
+    
+  mongo:
+    image: mongo:4.2-bionic
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: cws
+      MONGO_INITDB_ROOT_USERNAME: cws
+      MONGO_INITDB_ROOT_PASSWORD: password
 
   go-chatgpt-api:
     container_name: go-chatgpt-api
-    image: linweiyuan/go-chatgpt-api
+    image: linweiyuan/go-chatgpt-api:latest
     # ports:
       # - 8080:8080 # 如果你需要暴露端口如一带多，可以取消注释
     environment:
       - GIN_MODE=release
-      - CHATGPT_PROXY_SERVER=http://chatgpt-proxy-server:9515
 #      - NETWORK_PROXY_SERVER=http://host:port
-    depends_on:
-      - chatgpt-proxy-server
-    restart: unless-stopped
-
-  chatgpt-proxy-server:
-    container_name: chatgpt-proxy-server
-    image: linweiyuan/chatgpt-proxy-server
     restart: unless-stopped
