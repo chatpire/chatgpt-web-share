@@ -13,10 +13,7 @@ ARG TARGETARCH
 
 RUN mkdir -p /app/backend
 
-RUN apk add --update caddy gcc
-RUN if [ "${TARGETARCH}" = "arm64" ] ; then \
-        apk add --no-cache gcc musl-dev libffi-dev \
-    ; fi
+RUN apk add --update caddy gcc musl-dev libffi-dev
 
 COPY backend/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
