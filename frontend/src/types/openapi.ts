@@ -160,11 +160,9 @@ export interface components {
       id: string;
       /**
        * Type 
-       * @default api 
-       * @constant 
        * @enum {string}
        */
-      type?: api;
+      type: "api";
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
@@ -191,11 +189,9 @@ export interface components {
     ApiChatMessageMetadata: {
       /**
        * Type 
-       * @default api 
-       * @constant 
        * @enum {string}
        */
-      type?: api;
+      type: "api";
       usage?: components["schemas"]["OpenAIChatResponseUsage"];
       /** Finish Reason */
       finish_reason?: string;
@@ -204,11 +200,9 @@ export interface components {
     ApiChatMessageTextContent: {
       /**
        * Content Type 
-       * @default text 
-       * @constant 
        * @enum {string}
        */
-      content_type?: text;
+      content_type: "text";
       /** Text */
       text: string;
     };
@@ -240,11 +234,9 @@ export interface components {
       _id?: string;
       /**
        * Type 
-       * @default api 
-       * @constant 
        * @enum {string}
        */
-      type?: api;
+      type: "api";
       /** Title */
       title: string;
       /**
@@ -617,7 +609,7 @@ export interface components {
        * @default {
        *   "data_dir": "./data",
        *   "database_url": "sqlite+aiosqlite:///data/database.db",
-       *   "mongodb_url": "mongodb://cws:password@localhost:27017",
+       *   "mongodb_url": "mongodb://cws:password@mongo:27017",
        *   "run_migration": false
        * }
        */
@@ -653,7 +645,6 @@ export interface components {
       /**
        * Log 
        * @default {
-       *   "log_dir": "logs",
        *   "console_log_level": "INFO"
        * }
        */
@@ -711,7 +702,7 @@ export interface components {
       database_url?: string;
       /**
        * Mongodb Url 
-       * @default mongodb://cws:password@localhost:27017
+       * @default mongodb://cws:password@mongo:27017
        */
       mongodb_url?: string;
       /**
@@ -765,11 +756,6 @@ export interface components {
     };
     /** LogSetting */
     LogSetting: {
-      /**
-       * Log Dir 
-       * @default logs
-       */
-      log_dir?: string;
       /**
        * Console Log Level 
        * @default INFO 
@@ -876,11 +862,9 @@ export interface components {
       id: string;
       /**
        * Type 
-       * @default rev 
-       * @constant 
        * @enum {string}
        */
-      type?: rev;
+      type: "rev";
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
@@ -908,11 +892,9 @@ export interface components {
     RevChatMessageCodeContent: {
       /**
        * Content Type 
-       * @default code 
-       * @constant 
        * @enum {string}
        */
-      content_type?: code;
+      content_type: "code";
       /** Language */
       language?: string;
       /** Text */
@@ -922,11 +904,9 @@ export interface components {
     RevChatMessageMetadata: {
       /**
        * Type 
-       * @default rev 
-       * @constant 
        * @enum {string}
        */
-      type?: rev;
+      type: "rev";
       /** Finish Details */
       finish_details?: Record<string, never>;
       /** Weight */
@@ -946,7 +926,7 @@ export interface components {
       args?: (string)[];
       /** Status */
       status?: "finished" | string;
-      _cite_metadata?: components["schemas"]["RevChatMessageMetadataCite"];
+      cite_metadata?: components["schemas"]["RevChatMessageMetadataCite"];
     };
     /** RevChatMessageMetadataCite */
     RevChatMessageMetadataCite: {
@@ -979,11 +959,9 @@ export interface components {
     RevChatMessageTetherBrowsingDisplayContent: {
       /**
        * Content Type 
-       * @default tether_browsing_display 
-       * @constant 
        * @enum {string}
        */
-      content_type?: tether_browsing_display;
+      content_type: "tether_browsing_display";
       /** Result */
       result?: string;
     };
@@ -991,11 +969,9 @@ export interface components {
     RevChatMessageTetherQuoteContent: {
       /**
        * Content Type 
-       * @default tether_quote 
-       * @constant 
        * @enum {string}
        */
-      content_type?: tether_quote;
+      content_type: "tether_quote";
       /** Url */
       url?: string;
       /** Domain */
@@ -1009,11 +985,9 @@ export interface components {
     RevChatMessageTextContent: {
       /**
        * Content Type 
-       * @default text 
-       * @constant 
        * @enum {string}
        */
-      content_type?: text;
+      content_type: "text";
       /** Parts */
       parts?: (string)[];
     };
@@ -1051,11 +1025,9 @@ export interface components {
       _id?: string;
       /**
        * Type 
-       * @default rev 
-       * @constant 
        * @enum {string}
        */
-      type?: rev;
+      type: "rev";
       /** Title */
       title: string;
       /**

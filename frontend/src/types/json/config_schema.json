@@ -39,7 +39,7 @@
       "default": {
         "data_dir": "./data",
         "database_url": "sqlite+aiosqlite:///data/database.db",
-        "mongodb_url": "mongodb://cws:password@localhost:27017",
+        "mongodb_url": "mongodb://cws:password@mongo:27017",
         "run_migration": false
       },
       "allOf": [
@@ -92,7 +92,6 @@
     "log": {
       "title": "Log",
       "default": {
-        "log_dir": "logs",
         "console_log_level": "INFO"
       },
       "allOf": [
@@ -197,7 +196,7 @@
         },
         "mongodb_url": {
           "title": "Mongodb Url",
-          "default": "mongodb://cws:password@localhost:27017",
+          "default": "mongodb://cws:password@mongo:27017",
           "type": "string"
         },
         "run_migration": {
@@ -288,11 +287,6 @@
       "title": "LogSetting",
       "type": "object",
       "properties": {
-        "log_dir": {
-          "title": "Log Dir",
-          "default": "logs",
-          "type": "string"
-        },
         "console_log_level": {
           "title": "Console Log Level",
           "default": "INFO",

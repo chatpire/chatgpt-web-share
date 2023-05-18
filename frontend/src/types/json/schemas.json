@@ -26,6 +26,7 @@
     "title": "ApiChatMessage",
     "required": [
       "id",
+      "type",
       "role",
       "children"
     ],
@@ -41,9 +42,7 @@
         "enum": [
           "api"
         ],
-        "type": "string",
-        "default": "api",
-        "const": "api"
+        "type": "string"
       },
       "role": {
         "title": "Role",
@@ -91,6 +90,7 @@
       "content": {
         "title": "ApiChatMessageTextContent",
         "required": [
+          "content_type",
           "text"
         ],
         "type": "object",
@@ -100,9 +100,7 @@
             "enum": [
               "text"
             ],
-            "type": "string",
-            "default": "text",
-            "const": "text"
+            "type": "string"
           },
           "text": {
             "title": "Text",
@@ -115,6 +113,9 @@
         "anyOf": [
           {
             "title": "RevChatMessageMetadata",
+            "required": [
+              "type"
+            ],
             "type": "object",
             "properties": {
               "type": {
@@ -122,9 +123,7 @@
                 "enum": [
                   "rev"
                 ],
-                "type": "string",
-                "default": "rev",
-                "const": "rev"
+                "type": "string"
               },
               "finish_details": {
                 "title": "Finish Details",
@@ -217,7 +216,7 @@
                   }
                 ]
               },
-              "_cite_metadata": {
+              "cite_metadata": {
                 "title": "RevChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
@@ -253,6 +252,9 @@
           },
           {
             "title": "ApiChatMessageMetadata",
+            "required": [
+              "type"
+            ],
             "type": "object",
             "properties": {
               "type": {
@@ -260,9 +262,7 @@
                 "enum": [
                   "api"
                 ],
-                "type": "string",
-                "default": "api",
-                "const": "api"
+                "type": "string"
               },
               "usage": {
                 "title": "OpenAIChatResponseUsage",
@@ -290,6 +290,9 @@
   },
   "ApiChatMessageMetadata": {
     "title": "ApiChatMessageMetadata",
+    "required": [
+      "type"
+    ],
     "type": "object",
     "properties": {
       "type": {
@@ -297,9 +300,7 @@
         "enum": [
           "api"
         ],
-        "type": "string",
-        "default": "api",
-        "const": "api"
+        "type": "string"
       },
       "usage": {
         "title": "OpenAIChatResponseUsage",
@@ -324,6 +325,7 @@
   "ApiChatMessageTextContent": {
     "title": "ApiChatMessageTextContent",
     "required": [
+      "content_type",
       "text"
     ],
     "type": "object",
@@ -333,9 +335,7 @@
         "enum": [
           "text"
         ],
-        "type": "string",
-        "default": "text",
-        "const": "text"
+        "type": "string"
       },
       "text": {
         "title": "Text",
@@ -355,6 +355,7 @@
   "ApiConversationHistoryDocument": {
     "title": "ApiConversationHistoryDocument",
     "required": [
+      "type",
       "title",
       "create_time",
       "update_time",
@@ -372,9 +373,7 @@
         "enum": [
           "api"
         ],
-        "type": "string",
-        "default": "api",
-        "const": "api"
+        "type": "string"
       },
       "title": {
         "title": "Title",
@@ -397,6 +396,7 @@
           "title": "ApiChatMessage",
           "required": [
             "id",
+            "type",
             "role",
             "children"
           ],
@@ -412,9 +412,7 @@
               "enum": [
                 "api"
               ],
-              "type": "string",
-              "default": "api",
-              "const": "api"
+              "type": "string"
             },
             "role": {
               "title": "Role",
@@ -462,6 +460,7 @@
             "content": {
               "title": "ApiChatMessageTextContent",
               "required": [
+                "content_type",
                 "text"
               ],
               "type": "object",
@@ -471,9 +470,7 @@
                   "enum": [
                     "text"
                   ],
-                  "type": "string",
-                  "default": "text",
-                  "const": "text"
+                  "type": "string"
                 },
                 "text": {
                   "title": "Text",
@@ -486,6 +483,9 @@
               "anyOf": [
                 {
                   "title": "RevChatMessageMetadata",
+                  "required": [
+                    "type"
+                  ],
                   "type": "object",
                   "properties": {
                     "type": {
@@ -493,9 +493,7 @@
                       "enum": [
                         "rev"
                       ],
-                      "type": "string",
-                      "default": "rev",
-                      "const": "rev"
+                      "type": "string"
                     },
                     "finish_details": {
                       "title": "Finish Details",
@@ -588,7 +586,7 @@
                         }
                       ]
                     },
-                    "_cite_metadata": {
+                    "cite_metadata": {
                       "title": "RevChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
@@ -624,6 +622,9 @@
                 },
                 {
                   "title": "ApiChatMessageMetadata",
+                  "required": [
+                    "type"
+                  ],
                   "type": "object",
                   "properties": {
                     "type": {
@@ -631,9 +632,7 @@
                       "enum": [
                         "api"
                       ],
-                      "type": "string",
-                      "default": "api",
-                      "const": "api"
+                      "type": "string"
                     },
                     "usage": {
                       "title": "OpenAIChatResponseUsage",
@@ -974,6 +973,7 @@
             "title": "RevChatMessage",
             "required": [
               "id",
+              "type",
               "role",
               "children"
             ],
@@ -989,9 +989,7 @@
                 "enum": [
                   "rev"
                 ],
-                "type": "string",
-                "default": "rev",
-                "const": "rev"
+                "type": "string"
               },
               "role": {
                 "title": "Role",
@@ -1041,6 +1039,9 @@
                 "anyOf": [
                   {
                     "title": "RevChatMessageTextContent",
+                    "required": [
+                      "content_type"
+                    ],
                     "type": "object",
                     "properties": {
                       "content_type": {
@@ -1048,9 +1049,7 @@
                         "enum": [
                           "text"
                         ],
-                        "type": "string",
-                        "default": "text",
-                        "const": "text"
+                        "type": "string"
                       },
                       "parts": {
                         "title": "Parts",
@@ -1063,6 +1062,9 @@
                   },
                   {
                     "title": "RevChatMessageCodeContent",
+                    "required": [
+                      "content_type"
+                    ],
                     "type": "object",
                     "properties": {
                       "content_type": {
@@ -1070,9 +1072,7 @@
                         "enum": [
                           "code"
                         ],
-                        "type": "string",
-                        "default": "code",
-                        "const": "code"
+                        "type": "string"
                       },
                       "language": {
                         "title": "Language",
@@ -1086,6 +1086,9 @@
                   },
                   {
                     "title": "RevChatMessageTetherBrowsingDisplayContent",
+                    "required": [
+                      "content_type"
+                    ],
                     "type": "object",
                     "properties": {
                       "content_type": {
@@ -1093,9 +1096,7 @@
                         "enum": [
                           "tether_browsing_display"
                         ],
-                        "type": "string",
-                        "default": "tether_browsing_display",
-                        "const": "tether_browsing_display"
+                        "type": "string"
                       },
                       "result": {
                         "title": "Result",
@@ -1105,6 +1106,9 @@
                   },
                   {
                     "title": "RevChatMessageTetherQuoteContent",
+                    "required": [
+                      "content_type"
+                    ],
                     "type": "object",
                     "properties": {
                       "content_type": {
@@ -1112,9 +1116,7 @@
                         "enum": [
                           "tether_quote"
                         ],
-                        "type": "string",
-                        "default": "tether_quote",
-                        "const": "tether_quote"
+                        "type": "string"
                       },
                       "url": {
                         "title": "Url",
@@ -1141,6 +1143,9 @@
                 "anyOf": [
                   {
                     "title": "RevChatMessageMetadata",
+                    "required": [
+                      "type"
+                    ],
                     "type": "object",
                     "properties": {
                       "type": {
@@ -1148,9 +1153,7 @@
                         "enum": [
                           "rev"
                         ],
-                        "type": "string",
-                        "default": "rev",
-                        "const": "rev"
+                        "type": "string"
                       },
                       "finish_details": {
                         "title": "Finish Details",
@@ -1243,7 +1246,7 @@
                           }
                         ]
                       },
-                      "_cite_metadata": {
+                      "cite_metadata": {
                         "title": "RevChatMessageMetadataCite",
                         "type": "object",
                         "properties": {
@@ -1279,6 +1282,9 @@
                   },
                   {
                     "title": "ApiChatMessageMetadata",
+                    "required": [
+                      "type"
+                    ],
                     "type": "object",
                     "properties": {
                       "type": {
@@ -1286,9 +1292,7 @@
                         "enum": [
                           "api"
                         ],
-                        "type": "string",
-                        "default": "api",
-                        "const": "api"
+                        "type": "string"
                       },
                       "usage": {
                         "title": "OpenAIChatResponseUsage",
@@ -1318,6 +1322,7 @@
             "title": "ApiChatMessage",
             "required": [
               "id",
+              "type",
               "role",
               "children"
             ],
@@ -1333,9 +1338,7 @@
                 "enum": [
                   "api"
                 ],
-                "type": "string",
-                "default": "api",
-                "const": "api"
+                "type": "string"
               },
               "role": {
                 "title": "Role",
@@ -1383,6 +1386,7 @@
               "content": {
                 "title": "ApiChatMessageTextContent",
                 "required": [
+                  "content_type",
                   "text"
                 ],
                 "type": "object",
@@ -1392,9 +1396,7 @@
                     "enum": [
                       "text"
                     ],
-                    "type": "string",
-                    "default": "text",
-                    "const": "text"
+                    "type": "string"
                   },
                   "text": {
                     "title": "Text",
@@ -1407,6 +1409,9 @@
                 "anyOf": [
                   {
                     "title": "RevChatMessageMetadata",
+                    "required": [
+                      "type"
+                    ],
                     "type": "object",
                     "properties": {
                       "type": {
@@ -1414,9 +1419,7 @@
                         "enum": [
                           "rev"
                         ],
-                        "type": "string",
-                        "default": "rev",
-                        "const": "rev"
+                        "type": "string"
                       },
                       "finish_details": {
                         "title": "Finish Details",
@@ -1509,7 +1512,7 @@
                           }
                         ]
                       },
-                      "_cite_metadata": {
+                      "cite_metadata": {
                         "title": "RevChatMessageMetadataCite",
                         "type": "object",
                         "properties": {
@@ -1545,6 +1548,9 @@
                   },
                   {
                     "title": "ApiChatMessageMetadata",
+                    "required": [
+                      "type"
+                    ],
                     "type": "object",
                     "properties": {
                       "type": {
@@ -1552,9 +1558,7 @@
                         "enum": [
                           "api"
                         ],
-                        "type": "string",
-                        "default": "api",
-                        "const": "api"
+                        "type": "string"
                       },
                       "usage": {
                         "title": "OpenAIChatResponseUsage",
@@ -1705,6 +1709,9 @@
             "oneOf": [
               {
                 "title": "RevChatMessageTextContent",
+                "required": [
+                  "content_type"
+                ],
                 "type": "object",
                 "properties": {
                   "content_type": {
@@ -1712,9 +1719,7 @@
                     "enum": [
                       "text"
                     ],
-                    "type": "string",
-                    "default": "text",
-                    "const": "text"
+                    "type": "string"
                   },
                   "parts": {
                     "title": "Parts",
@@ -1727,6 +1732,9 @@
               },
               {
                 "title": "RevChatMessageCodeContent",
+                "required": [
+                  "content_type"
+                ],
                 "type": "object",
                 "properties": {
                   "content_type": {
@@ -1734,9 +1742,7 @@
                     "enum": [
                       "code"
                     ],
-                    "type": "string",
-                    "default": "code",
-                    "const": "code"
+                    "type": "string"
                   },
                   "language": {
                     "title": "Language",
@@ -1750,6 +1756,9 @@
               },
               {
                 "title": "RevChatMessageTetherBrowsingDisplayContent",
+                "required": [
+                  "content_type"
+                ],
                 "type": "object",
                 "properties": {
                   "content_type": {
@@ -1757,9 +1766,7 @@
                     "enum": [
                       "tether_browsing_display"
                     ],
-                    "type": "string",
-                    "default": "tether_browsing_display",
-                    "const": "tether_browsing_display"
+                    "type": "string"
                   },
                   "result": {
                     "title": "Result",
@@ -1769,6 +1776,9 @@
               },
               {
                 "title": "RevChatMessageTetherQuoteContent",
+                "required": [
+                  "content_type"
+                ],
                 "type": "object",
                 "properties": {
                   "content_type": {
@@ -1776,9 +1786,7 @@
                     "enum": [
                       "tether_quote"
                     ],
-                    "type": "string",
-                    "default": "tether_quote",
-                    "const": "tether_quote"
+                    "type": "string"
                   },
                   "url": {
                     "title": "Url",
@@ -1803,6 +1811,7 @@
           {
             "title": "ApiChatMessageTextContent",
             "required": [
+              "content_type",
               "text"
             ],
             "type": "object",
@@ -1812,9 +1821,7 @@
                 "enum": [
                   "text"
                 ],
-                "type": "string",
-                "default": "text",
-                "const": "text"
+                "type": "string"
               },
               "text": {
                 "title": "Text",
@@ -1832,6 +1839,9 @@
         "anyOf": [
           {
             "title": "RevChatMessageMetadata",
+            "required": [
+              "type"
+            ],
             "type": "object",
             "properties": {
               "type": {
@@ -1839,9 +1849,7 @@
                 "enum": [
                   "rev"
                 ],
-                "type": "string",
-                "default": "rev",
-                "const": "rev"
+                "type": "string"
               },
               "finish_details": {
                 "title": "Finish Details",
@@ -1934,7 +1942,7 @@
                   }
                 ]
               },
-              "_cite_metadata": {
+              "cite_metadata": {
                 "title": "RevChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
@@ -1970,6 +1978,9 @@
           },
           {
             "title": "ApiChatMessageMetadata",
+            "required": [
+              "type"
+            ],
             "type": "object",
             "properties": {
               "type": {
@@ -1977,9 +1988,7 @@
                 "enum": [
                   "api"
                 ],
-                "type": "string",
-                "default": "api",
-                "const": "api"
+                "type": "string"
               },
               "usage": {
                 "title": "OpenAIChatResponseUsage",
@@ -2119,6 +2128,9 @@
                   "oneOf": [
                     {
                       "title": "RevChatMessageTextContent",
+                      "required": [
+                        "content_type"
+                      ],
                       "type": "object",
                       "properties": {
                         "content_type": {
@@ -2126,9 +2138,7 @@
                           "enum": [
                             "text"
                           ],
-                          "type": "string",
-                          "default": "text",
-                          "const": "text"
+                          "type": "string"
                         },
                         "parts": {
                           "title": "Parts",
@@ -2141,6 +2151,9 @@
                     },
                     {
                       "title": "RevChatMessageCodeContent",
+                      "required": [
+                        "content_type"
+                      ],
                       "type": "object",
                       "properties": {
                         "content_type": {
@@ -2148,9 +2161,7 @@
                           "enum": [
                             "code"
                           ],
-                          "type": "string",
-                          "default": "code",
-                          "const": "code"
+                          "type": "string"
                         },
                         "language": {
                           "title": "Language",
@@ -2164,6 +2175,9 @@
                     },
                     {
                       "title": "RevChatMessageTetherBrowsingDisplayContent",
+                      "required": [
+                        "content_type"
+                      ],
                       "type": "object",
                       "properties": {
                         "content_type": {
@@ -2171,9 +2185,7 @@
                           "enum": [
                             "tether_browsing_display"
                           ],
-                          "type": "string",
-                          "default": "tether_browsing_display",
-                          "const": "tether_browsing_display"
+                          "type": "string"
                         },
                         "result": {
                           "title": "Result",
@@ -2183,6 +2195,9 @@
                     },
                     {
                       "title": "RevChatMessageTetherQuoteContent",
+                      "required": [
+                        "content_type"
+                      ],
                       "type": "object",
                       "properties": {
                         "content_type": {
@@ -2190,9 +2205,7 @@
                           "enum": [
                             "tether_quote"
                           ],
-                          "type": "string",
-                          "default": "tether_quote",
-                          "const": "tether_quote"
+                          "type": "string"
                         },
                         "url": {
                           "title": "Url",
@@ -2217,6 +2230,7 @@
                 {
                   "title": "ApiChatMessageTextContent",
                   "required": [
+                    "content_type",
                     "text"
                   ],
                   "type": "object",
@@ -2226,9 +2240,7 @@
                       "enum": [
                         "text"
                       ],
-                      "type": "string",
-                      "default": "text",
-                      "const": "text"
+                      "type": "string"
                     },
                     "text": {
                       "title": "Text",
@@ -2246,6 +2258,9 @@
               "anyOf": [
                 {
                   "title": "RevChatMessageMetadata",
+                  "required": [
+                    "type"
+                  ],
                   "type": "object",
                   "properties": {
                     "type": {
@@ -2253,9 +2268,7 @@
                       "enum": [
                         "rev"
                       ],
-                      "type": "string",
-                      "default": "rev",
-                      "const": "rev"
+                      "type": "string"
                     },
                     "finish_details": {
                       "title": "Finish Details",
@@ -2348,7 +2361,7 @@
                         }
                       ]
                     },
-                    "_cite_metadata": {
+                    "cite_metadata": {
                       "title": "RevChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
@@ -2384,6 +2397,9 @@
                 },
                 {
                   "title": "ApiChatMessageMetadata",
+                  "required": [
+                    "type"
+                  ],
                   "type": "object",
                   "properties": {
                     "type": {
@@ -2391,9 +2407,7 @@
                       "enum": [
                         "api"
                       ],
-                      "type": "string",
-                      "default": "api",
-                      "const": "api"
+                      "type": "string"
                     },
                     "usage": {
                       "title": "OpenAIChatResponseUsage",
@@ -2700,7 +2714,7 @@
               "mongodb_url": {
                 "title": "Mongodb Url",
                 "type": "string",
-                "default": "mongodb://cws:password@localhost:27017"
+                "default": "mongodb://cws:password@mongo:27017"
               },
               "run_migration": {
                 "title": "Run Migration",
@@ -2713,7 +2727,7 @@
         "default": {
           "data_dir": "./data",
           "database_url": "sqlite+aiosqlite:///data/database.db",
-          "mongodb_url": "mongodb://cws:password@localhost:27017",
+          "mongodb_url": "mongodb://cws:password@mongo:27017",
           "run_migration": false
         }
       },
@@ -2832,11 +2846,6 @@
             "title": "LogSetting",
             "type": "object",
             "properties": {
-              "log_dir": {
-                "title": "Log Dir",
-                "type": "string",
-                "default": "logs"
-              },
               "console_log_level": {
                 "title": "Console Log Level",
                 "enum": [
@@ -2851,7 +2860,6 @@
           }
         ],
         "default": {
-          "log_dir": "logs",
           "console_log_level": "INFO"
         }
       },
@@ -2955,7 +2963,7 @@
       "mongodb_url": {
         "title": "Mongodb Url",
         "type": "string",
-        "default": "mongodb://cws:password@localhost:27017"
+        "default": "mongodb://cws:password@mongo:27017"
       },
       "run_migration": {
         "title": "Run Migration",
@@ -3081,11 +3089,6 @@
     "title": "LogSetting",
     "type": "object",
     "properties": {
-      "log_dir": {
-        "title": "Log Dir",
-        "type": "string",
-        "default": "logs"
-      },
       "console_log_level": {
         "title": "Console Log Level",
         "enum": [
@@ -3346,6 +3349,7 @@
     "title": "RevChatMessage",
     "required": [
       "id",
+      "type",
       "role",
       "children"
     ],
@@ -3361,9 +3365,7 @@
         "enum": [
           "rev"
         ],
-        "type": "string",
-        "default": "rev",
-        "const": "rev"
+        "type": "string"
       },
       "role": {
         "title": "Role",
@@ -3413,6 +3415,9 @@
         "anyOf": [
           {
             "title": "RevChatMessageTextContent",
+            "required": [
+              "content_type"
+            ],
             "type": "object",
             "properties": {
               "content_type": {
@@ -3420,9 +3425,7 @@
                 "enum": [
                   "text"
                 ],
-                "type": "string",
-                "default": "text",
-                "const": "text"
+                "type": "string"
               },
               "parts": {
                 "title": "Parts",
@@ -3435,6 +3438,9 @@
           },
           {
             "title": "RevChatMessageCodeContent",
+            "required": [
+              "content_type"
+            ],
             "type": "object",
             "properties": {
               "content_type": {
@@ -3442,9 +3448,7 @@
                 "enum": [
                   "code"
                 ],
-                "type": "string",
-                "default": "code",
-                "const": "code"
+                "type": "string"
               },
               "language": {
                 "title": "Language",
@@ -3458,6 +3462,9 @@
           },
           {
             "title": "RevChatMessageTetherBrowsingDisplayContent",
+            "required": [
+              "content_type"
+            ],
             "type": "object",
             "properties": {
               "content_type": {
@@ -3465,9 +3472,7 @@
                 "enum": [
                   "tether_browsing_display"
                 ],
-                "type": "string",
-                "default": "tether_browsing_display",
-                "const": "tether_browsing_display"
+                "type": "string"
               },
               "result": {
                 "title": "Result",
@@ -3477,6 +3482,9 @@
           },
           {
             "title": "RevChatMessageTetherQuoteContent",
+            "required": [
+              "content_type"
+            ],
             "type": "object",
             "properties": {
               "content_type": {
@@ -3484,9 +3492,7 @@
                 "enum": [
                   "tether_quote"
                 ],
-                "type": "string",
-                "default": "tether_quote",
-                "const": "tether_quote"
+                "type": "string"
               },
               "url": {
                 "title": "Url",
@@ -3513,6 +3519,9 @@
         "anyOf": [
           {
             "title": "RevChatMessageMetadata",
+            "required": [
+              "type"
+            ],
             "type": "object",
             "properties": {
               "type": {
@@ -3520,9 +3529,7 @@
                 "enum": [
                   "rev"
                 ],
-                "type": "string",
-                "default": "rev",
-                "const": "rev"
+                "type": "string"
               },
               "finish_details": {
                 "title": "Finish Details",
@@ -3615,7 +3622,7 @@
                   }
                 ]
               },
-              "_cite_metadata": {
+              "cite_metadata": {
                 "title": "RevChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
@@ -3651,6 +3658,9 @@
           },
           {
             "title": "ApiChatMessageMetadata",
+            "required": [
+              "type"
+            ],
             "type": "object",
             "properties": {
               "type": {
@@ -3658,9 +3668,7 @@
                 "enum": [
                   "api"
                 ],
-                "type": "string",
-                "default": "api",
-                "const": "api"
+                "type": "string"
               },
               "usage": {
                 "title": "OpenAIChatResponseUsage",
@@ -3688,6 +3696,9 @@
   },
   "RevChatMessageCodeContent": {
     "title": "RevChatMessageCodeContent",
+    "required": [
+      "content_type"
+    ],
     "type": "object",
     "properties": {
       "content_type": {
@@ -3695,9 +3706,7 @@
         "enum": [
           "code"
         ],
-        "type": "string",
-        "default": "code",
-        "const": "code"
+        "type": "string"
       },
       "language": {
         "title": "Language",
@@ -3711,6 +3720,9 @@
   },
   "RevChatMessageMetadata": {
     "title": "RevChatMessageMetadata",
+    "required": [
+      "type"
+    ],
     "type": "object",
     "properties": {
       "type": {
@@ -3718,9 +3730,7 @@
         "enum": [
           "rev"
         ],
-        "type": "string",
-        "default": "rev",
-        "const": "rev"
+        "type": "string"
       },
       "finish_details": {
         "title": "Finish Details",
@@ -3813,7 +3823,7 @@
           }
         ]
       },
-      "_cite_metadata": {
+      "cite_metadata": {
         "title": "RevChatMessageMetadataCite",
         "type": "object",
         "properties": {
@@ -3921,6 +3931,9 @@
   },
   "RevChatMessageTetherBrowsingDisplayContent": {
     "title": "RevChatMessageTetherBrowsingDisplayContent",
+    "required": [
+      "content_type"
+    ],
     "type": "object",
     "properties": {
       "content_type": {
@@ -3928,9 +3941,7 @@
         "enum": [
           "tether_browsing_display"
         ],
-        "type": "string",
-        "default": "tether_browsing_display",
-        "const": "tether_browsing_display"
+        "type": "string"
       },
       "result": {
         "title": "Result",
@@ -3940,6 +3951,9 @@
   },
   "RevChatMessageTetherQuoteContent": {
     "title": "RevChatMessageTetherQuoteContent",
+    "required": [
+      "content_type"
+    ],
     "type": "object",
     "properties": {
       "content_type": {
@@ -3947,9 +3961,7 @@
         "enum": [
           "tether_quote"
         ],
-        "type": "string",
-        "default": "tether_quote",
-        "const": "tether_quote"
+        "type": "string"
       },
       "url": {
         "title": "Url",
@@ -3971,6 +3983,9 @@
   },
   "RevChatMessageTextContent": {
     "title": "RevChatMessageTextContent",
+    "required": [
+      "content_type"
+    ],
     "type": "object",
     "properties": {
       "content_type": {
@@ -3978,9 +3993,7 @@
         "enum": [
           "text"
         ],
-        "type": "string",
-        "default": "text",
-        "const": "text"
+        "type": "string"
       },
       "parts": {
         "title": "Parts",
@@ -4015,6 +4028,7 @@
   "RevConversationHistoryDocument": {
     "title": "RevConversationHistoryDocument",
     "required": [
+      "type",
       "title",
       "create_time",
       "update_time",
@@ -4032,9 +4046,7 @@
         "enum": [
           "rev"
         ],
-        "type": "string",
-        "default": "rev",
-        "const": "rev"
+        "type": "string"
       },
       "title": {
         "title": "Title",
@@ -4057,6 +4069,7 @@
           "title": "RevChatMessage",
           "required": [
             "id",
+            "type",
             "role",
             "children"
           ],
@@ -4072,9 +4085,7 @@
               "enum": [
                 "rev"
               ],
-              "type": "string",
-              "default": "rev",
-              "const": "rev"
+              "type": "string"
             },
             "role": {
               "title": "Role",
@@ -4124,6 +4135,9 @@
               "anyOf": [
                 {
                   "title": "RevChatMessageTextContent",
+                  "required": [
+                    "content_type"
+                  ],
                   "type": "object",
                   "properties": {
                     "content_type": {
@@ -4131,9 +4145,7 @@
                       "enum": [
                         "text"
                       ],
-                      "type": "string",
-                      "default": "text",
-                      "const": "text"
+                      "type": "string"
                     },
                     "parts": {
                       "title": "Parts",
@@ -4146,6 +4158,9 @@
                 },
                 {
                   "title": "RevChatMessageCodeContent",
+                  "required": [
+                    "content_type"
+                  ],
                   "type": "object",
                   "properties": {
                     "content_type": {
@@ -4153,9 +4168,7 @@
                       "enum": [
                         "code"
                       ],
-                      "type": "string",
-                      "default": "code",
-                      "const": "code"
+                      "type": "string"
                     },
                     "language": {
                       "title": "Language",
@@ -4169,6 +4182,9 @@
                 },
                 {
                   "title": "RevChatMessageTetherBrowsingDisplayContent",
+                  "required": [
+                    "content_type"
+                  ],
                   "type": "object",
                   "properties": {
                     "content_type": {
@@ -4176,9 +4192,7 @@
                       "enum": [
                         "tether_browsing_display"
                       ],
-                      "type": "string",
-                      "default": "tether_browsing_display",
-                      "const": "tether_browsing_display"
+                      "type": "string"
                     },
                     "result": {
                       "title": "Result",
@@ -4188,6 +4202,9 @@
                 },
                 {
                   "title": "RevChatMessageTetherQuoteContent",
+                  "required": [
+                    "content_type"
+                  ],
                   "type": "object",
                   "properties": {
                     "content_type": {
@@ -4195,9 +4212,7 @@
                       "enum": [
                         "tether_quote"
                       ],
-                      "type": "string",
-                      "default": "tether_quote",
-                      "const": "tether_quote"
+                      "type": "string"
                     },
                     "url": {
                       "title": "Url",
@@ -4224,6 +4239,9 @@
               "anyOf": [
                 {
                   "title": "RevChatMessageMetadata",
+                  "required": [
+                    "type"
+                  ],
                   "type": "object",
                   "properties": {
                     "type": {
@@ -4231,9 +4249,7 @@
                       "enum": [
                         "rev"
                       ],
-                      "type": "string",
-                      "default": "rev",
-                      "const": "rev"
+                      "type": "string"
                     },
                     "finish_details": {
                       "title": "Finish Details",
@@ -4326,7 +4342,7 @@
                         }
                       ]
                     },
-                    "_cite_metadata": {
+                    "cite_metadata": {
                       "title": "RevChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
@@ -4362,6 +4378,9 @@
                 },
                 {
                   "title": "ApiChatMessageMetadata",
+                  "required": [
+                    "type"
+                  ],
                   "type": "object",
                   "properties": {
                     "type": {
@@ -4369,9 +4388,7 @@
                       "enum": [
                         "api"
                       ],
-                      "type": "string",
-                      "default": "api",
-                      "const": "api"
+                      "type": "string"
                     },
                     "usage": {
                       "title": "OpenAIChatResponseUsage",

@@ -29,7 +29,7 @@ class RevChatMessageMetadataCite(BaseModel):
 
 
 class RevChatMessageMetadata(BaseModel):
-    type: Literal["rev"] = Field(default="rev", const=True)
+    type: Literal["rev"]
     # 以下只有assistant有
     # mapping[id].message.metadata 中的内容 加上 mapping[id].message 中的 weight, end_turn
     finish_details: Optional[dict[str, Any]]
@@ -44,11 +44,11 @@ class RevChatMessageMetadata(BaseModel):
     command: Optional[Literal['search'] | str]
     args: Optional[list[str]]  # 例如：['May 17, 2023 stock market news']
     status: Optional[Literal['finished'] | str]
-    cite_metadata: Optional[RevChatMessageMetadataCite] = Field(alias="_cite_metadata")  # _cite_metadata
+    cite_metadata: Optional[RevChatMessageMetadataCite]  # _cite_metadata
 
 
 class ApiChatMessageMetadata(BaseModel):
-    type: Literal['api'] = Field(default="api", const=True)
+    type: Literal['api']
     usage: Optional[OpenAIChatResponseUsage]
     finish_reason: Optional[str]
 
@@ -57,23 +57,23 @@ class ApiChatMessageMetadata(BaseModel):
 
 
 class RevChatMessageTextContent(BaseModel):
-    content_type: Literal['text'] = Field(default="text", const=True)
+    content_type: Literal['text']
     parts: Optional[list[str]]
 
 
 class RevChatMessageCodeContent(BaseModel):
-    content_type: Literal['code'] = Field(default="code", const=True)
+    content_type: Literal['code']
     language: Optional[str]
     text: Optional[str]
 
 
 class RevChatMessageTetherBrowsingDisplayContent(BaseModel):
-    content_type: Literal['tether_browsing_display'] = Field(default="tether_browsing_display", const=True)
+    content_type: Literal['tether_browsing_display']
     result: Optional[str]
 
 
 class RevChatMessageTetherQuoteContent(BaseModel):
-    content_type: Literal['tether_quote'] = Field(default="tether_quote", const=True)
+    content_type: Literal['tether_quote']
     url: Optional[str]
     domain: Optional[str]
     text: Optional[str]
@@ -88,7 +88,7 @@ RevChatMessageContent = Annotated[
 
 
 class ApiChatMessageTextContent(BaseModel):
-    content_type: Literal['text'] = Field(default="text", const=True)
+    content_type: Literal['text']
     text: str
 
 
@@ -113,12 +113,12 @@ class BaseChatMessage(BaseModel):
 
 
 class RevChatMessage(BaseChatMessage):
-    type: Literal["rev"] = Field(default="rev", const=True)
+    type: Literal["rev"]
     content: Optional[RevChatMessageContent]
 
 
 class ApiChatMessage(BaseChatMessage):
-    type: Literal["api"] = Field(default="api", const=True)
+    type: Literal["api"]
     # content: Union[ApiChatMessageTextContent] = Field(..., discriminator='content_type')
     content: Optional[ApiChatMessageTextContent]
 
@@ -148,7 +148,7 @@ class BaseConversationHistory(BaseModel):
 
 class RevConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    type: Literal["rev"] = Field(default="rev", const=True)
+    type: Literal["rev"]
     mapping: dict[str, RevChatMessage]
 
     class Settings:
@@ -157,7 +157,7 @@ class RevConversationHistoryDocument(Document, BaseConversationHistory):
 
 class ApiConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    type: Literal["api"] = Field(default="api", const=True)
+    type: Literal["api"]
     mapping: dict[str, ApiChatMessage]
 
     class Settings:

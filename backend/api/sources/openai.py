@@ -62,12 +62,13 @@ class OpenAIChatManager:
         now_time = datetime.now().astimezone(tz=timezone.utc)
         message_id = uuid.uuid4()
         new_message = ApiChatMessage(
+            type="api",
             id=message_id,
             role="user",
             create_time=now_time,
             parent=parent_id,
             children=[],
-            content=ApiChatMessageTextContent(text=content),
+            content=ApiChatMessageTextContent(content_type="text", text=content),
             metadata=ApiChatMessageMetadata(
                 type="api",
             )
@@ -149,19 +150,21 @@ class OpenAIChatManager:
                         text_content += resp.choices[0].delta.get("content", "")
                     if reply_message is None:
                         reply_message = ApiChatMessage(
+                            type="api",
                             id=uuid.uuid4(),
                             role="assistant",
                             model=model,
                             create_time=datetime.now().astimezone(tz=timezone.utc),
                             parent=message_id,
                             children=[],
-                            content=ApiChatMessageTextContent(text=text_content),
+                            content=ApiChatMessageTextContent(content_type="text", text=text_content),
                             metadata=ApiChatMessageMetadata(
+                                type="api",
                                 finish_reason=resp.choices[0].finish_reason,
                             )
                         )
                     else:
-                        reply_message.content = ApiChatMessageTextContent(text=text_content)
+                        reply_message.content = ApiChatMessageTextContent(content_type="text", text=text_content)
 
                     if resp.usage:
                         reply_message.metadata.usage = resp.usage

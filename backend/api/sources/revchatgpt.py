@@ -48,6 +48,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMes
 
     message_id = message_id or item["message"]["id"]
     result = RevChatMessage(
+        type="rev",
         id=message_id,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
         role=item["message"]["author"]["role"],
         author_name=item["message"]["author"].get("name"),
@@ -167,6 +168,7 @@ class RevChatGPTManager:
         if mapping.get(result.get("current_node")):
             current_model = get_latest_model_from_mapping(result["current_node"], mapping)
         doc = RevConversationHistoryDocument(
+            type="rev",
             id=conversation_id,
             title=result.get("title"),
             create_time=result.get("create_time"),
@@ -198,7 +200,7 @@ class RevChatGPTManager:
         if plugin_ids is not None and model != RevChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
-        content = RevChatMessageTextContent(parts=[content])
+        content = RevChatMessageTextContent(content_type="text", parts=[content])
 
         messages = [
             {

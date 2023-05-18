@@ -394,9 +394,10 @@ async def chat(websocket: WebSocket):
 
             content = ask_request.content
             if isinstance(content, str):
-                content = ApiChatMessageTextContent(text=content)
+                content = ApiChatMessageTextContent(content_type="text", text=content)
 
             ask_message = ApiChatMessage(
+                type="api",
                 id=message.parent,
                 role="user",
                 create_time=request_start_time.astimezone(tz=timezone.utc),
@@ -408,8 +409,8 @@ async def chat(websocket: WebSocket):
             # 对于api新对话，添加历史记录到mongodb
             if ask_request.new_conversation:
                 new_conv_history = ApiConversationHistoryDocument(
+                    type="api",
                     id=conversation_id,
-                    type=ask_request.type,
                     title=ask_request.new_title or "New Chat",
                     create_time=request_start_time.astimezone(tz=timezone.utc),
                     update_time=datetime.now().astimezone(tz=timezone.utc),

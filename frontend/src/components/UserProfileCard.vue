@@ -19,8 +19,9 @@ import { computed, h, ref, VNode } from 'vue';
 import { i18n } from '@/i18n';
 import { useUserStore } from '@/store';
 import { chatStatusMap, UserRead } from '@/types/schema';
-const t = i18n.global.t as any;
 import { getUserAttrColumns } from '@/utils/user';
+
+const t = i18n.global.t as any;
 
 const userStore = useUserStore();
 const user: UserRead | null = userStore.user;
