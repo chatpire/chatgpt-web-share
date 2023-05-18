@@ -4,7 +4,7 @@ import chatgptIcon from '/chatgpt-icon.svg';
 import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import { i18n } from '@/i18n';
 import { allChatModelNames } from '@/types/json_schema';
-import { ApiChatModels, BaseChatMessage, RevChatMessageCodeContent, RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageTextContent, RevChatModels } from '@/types/schema';
+import { ApiChatMessageTextContent, ApiChatModels, BaseChatMessage, RevChatMessageCodeContent, RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageTextContent, RevChatModels } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
@@ -44,8 +44,13 @@ export const getContentRawText = (message: BaseChatMessage): string => {
   if (!message.content) return '';
   if (typeof message.content == 'string') return message.content;
   else if (message.content.content_type == 'text') {
-    const content = message.content as RevChatMessageTextContent;
-    return content.parts![0];
+    if (message.type == 'rev') {
+      const content = message.content as RevChatMessageTextContent;
+      return content.parts![0];
+    } else {
+      const content = message.content as ApiChatMessageTextContent;
+      return content.text || '';
+    }
   } else if (message.content.content_type == 'code') {
     const content = message.content as RevChatMessageCodeContent;
     return content.text || '';

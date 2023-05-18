@@ -20,7 +20,8 @@ from api.database import get_async_session_context
 from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels, ApiChatModels
 from api.exceptions import InternalException, InvalidParamsException
 from api.models.db import RevConversation, User, BaseConversation
-from api.models.doc import RevChatMessage, ApiChatMessage, RevConversationHistoryDocument, ApiConversationHistoryDocument
+from api.models.doc import RevChatMessage, ApiChatMessage, RevConversationHistoryDocument, \
+    ApiConversationHistoryDocument, ApiChatMessageTextContent
 from api.routers.conv import _get_conversation_by_id
 from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
@@ -391,13 +392,17 @@ async def chat(websocket: WebSocket):
         if ask_request.type == ChatSourceTypes.api:
             assert message.parent is not None, "message.parent is None"
 
+            content = ask_request.content
+            if isinstance(content, str):
+                content = ApiChatMessageTextContent(text=content)
+
             ask_message = ApiChatMessage(
                 id=message.parent,
                 role="user",
                 create_time=request_start_time.astimezone(tz=timezone.utc),
                 parent=ask_request.parent,
                 children=[message.id],
-                content=ask_request.content
+                content=content
             )
 
             # 对于api新对话，添加历史记录到mongodb

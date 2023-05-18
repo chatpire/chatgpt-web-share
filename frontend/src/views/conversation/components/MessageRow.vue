@@ -11,10 +11,19 @@
         </n-icon>
       </n-avatar>
       <!-- <n-avatar v-else size="small" :src="chatgptIcon" /> -->
-      <ChatGPTAvatar v-else size="small" :model="props.message.model" />
+      <ChatGPTAvatar v-show="!shrinkMessage" v-else size="small" :model="props.message.model" />
     </div>
     <div class="lt-sm:mx-0 mx-4 w-full">
-      <div v-if="showRawContent" class="my-3 w-full whitespace-pre-wrap text-gray-500">
+      <div v-if="shrinkMessage">
+        <n-collapse class="mb-2">
+          <n-collapse-item :title="t('commons.expandResult')">
+            <div class="whitespace-pre-wrap">
+              {{ content }}
+            </div>
+          </n-collapse-item>
+        </n-collapse>
+      </div>
+      <div v-else-if="showRawContent" class="my-3 w-full  text-gray-500">
         {{ content }}
       </div>
       <div v-else-if="isPluginMessage" class="my-3">
@@ -45,7 +54,7 @@
         {{ renderedContent }}
       </div>
 
-      <div class="hide-in-print">
+      <div v-if="!shrinkMessage" class="hide-in-print">
         <n-button
           text
           ghost
@@ -116,6 +125,13 @@ const showRawContent = ref(false);
 const props = defineProps<{
   message: BaseChatMessage;
 }>();
+
+const shrinkMessage = computed(() => {
+  if (props.message.metadata && (props.message.metadata as any).weight != undefined) {
+    return (props.message.metadata as any).weight == 0;
+  }
+  return false;
+});
 
 const revMetadata = computed<RevChatMessageMetadata | null>(() => {
   if (props.message.type == 'rev') {

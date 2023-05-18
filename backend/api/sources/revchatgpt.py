@@ -185,7 +185,7 @@ class RevChatGPTManager:
     async def clear_conversations(self):
         await self.chatbot.clear_conversations()
 
-    async def ask(self, content: RevChatMessageContent, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
+    async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
                   timeout=360, model: RevChatModels = None, plugin_ids: list[str] = None):
 
         model = model or RevChatModels.gpt_3_5
@@ -198,12 +198,14 @@ class RevChatGPTManager:
         if plugin_ids is not None and model != RevChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
+        content = RevChatMessageTextContent(parts=[content])
+
         messages = [
             {
                 "id": str(uuid.uuid4()),
                 "role": "user",
                 "author": {"role": "user"},
-                "content": content,
+                "content": content.dict(),
             }
         ]
 

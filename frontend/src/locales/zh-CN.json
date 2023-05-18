@@ -132,7 +132,8 @@
     "configSetting": "配置选项",
     "credentialsSetting": "凭据选项",
     "total": "总",
-    "invoking_plugin": "正在调用 {0}..."
+    "invoking_plugin": "调用 {0}...",
+    "expandResult": "展开结果"
   },
   "errors": {
     "403": "403 错误：无访问权限",

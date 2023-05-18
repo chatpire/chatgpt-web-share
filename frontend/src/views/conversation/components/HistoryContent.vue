@@ -44,7 +44,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useConversationStore } from '@/store';
-import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory, RevChatMessageMetadata } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getMessageListFromHistory } from '@/utils/conversation';
 import { Message } from '@/utils/tips';
@@ -81,7 +81,9 @@ const messages = computed<BaseChatMessage[]>(() => {
 });
 
 const filteredMessages = computed<BaseChatMessage[]>(() => {
-  return messages.value ? messages.value.filter((message) => message.role !== 'system') : [];
+  return messages.value ? messages.value.filter((message) => {
+    return message.role !== 'system';
+  }) : [];
 });
 
 watch(

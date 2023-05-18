@@ -115,13 +115,13 @@ class OpenAIChatManager:
         base_url = config.api.openai_base_url
         data = {
             "model": model.code(),
-            "messages": [{"role": msg.role, "content": msg.content} for msg in messages],
+            "messages": [{"role": msg.role, "content": msg.content.text} for msg in messages],
             "stream": True,
             **(extra_args or {})
         }
 
         reply_message = None
-        content = ""
+        text_content = ""
 
         async with self.client.stream(
                 method="POST",
@@ -144,9 +144,9 @@ class OpenAIChatManager:
                     resp = OpenAIChatResponse(**line)
 
                     if resp.choices[0].message is not None:
-                        content = resp.choices[0].message.get("content")
+                        text_content = resp.choices[0].message.get("content")
                     if resp.choices[0].delta is not None:
-                        content += resp.choices[0].delta.get("content", "")
+                        text_content += resp.choices[0].delta.get("content", "")
                     if reply_message is None:
                         reply_message = ApiChatMessage(
                             id=uuid.uuid4(),
@@ -155,13 +155,13 @@ class OpenAIChatManager:
                             create_time=datetime.now().astimezone(tz=timezone.utc),
                             parent=message_id,
                             children=[],
-                            content=content,
+                            content=ApiChatMessageTextContent(text=text_content),
                             metadata=ApiChatMessageMetadata(
                                 finish_reason=resp.choices[0].finish_reason,
                             )
                         )
                     else:
-                        reply_message.content = content
+                        reply_message.content = ApiChatMessageTextContent(text=text_content)
 
                     if resp.usage:
                         reply_message.metadata.usage = resp.usage
