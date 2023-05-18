@@ -91,6 +91,7 @@ const uiSchema = {
     'ui:title': t('labels.allow_to_use')
   },
   'valid_until': {
+    'ui:hidden': true,
     'ui:title': t('labels.valid_until')
   },
   'available_models': {
@@ -106,6 +107,7 @@ const uiSchema = {
     'ui:title': t('labels.per_model_ask_count')
   },
   'rate_limits': {
+    'ui:hidden': true,
     'ui:title': t('labels.rate_limits'),
     'type': 'array',
     'items': {
@@ -121,6 +123,7 @@ const uiSchema = {
     }
   },
   'daily_available_time_slots': {
+    'ui:hidden': true,
     'ui:title': t('labels.daily_available_time_slots'),
     'type': 'array',
     'items': {
@@ -138,12 +141,15 @@ const uiSchema = {
     }
   },
   'credits': {
+    'ui:hidden': true,
     'ui:title': t('labels.credits'),
   },
   'allow_custom_openai_api': {
+    'ui:hidden': true,
     'ui:title': t('labels.allow_custom_openai_api'),
   },
   'custom_openai_api_settings': {
+    'ui:hidden': true,
     'ui:title': t('labels.custom_openai_api_settings'),
   }
 };
