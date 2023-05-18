@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from typing import TypeVar, Generic, Type
+from typing import TypeVar, Generic, Type, get_args
 from pydantic import BaseModel
 from ruamel.yaml import YAML
 
@@ -17,7 +17,7 @@ class BaseConfig(Generic[T]):
 
     def __init__(self, model_type: Type, config_filename: str):
         self._model_type = model_type
-        config_dir = os.environ.get('CWS_CONFIG_DIR', './config')
+        config_dir = os.environ.get('CWS_CONFIG_DIR', './data/config')
         self._config_path = os.path.join(config_dir, config_filename)
 
     def __getattr__(self, key):
@@ -61,3 +61,11 @@ class BaseConfig(Generic[T]):
         with open(self._config_path, mode='w', encoding='utf-8') as sf:
             yaml = YAML()
             yaml.dump(config_dict, sf)
+
+    def create(self, target_dir_path):
+        config_path = os.path.join(target_dir_path, f'{self.__class__.__name__.lower()}.yaml')
+        if os.path.exists(config_path):
+            raise ConfigException(f"Config file already exists: {config_path}")
+        with open(config_path, mode='w', encoding='utf-8') as f:
+            yaml = YAML()
+            yaml.dump(self._model_type().dict(), f)

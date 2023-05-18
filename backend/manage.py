@@ -1,9 +1,20 @@
 import json
+import os.path
 import sys
 
 
-def init_config(args):
-    raise NotImplementedError()
+def create_config(args):
+    if len(args) < 1:
+        print("Usage: python manage.py create_config [config_dir_path]")
+        sys.exit(1)
+    config_dir_path = args[0]
+    if not os.path.exists(config_dir_path):
+        print(f"config_dir_path {config_dir_path} does not exist")
+        sys.exit(1)
+    from api.conf.config import Config
+    from api.conf.credentials import Credentials
+    Config().create(config_dir_path)
+    Credentials().create(config_dir_path)
 
 
 def get_config_schema(args):
@@ -26,7 +37,7 @@ def get_model_definitions(args):
 
 
 commands = {
-    "init_config": init_config,
+    "create_config": create_config,
     "get_config_schema": get_config_schema,
     "get_credentials_schema": get_credentials_schema,
     "get_model_definitions": get_model_definitions

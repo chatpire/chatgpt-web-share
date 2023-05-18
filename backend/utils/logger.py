@@ -18,7 +18,7 @@ def get_log_config():
 
 
 def setup_logger():
-    log_dir = Config().log.log_dir
+    log_dir = os.path.join(Config().data.data_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     g.server_log_filename = os.path.join(log_dir, f"{datetime.now().strftime('%Y%m%d_%H-%M-%S')}.log")
     log_config = get_log_config()

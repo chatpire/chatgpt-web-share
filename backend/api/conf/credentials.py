@@ -25,10 +25,3 @@ class Credentials(BaseConfig[CredentialsModel]):
 
     def __init__(self):
         super().__init__(CredentialsModel, "credentials.yaml")
-
-
-if __name__ == '__main__':
-    credentials = Credentials()
-    credentials._model = CredentialsModel()
-    credentials._config_path = './credentials.example.yaml'
-    credentials.save()

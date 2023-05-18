@@ -69,7 +69,6 @@ class APISetting(BaseModel):
 
 
 class LogSetting(BaseModel):
-    log_dir: str = 'logs'
     console_log_level: Literal['INFO', 'DEBUG', 'WARNING'] = 'INFO'
 
 
@@ -107,11 +106,3 @@ class Config(BaseConfig[ConfigModel]):
 
     def __init__(self):
         super().__init__(ConfigModel, "config.yaml")
-
-
-if __name__ == '__main__':
-    # 用于生成默认配置文件
-    cfg = Config()
-    cfg._model = ConfigModel()
-    cfg._config_path = './config.example.yaml'
-    cfg.save()
