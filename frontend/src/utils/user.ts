@@ -30,7 +30,7 @@ export const renderUserPerModelCounts = (setting: UserSettingSchema, availableOn
     }
     );
   }
-  console.log(revCounts, apiCounts);
+  // console.log(revCounts, apiCounts);
   return h(ChatTypeTagInfoCell, {
     value: {
       rev: h(ChatModelTagsRow, {

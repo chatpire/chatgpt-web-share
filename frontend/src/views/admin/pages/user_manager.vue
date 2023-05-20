@@ -21,7 +21,12 @@
       pageSize: 20,
     }"
   />
-  <n-drawer v-if="drawer.show.value" v-model:show="drawer.show.value" :width="gtsm() ? '50%' : '80%'" :placement="'right'">
+  <n-drawer
+    v-if="drawer.show.value"
+    v-model:show="drawer.show.value"
+    :width="gtsm() ? '50%' : '80%'"
+    :placement="'right'"
+  >
     <n-drawer-content closable :title="drawer.title.value" :native-scrollbar="false">
       <CreateUserForm v-if="drawer.name.value == 'create'" @save="handleCreateUser" />
       <UpdateUserBasicForm
@@ -51,8 +56,9 @@ import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
 import { getCountTrans } from '@/utils/chat';
 import { screenWidthGreaterThan } from '@/utils/screen';
+import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
-import { renderUserPerModelCounts} from '@/utils/user';
+import { renderUserPerModelCounts } from '@/utils/user';
 
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';
@@ -77,7 +83,6 @@ getAllUserApi().then((res) => {
   data.value = res.data;
 });
 
-
 const columns: DataTableColumns<UserReadAdmin> = [
   { title: '#', key: 'id' },
   { title: t('commons.username'), key: 'username' },
@@ -96,10 +101,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
     render(row) {
       return row.last_active_time ? new Date(row.last_active_time).toLocaleString() : t('commons.neverActive');
     },
-    sorter: (a, b) => {
-      if (!a.last_active_time || !b.last_active_time) return 0;
-      return new Date(a.last_active_time).getTime() - new Date(b.last_active_time).getTime();
-    },
+    sorter: getDateStringSorter<UserReadAdmin>('last_active_time'),
   },
   {
     title: `${t('labels.max_conv_count')}`,
@@ -108,8 +110,8 @@ const columns: DataTableColumns<UserReadAdmin> = [
       return h(ChatTypeTagInfoCell, {
         value: {
           rev: getCountTrans(row.setting.rev.max_conv_count),
-          api: getCountTrans(row.setting.api.max_conv_count)
-        }
+          api: getCountTrans(row.setting.api.max_conv_count),
+        },
       });
     },
   },

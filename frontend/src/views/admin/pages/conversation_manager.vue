@@ -64,7 +64,7 @@ import { TrashOutline } from '@vicons/ionicons5';
 import { EmojiFlagsFilled, PersonAddAlt1Filled, RefreshFilled } from '@vicons/material';
 import type { DataTableColumns } from 'naive-ui';
 import { NButton, NIcon, NTooltip } from 'naive-ui';
-import { h, ref } from 'vue';
+import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -77,6 +77,7 @@ import {
 } from '@/api/conv';
 import { BaseConversationSchema } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
+import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
 
 import UserSelector from '../components/UserSelector.vue';
@@ -87,7 +88,7 @@ const rowKey = (row: BaseConversationSchema) => row.conversation_id;
 const checkedRowKeys = ref<Array<string>>([]);
 
 const refreshData = () => {
-  getAdminAllConversationsApi(true).then((res) => {
+  getAdminAllConversationsApi(false).then((res) => {
     data.value = res.data;
   });
 };
@@ -159,10 +160,7 @@ const columns: DataTableColumns<BaseConversationSchema> = [
     title: t('commons.createTime'),
     key: 'create_time',
     defaultSortOrder: 'descend',
-    sorter: (a, b) => {
-      if (!a.create_time || !b.create_time) return 0;
-      return new Date(a.create_time!).getTime() - new Date(b.create_time!).getTime();
-    },
+    sorter: getDateStringSorter<BaseConversationSchema>('create_time'),
     render: (row) => {
       if (!row.create_time) return '';
       return h(
