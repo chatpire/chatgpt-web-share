@@ -16,7 +16,7 @@
       </n-space>
     </template>
     <template #avatar>
-      <ChatGPTAvatar color="green" icon-style="default" />
+      <ChatGPTAvatar color="green" icon-style="default" :size="32" />
     </template>
     <template #extra>
       <n-space>
