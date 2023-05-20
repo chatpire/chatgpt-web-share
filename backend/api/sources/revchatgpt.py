@@ -27,8 +27,8 @@ logger = get_logger(__name__)
 def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMessage | None:
     if not item.get("message"):
         return None
-    if not not item["message"].get("author"):
-        logger.debug(f"Parse message: Unknown author {item['message']['author']}")
+    if not item["message"].get("author"):
+        logger.debug(f"Parse message {message_id}: Unknown author")
 
     content = None
     fallback_content = None
