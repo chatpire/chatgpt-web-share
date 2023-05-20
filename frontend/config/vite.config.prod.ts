@@ -7,7 +7,7 @@ export default mergeConfig(
     mode: 'production',
     plugins: [],
     build: {
-      sourcemap: true,
+      sourcemap: process.env.VITE_DISABLE_SOURCEMAP !== 'yes',
       rollupOptions: {
         output: {
           manualChunks: {
