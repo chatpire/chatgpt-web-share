@@ -8,7 +8,7 @@ export function getAllConversationsApi() {
   return axios.get<Array<BaseConversationSchema>>(ApiUrl.Conversation);
 }
 
-export function getAdminAllConversationsApi(valid_only = true) {
+export function getAdminAllConversationsApi(valid_only = false) {
   return axios.get<Array<BaseConversationSchema>>(ApiUrl.AllConversation, {
     params: { valid_only },
   });

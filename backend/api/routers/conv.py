@@ -51,7 +51,7 @@ async def get_my_conversations(user: User = Depends(current_active_user)):
 
 @router.get("/conv/all", tags=["conversation"],
             response_model=List[BaseConversationSchema])
-async def get_all_conversations(_user: User = Depends(current_super_user), valid_only: bool = True):
+async def get_all_conversations(_user: User = Depends(current_super_user), valid_only: bool = False):
     async with get_async_session_context() as session:
         stat = True
         if valid_only:
@@ -60,16 +60,6 @@ async def get_all_conversations(_user: User = Depends(current_super_user), valid
         results = r.scalars().all()
         results = jsonable_encoder(results)
         return results
-
-
-@router.delete("/conv", tags=["conversation"])
-async def delete_all_conversations(user: User = Depends(current_active_user)):
-    """
-    软删除当前用户所有会话
-    """
-    async with get_async_session_context() as session:
-        conversations = session.execute(delete(BaseConversation).where(BaseConversation.user_id == user.id))
-        await session.commit()
 
 
 @router.get("/conv/{conversation_id}", tags=["conversation"],
@@ -147,7 +137,7 @@ async def update_conversation_title(title: str, conversation: BaseConversation =
     if conversation.type == "rev":
         await rev_manager.set_conversation_title(conversation.conversation_id,
                                                  title)
-    else:   # api
+    else:  # api
         doc = await ApiConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:
             raise InvalidParamsException("errors.conversationNotFound")

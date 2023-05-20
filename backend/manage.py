@@ -46,6 +46,9 @@ commands = {
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python manage.py [command] [args]")
+        print("Available commands:")
+        for command in commands:
+            print(command)
         sys.exit(1)
 
     command = sys.argv[1]
