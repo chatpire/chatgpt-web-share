@@ -41,10 +41,10 @@ async def sync_conversations():
                     openai_conversations_map.pop(str(conv_db.conversation_id))
                 else:
                     if conv_db.is_valid:  # 数据库中存在，但 ChatGPT 中（可能）不存在
-                        # conv_db.is_valid = False
+                        conv_db.is_valid = False
                         logger.warning(
                             f"Cannot fetch conversation [{conv_db.title}]({conv_db.conversation_id})")
-                        # session.add(conv_db)
+                        session.add(conv_db)
 
             # 新增对话
             for openai_conv in openai_conversations_map.values():

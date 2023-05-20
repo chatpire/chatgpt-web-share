@@ -1,4 +1,7 @@
-from pydantic import BaseModel, validator
+import datetime
+from typing import Optional
+
+from pydantic import BaseModel, validator, Field
 
 
 class ServerStatusSchema(BaseModel):
@@ -7,12 +10,6 @@ class ServerStatusSchema(BaseModel):
     active_user_in_1d: int = None
     is_chatbot_busy: bool = None
     chatbot_waiting_count: int = None
-
-
-class RequestStatistics(BaseModel):
-    request_counts_interval: int
-    request_counts: dict[int, list]  # {timestage: [count, [user_ids]]}
-    ask_records: list  # list of (ask, time_used), timestamp.
 
 
 class SystemInfo(BaseModel):
@@ -31,3 +28,15 @@ class LogFilterOptions(BaseModel):
         if v <= 0:
             raise ValueError("max_lines must be positive")
         return v
+
+
+class RequestStatsAggregationID(BaseModel):
+    start_time: datetime.datetime
+    route: str
+    method: str
+
+
+class RequestStatsAggregation(BaseModel):
+    id: RequestStatsAggregationID = Field(None, alias="_id")  # 起始时间
+    count: int  # 时间间隔内的请求数量
+    user_ids: list[Optional[int]] = None  # 用户ID列表

@@ -73,9 +73,9 @@ class LogSetting(BaseModel):
 
 
 class StatsSetting(BaseModel):
-    request_counter_time_window: int = 30 * 24 * 60 * 60  # 30 days
-    request_counts_interval: int = 30 * 60  # 30 minutes
-    ask_log_time_window: int = 604800  # 7 days
+    ask_stats_ttl: int = 90 * 24 * 60 * 60  # 90 days
+    request_stats_ttl: int = 30 * 24 * 60 * 60  # 30 days. -1 means never expire
+    request_stats_filter_keywords: list[str] = ['/status']
 
 
 class ConfigModel(BaseModel):

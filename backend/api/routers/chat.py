@@ -21,7 +21,7 @@ from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels, ApiChatMode
 from api.exceptions import InternalException, InvalidParamsException
 from api.models.db import RevConversation, User, BaseConversation
 from api.models.doc import RevChatMessage, ApiChatMessage, RevConversationHistoryDocument, \
-    ApiConversationHistoryDocument, ApiChatMessageTextContent
+    ApiConversationHistoryDocument, ApiChatMessageTextContent, AskStatDocument, RevAskStatMeta, ApiAskStatMeta
 from api.routers.conv import _get_conversation_by_id
 from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
@@ -53,8 +53,6 @@ _plugins_result_last_update_time = None
 
 @router.get("/chat/openai-plugins", tags=["chat"], response_model=list[OpenAIChatPlugin])
 async def get_chat_plugins(_user: User = Depends(current_active_user)):
-    # result = await rev_manager.get_plugin_manifests()
-    # return result
     global _plugins_result, _plugins_result_last_update_time
     if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600:
         _plugins_result = await rev_manager.get_plugin_manifests()
@@ -173,7 +171,7 @@ async def chat(websocket: WebSocket):
         await websocket.close(1008, "errors.unauthorized")
         return
 
-    logger.debug(f"{user_db.username} connected to websocket")
+    logger.info(f"{user_db.username} connected to websocket")
     websocket.scope["auth_user"] = user_db
 
     user = UserReadAdmin.from_orm(user_db)
@@ -234,6 +232,7 @@ async def chat(websocket: WebSocket):
         # 如果 websocket 关闭了，则直接退出
         if websocket.state == WebSocketState.DISCONNECTED:
             await change_user_chat_status(user.id, RevChatStatus.idling)
+            await rev_manager.semaphore.release()
             logger.debug(f"{user.username} websocket disconnected while queueing")
             return
 
@@ -356,7 +355,7 @@ async def chat(websocket: WebSocket):
         rev_manager.reset_chat()
 
     ask_stop_time = time.time()
-    queueing_time = 0
+    queueing_time = None
     if queueing_start_time is not None:
         queueing_time = queueing_end_time - queueing_start_time
         queueing_time = round(queueing_time, 3)
@@ -503,8 +502,17 @@ async def chat(websocket: WebSocket):
 
             await session.commit()
 
+            if ask_request.type == ChatSourceTypes.rev:
+                meta = RevAskStatMeta(type="rev", model=RevChatModels(ask_request.model))
+            else:
+                meta = ApiAskStatMeta(type="api", model=ApiChatModels(ask_request.model))
+
             # 写入到 scope 中，供统计
-            g.ask_log_queue.enqueue(
-                (user.id, ask_request.model, ask_time, queueing_time))
+            await AskStatDocument(
+                meta=meta,
+                user_id=user.id,
+                queueing_time=queueing_time,
+                ask_time=ask_time,
+            ).create()
 
         await websocket.close(websocket_code, websocket_reason)

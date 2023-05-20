@@ -14,8 +14,9 @@ from api.database import get_async_session_context, get_user_db_context
 from api.enums import RevChatStatus
 from api.exceptions import InvalidParamsException
 from api.models.db import User, RevConversation
-from api.schema import LogFilterOptions, SystemInfo, RequestStatistics, UserCreate, UserSettingSchema, \
-    RevSourceSettingSchema, ApiSourceSettingSchema
+from api.models.doc import RequestStatDocument, AskStatDocument
+from api.schema import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, RevSourceSettingSchema, \
+    ApiSourceSettingSchema, RequestStatsAggregation
 from api.users import current_super_user, get_user_manager_context
 from utils.logger import get_logger
 
@@ -116,15 +117,44 @@ def make_fake_ask_records(total=100, days=2):
     return result
 
 
-@router.get("/system/stats/request", tags=["system"], response_model=RequestStatistics)
-async def get_request_statistics(_user: User = Depends(current_super_user)):
-    result = RequestStatistics(
-        request_counts_interval=config.stats.request_counts_interval,
-        request_counts=dict(g.request_log_counter.counter),
-        # request_counts=make_fake_requests_count(20, 500),
-        ask_records=list(g.ask_log_queue.queue)
-        # ask_records=make_fake_ask_records(3000, 7)
-    )
+@router.get("/system/stats/request", tags=["system"], response_model=list[RequestStatsAggregation])
+async def get_request_statistics(granularity: int = 600, _user: User = Depends(current_super_user)):
+    if granularity <= 0 or granularity % 60 != 0:
+        raise InvalidParamsException("Invalid granularity")
+    pipeline = [
+        {
+            "$project": {
+                # 对齐时间到整点
+                "start_time": {
+                    "$toDate": {
+                        "$subtract": [{"$toLong": "$time"}, {"$mod": [{"$toLong": "$time"}, granularity * 1000]}]
+                    }
+                },
+                "route": "$meta.route",
+                "method": "$meta.method",
+                "user_id": 1
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "start_time": "$start_time",
+                    "route": "$route",
+                    "method": "$method"
+                },
+                "count": {"$sum": 1},
+                "user_ids": {"$addToSet": "$user_id"}
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        }
+    ]
+
+    result = await RequestStatDocument.aggregate(
+        pipeline, projection_model=RequestStatsAggregation
+    ).to_list()
+
     return result
 
 

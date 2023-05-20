@@ -2,10 +2,14 @@ import datetime
 import uuid
 from typing import Optional, Any, Literal, Union, Annotated, Dict
 
-from beanie import Document
+from beanie import Document, TimeSeriesConfig, Granularity
 from pydantic import BaseModel, Field
 
+from api.enums import RevChatModels, ApiChatModels
 from api.schema.openai_schemas import OpenAIChatResponseUsage
+from api.conf import Config
+
+config = Config()
 
 
 # metadata 相关
@@ -142,9 +146,6 @@ class BaseConversationHistory(BaseModel):
     current_model: Optional[str]
     rev_extra: Optional[RevConversationHistoryExtra]
 
-    class Settings:
-        is_root = True
-
 
 class RevConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
@@ -153,6 +154,7 @@ class RevConversationHistoryDocument(Document, BaseConversationHistory):
 
     class Settings:
         name = "rev_conversation_history"
+        validate_on_save = True
 
 
 class ApiConversationHistoryDocument(Document, BaseConversationHistory):
@@ -162,3 +164,51 @@ class ApiConversationHistoryDocument(Document, BaseConversationHistory):
 
     class Settings:
         name = "api_conversation_history"
+        validate_on_save = True
+
+
+class RequestStatMeta(BaseModel):
+    route_path: str
+    method: Literal['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] | str
+
+
+class RequestStatDocument(Document):
+    time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
+    meta: RequestStatMeta
+    user_id: Optional[int]
+
+    class Settings:
+        name = "request_statistics"
+        timeseries = TimeSeriesConfig(
+            time_field="time",
+            meta_field="meta",
+            granularity=Granularity.seconds,
+            expire_after_seconds=config.stats.request_stats_ttl
+        )
+
+
+class RevAskStatMeta(BaseModel):
+    type: Literal['rev']
+    model: RevChatModels
+
+
+class ApiAskStatMeta(BaseModel):
+    type: Literal['api']
+    model: ApiChatModels
+
+
+class AskStatDocument(Document):
+    time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
+    meta: Union[RevAskStatMeta, ApiAskStatMeta] = Field(discriminator='type')
+    user_id: int
+    queueing_time: Optional[float]
+    ask_time: Optional[float]
+
+    class Settings:
+        name = "ask_statistics"
+        timeseries = TimeSeriesConfig(
+            time_field="time",
+            meta_field="meta",
+            granularity=Granularity.seconds,
+            expire_after_seconds=config.stats.ask_stats_ttl
+        )
