@@ -15,7 +15,7 @@ import api.exceptions
 from api.conf import Config
 from api.database import get_user_db, get_async_session_context, get_user_db_context
 from api.models.db import User, UserSetting
-from api.schema import UserCreate, UserSettingSchema, UserUpdate, UserUpdateAdmin
+from api.schemas import UserCreate, UserSettingSchema, UserUpdate, UserUpdateAdmin
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

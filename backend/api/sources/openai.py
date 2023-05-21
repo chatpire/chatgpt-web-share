@@ -10,7 +10,7 @@ from api.conf import Config, Credentials
 from api.enums import ApiChatModels
 from api.models.doc import ApiChatMessage, ApiConversationHistoryDocument, ApiChatMessageMetadata, \
     ApiChatMessageTextContent
-from api.schema.openai_schemas import OpenAIChatResponse
+from api.schemas.openai_schemas import OpenAIChatResponse
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 

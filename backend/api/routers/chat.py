@@ -23,9 +23,9 @@ from api.models.db import RevConversation, User, BaseConversation
 from api.models.doc import RevChatMessage, ApiChatMessage, RevConversationHistoryDocument, \
     ApiConversationHistoryDocument, ApiChatMessageTextContent, AskStatDocument, RevAskStatMeta, ApiAskStatMeta
 from api.routers.conv import _get_conversation_by_id
-from api.schema import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
+from api.schemas import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
-from api.schema.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
+from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from api.sources import RevChatGPTManager, convert_revchatgpt_message, OpenAIChatManager, OpenAIChatException
 from api.users import websocket_auth, current_active_user
 from utils.logger import get_logger

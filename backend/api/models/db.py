@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from api.database.custom_types import GUID, Pydantic, UTCDateTime
 from api.enums import RevChatStatus, RevChatModels, ApiChatModels, ChatSourceTypes
 from api.models.json import CustomOpenaiApiSettings
-from api.schema import UserSettingSchema, RevSourceSettingSchema, ApiSourceSettingSchema
+from api.schemas import UserSettingSchema, RevSourceSettingSchema, ApiSourceSettingSchema
 
 
 # declarative base class

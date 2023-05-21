@@ -3,7 +3,7 @@ from fastapi import Depends, APIRouter
 from api.models.db import User
 from api.routers.conv import rev_manager
 from api.routers.system import check_users
-from api.schema import ServerStatusSchema
+from api.schemas import ServerStatusSchema
 from api.users import current_active_user
 
 router = APIRouter()

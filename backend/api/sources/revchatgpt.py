@@ -15,7 +15,7 @@ from api.exceptions import InvalidParamsException
 from api.models.doc import RevChatMessageMetadata, RevConversationHistoryDocument, \
     RevConversationHistoryExtra, RevChatMessage, RevChatMessageTextContent, RevChatMessageCodeContent, \
     RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageContent
-from api.schema.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
+from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 

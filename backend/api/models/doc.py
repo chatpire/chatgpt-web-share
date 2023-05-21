@@ -6,7 +6,7 @@ from beanie import Document, TimeSeriesConfig, Granularity
 from pydantic import BaseModel, Field
 
 from api.enums import RevChatModels, ApiChatModels
-from api.schema.openai_schemas import OpenAIChatResponseUsage
+from api.schemas.openai_schemas import OpenAIChatResponseUsage
 from api.conf import Config
 
 config = Config()

@@ -16,7 +16,7 @@ from api.enums import RevChatStatus
 from api.exceptions import InvalidParamsException
 from api.models.db import User, RevConversation
 from api.models.doc import RequestStatDocument, AskStatDocument
-from api.schema import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, RevSourceSettingSchema, \
+from api.schemas import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, RevSourceSettingSchema, \
     ApiSourceSettingSchema, RequestStatsAggregation
 from api.users import current_super_user, get_user_manager_context
 from utils.logger import get_logger

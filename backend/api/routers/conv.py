@@ -12,7 +12,7 @@ from api.exceptions import InvalidParamsException, AuthorityDenyException, Inter
 from api.models.db import User, RevConversation, BaseConversation
 from api.models.doc import ApiConversationHistoryDocument, RevConversationHistoryDocument, BaseConversationHistory
 from api.response import response
-from api.schema import RevConversationSchema, BaseConversationSchema, ApiConversationSchema
+from api.schemas import RevConversationSchema, BaseConversationSchema, ApiConversationSchema
 from api.sources import RevChatGPTManager
 from api.users import current_active_user, current_super_user
 from utils.logger import get_logger

@@ -23,7 +23,7 @@ from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from api.models.db import User
 from api.response import CustomJSONResponse, handle_exception_response
 from api.routers import users, conv, chat, system, status
-from api.schema import UserCreate, UserSettingSchema
+from api.schemas import UserCreate, UserSettingSchema
 from api.sources import RevChatGPTManager
 from api.users import get_user_manager_context
 from utils.admin import sync_conversations
