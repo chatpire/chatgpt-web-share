@@ -1,10 +1,12 @@
-FROM golang:1.20-alpine AS ProxyBuilder
+FROM node:18-alpine AS FrontendBuilder
 
-COPY ChatGPT-Proxy-V4 /app/ChatGPT-Proxy-V4
+RUN mkdir -p /app
+COPY frontend /app/frontend
 
-WORKDIR /app/ChatGPT-Proxy-V4
-
-RUN CGO_ENABLED=0 go build -a -installsuffix cgo .
+WORKDIR /app/frontend
+RUN npm install pnpm -g
+RUN pnpm install
+RUN pnpm build
 
 FROM python:3.10-alpine
 
@@ -20,8 +22,7 @@ RUN pip install -r /tmp/requirements.txt
 
 COPY Caddyfile /app/Caddyfile
 COPY backend /app/backend
-COPY frontend/dist /app/dist
-COPY --from=ProxyBuilder /app/ChatGPT-Proxy-V4/ChatGPT-Proxy-V4 /app/backend/ChatGPT-Proxy-V4
+COPY --from=FrontendBuilder /app/frontend/dist /app/dist
 
 WORKDIR /app
 
