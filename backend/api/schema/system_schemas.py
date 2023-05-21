@@ -32,7 +32,7 @@ class LogFilterOptions(BaseModel):
 
 class RequestStatsAggregationID(BaseModel):
     start_time: datetime.datetime
-    route: str
+    route_path: str
     method: str
 
 

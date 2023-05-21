@@ -6,6 +6,7 @@ from fastapi import Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi_users.router import ErrorCode
+from pydantic import ValidationError
 from pydantic.generics import GenericModel
 from revChatGPT.typings import Error as revChatGPTError
 from starlette.background import BackgroundTask
@@ -91,15 +92,15 @@ def get_http_message(status_code: int) -> str:
 
 
 def handle_exception_response(e: Exception) -> CustomJSONResponse:
-    if isinstance(e, RequestValidationError):
-        return response(-1, f"errors.requestValidationError", e.errors())
+    if isinstance(e, ValidationError):
+        return response(-1, f"errors.validationError", e.errors())
     elif isinstance(e, SelfDefinedException):
         return response(-1, e.reason, e.message)
     elif isinstance(e, StarletteHTTPException):
         if e.detail == ErrorCode.REGISTER_USER_ALREADY_EXISTS:
-            message="errors.userAlreadyExists"
+            message = "errors.userAlreadyExists"
         elif e.detail == ErrorCode.LOGIN_BAD_CREDENTIALS:
-            message="errors.badCredentials"
+            message = "errors.badCredentials"
         else:
             message = get_http_message(e.status_code)
         return response(e.status_code or -1, message or f"{e.status_code} {e.detail}")

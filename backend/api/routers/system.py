@@ -1,6 +1,7 @@
 import csv
 import random
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy import select
@@ -118,7 +119,11 @@ def make_fake_ask_records(total=100, days=2):
 
 
 @router.get("/system/stats/request", tags=["system"], response_model=list[RequestStatsAggregation])
-async def get_request_statistics(granularity: int = 600, _user: User = Depends(current_super_user)):
+async def get_request_statistics(
+        start_time: Optional[datetime] = None,
+        end_time: Optional[datetime] = None,
+        granularity: int = 600, _user: User = Depends(current_super_user)
+):
     if granularity <= 0 or granularity % 60 != 0:
         raise InvalidParamsException("Invalid granularity")
     pipeline = [
@@ -130,16 +135,24 @@ async def get_request_statistics(granularity: int = 600, _user: User = Depends(c
                         "$subtract": [{"$toLong": "$time"}, {"$mod": [{"$toLong": "$time"}, granularity * 1000]}]
                     }
                 },
-                "route": "$meta.route",
+                "route_path": "$meta.route_path",
                 "method": "$meta.method",
                 "user_id": 1
+            }
+        },
+        {
+            "$match": {
+                "$and": [
+                    {"start_time": {"$gte": start_time}} if start_time else {},
+                    {"start_time": {"$lt": end_time}} if end_time else {}
+                ]
             }
         },
         {
             "$group": {
                 "_id": {
                     "start_time": "$start_time",
-                    "route": "$route",
+                    "route_path": "route_path",
                     "method": "$method"
                 },
                 "count": {"$sum": 1},

@@ -176,6 +176,8 @@ class RequestStatDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
     meta: RequestStatMeta
     user_id: Optional[int]
+    elapsed_ms: float
+    status: Optional[int]
 
     class Settings:
         name = "request_statistics"

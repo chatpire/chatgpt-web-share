@@ -292,8 +292,9 @@ async def chat(websocket: WebSocket):
             ))
 
         is_completed = True
-    except ConnectionClosed:
-        # print("websocket aborted", e.code)
+    except ConnectionClosed as e:
+        websocket_code = e.code
+        websocket_reason = e.reason
         is_canceled = True
     except httpx.TimeoutException as e:
         logger.warning(str(e))
@@ -355,7 +356,7 @@ async def chat(websocket: WebSocket):
         rev_manager.reset_chat()
 
     ask_stop_time = time.time()
-    queueing_time = None
+    queueing_time = 0
     if queueing_start_time is not None:
         queueing_time = queueing_end_time - queueing_start_time
         queueing_time = round(queueing_time, 3)
@@ -515,4 +516,6 @@ async def chat(websocket: WebSocket):
                 ask_time=ask_time,
             ).create()
 
+        websocket.scope["ask_websocket_close_code"] = websocket_code
+        websocket.scope["ask_websocket_close_reason"] = websocket_reason
         await websocket.close(websocket_code, websocket_reason)
