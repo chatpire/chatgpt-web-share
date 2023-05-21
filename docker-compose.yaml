@@ -32,5 +32,5 @@ services:
       # - 8080:8080 # 如果你需要暴露端口如一带多，可以取消注释
     environment:
       - GIN_MODE=release
-#      - NETWORK_PROXY_SERVER=http://host:port
+#      - GO_CHATGPT_API_PROXY=http://host:port
     restart: unless-stopped
