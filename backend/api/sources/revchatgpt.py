@@ -148,8 +148,16 @@ class RevChatGPTManager:
         return self.semaphore.locked()
 
     async def get_conversations(self):
-        conversations = await self.chatbot.get_conversations(limit=80)
-        return conversations
+        all_conversations = []
+        offset = 0
+        while True:
+            conversations = await self.chatbot.get_conversations(offset = offset, limit = 80)
+            if len(conversations):
+                all_conversations.extend(conversations)
+            else:
+                break
+            offset += 80
+        return all_conversations 
 
     async def get_conversation_history(self, conversation_id: uuid.UUID | str,
                                        refresh=True) -> RevConversationHistoryDocument:
