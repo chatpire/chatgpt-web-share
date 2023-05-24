@@ -1,11 +1,10 @@
 import { MdMore } from '@vicons/ionicons4';
-import { NButton, NDropdown, NIcon, NInput, NSelect, SelectOption } from 'naive-ui';
+import { NButton, NDropdown, NIcon, NInput } from 'naive-ui';
 import { h } from 'vue';
 
 import { i18n } from '@/i18n';
-import useUserStore from '@/store/modules/user';
 import {NewConversationInfo} from '@/types/custom';
-import { BaseConversationSchema, UserSettingSchema } from '@/types/schema';
+import { BaseConversationSchema } from '@/types/schema';
 import { Dialog, Message } from '@/utils/tips';
 import NewConversationForm from '@/views/conversation/components/NewConversationForm.vue';
 
@@ -125,7 +124,7 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
       }),
     onPositiveClick() {
       d.loading = true;
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, _reject) => {
         if (input === null) {
           resolve(false);
         }

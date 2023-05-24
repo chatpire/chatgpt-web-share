@@ -103,9 +103,9 @@
     "stats": {
       "title": "Stats",
       "default": {
-        "request_counter_time_window": 2592000,
-        "request_counts_interval": 1800,
-        "ask_log_time_window": 604800
+        "enable_auto_expire": true,
+        "request_stats_ttl": 604800,
+        "ask_stats_ttl": 2592000
       },
       "allOf": [
         {
@@ -303,19 +303,19 @@
       "title": "StatsSetting",
       "type": "object",
       "properties": {
-        "request_counter_time_window": {
-          "title": "Request Counter Time Window",
-          "default": 2592000,
-          "type": "integer"
+        "enable_auto_expire": {
+          "title": "Enable Auto Expire",
+          "default": true,
+          "type": "boolean"
         },
-        "request_counts_interval": {
-          "title": "Request Counts Interval",
-          "default": 1800,
-          "type": "integer"
-        },
-        "ask_log_time_window": {
-          "title": "Ask Log Time Window",
+        "request_stats_ttl": {
+          "title": "Request Stats Ttl",
           "default": 604800,
+          "type": "integer"
+        },
+        "ask_stats_ttl": {
+          "title": "Ask Stats Ttl",
+          "default": 2592000,
           "type": "integer"
         }
       }

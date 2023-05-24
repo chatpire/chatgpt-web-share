@@ -53,12 +53,10 @@
 import { Language, LogoGithub, SettingsSharp } from '@vicons/ionicons5';
 import { ChatFilled, DarkModeRound, LightModeRound, ManageAccountsFilled } from '@vicons/material';
 import { DropdownOption } from 'naive-ui';
-import { computed, h, ref } from 'vue';
+import { computed, h } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
-// eslint-disable-next-line import/no-unresolved
-import chatgptIcon from '/chatgpt-icon.svg';
 import { updateUserMeApi } from '@/api/user';
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import router from '@/router';

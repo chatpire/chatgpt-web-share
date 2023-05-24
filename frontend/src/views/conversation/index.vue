@@ -114,13 +114,11 @@ import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { AskInfo, getAskWebsocketApiUrl } from '@/api/chat';
+import { getAskWebsocketApiUrl } from '@/api/chat';
 import { useAppStore, useConversationStore, useUserStore } from '@/store';
 import { newConversationId } from '@/store/modules/conversation';
 import {NewConversationInfo} from '@/types/custom';
-import { AskRequest, AskResponse, BaseChatMessage, BaseConversationHistory, BaseConversationSchema, RevConversationSchema  } from '@/types/schema';
-import { getChatModelNameTrans } from '@/utils/chat';
-import { getMessageListFromHistory } from '@/utils/conversation';
+import { AskRequest, AskResponse, BaseChatMessage, BaseConversationHistory, BaseConversationSchema  } from '@/types/schema';
 import { popupNewConversationDialog } from '@/utils/renders';
 // import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';

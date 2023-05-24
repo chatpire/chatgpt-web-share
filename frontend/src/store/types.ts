@@ -1,6 +1,6 @@
 import { RemovableRef } from '@vueuse/core';
 
-import { BaseConversationHistory, BaseConversationSchema, OpenAIChatPlugin, UserRead } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema, UserRead } from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;

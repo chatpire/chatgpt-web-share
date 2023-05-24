@@ -2554,6 +2554,20 @@
       }
     }
   },
+  "Body_import_users_system_import_users_post": {
+    "title": "Body_import_users_system_import_users_post",
+    "required": [
+      "file"
+    ],
+    "type": "object",
+    "properties": {
+      "file": {
+        "title": "File",
+        "type": "string",
+        "format": "binary"
+      }
+    }
+  },
   "ChatSourceTypes": {
     "title": "ChatSourceTypes",
     "enum": [
@@ -2870,28 +2884,28 @@
             "title": "StatsSetting",
             "type": "object",
             "properties": {
-              "request_counter_time_window": {
-                "title": "Request Counter Time Window",
-                "type": "integer",
-                "default": 2592000
+              "enable_auto_expire": {
+                "title": "Enable Auto Expire",
+                "type": "boolean",
+                "default": true
               },
-              "request_counts_interval": {
-                "title": "Request Counts Interval",
-                "type": "integer",
-                "default": 1800
-              },
-              "ask_log_time_window": {
-                "title": "Ask Log Time Window",
+              "request_stats_ttl": {
+                "title": "Request Stats Ttl",
                 "type": "integer",
                 "default": 604800
+              },
+              "ask_stats_ttl": {
+                "title": "Ask Stats Ttl",
+                "type": "integer",
+                "default": 2592000
               }
             }
           }
         ],
         "default": {
-          "request_counter_time_window": 2592000,
-          "request_counts_interval": 1800,
-          "ask_log_time_window": 604800
+          "enable_auto_expire": true,
+          "request_stats_ttl": 604800,
+          "ask_stats_ttl": 2592000
         }
       }
     }
@@ -4692,20 +4706,20 @@
     "title": "StatsSetting",
     "type": "object",
     "properties": {
-      "request_counter_time_window": {
-        "title": "Request Counter Time Window",
-        "type": "integer",
-        "default": 2592000
+      "enable_auto_expire": {
+        "title": "Enable Auto Expire",
+        "type": "boolean",
+        "default": true
       },
-      "request_counts_interval": {
-        "title": "Request Counts Interval",
-        "type": "integer",
-        "default": 1800
-      },
-      "ask_log_time_window": {
-        "title": "Ask Log Time Window",
+      "request_stats_ttl": {
+        "title": "Request Stats Ttl",
         "type": "integer",
         "default": 604800
+      },
+      "ask_stats_ttl": {
+        "title": "Ask Stats Ttl",
+        "type": "integer",
+        "default": 2592000
       }
     }
   },

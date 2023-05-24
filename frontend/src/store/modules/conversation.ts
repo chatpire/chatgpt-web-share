@@ -7,7 +7,7 @@ import {
   setConversationTitleApi,
 } from '@/api/conv';
 import { NewConversationInfo } from '@/types/custom';
-import { BaseChatMessage, BaseConversationHistory, BaseConversationSchema, RevConversationSchema } from '@/types/schema';
+import { BaseChatMessage, BaseConversationSchema } from '@/types/schema';
 
 import { ConversationState } from '../types';
 

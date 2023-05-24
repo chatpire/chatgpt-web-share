@@ -9,21 +9,15 @@
 </template>
 
 <script setup lang="ts">
-import { useThemeVars } from 'naive-ui';
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useConversationStore } from '@/store';
-import { getChatModelNameTrans } from '@/utils/chat';
-import { getMessageListFromHistory } from '@/utils/conversation';
 
 import HistoryContent from './components/HistoryContent.vue';
 
 const conversationStore = useConversationStore();
 
-const themeVars = useThemeVars();
-const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const conversationId = route.params.conversation_id as string;

@@ -1,4 +1,3 @@
-import { useStorage } from '@vueuse/core';
 import axios from 'axios';
 
 import { OpenAIChatPlugin } from '@/types/schema';

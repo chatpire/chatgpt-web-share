@@ -1,7 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
-import chatgptIcon from '/chatgpt-icon.svg';
-// eslint-disable-next-line import/no-unresolved
-import chatgptIconBlack from '/chatgpt-icon-black.svg';
 import { i18n } from '@/i18n';
 import { allChatModelNames } from '@/types/json_schema';
 import { ApiChatMessageTextContent, ApiChatModels, BaseChatMessage, RevChatMessageCodeContent, RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageTextContent, RevChatModels } from '@/types/schema';

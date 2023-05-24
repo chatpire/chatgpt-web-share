@@ -120,6 +120,14 @@ export interface paths {
     /** Update Credentials */
     put: operations["update_credentials_system_credentials_put"];
   };
+  "/system/import-users": {
+    /**
+     * Import Users 
+     * @description 解析csv文件，导入用户
+     * csv字段：
+     */
+    post: operations["import_users_system_import_users_post"];
+  };
   "/status": {
     /**
      * Get Server Status 
@@ -539,6 +547,14 @@ export interface components {
       /** Client Secret */
       client_secret?: string;
     };
+    /** Body_import_users_system_import_users_post */
+    Body_import_users_system_import_users_post: {
+      /**
+       * File 
+       * Format: binary
+       */
+      file: string;
+    };
     /**
      * ChatSourceTypes 
      * @description An enumeration. 
@@ -652,9 +668,9 @@ export interface components {
       /**
        * Stats 
        * @default {
-       *   "request_counter_time_window": 2592000,
-       *   "request_counts_interval": 1800,
-       *   "ask_log_time_window": 604800
+       *   "enable_auto_expire": true,
+       *   "request_stats_ttl": 604800,
+       *   "ask_stats_ttl": 2592000
        * }
        */
       stats?: components["schemas"]["StatsSetting"];
@@ -1159,20 +1175,20 @@ export interface components {
     /** StatsSetting */
     StatsSetting: {
       /**
-       * Request Counter Time Window 
-       * @default 2592000
+       * Enable Auto Expire 
+       * @default true
        */
-      request_counter_time_window?: number;
+      enable_auto_expire?: boolean;
       /**
-       * Request Counts Interval 
-       * @default 1800
-       */
-      request_counts_interval?: number;
-      /**
-       * Ask Log Time Window 
+       * Request Stats Ttl 
        * @default 604800
        */
-      ask_log_time_window?: number;
+      request_stats_ttl?: number;
+      /**
+       * Ask Stats Ttl 
+       * @default 2592000
+       */
+      ask_stats_ttl?: number;
     };
     /** SystemInfo */
     SystemInfo: {
@@ -1940,6 +1956,32 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["CredentialsModel"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  import_users_system_import_users_post: {
+    /**
+     * Import Users 
+     * @description 解析csv文件，导入用户
+     * csv字段：
+     */
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_import_users_system_import_users_post"];
       };
     };
     responses: {

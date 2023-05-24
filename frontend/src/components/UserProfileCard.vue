@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, ref, VNode } from 'vue';
+import { computed, h, VNode } from 'vue';
 
 import { i18n } from '@/i18n';
 import { useUserStore } from '@/store';
-import { chatStatusMap, UserRead } from '@/types/schema';
+import { UserRead } from '@/types/schema';
 import { getUserAttrColumns } from '@/utils/user';
 
 const t = i18n.global.t as any;

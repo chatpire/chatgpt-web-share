@@ -63,11 +63,10 @@
 import { MdPeople } from '@vicons/ionicons4';
 import { EventBusyFilled, QueueFilled } from '@vicons/material';
 import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 
 import { getServerStatusApi } from '@/api/status';
 import { ServerStatusSchema } from '@/types/schema';
-const { t } = useI18n();
+
 const serverStatus = ref<ServerStatusSchema>({});
 
 const isExpaned = ref(false);
