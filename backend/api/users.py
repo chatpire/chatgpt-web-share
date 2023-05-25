@@ -114,9 +114,12 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         if "username" in update_dict:
             await self._check_username_unique(username=update_dict["username"], exclude_username=user.username)
         if safe:
-            update_dict.pop("is_active")
-            update_dict.pop("is_superuser")
-            update_dict.pop("is_verified")
+            try:
+                update_dict.pop("is_active")
+                update_dict.pop("is_superuser")
+                update_dict.pop("is_verified")
+            except KeyError:
+                pass
 
         async with get_async_session_context() as session:
             user = await session.get(User, user.id)
