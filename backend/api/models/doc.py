@@ -167,20 +167,20 @@ class ApiConversationHistoryDocument(Document, BaseConversationHistory):
         validate_on_save = True
 
 
-class RequestStatMeta(BaseModel):
+class RequestLogMeta(BaseModel):
     route_path: str
     method: Literal['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] | str
 
 
-class RequestStatDocument(Document):
+class RequestLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    meta: RequestStatMeta
+    meta: RequestLogMeta
     user_id: Optional[int]
     elapsed_ms: float
     status: Optional[int]
 
     class Settings:
-        name = "request_statistics"
+        name = "request_logs"
         timeseries = TimeSeriesConfig(
             time_field="time",
             meta_field="meta",
@@ -189,25 +189,25 @@ class RequestStatDocument(Document):
         )
 
 
-class RevAskStatMeta(BaseModel):
+class RevAskLogMeta(BaseModel):
     type: Literal['rev']
     model: RevChatModels
 
 
-class ApiAskStatMeta(BaseModel):
+class ApiAskLogMeta(BaseModel):
     type: Literal['api']
     model: ApiChatModels
 
 
-class AskStatDocument(Document):
+class AskLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    meta: Union[RevAskStatMeta, ApiAskStatMeta] = Field(discriminator='type')
+    meta: Union[RevAskLogMeta, ApiAskLogMeta] = Field(discriminator='type')
     user_id: int
     queueing_time: Optional[float]
     ask_time: Optional[float]
 
     class Settings:
-        name = "ask_statistics"
+        name = "ask_logs"
         timeseries = TimeSeriesConfig(
             time_field="time",
             meta_field="meta",

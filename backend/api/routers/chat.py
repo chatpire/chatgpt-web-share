@@ -21,7 +21,7 @@ from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels, ApiChatMode
 from api.exceptions import InternalException, InvalidParamsException
 from api.models.db import RevConversation, User, BaseConversation
 from api.models.doc import RevChatMessage, ApiChatMessage, RevConversationHistoryDocument, \
-    ApiConversationHistoryDocument, ApiChatMessageTextContent, AskStatDocument, RevAskStatMeta, ApiAskStatMeta
+    ApiConversationHistoryDocument, ApiChatMessageTextContent, AskLogDocument, RevAskLogMeta, ApiAskLogMeta
 from api.routers.conv import _get_conversation_by_id
 from api.schemas import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
@@ -504,12 +504,12 @@ async def chat(websocket: WebSocket):
             await session.commit()
 
             if ask_request.type == ChatSourceTypes.rev:
-                meta = RevAskStatMeta(type="rev", model=RevChatModels(ask_request.model))
+                meta = RevAskLogMeta(type="rev", model=RevChatModels(ask_request.model))
             else:
-                meta = ApiAskStatMeta(type="api", model=ApiChatModels(ask_request.model))
+                meta = ApiAskLogMeta(type="api", model=ApiChatModels(ask_request.model))
 
             # 写入到 scope 中，供统计
-            await AskStatDocument(
+            await AskLogDocument(
                 meta=meta,
                 user_id=user.id,
                 queueing_time=queueing_time,

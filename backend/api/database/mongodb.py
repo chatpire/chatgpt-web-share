@@ -2,8 +2,8 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.conf import Config
-from api.models.doc import ApiConversationHistoryDocument, RevConversationHistoryDocument, AskStatDocument, \
-    RequestStatDocument
+from api.models.doc import ApiConversationHistoryDocument, RevConversationHistoryDocument, AskLogDocument, \
+    RequestLogDocument
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -17,8 +17,8 @@ async def init_mongodb():
     global client
     client = AsyncIOMotorClient(config.data.mongodb_url)
     await init_beanie(database=client[DATABASE_NAME],
-                      document_models=[ApiConversationHistoryDocument, RevConversationHistoryDocument, AskStatDocument,
-                                       RequestStatDocument])
+                      document_models=[ApiConversationHistoryDocument, RevConversationHistoryDocument, AskLogDocument,
+                                       RequestLogDocument])
     # 展示当前mongodb数据库用量
     db = client[DATABASE_NAME]
     stats = await db.command({"dbStats": 1})
@@ -35,7 +35,7 @@ async def handle_timeseries():
     global client
     assert client is not None, "MongoDB not initialized"
     db = client[DATABASE_NAME]
-    time_series_docs = [AskStatDocument, RequestStatDocument]
+    time_series_docs = [AskLogDocument, RequestLogDocument]
     config_ttls = [config.stats.ask_stats_ttl, config.stats.request_stats_ttl]
     for doc, config_ttl in zip(time_series_docs, config_ttls):
         collection_name = doc.get_collection_name()

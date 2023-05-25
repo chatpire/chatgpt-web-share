@@ -7,7 +7,7 @@ from asgiref.typing import ASGI3Application, HTTPScope, ASGIReceiveCallable, ASG
 from fastapi.routing import APIRoute
 
 import api.globals as g
-from api.models.doc import RequestStatDocument, RequestStatMeta
+from api.models.doc import RequestLogDocument, RequestLogMeta
 
 from utils.logger import get_logger
 
@@ -85,8 +85,8 @@ class StatisticsMiddleware:
             elapsed_ms = end_time - start_time
             elapsed_ms = round(elapsed_ms * 1000, 2)
 
-            await RequestStatDocument(
-                meta=RequestStatMeta(route_path=route.path, method=method),
+            await RequestLogDocument(
+                meta=RequestLogMeta(route_path=route.path, method=method),
                 user_id=user_id,
                 elapsed_ms=elapsed_ms,
                 status=body_code or raw_status_code or scope.get("ask_websocket_close_code", None)

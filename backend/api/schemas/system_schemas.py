@@ -3,7 +3,7 @@ from typing import Optional, Literal, Union
 
 from pydantic import BaseModel, validator, Field
 
-from api.models.doc import RevAskStatMeta, ApiAskStatMeta
+from api.models.doc import RevAskLogMeta, ApiAskLogMeta
 
 
 class ServerStatusSchema(BaseModel):
@@ -35,14 +35,14 @@ class LogFilterOptions(BaseModel):
 datetime.now().astimezone()
 
 
-class RequestStatsAggregationID(BaseModel):
+class RequestLogAggregationID(BaseModel):
     start_time: datetime
     route_path: str
     method: str
 
 
-class RequestStatsAggregation(BaseModel):
-    id: RequestStatsAggregationID = Field(None, alias="_id")  # 起始时间
+class RequestLogAggregation(BaseModel):
+    id: RequestLogAggregationID = Field(alias="_id")  # 起始时间
     count: int  # 时间间隔内的请求数量
     user_ids: list[Optional[int]] = None  # 用户ID列表
     avg_elapsed_ms: Optional[float]
@@ -53,13 +53,13 @@ class RequestStatsAggregation(BaseModel):
         }
 
 
-class AskStatsAggregationID(BaseModel):
+class AskLogAggregationID(BaseModel):
     start_time: datetime
-    meta: Union[RevAskStatMeta, ApiAskStatMeta] = Field(discriminator='type')
+    meta: Union[RevAskLogMeta, ApiAskLogMeta] = Field(discriminator='type')
 
 
-class AskStatsAggregation(BaseModel):
-    id: AskStatsAggregationID = Field(None, alias="_id")  # 起始时间
+class AskLogAggregation(BaseModel):
+    id: AskLogAggregationID = Field(alias="_id")  # 起始时间
     count: int  # 时间间隔内的请求数量
     user_ids: list[Optional[int]] = None  # 用户ID列表
     total_queueing_time: Optional[float]

@@ -15,9 +15,9 @@ from api.database import get_async_session_context, get_user_db_context
 from api.enums import RevChatStatus
 from api.exceptions import InvalidParamsException
 from api.models.db import User, RevConversation
-from api.models.doc import RequestStatDocument, AskStatDocument
+from api.models.doc import RequestLogDocument, AskLogDocument
 from api.schemas import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, RevSourceSettingSchema, \
-    ApiSourceSettingSchema, RequestStatsAggregation, AskStatsAggregation
+    ApiSourceSettingSchema, RequestLogAggregation, AskLogAggregation
 from api.users import current_super_user, get_user_manager_context
 from utils.logger import get_logger
 
@@ -118,12 +118,12 @@ def make_fake_ask_records(total=100, days=2):
     return result
 
 
-@router.get("/system/stats/request", tags=["system"], response_model=list[RequestStatsAggregation])
+@router.get("/system/stats/request", tags=["system"], response_model=list[RequestLogAggregation])
 async def get_request_statistics(
         # TODO: add filter options
         # start_query_time: Optional[datetime] = None,
         # end_query_time: Optional[datetime] = None,
-        granularity: int = 600, _user: User = Depends(current_super_user)
+        granularity: int = 1800, _user: User = Depends(current_super_user)
 ):
     if granularity <= 0 or granularity % 60 != 0:
         raise InvalidParamsException("Invalid granularity")
@@ -161,18 +161,18 @@ async def get_request_statistics(
         }
     ]
 
-    result = await RequestStatDocument.aggregate(
+    result = await RequestLogDocument.aggregate(
         pipeline
     ).to_list()
 
     return result
 
 
-@router.get("/system/stats/ask", tags=["system"], response_model=list[AskStatsAggregation])
+@router.get("/system/stats/ask", tags=["system"], response_model=list[AskLogAggregation])
 async def get_ask_statistics(
         # start_query_time: Optional[datetime] = None,
         # end_query_time: Optional[datetime] = None,
-        granularity: int = 600, _user: User = Depends(current_super_user)
+        granularity: int = 1800, _user: User = Depends(current_super_user)
 ):
     if granularity <= 0 or granularity % 60 != 0:
         raise InvalidParamsException("Invalid granularity")
@@ -208,7 +208,7 @@ async def get_ask_statistics(
         }
     ]
 
-    result = await AskStatDocument.aggregate(
+    result = await AskLogDocument.aggregate(
         pipeline
     ).to_list()
 
