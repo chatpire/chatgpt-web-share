@@ -9,21 +9,22 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 
+// import { IconComponentResolver } from './utils/icon-component-resolver';
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: process.env.VITE_BASE || '/',
   plugins: [
     vue(),
     UnoCSS({
-      presets: [
-        /* no presets by default */
-        presetUno(),
-      ],
-      /* options */
+      presets: [presetUno()],
       transformers: [transformerDirectives()],
     }),
     Components({
-      resolvers: [NaiveUiResolver()],
+      resolvers: [
+        NaiveUiResolver(),
+        // IconComponentResolver({ pkgs: ['@vicons/ionicons4', '@vicons/ionicons5', '@vicons/material'], prefix: 'X' }),
+      ],
     }),
   ],
   resolve: {
@@ -35,6 +36,6 @@ export default defineConfig({
     'import.meta.env.PACKAGE_VERSION': JSON.stringify(process.env.npm_package_version),
     'import.meta.env.VITE_ENABLE_SENTRY': process.env.VITE_ENABLE_SENTRY || '\'no\'',
     'import.meta.env.VITE_ROUTER_BASE': process.env.VITE_ROUTER_BASE || '\'/\'',
-    'import.meta.env.VITE_API_BASE_URL': process.env.VITE_API_BASE_URL || '\'/api/\''
+    'import.meta.env.VITE_API_BASE_URL': process.env.VITE_API_BASE_URL || '\'/api/\'',
   },
 });

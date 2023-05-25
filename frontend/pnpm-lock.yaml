@@ -117,6 +117,9 @@ devDependencies:
   eslint-plugin-vue:
     specifier: ^9.11.0
     version: 9.11.0(eslint@8.38.0)
+  local-pkg:
+    specifier: ^0.4.3
+    version: 0.4.3
   naive-ui:
     specifier: ^2.34.3
     version: 2.34.3(vue@3.2.47)
