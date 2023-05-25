@@ -68,6 +68,7 @@
       "default": {
         "is_plus_account": false,
         "chatgpt_base_url": null,
+        "common_timeout": 10,
         "ask_timeout": 600
       },
       "allOf": [
@@ -81,7 +82,7 @@
       "default": {
         "openai_base_url": "https://api.openai.com/v1/",
         "connect_timeout": 10,
-        "read_timeout": 10
+        "read_timeout": 20
       },
       "allOf": [
         {
@@ -254,6 +255,12 @@
           "title": "Chatgpt Base Url",
           "type": "string"
         },
+        "common_timeout": {
+          "title": "Common Timeout",
+          "default": 10,
+          "minimum": 1,
+          "type": "integer"
+        },
         "ask_timeout": {
           "title": "Ask Timeout",
           "default": 600,
@@ -279,7 +286,7 @@
         },
         "read_timeout": {
           "title": "Read Timeout",
-          "default": 10,
+          "default": 20,
           "minimum": 1,
           "type": "integer"
         }

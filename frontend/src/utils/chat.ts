@@ -1,6 +1,6 @@
 import { i18n } from '@/i18n';
 import { allChatModelNames } from '@/types/json_schema';
-import { ApiChatMessageTextContent, ApiChatModels, BaseChatMessage, RevChatMessageCodeContent, RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageTextContent, RevChatModels } from '@/types/schema';
+import { ApiChatMessageTextContent, ApiChatModels, BaseChatMessage, RevChatMessageCodeContent, RevChatMessageSystemErrorContent, RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageTextContent, RevChatModels } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
@@ -56,6 +56,9 @@ export const getContentRawText = (message: BaseChatMessage): string => {
   } else if (message.content.content_type == 'tether_quote') {
     const content = message.content as RevChatMessageTetherQuoteContent;
     return content.text || ''; // TODO: more info
+  } else if (message.content.content_type == 'system_error') {
+    const content = message.content as RevChatMessageSystemErrorContent;
+    return `${content.name}: ${content.text}`;
   } else {
     return `${message.content}`;
   }

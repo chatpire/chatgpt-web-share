@@ -18,7 +18,7 @@
         "title": "Read Timeout",
         "minimum": 1,
         "type": "integer",
-        "default": 10
+        "default": 20
       }
     }
   },
@@ -89,7 +89,17 @@
       },
       "author_name": {
         "title": "Author Name",
-        "type": "string"
+        "anyOf": [
+          {
+            "enum": [
+              "browser"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
       },
       "model": {
         "title": "Model",
@@ -459,7 +469,17 @@
             },
             "author_name": {
               "title": "Author Name",
-              "type": "string"
+              "anyOf": [
+                {
+                  "enum": [
+                    "browser"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
             },
             "model": {
               "title": "Model",
@@ -1227,7 +1247,17 @@
               },
               "author_name": {
                 "title": "Author Name",
-                "type": "string"
+                "anyOf": [
+                  {
+                    "enum": [
+                      "browser"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
               },
               "model": {
                 "title": "Model",
@@ -1349,6 +1379,40 @@
                       },
                       "title": {
                         "title": "Title",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "RevChatMessageSystemErrorContent",
+                    "required": [
+                      "content_type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "content_type": {
+                        "title": "Content Type",
+                        "enum": [
+                          "system_error"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "title": "Name",
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "tool_error"
+                            ],
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "text": {
+                        "title": "Text",
                         "type": "string"
                       }
                     }
@@ -1576,7 +1640,17 @@
               },
               "author_name": {
                 "title": "Author Name",
-                "type": "string"
+                "anyOf": [
+                  {
+                    "enum": [
+                      "browser"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
               },
               "model": {
                 "title": "Model",
@@ -1895,7 +1969,17 @@
       },
       "author_name": {
         "title": "Author Name",
-        "type": "string"
+        "anyOf": [
+          {
+            "enum": [
+              "browser"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
       },
       "model": {
         "title": "Model",
@@ -2019,6 +2103,40 @@
                   },
                   "title": {
                     "title": "Title",
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "title": "RevChatMessageSystemErrorContent",
+                "required": [
+                  "content_type"
+                ],
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "system_error"
+                    ],
+                    "type": "string"
+                  },
+                  "name": {
+                    "title": "Name",
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "tool_error"
+                        ],
+                        "type": "string"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "text": {
+                    "title": "Text",
                     "type": "string"
                   }
                 }
@@ -2314,7 +2432,17 @@
             },
             "author_name": {
               "title": "Author Name",
-              "type": "string"
+              "anyOf": [
+                {
+                  "enum": [
+                    "browser"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
             },
             "model": {
               "title": "Model",
@@ -2438,6 +2566,40 @@
                         },
                         "title": {
                           "title": "Title",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "title": "RevChatMessageSystemErrorContent",
+                      "required": [
+                        "content_type"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "content_type": {
+                          "title": "Content Type",
+                          "enum": [
+                            "system_error"
+                          ],
+                          "type": "string"
+                        },
+                        "name": {
+                          "title": "Name",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "tool_error"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "text": {
+                          "title": "Text",
                           "type": "string"
                         }
                       }
@@ -3023,6 +3185,12 @@
                 "title": "Chatgpt Base Url",
                 "type": "string"
               },
+              "common_timeout": {
+                "title": "Common Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 10
+              },
               "ask_timeout": {
                 "title": "Ask Timeout",
                 "minimum": 1,
@@ -3034,6 +3202,7 @@
         ],
         "default": {
           "is_plus_account": false,
+          "common_timeout": 10,
           "ask_timeout": 600
         }
       },
@@ -3059,7 +3228,7 @@
                 "title": "Read Timeout",
                 "minimum": 1,
                 "type": "integer",
-                "default": 10
+                "default": 20
               }
             }
           }
@@ -3067,7 +3236,7 @@
         "default": {
           "openai_base_url": "https://api.openai.com/v1/",
           "connect_timeout": 10,
-          "read_timeout": 10
+          "read_timeout": 20
         }
       },
       "log": {
@@ -3648,6 +3817,12 @@
         "title": "Chatgpt Base Url",
         "type": "string"
       },
+      "common_timeout": {
+        "title": "Common Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 10
+      },
       "ask_timeout": {
         "title": "Ask Timeout",
         "minimum": 1,
@@ -3697,7 +3872,17 @@
       },
       "author_name": {
         "title": "Author Name",
-        "type": "string"
+        "anyOf": [
+          {
+            "enum": [
+              "browser"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
       },
       "model": {
         "title": "Model",
@@ -3819,6 +4004,40 @@
               },
               "title": {
                 "title": "Title",
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "RevChatMessageSystemErrorContent",
+            "required": [
+              "content_type"
+            ],
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "system_error"
+                ],
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "tool_error"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "text": {
+                "title": "Text",
                 "type": "string"
               }
             }
@@ -4240,6 +4459,40 @@
       }
     }
   },
+  "RevChatMessageSystemErrorContent": {
+    "title": "RevChatMessageSystemErrorContent",
+    "required": [
+      "content_type"
+    ],
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "system_error"
+        ],
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "anyOf": [
+          {
+            "enum": [
+              "tool_error"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      }
+    }
+  },
   "RevChatMessageTetherBrowsingDisplayContent": {
     "title": "RevChatMessageTetherBrowsingDisplayContent",
     "required": [
@@ -4417,7 +4670,17 @@
             },
             "author_name": {
               "title": "Author Name",
-              "type": "string"
+              "anyOf": [
+                {
+                  "enum": [
+                    "browser"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
             },
             "model": {
               "title": "Model",
@@ -4539,6 +4802,40 @@
                     },
                     "title": {
                       "title": "Title",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "title": "RevChatMessageSystemErrorContent",
+                  "required": [
+                    "content_type"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "system_error"
+                      ],
+                      "type": "string"
+                    },
+                    "name": {
+                      "title": "Name",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "tool_error"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "text": {
+                      "title": "Text",
                       "type": "string"
                     }
                   }

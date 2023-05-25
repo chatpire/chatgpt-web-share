@@ -14,7 +14,8 @@ from api.enums import RevChatModels, ChatSourceTypes
 from api.exceptions import InvalidParamsException
 from api.models.doc import RevChatMessageMetadata, RevConversationHistoryDocument, \
     RevConversationHistoryExtra, RevChatMessage, RevChatMessageTextContent, RevChatMessageCodeContent, \
-    RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageContent
+    RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageContent, \
+    RevChatMessageSystemErrorContent
 from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -38,7 +39,8 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMes
             "text": RevChatMessageTextContent,
             "code": RevChatMessageCodeContent,
             "tether_browsing_display": RevChatMessageTetherBrowsingDisplayContent,
-            "tether_quote": RevChatMessageTetherQuoteContent
+            "tether_quote": RevChatMessageTetherQuoteContent,
+            "system_error": RevChatMessageSystemErrorContent
         }
         if content_type not in content_map:
             logger.debug(f"Parse message: Unknown content type {content_type}")
@@ -147,17 +149,24 @@ class RevChatGPTManager:
     def is_busy(self):
         return self.semaphore.locked()
 
-    async def get_conversations(self):
+    async def get_conversations(self, timeout=None):
         all_conversations = []
         offset = 0
+        limit = 80
         while True:
-            conversations = await self.chatbot.get_conversations(offset = offset, limit = 80)
+            url = f"{self.chatbot.base_url}conversations?offset={offset}&limit={limit}"
+            if timeout is None:
+                timeout = httpx.Timeout(config.revchatgpt.common_timeout)
+            response = await self.chatbot.session.get(url, timeout=timeout)
+            await _check_response(response)
+            data = json.loads(response.text)
+            conversations = data["items"]
             if len(conversations):
                 all_conversations.extend(conversations)
             else:
                 break
             offset += 80
-        return all_conversations 
+        return all_conversations
 
     async def get_conversation_history(self, conversation_id: uuid.UUID | str,
                                        refresh=True) -> RevConversationHistoryDocument:
@@ -165,8 +174,12 @@ class RevChatGPTManager:
             doc = await RevConversationHistoryDocument.get(conversation_id)
             if doc:
                 return doc
-        result = await self.chatbot.get_msg_history(conversation_id)
-        result = jsonable_encoder(result)
+        # result = await self.chatbot.get_msg_history(conversation_id)
+        url = f"{self.chatbot.base_url}conversation/{conversation_id}"
+        response = await self.chatbot.session.get(url, timeout=None)
+        response.encoding = 'utf-8'
+        await _check_response(response)
+        result = json.loads(response.text)
         mapping = {}
         try:
             mapping = convert_mapping(result.get("mapping"))
@@ -196,7 +209,7 @@ class RevChatGPTManager:
         await self.chatbot.clear_conversations()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  timeout=360, model: RevChatModels = None, plugin_ids: list[str] = None):
+                  model: RevChatModels = None, plugin_ids: list[str] = None):
 
         model = model or RevChatModels.gpt_3_5
 
@@ -229,6 +242,8 @@ class RevChatGPTManager:
         }
         if plugin_ids:
             data["plugin_ids"] = plugin_ids
+
+        timeout = httpx.Timeout(Config().revchatgpt.common_timeout, read=Config().revchatgpt.ask_timeout)
 
         async with self.chatbot.session.stream(
                 method="POST",

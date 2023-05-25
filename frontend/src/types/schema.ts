@@ -22,6 +22,7 @@ export type RevChatMessageTextContent = components['schemas']['RevChatMessageTex
 export type RevChatMessageCodeContent = components['schemas']['RevChatMessageCodeContent'];
 export type RevChatMessageTetherBrowsingDisplayContent = components['schemas']['RevChatMessageTetherBrowsingDisplayContent'];
 export type RevChatMessageTetherQuoteContent = components['schemas']['RevChatMessageTetherQuoteContent'];
+export type RevChatMessageSystemErrorContent = components['schemas']['RevChatMessageSystemErrorContent'];
 export type ApiChatMessageTextContent  = components['schemas']['ApiChatMessageTextContent'];
 export type BaseChatMessage = components['schemas']['BaseChatMessage'];
 export type ApiChatMessage = components['schemas']['ApiChatMessage'];

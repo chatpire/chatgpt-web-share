@@ -88,6 +88,11 @@ const configUiSchema = {
       'ui:widget': DynamicTags,
     },
   },
+  stats: {
+    request_stats_filter_keywords: {
+      'ui:widget': DynamicTags,
+    }
+  }
 };
 
 const credentialsUiSchema = {

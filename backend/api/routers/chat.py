@@ -256,17 +256,14 @@ async def chat(websocket: WebSocket):
 
         # 设置 timeout
         if ask_request.type == ChatSourceTypes.rev:
-            timeout = Config().revchatgpt.ask_timeout  # TODO: 完善超时机制
             model = RevChatModels(ask_request.model)
         else:
-            timeout = httpx.Timeout(config.api.read_timeout, connect=config.api.connect_timeout)
             model = ApiChatModels(ask_request.model)
 
         # stream 传输
         async for data in manager.ask(content=ask_request.content,
                                       conversation_id=ask_request.conversation_id,
                                       parent_id=ask_request.parent,
-                                      timeout=timeout,
                                       model=model):
             has_got_reply = True
 

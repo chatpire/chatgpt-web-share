@@ -61,11 +61,11 @@ async def sync_conversations():
             await session.commit()
         logger.info("Sync conversations finished.")
     except revChatGPTError as e:
-        logger.error(f"Fetch conversation error (ChatGPTError): {e.source} {e.code}: {e.message}")
+        logger.error(f"Fetch conversation error ({e.__class__.__name__}) {e.source} {e.code}: {e.message}")
         logger.warning("Sync conversations on startup failed!")
     except HTTPError as e:
-        logger.error(f"Fetch conversation error (httpx.HTTPError): {str(e)}")
+        logger.error(f"Fetch conversation error ({e.__class__.__name__}) {str(e)}")
         logger.warning("Sync conversations on startup failed!")
     except Exception as e:
-        logger.error(f"Fetch conversation error (unknown): {str(e)}")
+        logger.error(f"Fetch conversation error ({e.__class__.__name__}) {str(e)}")
         logger.warning("Sync conversations on startup failed!")

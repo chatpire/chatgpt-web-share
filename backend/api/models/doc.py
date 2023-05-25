@@ -84,10 +84,16 @@ class RevChatMessageTetherQuoteContent(BaseModel):
     title: Optional[str]
 
 
+class RevChatMessageSystemErrorContent(BaseModel):
+    content_type: Literal['system_error']
+    name: Optional[Literal['tool_error'] | str]
+    text: Optional[str]
+
+
 RevChatMessageContent = Annotated[
     Union[
         RevChatMessageTextContent, RevChatMessageCodeContent, RevChatMessageTetherBrowsingDisplayContent,
-        RevChatMessageTetherQuoteContent
+        RevChatMessageTetherQuoteContent, RevChatMessageSystemErrorContent
     ], Field(discriminator='content_type')]
 
 
@@ -102,7 +108,7 @@ class BaseChatMessage(BaseModel):
     id: uuid.UUID
     type: Literal["rev", "api"]
     role: Literal['system', 'user', 'assistant', 'tool'] | str
-    author_name: Optional[str]  # rev: mapping[id].message.author.name
+    author_name: Optional[Literal['browser'] | str]  # rev: mapping[id].message.author.name
     model: Optional[str]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
     create_time: Optional[datetime.datetime]
     parent: Optional[uuid.UUID]

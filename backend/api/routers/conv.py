@@ -74,6 +74,9 @@ async def get_conversation_history(refresh: bool = False,
                     conversation = await session.get(BaseConversation, conversation.id)
                     conversation.current_model = result.current_model
                     await session.commit()
+        except httpx.TimeoutException as e:
+            logger.warning(f"{conversation.conversation_id} get conversation history timeout: {e.__class__.__name__}")
+            raise InternalException("errors.revChatGPTTimeout")
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
                 raise InvalidParamsException("errors.conversationNotFound")

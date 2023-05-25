@@ -57,7 +57,7 @@ class OpenAIChatManager:
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None,
                   parent_id: uuid.UUID = None, model: ApiChatModels = None,
-                  timeout: int = None, context_message_count: int = -1, extra_args: Optional[dict] = None):
+                  context_message_count: int = -1, extra_args: Optional[dict] = None):
 
         now_time = datetime.now().astimezone(tz=timezone.utc)
         message_id = uuid.uuid4()
@@ -123,6 +123,8 @@ class OpenAIChatManager:
 
         reply_message = None
         text_content = ""
+
+        timeout = httpx.Timeout(config.api.read_timeout, connect=config.api.connect_timeout)
 
         async with self.client.stream(
                 method="POST",

@@ -159,7 +159,7 @@ export interface components {
       connect_timeout?: number;
       /**
        * Read Timeout 
-       * @default 10
+       * @default 20
        */
       read_timeout?: number;
     };
@@ -187,7 +187,7 @@ export interface components {
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: string;
+      author_name?: "browser" | string;
       /** Model */
       model?: string;
       /**
@@ -472,7 +472,7 @@ export interface components {
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: string;
+      author_name?: "browser" | string;
       /** Model */
       model?: string;
       /**
@@ -488,7 +488,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: (components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"]) | components["schemas"]["ApiChatMessageTextContent"] | string;
+      content?: (components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"] | components["schemas"]["RevChatMessageSystemErrorContent"]) | components["schemas"]["ApiChatMessageTextContent"] | string;
       /** Metadata */
       metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
     };
@@ -680,6 +680,7 @@ export interface components {
        * Revchatgpt 
        * @default {
        *   "is_plus_account": false,
+       *   "common_timeout": 10,
        *   "ask_timeout": 600
        * }
        */
@@ -689,7 +690,7 @@ export interface components {
        * @default {
        *   "openai_base_url": "https://api.openai.com/v1/",
        *   "connect_timeout": 10,
-       *   "read_timeout": 10
+       *   "read_timeout": 20
        * }
        */
       api?: components["schemas"]["APISetting"];
@@ -921,6 +922,11 @@ export interface components {
       /** Chatgpt Base Url */
       chatgpt_base_url?: string;
       /**
+       * Common Timeout 
+       * @default 10
+       */
+      common_timeout?: number;
+      /**
        * Ask Timeout 
        * @default 600
        */
@@ -941,7 +947,7 @@ export interface components {
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: string;
+      author_name?: "browser" | string;
       /** Model */
       model?: string;
       /**
@@ -957,7 +963,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"];
+      content?: components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"] | components["schemas"]["RevChatMessageSystemErrorContent"];
       /** Metadata */
       metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
     };
@@ -1027,6 +1033,18 @@ export interface components {
       plugin_id?: string;
       /** Type */
       type?: string;
+    };
+    /** RevChatMessageSystemErrorContent */
+    RevChatMessageSystemErrorContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "system_error";
+      /** Name */
+      name?: "tool_error" | string;
+      /** Text */
+      text?: string;
     };
     /** RevChatMessageTetherBrowsingDisplayContent */
     RevChatMessageTetherBrowsingDisplayContent: {
