@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from pydantic import BaseModel, validator, Field
@@ -30,8 +30,11 @@ class LogFilterOptions(BaseModel):
         return v
 
 
+datetime.now().astimezone()
+
+
 class RequestStatsAggregationID(BaseModel):
-    start_time: datetime.datetime
+    start_time: datetime
     route_path: str
     method: str
 
@@ -40,3 +43,9 @@ class RequestStatsAggregation(BaseModel):
     id: RequestStatsAggregationID = Field(None, alias="_id")  # 起始时间
     count: int  # 时间间隔内的请求数量
     user_ids: list[Optional[int]] = None  # 用户ID列表
+    avg_elapsed_ms: Optional[float]
+
+    class Config:
+        json_encoders = {
+            datetime: lambda d: d.astimezone(tz=timezone.utc)
+        }

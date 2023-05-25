@@ -120,12 +120,13 @@ def make_fake_ask_records(total=100, days=2):
 
 @router.get("/system/stats/request", tags=["system"], response_model=list[RequestStatsAggregation])
 async def get_request_statistics(
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
+        # start_query_time: Optional[datetime] = None,
+        # end_query_time: Optional[datetime] = None,
         granularity: int = 600, _user: User = Depends(current_super_user)
 ):
     if granularity <= 0 or granularity % 60 != 0:
         raise InvalidParamsException("Invalid granularity")
+
     pipeline = [
         {
             "$project": {
@@ -137,26 +138,20 @@ async def get_request_statistics(
                 },
                 "route_path": "$meta.route_path",
                 "method": "$meta.method",
-                "user_id": 1
-            }
-        },
-        {
-            "$match": {
-                "$and": [
-                    {"start_time": {"$gte": start_time}} if start_time else {},
-                    {"start_time": {"$lt": end_time}} if end_time else {}
-                ]
+                "user_id": 1,
+                "elapsed_ms": 1
             }
         },
         {
             "$group": {
                 "_id": {
                     "start_time": "$start_time",
-                    "route_path": "route_path",
+                    "route_path": "$route_path",
                     "method": "$method"
                 },
                 "count": {"$sum": 1},
-                "user_ids": {"$addToSet": "$user_id"}
+                "user_ids": {"$addToSet": "$user_id"},
+                "avg_elapsed_ms": {"$avg": "$elapsed_ms"}
             }
         },
         {
@@ -165,7 +160,7 @@ async def get_request_statistics(
     ]
 
     result = await RequestStatDocument.aggregate(
-        pipeline, projection_model=RequestStatsAggregation
+        pipeline
     ).to_list()
 
     return result
