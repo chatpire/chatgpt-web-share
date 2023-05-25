@@ -1,29 +1,25 @@
 <template>
-  <n-space vertical class="-ml-2 h-full px-2">
-    <n-layout has-sider class="h-90vh">
-      <n-layout-sider
-        bordered
-        :collapsed="collapsed"
-        collapse-mode="width"
-        :collapsed-width="64"
-        :width="200"
-        show-trigger
-        @collapse="collapsed = true"
-        @expand="collapsed = false"
-      >
-        <n-menu v-model:value="activeKey" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
-      </n-layout-sider>
-      <n-layout class="ml-4 mr-2">
-        <n-scrollbar>
-          <router-view v-slot="{ Component, route }">
-            <keep-alive>
-              <component :is="Component" :key="route.fullPath" />
-            </keep-alive>
-          </router-view>
-        </n-scrollbar>
-      </n-layout>
+  <n-layout has-sider class="h-90vh h-full">
+    <n-layout-sider
+      bordered
+      :collapsed="collapsed"
+      collapse-mode="width"
+      :collapsed-width="64"
+      :width="200"
+      show-trigger
+      @collapse="collapsed = true"
+      @expand="collapsed = false"
+    >
+      <n-menu v-model:value="activeKey" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
+    </n-layout-sider>
+    <n-layout class="m-4">
+      <n-scrollbar>
+        <router-view v-slot="{ Component, route }">
+          <component :is="Component" :key="route.fullPath" />
+        </router-view>
+      </n-scrollbar>
     </n-layout>
-  </n-space>
+  </n-layout>
 </template>
 
 <script setup lang="ts">
