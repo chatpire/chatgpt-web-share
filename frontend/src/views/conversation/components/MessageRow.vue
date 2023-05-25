@@ -40,12 +40,14 @@
           {{ content }}
         </n-alert>
       </div>
+      <!-- 按 markdown 渲染内容 -->
       <div
         v-else-if="!showRawContent && !renderPureText"
         ref="contentRef"
         class="message-content w-full"
         v-html="renderedContent"
       />
+      <!-- 用户回复不渲染为markdown -->
       <div
         v-else-if="!showRawContent && renderPureText"
         ref="contentRef"
@@ -175,7 +177,7 @@ const renderedContent = computed(() => {
   //   return '';
   // }
   if (renderPureText.value) {
-    return props.message.content;
+    return content.value;
   }
   const result = md.render(content.value || '');
   return addButtonsToPreTags(result);
