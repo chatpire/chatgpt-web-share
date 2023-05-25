@@ -24,8 +24,7 @@ import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
 
 import { useAppStore } from '@/store';
-import { ToolTipFormatterParams } from '@/types/echarts';
-import { UserRead } from '@/types/schema';
+import { AskLogAggregation, UserRead } from '@/types/schema';
 
 import { timeFormatter } from './helpers';
 const { t } = useI18n();
@@ -44,91 +43,102 @@ use([
   BrushComponent,
 ]);
 
-type AskRecord = [[number, string, number, number], number];
-
-// provide(THEME_KEY, appStore.theme);
-interface StatRecord {
-  timestamp: number;
-  count: number;
-  sumAskDuration: number;
-  sumTotalDuration: number;
-  userIds: number[];
-}
-
 const props = defineProps<{
   loading: boolean;
-  askRecords?: AskRecord[];
+  askStats: AskLogAggregation[];
+  granularity: number;
   users?: UserRead[];
 }>();
 
-function makeDataset(askRecords: AskRecord[]) {
-  // 获得最早的时间戳
-  const earliestTimestamp = askRecords.reduce((min, record) => Math.min(min, record[1]), Number.MAX_VALUE);
+type AskStatRecord = {
+  timestamp: number;
+  count: number;
+  users: string;
+  totalAskTime: number;
+  totalQueueingTime: number;
+};
 
-  const latestTimestamp = askRecords.reduce((max, record) => Math.max(max, record[1]), Number.MIN_VALUE);
+type AskDataset = {
+  id: number;
+  source: AskStatRecord[];
+  // dimensions: any;
+  type: string;
+  model: string;
+  name: string;
+};
 
-  // 对齐到整点或半点
-  const alignedEarliestTimestamp = Math.floor(earliestTimestamp / 1800) * 1800 * 1000;
-  const alignedLatestTimestamp = Math.ceil(latestTimestamp / 1800) * 1800 * 1000;
+function makeDataset(askRecords: AskLogAggregation[]) {
+  const dataset = [] as AskDataset[];
 
-  // 数据分类
-  const otherRecords: AskRecord[] = [];
-  const gpt4Records: AskRecord[] = [];
-
-  askRecords.forEach((record) => {
-    if (record[0][1] === 'gpt-4') {
-      gpt4Records.push(record);
+  // 对askRecords按照_id.meta.type和_id.meta.model进行聚合
+  const askRecordsGroupByTypeAndModel = askRecords.reduce((acc, cur) => {
+    const key = `${cur._id.meta.type}|${cur._id.meta.model}`;
+    if (acc[key]) {
+      acc[key].push(cur);
     } else {
-      otherRecords.push(record);
+      acc[key] = [cur];
     }
+    return acc;
+  }, {} as Record<string, AskLogAggregation[]>);
+
+  Object.entries(askRecordsGroupByTypeAndModel).forEach(([key, value], idx) => {
+    const [type, model] = key.split('|');
+    const source = value.map((v) => {
+      return {
+        timestamp: new Date(v._id.start_time).getTime(),
+        count: v.count,
+        // userIds: v.user_ids || [],
+        // findUsername 生成 string，超过5人则省略；格式：'user1, user2, user3, ... 等 x 人'
+        users: v.user_ids
+          ? v.user_ids.length > 5
+            ? `${findUsername(v.user_ids[0])}, ${findUsername(
+              v.user_ids[1],
+            )}, ${findUsername(v.user_ids[2])}, ... and ${v.user_ids.length - 3} more`
+            : v.user_ids.map((id) => findUsername(id)).join(', ')
+          : '',
+        totalAskTime: v.total_ask_time?.toFixed(2) || 0,
+        totalQueueingTime: v.total_queueing_time?.toFixed(2) || 0,
+      } as AskStatRecord;
+    });
+    dataset.push({
+      id: idx,
+      source,
+      // 下面的非echarts配置，用于生成series
+      type,
+      model,
+      name: `${t('labels.' + type)}-${t('models.' + model)}`,
+    });
   });
 
-  // 计算统计数据
-  function calculateStats(records: AskRecord[]): StatRecord[] {
-    const stats: StatRecord[] = [];
-    let currentTimestamp = alignedEarliestTimestamp;
-    // console.log('currentTimestamp', currentTimestamp, new Date(currentTimestamp).toLocaleString())
-    while (currentTimestamp < alignedLatestTimestamp) {
-      const recordsInInterval = records.filter(
-        (record) => record[1] * 1000 >= currentTimestamp && record[1] * 1000 < currentTimestamp + 1800 * 1000
-      );
+  const allTimestamps = new Set<number>();
+  dataset.forEach((d) => {
+    d.source.forEach((s) => {
+      allTimestamps.add(s.timestamp);
+    });
+  });
+  // 遍历所有source, 补全其在allTimestamps中不存在的值
+  dataset.forEach((d) => {
+    const source = d.source;
+    const timestamps = source.map((s) => s.timestamp);
+    const missingTimestamps = Array.from(allTimestamps).filter((t) => !timestamps.includes(t));
+    missingTimestamps.forEach((ts) => {
+      source.push({
+        timestamp: ts,
+        count: 0,
+        users: t('commons.empty'),
+        totalAskTime: 0,
+        totalQueueingTime: 0,
+      });
+    });
+    source.sort((a, b) => a.timestamp - b.timestamp);
+  });
 
-      if (recordsInInterval.length > 0) {
-        const userIds = new Set(recordsInInterval.map((record) => record[0][0]));
-        const stat: StatRecord = {
-          timestamp: currentTimestamp,
-          count: recordsInInterval.length,
-          sumAskDuration: recordsInInterval.reduce((sum, record) => sum + record[0][2], 0),
-          sumTotalDuration: recordsInInterval.reduce((sum, record) => sum + record[0][3], 0),
-          userIds: Array.from(userIds),
-        };
-        stats.push(stat);
-      } else {
-        const stat: StatRecord = {
-          timestamp: currentTimestamp,
-          count: 0,
-          sumAskDuration: 0,
-          sumTotalDuration: 0,
-          userIds: [],
-        };
-        stats.push(stat);
-      }
-
-      currentTimestamp += 1800 * 1000;
-    }
-
-    return stats;
-  }
-
-  const otherStats = calculateStats(otherRecords);
-  const gpt4Stats = calculateStats(gpt4Records);
-
-  return [{ source: otherStats }, { source: gpt4Stats }];
+  return dataset;
 }
 
 const dataset = computed(() => {
-  if (props.askRecords) {
-    return makeDataset(props.askRecords);
+  if (props.askStats) {
+    return makeDataset(props.askStats);
   } else {
     return [];
   }
@@ -141,20 +151,16 @@ const findUsername = (user_id: number) => {
 
 const isDark = computed(() => appStore.theme === 'dark');
 
-const generateSeries = (
-  name: string,
-  lineColor: string,
-  itemBorderColor: string,
-  datasetIndex: number
-): BarSeriesOption => {
+const generateSeries = (lineColor: string, itemBorderColor: string, datasetIndex: number): BarSeriesOption => {
   return {
     type: 'bar',
-    name,
+    name: dataset.value[datasetIndex].name,
     datasetIndex,
     yAxisIndex: 0,
     encode: {
       x: 'timestamp',
       y: 'count',
+      tooltip: ['count', 'totalAskTime', 'totalQueueingTime', 'users'],
     },
     stack: 'total',
     itemStyle: {
@@ -170,6 +176,38 @@ const generateSeries = (
     },
   };
 };
+
+const series = computed(() => {
+  // 从 dataset 中生成 series
+
+  // const colors = [
+  //   ['#9ce6aa', '#E8FFFB'], // green
+  //   ['#F77234', '#FFE4BA'], // orange
+  //   ['#F7B334', '#FFF4BA'],
+  //   ['#9ce6aa', '#E8FFFB'],
+  // ];
+  const colorModelMap = {
+    'rev|gpt_3_5': ['#9ce6aa', '#E8FFFB'],
+    'rev|gpt_4': ['#F77234', '#FFE4BA'],
+    'api|gpt_3_5': ['#F7B334', '#FFF4BA'],
+    'api|gpt_4': ['#9ce6aa', '#E8FFFB'],
+  };
+
+  const getDatasetColors = (d: AskDataset) => {
+    const colors = colorModelMap[`${d.type}|${d.model}` as keyof typeof colorModelMap];
+    if (colors) {
+      return colors;
+    } else {
+      const color = isDark.value ? '#fff' : '#000';
+      return [color, color];
+    }
+  };
+
+  return dataset.value.map((d, idx) => {
+    const colors = getDatasetColors(d);
+    return generateSeries(colors[0], colors[1], idx);
+  });
+});
 
 const showDataZoom = ref(false);
 const dataZoomOption = computed(() => {
@@ -214,7 +252,7 @@ const option = computed(() => {
       type: 'time',
       axisLabel: {
         color: '#4E5969',
-        formatter: (val: any) => timeFormatter(val, false),
+        formatter: (val: number) => timeFormatter(val, false),
         hideOverlap: true,
       },
       axisLine: {
@@ -266,35 +304,17 @@ const option = computed(() => {
     ],
     tooltip: {
       trigger: 'axis',
-      formatter(params: any[]) {
-        const [el0, el1] = params as ToolTipFormatterParams[];
-        const data0 = el0.data as StatRecord;
-        const data1 = el1.data as StatRecord;
-        return `<div>
-                  <span>${timeFormatter(data0.timestamp, true)} ~ ${timeFormatter(
-  data0.timestamp + 1800 * 1000,
-  true
-)}</span>
-                  <br />
-                  <span>${el0.seriesName}: ${data0.count}</span> <br />
-                  <span>${el1.seriesName}: ${data1.count}</span> <br />
-                  <span>${t('commons.normalAskUsers')}: ${data0.userIds.map((id: number) =>
-  findUsername(id)
-)}</span> <br />
-                  <span>${t('commons.gpt4AskUsers')}: ${data1.userIds.map((id: number) =>
-  findUsername(id)
-)}</span> <br />
-                  <span>${t('commons.sumOfNormalAskDuration')}: ${data0.sumAskDuration.toFixed(2)} s</span> <br />
-                  <span>${t('commons.sumOfGpt4AskDuration')}: ${data1.sumAskDuration.toFixed(2)} s</span> <br />
-                </div>`;
-      },
-      className: 'echarts-tooltip-diy',
+      // formatter: '{a}: {b} {c} {d}'
     },
 
-    series: [
-      generateSeries(t('commons.normalAskCount'), '#9ce6aa', '#E8FFFB', 0),
-      generateSeries(t('commons.gpt4AskCount'), '#F77234', '#FFE4BA', 1),
-    ],
+    series: series.value,
+
+    legend: {
+      show: true,
+      orient: 'vertical',
+      right: 10,
+      top: 40
+    },
 
     toolbox: {
       feature: {
@@ -315,7 +335,7 @@ const option = computed(() => {
 });
 
 // watchEffect(() => {
-console.log('props', props.askRecords);
+console.log('props', props.askStats);
 // console.log('xAxis', xAxis.value);
 // console.log('totalRequestsCountData', totalRequestsCountData.value);
 // console.log('datasetSource', datasetSource.value);

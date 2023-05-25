@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ConfigModel, CredentialsModel, LogFilterOptions, RequestStatistics, SystemInfo } from '@/types/schema';
+import { AskLogAggregation, ConfigModel, CredentialsModel, LogFilterOptions, RequestLogAggregation, SystemInfo } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -8,8 +8,16 @@ export function getSystemInfoApi() {
   return axios.get<SystemInfo>(ApiUrl.SystemInfo);
 }
 
-export function getRequestStatisticsApi() {
-  return axios.get<RequestStatistics>(ApiUrl.SystemRequestStatistics);
+export function getRequestStatisticsApi(granularity: number) {
+  return axios.get<RequestLogAggregation[]>(ApiUrl.SystemRequestStatistics, {
+    params: { granularity },
+  });
+}
+
+export function getAskStatisticsApi(granularity: number) {
+  return axios.get<AskLogAggregation[]>(ApiUrl.SystemAskStatistics, {
+    params: { granularity },
+  });
 }
 
 export function getServerLogsApi(options: LogFilterOptions | null) {

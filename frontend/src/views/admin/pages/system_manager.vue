@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4 mt-2 flex flex-col space-y-4">
     <SystemInfoCard :system-info="systemInfo" :server-status="serverStatus" @refresh="refreshData" />
-    <StatisticsCard :request-statistics="requestStatistics" :users="users" />
+    <StatisticsCard :request-stats="requestStats" :ask-stats="askStats" :users="users" :granularity="granularity" />
   </div>
 </template>
 
@@ -10,9 +10,9 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getServerStatusApi } from '@/api/status';
-import { getRequestStatisticsApi, getSystemInfoApi } from '@/api/system';
+import { getAskStatisticsApi, getRequestStatisticsApi, getSystemInfoApi } from '@/api/system';
 import { getAllUserApi } from '@/api/user';
-import { RequestStatistics, ServerStatusSchema, SystemInfo, UserRead } from '@/types/schema';
+import { AskLogAggregation, RequestLogAggregation, ServerStatusSchema, SystemInfo, UserRead } from '@/types/schema';
 
 import StatisticsCard from '../components/StatisticsCard.vue';
 import SystemInfoCard from '../components/SystemInfoCard.vue';
@@ -20,8 +20,11 @@ const { t } = useI18n();
 
 const systemInfo = ref<SystemInfo | undefined>();
 const serverStatus = ref<ServerStatusSchema | undefined>();
-const requestStatistics = ref<RequestStatistics | undefined>();
+const requestStats = ref<RequestLogAggregation[] | undefined>();
+const askStats = ref<AskLogAggregation[] | undefined>();
 const users = ref<UserRead[] | undefined>();
+
+const granularity = 1800;
 
 const refreshData = () => {
   getSystemInfoApi().then((res) => {
@@ -32,8 +35,12 @@ const refreshData = () => {
     serverStatus.value = res.data;
   });
 
-  getRequestStatisticsApi().then((res) => {
-    requestStatistics.value = res.data;
+  getRequestStatisticsApi(granularity).then((res) => {
+    requestStats.value = res.data;
+  });
+
+  getAskStatisticsApi(granularity).then((res) => {
+    askStats.value = res.data;
   });
 };
 

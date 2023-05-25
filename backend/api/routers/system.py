@@ -139,7 +139,7 @@ async def get_request_statistics(
                     }
                 },
                 "route_path": "$meta.route_path",
-                "method": "$meta.method",
+                    "method": "$meta.method",
                 "user_id": 1,
                 "elapsed_ms": 1
             }
@@ -199,6 +199,7 @@ async def get_ask_statistics(
                     "meta": "$meta"
                 },
                 "count": {"$sum": 1},
+                "user_ids": {"$addToSet": "$user_id"},
                 "total_ask_time": {"$sum": "$ask_time"},
                 "total_queueing_time": {"$sum": "$queueing_time"},
             }

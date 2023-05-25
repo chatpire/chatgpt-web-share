@@ -26,7 +26,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useAppStore } from '@/store';
 import { ToolTipFormatterParams } from '@/types/echarts';
-import { UserRead } from '@/types/schema';
+import { RequestLogAggregation, UserRead } from '@/types/schema';
 
 import { timeFormatter } from './helpers';
 const { t } = useI18n();
@@ -50,8 +50,8 @@ use([
 
 const props = defineProps<{
   loading: boolean;
-  requestCounts?: Record<string, [number, number[]]>; // list of [timestage, [total, user_id_list]]
-  requestCountsInterval?: number;
+  requestStats: RequestLogAggregation[];
+  requestStatsGranularity: number;
   users?: UserRead[];
 }>();
 
@@ -62,21 +62,37 @@ const findUsername = (user_id: number) => {
 
 const isDark = computed(() => appStore.theme === 'dark');
 
+type RequestStatsRecord = {
+  timestamp: number;
+  count: number;
+  userIds: number[];
+};
+
 const datasetSource = computed(() => {
-  const data = props.requestCounts
-    ? Object.keys(props.requestCounts).map((key) => {
-      const timestamp = parseInt(key) * 1000 * props.requestCountsInterval!;
-      const count = props.requestCounts![key][0];
-      const userIds = props.requestCounts![key][1] as number[];
-      // const userString = userIds.map((i) => `${i}`).join(', ');
-      return {
-        timestamp,
-        count,
-        userIds,
-      };
-    })
-    : [];
-  return data;
+  if (props.requestStats) {
+    // aggregate by start_time
+    // TODO: 根据 endpoint 提供筛选选项；这里只是按照时间展示总量
+    const aggregated = props.requestStats.reduce((acc, cur) => {
+      const timestamp = new Date(cur._id.start_time).getTime();
+      const count = cur.count;
+      const userIds = cur.user_ids;
+      const key = timestamp.toString();
+      if (acc[key]) {
+        acc[key].count += count;
+        acc[key].userIds.concat(userIds || []);
+      } else {
+        acc[key] = {
+          timestamp,
+          count,
+          userIds: userIds || [],
+        };
+      }
+      return acc;
+    }, {} as Record<string, RequestStatsRecord>);
+    return Object.values(aggregated);
+  } else {
+    return [];
+  }
 });
 
 const generateSeries = (name: string, lineColor: string, itemBorderColor: string): LineSeriesOption => {
@@ -213,7 +229,7 @@ const option = computed(() => {
         const data = el.data as any;
         return `<div>
                   <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(
-  data.timestamp + props.requestCountsInterval! * 1000,
+  new Date(data.timestamp).getTime() / 1000 + props.requestStatsGranularity!,
   true
 )}</span>
                   <br />

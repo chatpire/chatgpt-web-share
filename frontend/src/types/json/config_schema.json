@@ -103,9 +103,11 @@
     "stats": {
       "title": "Stats",
       "default": {
-        "enable_auto_expire": true,
-        "request_stats_ttl": 604800,
-        "ask_stats_ttl": 2592000
+        "ask_stats_ttl": 7776000,
+        "request_stats_ttl": 2592000,
+        "request_stats_filter_keywords": [
+          "/status"
+        ]
       },
       "allOf": [
         {
@@ -303,20 +305,25 @@
       "title": "StatsSetting",
       "type": "object",
       "properties": {
-        "enable_auto_expire": {
-          "title": "Enable Auto Expire",
-          "default": true,
-          "type": "boolean"
+        "ask_stats_ttl": {
+          "title": "Ask Stats Ttl",
+          "default": 7776000,
+          "type": "integer"
         },
         "request_stats_ttl": {
           "title": "Request Stats Ttl",
-          "default": 604800,
-          "type": "integer"
-        },
-        "ask_stats_ttl": {
-          "title": "Ask Stats Ttl",
           "default": 2592000,
           "type": "integer"
+        },
+        "request_stats_filter_keywords": {
+          "title": "Request Stats Filter Keywords",
+          "default": [
+            "/status"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

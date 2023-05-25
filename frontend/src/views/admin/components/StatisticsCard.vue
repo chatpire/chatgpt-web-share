@@ -3,11 +3,11 @@
     <RequestsChart
       :users="users"
       :loading="loading"
-      :request-counts-interval="requestCountsInterval"
-      :request-counts="requestCounts"
+      :request-stats-granularity="$props.granularity"
+      :request-stats="requestStats || []"
     />
 
-    <AskChart :loading="loading" :ask-records="askRecords" :users="users" />
+    <AskChart :loading="loading" :ask-stats="askStats || []" :granularity="granularity" :users="users" />
   </n-card>
 </template>
 
@@ -15,30 +15,20 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { RequestStatistics, UserRead } from '@/types/schema';
+import { AskLogAggregation, RequestLogAggregation, UserRead } from '@/types/schema';
 
 import AskChart from './charts/AskChart.vue';
 import RequestsChart from './charts/RequestsChart.vue';
 const { t } = useI18n();
 
 const props = defineProps<{
-  requestStatistics?: RequestStatistics;
+  requestStats?: RequestLogAggregation[];
+  askStats?: AskLogAggregation[];
   users?: UserRead[];
+  granularity: number;
 }>();
 
 const loading = computed(() => {
-  return !props.requestStatistics;
-});
-
-const requestCountsInterval = computed(() => {
-  return props.requestStatistics?.request_counts_interval;
-});
-
-const requestCounts = computed(() => {
-  return props.requestStatistics?.request_counts as any;
-});
-
-const askRecords = computed<any>(() => {
-  return props.requestStatistics?.ask_records;
+  return !props.requestStats;
 });
 </script>

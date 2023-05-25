@@ -104,6 +104,10 @@ export interface paths {
     /** Get Request Statistics */
     get: operations["get_request_statistics_system_stats_request_get"];
   };
+  "/system/stats/ask": {
+    /** Get Ask Statistics */
+    get: operations["get_ask_statistics_system_stats_ask_get"];
+  };
   "/system/logs/server": {
     /** Get Server Logs */
     post: operations["get_server_logs_system_logs_server_post"];
@@ -158,6 +162,15 @@ export interface components {
        * @default 10
        */
       read_timeout?: number;
+    };
+    /** ApiAskLogMeta */
+    ApiAskLogMeta: {
+      /**
+       * Type 
+       * @enum {string}
+       */
+      type: "api";
+      model: components["schemas"]["ApiChatModels"];
     };
     /** ApiChatMessage */
     ApiChatMessage: {
@@ -345,6 +358,28 @@ export interface components {
       /** Allow Custom Openai Api */
       allow_custom_openai_api: boolean;
       custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
+    };
+    /** AskLogAggregation */
+    AskLogAggregation: {
+      _id: components["schemas"]["AskLogAggregationID"];
+      /** Count */
+      count: number;
+      /** User Ids */
+      user_ids?: (number)[];
+      /** Total Queueing Time */
+      total_queueing_time?: number;
+      /** Total Ask Time */
+      total_ask_time?: number;
+    };
+    /** AskLogAggregationID */
+    AskLogAggregationID: {
+      /**
+       * Start Time 
+       * Format: date-time
+       */
+      start_time: string;
+      /** Meta */
+      meta: components["schemas"]["RevAskLogMeta"] | components["schemas"]["ApiAskLogMeta"];
     };
     /** AskRequest */
     AskRequest: {
@@ -668,9 +703,11 @@ export interface components {
       /**
        * Stats 
        * @default {
-       *   "enable_auto_expire": true,
-       *   "request_stats_ttl": 604800,
-       *   "ask_stats_ttl": 2592000
+       *   "ask_stats_ttl": 7776000,
+       *   "request_stats_ttl": 2592000,
+       *   "request_stats_filter_keywords": [
+       *     "/status"
+       *   ]
        * }
        */
       stats?: components["schemas"]["StatsSetting"];
@@ -843,16 +880,36 @@ export interface components {
       /** Completion Tokens */
       completion_tokens?: number;
     };
-    /** RequestStatistics */
-    RequestStatistics: {
-      /** Request Counts Interval */
-      request_counts_interval: number;
-      /** Request Counts */
-      request_counts: {
-        [key: string]: (Record<string, never>)[] | undefined;
-      };
-      /** Ask Records */
-      ask_records: (Record<string, never>)[];
+    /** RequestLogAggregation */
+    RequestLogAggregation: {
+      _id: components["schemas"]["RequestLogAggregationID"];
+      /** Count */
+      count: number;
+      /** User Ids */
+      user_ids?: (number)[];
+      /** Avg Elapsed Ms */
+      avg_elapsed_ms?: number;
+    };
+    /** RequestLogAggregationID */
+    RequestLogAggregationID: {
+      /**
+       * Start Time 
+       * Format: date-time
+       */
+      start_time: string;
+      /** Route Path */
+      route_path: string;
+      /** Method */
+      method: string;
+    };
+    /** RevAskLogMeta */
+    RevAskLogMeta: {
+      /**
+       * Type 
+       * @enum {string}
+       */
+      type: "rev";
+      model: components["schemas"]["RevChatModels"];
     };
     /** RevChatGPTSetting */
     RevChatGPTSetting: {
@@ -1175,20 +1232,22 @@ export interface components {
     /** StatsSetting */
     StatsSetting: {
       /**
-       * Enable Auto Expire 
-       * @default true
+       * Ask Stats Ttl 
+       * @default 7776000
        */
-      enable_auto_expire?: boolean;
+      ask_stats_ttl?: number;
       /**
        * Request Stats Ttl 
-       * @default 604800
+       * @default 2592000
        */
       request_stats_ttl?: number;
       /**
-       * Ask Stats Ttl 
-       * @default 2592000
+       * Request Stats Filter Keywords 
+       * @default [
+       *   "/status"
+       * ]
        */
-      ask_stats_ttl?: number;
+      request_stats_filter_keywords?: (string)[];
     };
     /** SystemInfo */
     SystemInfo: {
@@ -1876,11 +1935,44 @@ export interface operations {
   };
   get_request_statistics_system_stats_request_get: {
     /** Get Request Statistics */
+    parameters?: {
+      query?: {
+        granularity?: number;
+      };
+    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_ask_statistics_system_stats_ask_get: {
+    /** Get Ask Statistics */
+    parameters?: {
+      query?: {
+        granularity?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

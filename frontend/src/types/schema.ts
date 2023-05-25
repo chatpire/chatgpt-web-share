@@ -44,7 +44,8 @@ export type AskRequest = components['schemas']['AskRequest'];
 export type AskResponse = components['schemas']['AskResponse'];
 
 export type SystemInfo = components['schemas']['SystemInfo'];
-export type RequestStatistics = components['schemas']['RequestStatistics'];
+export type RequestLogAggregation = components['schemas']['RequestLogAggregation'];
+export type AskLogAggregation = components['schemas']['AskLogAggregation'];
 
 export type LogFilterOptions = components['schemas']['LogFilterOptions'];
 

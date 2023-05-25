@@ -1,5 +1,9 @@
-export const timeFormatter = (value: number, withYear: boolean) => {
-  const date = new Date(value);
+export const timeFormatter = (value: string | Date | number, withYear: boolean) => {
+  // const date = typeof value === 'string' ? new Date(value) : value;
+  if (typeof value === 'string' || typeof value === 'number') {
+    value = new Date(value);
+  }
+  const date = value;
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const day = date.getDate().toString().padStart(2, '0');

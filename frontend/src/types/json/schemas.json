@@ -22,6 +22,32 @@
       }
     }
   },
+  "ApiAskLogMeta": {
+    "title": "ApiAskLogMeta",
+    "required": [
+      "type",
+      "model"
+    ],
+    "type": "object",
+    "properties": {
+      "type": {
+        "title": "Type",
+        "enum": [
+          "api"
+        ],
+        "type": "string"
+      },
+      "model": {
+        "title": "ApiChatModels",
+        "enum": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      }
+    }
+  },
   "ApiChatMessage": {
     "title": "ApiChatMessage",
     "required": [
@@ -881,6 +907,197 @@
           "key": {
             "title": "Key",
             "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "AskLogAggregation": {
+    "title": "AskLogAggregation",
+    "required": [
+      "_id",
+      "count"
+    ],
+    "type": "object",
+    "properties": {
+      "_id": {
+        "title": "AskLogAggregationID",
+        "required": [
+          "start_time",
+          "meta"
+        ],
+        "type": "object",
+        "properties": {
+          "start_time": {
+            "title": "Start Time",
+            "type": "string",
+            "format": "date-time"
+          },
+          "meta": {
+            "title": "Meta",
+            "oneOf": [
+              {
+                "title": "RevAskLogMeta",
+                "required": [
+                  "type",
+                  "model"
+                ],
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "title": "Type",
+                    "enum": [
+                      "rev"
+                    ],
+                    "type": "string"
+                  },
+                  "model": {
+                    "title": "RevChatModels",
+                    "enum": [
+                      "gpt_3_5",
+                      "gpt_4",
+                      "gpt_4_browsing",
+                      "gpt_4_plugins"
+                    ],
+                    "type": "string",
+                    "description": "An enumeration."
+                  }
+                }
+              },
+              {
+                "title": "ApiAskLogMeta",
+                "required": [
+                  "type",
+                  "model"
+                ],
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "title": "Type",
+                    "enum": [
+                      "api"
+                    ],
+                    "type": "string"
+                  },
+                  "model": {
+                    "title": "ApiChatModels",
+                    "enum": [
+                      "gpt_3_5",
+                      "gpt_4"
+                    ],
+                    "type": "string",
+                    "description": "An enumeration."
+                  }
+                }
+              }
+            ],
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "rev": "#/components/schemas/RevAskLogMeta",
+                "api": "#/components/schemas/ApiAskLogMeta"
+              }
+            }
+          }
+        }
+      },
+      "count": {
+        "title": "Count",
+        "type": "integer"
+      },
+      "user_ids": {
+        "title": "User Ids",
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      },
+      "total_queueing_time": {
+        "title": "Total Queueing Time",
+        "type": "number"
+      },
+      "total_ask_time": {
+        "title": "Total Ask Time",
+        "type": "number"
+      }
+    }
+  },
+  "AskLogAggregationID": {
+    "title": "AskLogAggregationID",
+    "required": [
+      "start_time",
+      "meta"
+    ],
+    "type": "object",
+    "properties": {
+      "start_time": {
+        "title": "Start Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "meta": {
+        "title": "Meta",
+        "oneOf": [
+          {
+            "title": "RevAskLogMeta",
+            "required": [
+              "type",
+              "model"
+            ],
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "rev"
+                ],
+                "type": "string"
+              },
+              "model": {
+                "title": "RevChatModels",
+                "enum": [
+                  "gpt_3_5",
+                  "gpt_4",
+                  "gpt_4_browsing",
+                  "gpt_4_plugins"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+              }
+            }
+          },
+          {
+            "title": "ApiAskLogMeta",
+            "required": [
+              "type",
+              "model"
+            ],
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Type",
+                "enum": [
+                  "api"
+                ],
+                "type": "string"
+              },
+              "model": {
+                "title": "ApiChatModels",
+                "enum": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+              }
+            }
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "rev": "#/components/schemas/RevAskLogMeta",
+            "api": "#/components/schemas/ApiAskLogMeta"
           }
         }
       }
@@ -2884,28 +3101,35 @@
             "title": "StatsSetting",
             "type": "object",
             "properties": {
-              "enable_auto_expire": {
-                "title": "Enable Auto Expire",
-                "type": "boolean",
-                "default": true
+              "ask_stats_ttl": {
+                "title": "Ask Stats Ttl",
+                "type": "integer",
+                "default": 7776000
               },
               "request_stats_ttl": {
                 "title": "Request Stats Ttl",
                 "type": "integer",
-                "default": 604800
-              },
-              "ask_stats_ttl": {
-                "title": "Ask Stats Ttl",
-                "type": "integer",
                 "default": 2592000
+              },
+              "request_stats_filter_keywords": {
+                "title": "Request Stats Filter Keywords",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "/status"
+                ]
               }
             }
           }
         ],
         "default": {
-          "enable_auto_expire": true,
-          "request_stats_ttl": 604800,
-          "ask_stats_ttl": 2592000
+          "ask_stats_ttl": 7776000,
+          "request_stats_ttl": 2592000,
+          "request_stats_filter_keywords": [
+            "/status"
+          ]
         }
       }
     }
@@ -3310,31 +3534,104 @@
       }
     }
   },
-  "RequestStatistics": {
-    "title": "RequestStatistics",
+  "RequestLogAggregation": {
+    "title": "RequestLogAggregation",
     "required": [
-      "request_counts_interval",
-      "request_counts",
-      "ask_records"
+      "_id",
+      "count"
     ],
     "type": "object",
     "properties": {
-      "request_counts_interval": {
-        "title": "Request Counts Interval",
-        "type": "integer"
-      },
-      "request_counts": {
-        "title": "Request Counts",
+      "_id": {
+        "title": "RequestLogAggregationID",
+        "required": [
+          "start_time",
+          "route_path",
+          "method"
+        ],
         "type": "object",
-        "additionalProperties": {
-          "type": "array",
-          "items": {}
+        "properties": {
+          "start_time": {
+            "title": "Start Time",
+            "type": "string",
+            "format": "date-time"
+          },
+          "route_path": {
+            "title": "Route Path",
+            "type": "string"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          }
         }
       },
-      "ask_records": {
-        "title": "Ask Records",
+      "count": {
+        "title": "Count",
+        "type": "integer"
+      },
+      "user_ids": {
+        "title": "User Ids",
         "type": "array",
-        "items": {}
+        "items": {
+          "type": "integer"
+        }
+      },
+      "avg_elapsed_ms": {
+        "title": "Avg Elapsed Ms",
+        "type": "number"
+      }
+    }
+  },
+  "RequestLogAggregationID": {
+    "title": "RequestLogAggregationID",
+    "required": [
+      "start_time",
+      "route_path",
+      "method"
+    ],
+    "type": "object",
+    "properties": {
+      "start_time": {
+        "title": "Start Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "route_path": {
+        "title": "Route Path",
+        "type": "string"
+      },
+      "method": {
+        "title": "Method",
+        "type": "string"
+      }
+    }
+  },
+  "RevAskLogMeta": {
+    "title": "RevAskLogMeta",
+    "required": [
+      "type",
+      "model"
+    ],
+    "type": "object",
+    "properties": {
+      "type": {
+        "title": "Type",
+        "enum": [
+          "rev"
+        ],
+        "type": "string"
+      },
+      "model": {
+        "title": "RevChatModels",
+        "enum": [
+          "gpt_3_5",
+          "gpt_4",
+          "gpt_4_browsing",
+          "gpt_4_plugins"
+        ],
+        "type": "string",
+        "description": "An enumeration."
       }
     }
   },
@@ -4706,20 +5003,25 @@
     "title": "StatsSetting",
     "type": "object",
     "properties": {
-      "enable_auto_expire": {
-        "title": "Enable Auto Expire",
-        "type": "boolean",
-        "default": true
+      "ask_stats_ttl": {
+        "title": "Ask Stats Ttl",
+        "type": "integer",
+        "default": 7776000
       },
       "request_stats_ttl": {
         "title": "Request Stats Ttl",
         "type": "integer",
-        "default": 604800
-      },
-      "ask_stats_ttl": {
-        "title": "Ask Stats Ttl",
-        "type": "integer",
         "default": 2592000
+      },
+      "request_stats_filter_keywords": {
+        "title": "Request Stats Filter Keywords",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [
+          "/status"
+        ]
       }
     }
   },
