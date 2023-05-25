@@ -9,8 +9,8 @@
       :native-scrollbar="false"
       :collapsed-width="0"
       collapse-mode="transform"
-      trigger-style="top: 28px; right: -26px;"
-      collapsed-trigger-style="top: 28px; right: -26px;"
+      trigger-style="top: 27px; right: -26px;"
+      collapsed-trigger-style="top: 27px; right: -26px;"
       bordered
       show-trigger="arrow-circle"
       :width="300"
