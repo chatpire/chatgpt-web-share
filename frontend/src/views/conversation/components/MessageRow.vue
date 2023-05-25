@@ -140,12 +140,6 @@ const revMetadata = computed<RevChatMessageMetadata | null>(() => {
   return null;
 });
 
-const apiMetadata = computed<ApiChatMessageMetadata | null>(() => {
-  if (props.message.type == 'api') {
-    return props.message.metadata as ApiChatMessageMetadata;
-  }
-  return null;
-});
 
 const isPluginMessage = computed(() => {
   return revMetadata.value && revMetadata.value.recipient && revMetadata.value.recipient != 'all';
@@ -224,7 +218,7 @@ function addButtonsToPreTags(htmlString: string): string {
 onMounted(() => {
   if (!contentRef.value) return;
   // eslint-disable-next-line no-undef
-  const callback: MutationCallback = (mutations: MutationRecord[], observer: MutationObserver) => {
+  const callback: MutationCallback = (mutations: MutationRecord[]) => {
     for (const mutation of mutations) {
       if (mutation.type === 'childList') {
         bindOnclick();

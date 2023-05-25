@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Literal, Union
 
 from pydantic import BaseModel, validator, Field
+
+from api.models.doc import RevAskStatMeta, ApiAskStatMeta
 
 
 class ServerStatusSchema(BaseModel):
@@ -44,6 +46,24 @@ class RequestStatsAggregation(BaseModel):
     count: int  # 时间间隔内的请求数量
     user_ids: list[Optional[int]] = None  # 用户ID列表
     avg_elapsed_ms: Optional[float]
+
+    class Config:
+        json_encoders = {
+            datetime: lambda d: d.astimezone(tz=timezone.utc)
+        }
+
+
+class AskStatsAggregationID(BaseModel):
+    start_time: datetime
+    meta: Union[RevAskStatMeta, ApiAskStatMeta] = Field(discriminator='type')
+
+
+class AskStatsAggregation(BaseModel):
+    id: AskStatsAggregationID = Field(None, alias="_id")  # 起始时间
+    count: int  # 时间间隔内的请求数量
+    user_ids: list[Optional[int]] = None  # 用户ID列表
+    total_queueing_time: Optional[float]
+    total_ask_time: Optional[float]
 
     class Config:
         json_encoders = {
