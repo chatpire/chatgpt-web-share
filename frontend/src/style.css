@@ -1,3 +1,9 @@
+body {
+  overflow: hidden;
+  --header-height: 60px;
+}
+
+
 @media print {
   .hide-in-print * {
     visibility: hidden !important;

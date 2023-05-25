@@ -31,7 +31,7 @@ import { useI18n } from 'vue-i18n';
 
 import { jsonApiSourceSettingSchema, jsonRevSourceSettingSchema } from '@/types/json_schema';
 import { ApiSourceSettingSchema, RevSourceSettingSchema, UserReadAdmin, UserSettingSchema } from '@/types/schema';
-import { screenWidthGreaterThan } from '@/utils/screen';
+import { screenWidthGreaterThan } from '@/utils/media';
 
 const gtsm = screenWidthGreaterThan('sm');
 

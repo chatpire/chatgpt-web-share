@@ -1,19 +1,14 @@
 <template>
-  <div
-    class="flex lt-sm:flex-col flex-row lt-sm:py-2 py-4 lt-sm:px-5 px-4 box-content max-w-full relative"
-    :style="{ backgroundColor: backgroundColor }"
-  >
-    <div class="w-10 lt-sm:ml-0 ml-2 mt-3">
-      <!-- <n-text class="inline-block mt-4">{{ props.message.author_role == 'user' ? 'User' : 'ChatGPT' }}</n-text> -->
+  <div class="flex flex-row lt-md:flex-col py-3 lt-md:py-2 px-4 relative" :style="{ backgroundColor: backgroundColor }">
+    <div class="w-10 lt-md:ml-0 ml-2 mt-3">
       <n-avatar v-if="props.message.role == 'user'" size="small">
         <n-icon>
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <!-- <n-avatar v-else size="small" :src="chatgptIcon" /> -->
       <ChatGPTAvatar v-show="!shrinkMessage" v-else size="small" :model="props.message.model" />
     </div>
-    <div class="lt-sm:mx-0 mx-4 w-full">
+    <div class="lt-md:mx-0 mx-4 w-full">
       <div v-if="shrinkMessage">
         <n-collapse class="mb-2">
           <n-collapse-item :title="t('commons.expandResult')">
@@ -23,7 +18,7 @@
           </n-collapse-item>
         </n-collapse>
       </div>
-      <div v-else-if="showRawContent" class="my-3 w-full  text-gray-500">
+      <div v-else-if="showRawContent" class="my-3 w-full text-gray-500">
         {{ content }}
       </div>
       <div v-else-if="isPluginMessage" class="my-3">
@@ -96,12 +91,8 @@ import { useI18n } from 'vue-i18n';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useAppStore } from '@/store';
-import {
-  ApiChatMessageMetadata,
-  BaseChatMessage,
-  RevChatMessageMetadata,
-} from '@/types/schema';
-import {getContentRawText} from '@/utils/chat';
+import { ApiChatMessageMetadata, BaseChatMessage, RevChatMessageMetadata } from '@/types/schema';
+import { getContentRawText } from '@/utils/chat';
 import md from '@/utils/markdown';
 import { Message } from '@/utils/tips';
 // let md: any;
@@ -141,7 +132,6 @@ const revMetadata = computed<RevChatMessageMetadata | null>(() => {
   }
   return null;
 });
-
 
 const isPluginMessage = computed(() => {
   return revMetadata.value && revMetadata.value.recipient && revMetadata.value.recipient != 'all';
@@ -312,7 +302,9 @@ pre {
 
 pre code {
   /* @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170 */
-  @apply w-0 flex-grow mr-0 font-mono;
+  @apply w-0 flex-grow mr-0;
+  font-size: 0.8rem;
+  font-family: Menlo, ui-monospace, SFMono-Regular, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
 @media print {

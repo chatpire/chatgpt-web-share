@@ -1,61 +1,45 @@
 <template>
-  <div
+  <n-layout
     ref="rootRef"
-    :class="[
-      'flex-grow flex flex-col md:flex-row',
-      !appStore.preference.widerConversationPage ? 'lg:w-screen-lg lg:mx-auto' : '',
-    ]"
+    has-sider
+    :class="['h-full', !appStore.preference.widerConversationPage ? 'lg:w-screen-lg lg:mx-auto' : '']"
   >
     <!-- 左栏 -->
-    <LeftBar
-      v-show="!foldLeftBar"
-      v-model:value="currentConversationId"
-      :class="[
-        'md:min-w-50 pl-4 lt-md:pr-4 box-border mb-4 lt-md:h-56 md:flex-grow overflow-hidden flex flex-col space-y-4',
-        appStore.preference.widerConversationPage ? 'md:w-1/5' : 'md:w-1/4',
-      ]"
-      :loading="loadingBar"
-      @new-conversation="makeNewConversation"
-    />
-    <!-- 右栏 -->
-    <div
-      :class="['flex-grow flex flex-col md:px-4', appStore.preference.widerConversationPage ? 'md:w-4/5' : 'md:w-3/4']"
+    <n-layout-sider
+      :native-scrollbar="false"
+      :collapsed-width="0"
+      collapse-mode="transform"
+      trigger-style="top: 28px; right: -26px;"
+      collapsed-trigger-style="top: 28px; right: -26px;"
+      bordered
+      show-trigger="arrow-circle"
+      :width="300"
+      class="h-full"
     >
-      <n-card
-        class="flex-grow md:mb-4 relative"
-        :bordered="true"
-        content-style="padding: 0; display: flex; flex-direction: column; "
-      >
-        <!-- 展开/收起左栏 -->
-        <div class="left-3 top-3 absolute z-20">
-          <n-button
-            strong
-            secondary
-            :type="foldLeftBar ? 'default' : 'primary'"
-            size="small"
-            @click="foldLeftBar = !foldLeftBar"
-          >
-            <template #icon>
-              <n-icon :component="MenuRound" />
-            </template>
-          </n-button>
-        </div>
+      <LeftBar
+        v-show="!foldLeftBar"
+        v-model:value="currentConversationId"
+        :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
+        :loading="loadingBar"
+        @new-conversation="makeNewConversation"
+      />
+    </n-layout-sider>
+    <!-- 右栏 -->
+    <n-layout-content
+      embeded
+      :class="['flex flex-col overflow-hidden', gtmd() ? '' : 'min-w-100vw']"
+    >
+      <div class="h-full relative flex flex-col">
         <!-- 消息记录内容（用于全屏展示） -->
         <n-scrollbar
           v-if="currentConversationId"
           ref="historyRef"
-          class="basis-0 flex-grow shrink-grow relative"
-          :style="{'overflow-y': 'scroll','-webkit-overflow-scrolling': 'touch'}"
+          class="relative"
           :content-style="loadingHistory ? { height: '100%' } : {}"
         >
           <!-- 回到底部按钮 -->
           <div class="right-2 bottom-5 absolute z-20">
-            <n-button
-              secondary
-              circle
-              size="small"
-              @click="scrollToBottomSmooth"
-            >
+            <n-button secondary circle size="small" @click="scrollToBottomSmooth">
               <template #icon>
                 <n-icon :component="ArrowDown" />
               </template>
@@ -101,14 +85,13 @@
           @send-msg="sendMsg"
           @show-fullscreen-history="showFullscreenHistory"
         />
-      </n-card>
-    </div>
-  </div>
+      </div>
+    </n-layout-content>
+  </n-layout>
 </template>
 
 <script setup lang="ts">
 import { ArrowDown, ChatboxEllipses } from '@vicons/ionicons5';
-import { MenuRound } from '@vicons/material';
 import { RemovableRef, useStorage } from '@vueuse/core';
 import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
@@ -117,8 +100,15 @@ import { useI18n } from 'vue-i18n';
 import { getAskWebsocketApiUrl } from '@/api/chat';
 import { useAppStore, useConversationStore, useUserStore } from '@/store';
 import { newConversationId } from '@/store/modules/conversation';
-import {NewConversationInfo} from '@/types/custom';
-import { AskRequest, AskResponse, BaseChatMessage, BaseConversationHistory, BaseConversationSchema  } from '@/types/schema';
+import { NewConversationInfo } from '@/types/custom';
+import {
+  AskRequest,
+  AskResponse,
+  BaseChatMessage,
+  BaseConversationHistory,
+  BaseConversationSchema,
+} from '@/types/schema';
+import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
 // import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
@@ -131,6 +121,8 @@ import { saveAsMarkdown } from './utils/export';
 const themeVars = useThemeVars();
 
 const { t } = useI18n();
+
+const gtmd = screenWidthGreaterThan('md');
 
 const rootRef = ref();
 const historyRef = ref();
@@ -169,15 +161,9 @@ const currentRecvMessage = ref<BaseChatMessage | null>(null);
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
   const result: BaseChatMessage[] = [];
-  if (
-    currentSendMessage.value &&
-    result.findIndex((message) => message.id === currentSendMessage.value?.id) === -1
-  )
+  if (currentSendMessage.value && result.findIndex((message) => message.id === currentSendMessage.value?.id) === -1)
     result.push(currentSendMessage.value);
-  if (
-    currentRecvMessage.value &&
-    result.findIndex((message) => message.id === currentRecvMessage.value?.id) === -1
-  )
+  if (currentRecvMessage.value && result.findIndex((message) => message.id === currentRecvMessage.value?.id) === -1)
     result.push(currentRecvMessage.value);
   return result;
 });
@@ -217,7 +203,6 @@ const sendDisabled = computed(() => {
     inputValue.value.trim() == ''
   );
 });
-
 
 const makeNewConversation = () => {
   if (hasNewConversation.value) return;
@@ -365,7 +350,7 @@ const sendMsg = async () => {
           currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
           await conversationStore.fetchAllConversations();
           conversationStore.removeNewConversation();
-          
+
           console.log('done', newConvHistory, msgSend, msgRecv, currentConversationId.value);
         } else {
           // 将新消息存入 store

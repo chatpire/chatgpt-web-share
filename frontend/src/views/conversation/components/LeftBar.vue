@@ -1,8 +1,7 @@
 <template>
   <div>
     <StatusCard />
-    <div class="flex-grow flex flex-col">
-      <!-- <div class="flex box-content" v-if="!newConversation"> -->
+    <div class="h-full flex flex-col">
       <n-button secondary strong type="primary" :disabled="props.loading" @click="emits('new-conversation')">
         <template #icon>
           <n-icon class="">
@@ -11,18 +10,16 @@
         </template>
         {{ $t('commons.newConversation') }}
       </n-button>
-      <!-- </div> -->
-      <n-scrollbar class="h-0 flex-grow mt-4">
-        <n-menu
-          ref="menuRef"
-          v-model:value="convId"
-          class="-mx-2"
-          :content-style="{ backgroundColor: 'red' }"
-          :disabled="props.loading"
-          :options="menuOptions"
-          :root-indent="18"
-        />
-      </n-scrollbar>
+      <n-menu
+        ref="menuRef"
+        v-model:value="convId"
+        class="-mx-2 mt-2"
+        :content-style="{ backgroundColor: 'red' }"
+        :disabled="props.loading"
+        :options="menuOptions"
+        :root-indent="18"
+      />
+      <!-- </n-scrollbar> -->
     </div>
   </div>
 </template>

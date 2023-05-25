@@ -2,10 +2,12 @@
   <n-config-provider :theme="theme">
     <n-global-style />
     <div class="w-full box-border min-h-screen flex flex-col">
-      <div class="my-4 px-4">
+      <n-layout>
         <PageHeader />
-      </div>
-      <router-view />
+        <div style="height: calc(100vh - var(--header-height));">
+          <router-view />
+        </div>
+      </n-layout>
     </div>
   </n-config-provider>
 </template>

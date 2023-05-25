@@ -55,7 +55,7 @@ import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
 import { getCountTrans } from '@/utils/chat';
-import { screenWidthGreaterThan } from '@/utils/screen';
+import { screenWidthGreaterThan } from '@/utils/media';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
 import { renderUserPerModelCounts } from '@/utils/user';

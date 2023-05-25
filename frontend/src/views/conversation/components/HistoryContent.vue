@@ -2,25 +2,25 @@
   <div
     id="print-content"
     ref="contentRef"
-    class="flex flex-col h-full"
+    class="flex flex-col h-full p-0"
     tabindex="0"
     style="outline: none"
     @keyup.esc="toggleFullscreenHistory(true)"
   >
     <div v-if="!props.loading" class="relative">
-      <div class="flex justify-center py-4 px-4 max-w-full relative" :style="{ backgroundColor: themeVars.baseColor }">
+      <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
         <n-text>
           {{ $t('commons.currentConversationModel') }}: {{ getChatModelNameTrans(convHistory?.current_model || null) }}
           {{ t(`labels.${convHistory?.type}`) }}
         </n-text>
+        <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
+          <template #icon>
+            <n-icon>
+              <Close />
+            </n-icon>
+          </template>
+        </n-button>
       </div>
-      <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
-        <template #icon>
-          <n-icon>
-            <Close />
-          </n-icon>
-        </template>
-      </n-button>
       <!-- 消息记录 -->
       <MessageRow v-for="message in filteredMessages" :key="message.id" :message="message" />
     </div>

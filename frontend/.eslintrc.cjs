@@ -48,6 +48,7 @@ module.exports = {
       }
     }],
     "@typescript-eslint/no-non-null-assertion": ["off"],
+    "import/no-named-as-default": ["off"]
   },
   settings: {
     'import/parsers': {

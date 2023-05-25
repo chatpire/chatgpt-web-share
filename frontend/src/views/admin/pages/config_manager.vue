@@ -68,7 +68,7 @@ import { useI18n } from 'vue-i18n';
 import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
 import { jsonConfigModelSchema, jsonCredentialsModelSchema } from '@/types/json_schema';
 import { ConfigModel, CredentialsModel } from '@/types/schema';
-import { screenWidthGreaterThan } from '@/utils/screen';
+import { screenWidthGreaterThan } from '@/utils/media';
 import { Dialog, Message } from '@/utils/tips';
 
 const { t } = useI18n();
