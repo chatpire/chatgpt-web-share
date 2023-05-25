@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-shrink-0 flex flex-col align-middle relative z-10" :style="{ background: themeVars.baseColor }">
+  <div class="flex flex-col align-middle" :style="{ background: themeVars.baseColor }">
     <n-divider />
     <!-- 暂停按钮 -->
     <div class="flex w-full justify-center absolute -top-10">

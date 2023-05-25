@@ -77,6 +77,7 @@
         <InputRegion
           v-model:input-value="inputValue"
           v-model:auto-scrolling="autoScrolling"
+          class="sticky bottom-0 z-10"
           :can-abort="canAbort"
           :send-disabled="sendDisabled"
           @abort-request="abortRequest"
