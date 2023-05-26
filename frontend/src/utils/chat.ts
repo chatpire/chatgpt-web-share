@@ -7,6 +7,7 @@ const t = i18n.global.t as any;
 export const chatModelColorMap: Record<string, string> = {
   gpt_3_5: 'green',
   gpt_4: 'purple',
+  gpt_4_mobile: 'darkblue',
   gpt_4_browsing: 'purple',
   gpt_4_plugins: 'purple',
 };

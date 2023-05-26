@@ -120,7 +120,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
     key: 'available_ask_count',
     render(row) {
       // return getCountTrans(row.available_ask_count!);
-      return renderUserPerModelCounts(row.setting);
+      return renderUserPerModelCounts(row.setting, true);
     },
   },
   // TODO

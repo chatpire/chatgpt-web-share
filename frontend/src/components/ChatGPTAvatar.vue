@@ -92,6 +92,8 @@ const colorMap = {
   green: '#10A37F',
   black: '#000000',
   purple: 'rgb(171, 104, 255)',
+  lightblue: '#9ECBFB',
+  darkblue: '#2F94FF'
 };
 
 const color = computed(() => {

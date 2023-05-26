@@ -163,13 +163,11 @@ const generateSeries = (lineColor: string, itemBorderColor: string, datasetIndex
       tooltip: ['count', 'totalAskTime', 'totalQueueingTime', 'users'],
     },
     stack: 'total',
-    itemStyle: {
-      color: lineColor,
-    },
+
     emphasis: {
       focus: 'series',
       itemStyle: {
-        color: lineColor,
+        // color: lineColor,
         borderWidth: 2,
         borderColor: itemBorderColor,
       },
@@ -313,7 +311,10 @@ const option = computed(() => {
       show: true,
       orient: 'vertical',
       right: 10,
-      top: 40
+      top: 40,
+      textStyle: {
+        color: isDark.value ? '#EDEDED' : '#4E5969',
+      }
     },
 
     toolbox: {
