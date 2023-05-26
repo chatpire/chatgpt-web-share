@@ -148,7 +148,7 @@ export interface components {
      * @description An enumeration.
      * @enum {unknown}
      */
-    ChatModels: 'gpt-4' | 'text-davinci-002-render-sha' | 'text-davinci-002-render-paid' | '';
+    ChatModels: 'gpt-4' |'gpt-4-mobile' | 'text-davinci-002-render-sha' | 'text-davinci-002-render-paid' | '';
     /**
      * ChatStatus
      * @description An enumeration.

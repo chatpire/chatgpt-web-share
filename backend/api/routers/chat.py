@@ -243,10 +243,10 @@ async def ask(websocket: WebSocket):
     if model_name == ChatModels.paid and not user.can_use_paid:
         await websocket.close(1007, "errors.userNotAllowToUsePaidModel")
         return
-    if model_name == ChatModels.gpt4 and not user.can_use_gpt4:
+    if (model_name == ChatModels.gpt4 or model_name == ChatModels.gpt4_mobile) and not user.can_use_gpt4:
         await websocket.close(1007, "errors.userNotAllowToUseGPT4Model")
         return
-    if model_name in [ChatModels.gpt4, ChatModels.paid] and not config.get("chatgpt_paid", False):
+    if model_name in [ChatModels.gpt4, ChatModels.gpt4_mobile, ChatModels.paid] and not config.get("chatgpt_paid", False):
         await websocket.close(1007, "errors.paidModelNotAvailable")
         return
 
@@ -261,7 +261,7 @@ async def ask(websocket: WebSocket):
         if user.available_ask_count != -1 and user.available_ask_count <= 0:
             await websocket.close(1008, "errors.noAvailableAskCount")
             return
-        if user.available_gpt4_ask_count != -1 and user.available_gpt4_ask_count <= 0 and model_name == ChatModels.gpt4:
+        if user.available_gpt4_ask_count != -1 and user.available_gpt4_ask_count <= 0 and (model_name == ChatModels.gpt4 or model_name == ChatModels.gpt4_mobile):
             await websocket.close(1008, "errors.noAvailableGPT4AskCount")
             return
 
@@ -433,7 +433,7 @@ async def ask(websocket: WebSocket):
                     if user.available_ask_count != -1:
                         assert user.available_ask_count > 0
                         user.available_ask_count -= 1
-                    if model_name == ChatModels.gpt4 and user.available_gpt4_ask_count != -1:
+                    if (model_name == ChatModels.gpt4 or model_name == ChatModels.gpt4_mobile) and user.available_gpt4_ask_count != -1:
                         assert user.available_gpt4_ask_count > 0
                         user.available_gpt4_ask_count -= 1
                     session.add(user)

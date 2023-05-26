@@ -14,6 +14,7 @@ const modelNameMap = {
   'text-davinci-002-render-sha': t('commons.shaModel'),
   'text-davinci-002-render-paid': t('commons.paidModel'),
   'gpt-4': t('commons.gpt4Model'),
+  'gpt-4-mobile': t('commons.gpt4MobileModel'),
 };
 
 const getModelNameTrans = (model_name: keyof typeof modelNameMap) => {
@@ -105,7 +106,10 @@ const getAvailableModelOptions = (): SelectOption[] => {
       label: t('commons.paidModel'),
       value: 'text-davinci-002-render-paid',
     });
-  if (userStore.user?.can_use_gpt4) options.push({ label: t('commons.gpt4Model'), value: 'gpt-4' });
+  if (userStore.user?.can_use_gpt4) {
+    options.push({ label: t('commons.gpt4Model'), value: 'gpt-4' });
+    options.push({ label: t('commons.gpt4MobileModel'), value: 'gpt-4-mobile' });
+  };
   return options;
 };
 
