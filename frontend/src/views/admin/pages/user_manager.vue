@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-4 mt-1 ml-1 flex flex-row space-x-2 justify-between">
+  <div class="mb-4 mt-1 ml-1 flex flex-row gap-x-2 gap-y-1 space justify-between">
     <n-button circle @click="refreshData">
       <template #icon>
         <n-icon>

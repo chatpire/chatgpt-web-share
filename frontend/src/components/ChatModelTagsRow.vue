@@ -1,5 +1,5 @@
 <template>
-  <div class="inline-flex flex-row space-x-2">
+  <div class="flex flex-row flex-wrap gap-y-1 items-start gap-x-2">
     <n-tooltip v-for="(val, key) of props.value" :key="key" trigger="hover">
       <template #trigger>
         <n-tag round>
