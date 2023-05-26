@@ -976,6 +976,7 @@
                     "enum": [
                       "gpt_3_5",
                       "gpt_4",
+                      "gpt_4_mobile",
                       "gpt_4_browsing",
                       "gpt_4_plugins"
                     ],
@@ -1078,6 +1079,7 @@
                 "enum": [
                   "gpt_3_5",
                   "gpt_4",
+                  "gpt_4_mobile",
                   "gpt_4_browsing",
                   "gpt_4_plugins"
                 ],
@@ -3796,6 +3798,7 @@
         "enum": [
           "gpt_3_5",
           "gpt_4",
+          "gpt_4_mobile",
           "gpt_4_browsing",
           "gpt_4_plugins"
         ],
@@ -4573,6 +4576,7 @@
     "enum": [
       "gpt_3_5",
       "gpt_4",
+      "gpt_4_mobile",
       "gpt_4_browsing",
       "gpt_4_plugins"
     ],
@@ -5136,6 +5140,11 @@
         "type": "integer",
         "default": 0
       },
+      "gpt_4_mobile": {
+        "title": "Gpt 4 Mobile",
+        "type": "integer",
+        "default": 0
+      },
       "gpt_4_browsing": {
         "title": "Gpt 4 Browsing",
         "type": "integer",
@@ -5235,6 +5244,7 @@
           "enum": [
             "gpt_3_5",
             "gpt_4",
+            "gpt_4_mobile",
             "gpt_4_browsing",
             "gpt_4_plugins"
           ],
@@ -5253,6 +5263,11 @@
           },
           "gpt_4": {
             "title": "Gpt 4",
+            "type": "integer",
+            "default": 0
+          },
+          "gpt_4_mobile": {
+            "title": "Gpt 4 Mobile",
             "type": "integer",
             "default": 0
           },
@@ -5599,6 +5614,7 @@
                   "enum": [
                     "gpt_3_5",
                     "gpt_4",
+                    "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_plugins"
                   ],
@@ -5617,6 +5633,11 @@
                   },
                   "gpt_4": {
                     "title": "Gpt 4",
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "gpt_4_mobile": {
+                    "title": "Gpt 4 Mobile",
                     "type": "integer",
                     "default": 0
                   },
@@ -5946,6 +5967,7 @@
                   "enum": [
                     "gpt_3_5",
                     "gpt_4",
+                    "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_plugins"
                   ],
@@ -5964,6 +5986,11 @@
                   },
                   "gpt_4": {
                     "title": "Gpt 4",
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "gpt_4_mobile": {
+                    "title": "Gpt 4 Mobile",
                     "type": "integer",
                     "default": 0
                   },
@@ -6228,6 +6255,7 @@
               "enum": [
                 "gpt_3_5",
                 "gpt_4",
+                "gpt_4_mobile",
                 "gpt_4_browsing",
                 "gpt_4_plugins"
               ],
@@ -6246,6 +6274,11 @@
               },
               "gpt_4": {
                 "title": "Gpt 4",
+                "type": "integer",
+                "default": 0
+              },
+              "gpt_4_mobile": {
+                "title": "Gpt 4 Mobile",
                 "type": "integer",
                 "default": 0
               },

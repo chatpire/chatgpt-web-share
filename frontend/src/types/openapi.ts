@@ -1087,7 +1087,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    RevChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_browsing" | "gpt_4_plugins";
+    RevChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins";
     /**
      * RevChatStatus 
      * @description An enumeration. 
@@ -1203,6 +1203,11 @@ export interface components {
        * @default 0
        */
       gpt_4?: number;
+      /**
+       * Gpt 4 Mobile 
+       * @default 0
+       */
+      gpt_4_mobile?: number;
       /**
        * Gpt 4 Browsing 
        * @default 0

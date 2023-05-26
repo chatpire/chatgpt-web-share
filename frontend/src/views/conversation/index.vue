@@ -13,7 +13,7 @@
       collapsed-trigger-style="top: 27px; right: -26px;"
       bordered
       show-trigger="arrow-circle"
-      :width="300"
+      :width="260"
       class="h-full"
     >
       <LeftBar
