@@ -110,7 +110,7 @@ async def admin_update_user_setting(user_id: int, user_setting: UserSettingSchem
         user = await session.get(User, user_id)
         if user is None:
             raise UserNotExistException()
-        for key, value in user_setting.dict(exclude_unset=True, exclude={'id', 'user_id'}).items():
+        for key, value in user_setting.dict(exclude={'id', 'user_id'}).items():
             setattr(user.setting, key, value)
         await session.commit()
         await session.refresh(user)

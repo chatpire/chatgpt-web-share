@@ -15,6 +15,14 @@ class RevPerModelAskCount(BaseModel):
     gpt_4_browsing: int = 0
     gpt_4_plugins: int = 0
 
+    @root_validator(pre=True)
+    def check(cls, values):
+        # 如果某个值缺失，则默认设置为0
+        for model in list(RevChatModels):
+            if model not in values:
+                values[model] = 0
+        return values
+
     @staticmethod
     def default():
         return RevPerModelAskCount(gpt_3_5=0, gpt_4=0, gpt_4_browsing=0, gpt_4_plugins=0)
@@ -27,6 +35,13 @@ class RevPerModelAskCount(BaseModel):
 class ApiPerModelAskCount(BaseModel):
     gpt_3_5: int = 0
     gpt_4: int = 0
+
+    @root_validator(pre=True)
+    def check(cls, values):
+        for model in list(ApiChatModels):
+            if model not in values:
+                values[model] = 0
+        return values
 
     @staticmethod
     def default():
