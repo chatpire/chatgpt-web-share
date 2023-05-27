@@ -72,6 +72,7 @@
     "copiedToClipboard": "已复制到剪贴板",
     "send": "发送",
     "gpt4Model": "GPT-4",
+    "gpt4MobileModel": "GPT-4 (mobile v2)",
     "unknown": "未知",
     "availableGPT4AskCount": "剩余GPT-4对话次数",
     "canUseGPT4Model": "允许GPT-4",

@@ -73,6 +73,7 @@
     "send": "Send",
     "modelName": "Model Name",
     "gpt4Model": "GPT-4",
+    "gpt4MobileModel": "GPT-4 (mobile v2)",
     "unknown": "未知",
     "availableGPT4AskCount": "Available GPT-4 Ask Count",
     "canUseGPT4Model": "Allow GPT-4",
