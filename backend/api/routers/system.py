@@ -12,7 +12,7 @@ from api.conf import Config, Credentials
 from api.conf.config import ConfigModel
 from api.conf.credentials import CredentialsModel
 from api.database import get_async_session_context, get_user_db_context
-from api.enums import WebChatStatus
+from api.enums import OpenaiWebChatStatus
 from api.exceptions import InvalidParamsException
 from api.models.db import User, OpenaiWebConversation
 from api.models.doc import RequestLogDocument, AskLogDocument
@@ -57,7 +57,7 @@ async def check_users(refresh_cache: bool = False):
     for user in users:
         if not user.last_active_time:
             continue
-        if user.setting.openai_web_chat_status == WebChatStatus.queueing:
+        if user.setting.openai_web_chat_status == OpenaiWebChatStatus.queueing:
             queueing_count += 1
         if user.is_superuser:  # 管理员不计入在线人数
             continue

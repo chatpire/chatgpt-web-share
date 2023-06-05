@@ -17,7 +17,7 @@ from api.conf import Config
 import api.globals as g
 
 from api.database import create_db_and_tables, get_async_session_context, get_user_db_context, init_mongodb
-from api.enums import WebChatStatus
+from api.enums import OpenaiWebChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from api.models.db import User
@@ -114,7 +114,7 @@ async def on_startup():
         r = await session.execute(select(User))
         results = r.scalars().all()
         for user in results:
-            user.setting.openai_web_chat_status = WebChatStatus.idling
+            user.setting.openai_web_chat_status = OpenaiWebChatStatus.idling
             session.add(user.setting)
         await session.commit()
 

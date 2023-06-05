@@ -7,7 +7,7 @@ from sqlalchemy import String, Enum, Boolean, ForeignKey, func, Float
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic, UTCDateTime
-from api.enums import WebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels, ChatSourceTypes
+from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels, ChatSourceTypes
 from api.models.json import CustomOpenaiApiSettings
 from api.schemas import UserSettingSchema, OpenaiWebSourceSettingSchema, OpenaiApiSourceSettingSchema
 
@@ -51,8 +51,8 @@ class UserSetting(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="用户id")
     user: Mapped[User] = relationship("User", back_populates="setting", lazy="joined")
     credits: Mapped[float] = mapped_column(Float, default=0, comment="积分")
-    openai_web_chat_status: Mapped[WebChatStatus] = mapped_column(Enum(WebChatStatus), default=WebChatStatus.idling,
-                                                                  comment="对话状态")
+    openai_web_chat_status: Mapped[OpenaiWebChatStatus] = mapped_column(Enum(OpenaiWebChatStatus), default=OpenaiWebChatStatus.idling,
+                                                                        comment="对话状态")
     openai_web: Mapped[OpenaiWebSourceSettingSchema] = mapped_column(Pydantic(OpenaiWebSourceSettingSchema))
     openai_api: Mapped[OpenaiApiSourceSettingSchema] = mapped_column(Pydantic(OpenaiApiSourceSettingSchema))
 

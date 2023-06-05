@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi_users import schemas
 from pydantic import BaseModel, EmailStr
 
-from api.enums import WebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels
+from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels
 from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot, \
     RevPerModelAskCount, ApiPerModelAskCount
 
@@ -100,7 +100,7 @@ class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
     credits: float
-    openai_web_chat_status: WebChatStatus
+    openai_web_chat_status: OpenaiWebChatStatus
     openai_web: OpenaiWebSourceSettingSchema
     openai_api: OpenaiApiSourceSettingSchema
 
@@ -108,7 +108,7 @@ class UserSettingSchema(BaseModel):
     def default():
         return UserSettingSchema(
             credits=0,
-            openai_web_chat_status=WebChatStatus.idling,
+            openai_web_chat_status=OpenaiWebChatStatus.idling,
             openai_web=OpenaiWebSourceSettingSchema.default(),
             openai_api=OpenaiApiSourceSettingSchema.default()
         )
@@ -117,7 +117,7 @@ class UserSettingSchema(BaseModel):
     def unlimited():
         return UserSettingSchema(
             credits=-1,
-            openai_web_chat_status=WebChatStatus.idling,
+            openai_web_chat_status=OpenaiWebChatStatus.idling,
             openai_web=OpenaiWebSourceSettingSchema.unlimited(),
             openai_api=OpenaiApiSourceSettingSchema.unlimited()
         )

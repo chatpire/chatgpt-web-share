@@ -17,7 +17,7 @@ from websockets.exceptions import ConnectionClosed
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import WebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
+from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
 from api.exceptions import InternalException, InvalidParamsException
 from api.models.db import OpenaiWebConversation, User, BaseConversation
 from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
@@ -37,7 +37,7 @@ openai_api_manager = OpenAIChatManager()
 config = Config()
 
 
-async def change_user_chat_status(user_id: int, status: WebChatStatus):
+async def change_user_chat_status(user_id: int, status: OpenaiWebChatStatus):
     async with get_async_session_context() as session:
         user = await session.get(User, user_id)
         user.setting.openai_web_chat_status = status
@@ -176,7 +176,7 @@ async def chat(websocket: WebSocket):
 
     user = UserReadAdmin.from_orm(user_db)
 
-    if user.rev_chat_status != WebChatStatus.idling:
+    if user.rev_chat_status != OpenaiWebChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
         return
 
@@ -225,13 +225,13 @@ async def chat(websocket: WebSocket):
                 type=AskResponseType.queueing,
                 tip="tips.queueing"
             ))
-        await change_user_chat_status(user.id, WebChatStatus.queueing)
+        await change_user_chat_status(user.id, OpenaiWebChatStatus.queueing)
         queueing_start_time = time.time()
         await openai_web_manager.semaphore.acquire()
         queueing_end_time = time.time()
         # 如果 websocket 关闭了，则直接退出
         if websocket.state == WebSocketState.DISCONNECTED:
-            await change_user_chat_status(user.id, WebChatStatus.idling)
+            await change_user_chat_status(user.id, OpenaiWebChatStatus.idling)
             await openai_web_manager.semaphore.release()
             logger.debug(f"{user.username} websocket disconnected while queueing")
             return
@@ -242,7 +242,7 @@ async def chat(websocket: WebSocket):
     try:
         # rev: 更改状态为 asking
         if ask_request.type == ChatSourceTypes.openai_web:
-            await change_user_chat_status(user.id, WebChatStatus.asking)
+            await change_user_chat_status(user.id, OpenaiWebChatStatus.asking)
             openai_web_manager.reset_chat()
 
         await reply(AskResponse(
@@ -349,7 +349,7 @@ async def chat(websocket: WebSocket):
     finally:
         if ask_request.type == ChatSourceTypes.openai_web:
             openai_web_manager.semaphore.release()
-            await change_user_chat_status(user.id, WebChatStatus.idling)
+            await change_user_chat_status(user.id, OpenaiWebChatStatus.idling)
         openai_web_manager.reset_chat()
 
     ask_stop_time = time.time()
