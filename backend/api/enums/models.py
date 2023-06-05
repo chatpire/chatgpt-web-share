@@ -23,7 +23,7 @@ chat_model_definitions = {
 }
 
 
-cls_to_source_type = {
+cls_to_source = {
     "OpenaiWebChatModels": ChatSourceTypes.openai_web,
     "OpenaiApiChatModels": ChatSourceTypes.openai_api,
 }
@@ -31,15 +31,15 @@ cls_to_source_type = {
 
 class BaseChatModelEnum(StrEnum):
     def code(self):
-        source_type = cls_to_source_type.get(self.__class__.__name__, None)
-        result = chat_model_definitions[source_type].get(self.name, None)
+        source = cls_to_source.get(self.__class__.__name__, None)
+        result = chat_model_definitions[source].get(self.name, None)
         assert result, f"model name not found: {self.name}"
         return result
 
     @classmethod
     def from_code(cls, code: str):
-        source_type = cls_to_source_type.get(cls.__name__, None)
-        for name, value in chat_model_definitions[source_type].items():
+        source = cls_to_source.get(cls.__name__, None)
+        for name, value in chat_model_definitions[source].items():
             if value == code:
                 return cls[name]
         return None

@@ -62,7 +62,7 @@ class OpenAIChatManager:
         now_time = datetime.now().astimezone(tz=timezone.utc)
         message_id = uuid.uuid4()
         new_message = OpenaiApiChatMessage(
-            source_type="openai_api",
+            source="openai_api",
             id=message_id,
             role="user",
             create_time=now_time,
@@ -70,7 +70,7 @@ class OpenAIChatManager:
             children=[],
             content=OpenaiApiChatMessageTextContent(content_type="text", text=content),
             metadata=OpenaiApiChatMessageMetadata(
-                source_type="openai_api",
+                source="openai_api",
             )
         )
 
@@ -83,7 +83,7 @@ class OpenAIChatManager:
             conv_history = await OpenaiApiConversationHistoryDocument.get(conversation_id)
             if not conv_history:
                 raise ValueError("conversation_id not found")
-            if conv_history.source_type != ChatSourceTypes.openai_api:
+            if conv_history.source != ChatSourceTypes.openai_api:
                 raise ValueError(f"{conversation_id} is not api conversation")
             if not conv_history.mapping.get(str(parent_id)):
                 raise ValueError(f"{parent_id} is not a valid parent of {conversation_id}")
@@ -152,7 +152,7 @@ class OpenAIChatManager:
                         text_content += resp.choices[0].delta.get("content", "")
                     if reply_message is None:
                         reply_message = OpenaiApiChatMessage(
-                            source_type="openai_api",
+                            source="openai_api",
                             id=uuid.uuid4(),
                             role="assistant",
                             model=model,
@@ -161,7 +161,7 @@ class OpenAIChatManager:
                             children=[],
                             content=OpenaiApiChatMessageTextContent(content_type="text", text=text_content),
                             metadata=OpenaiApiChatMessageMetadata(
-                                source_type="openai_api",
+                                source="openai_api",
                                 finish_reason=resp.choices[0].finish_reason,
                             )
                         )

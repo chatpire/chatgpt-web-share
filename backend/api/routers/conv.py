@@ -67,7 +67,7 @@ async def get_all_conversations(_user: User = Depends(current_super_user), valid
             response_model=OpenaiApiConversationHistoryDocument | OpenaiWebConversationHistoryDocument | BaseConversationHistory)
 async def get_conversation_history(fallback_cache: bool = False,
                                    conversation: BaseConversation = Depends(_get_conversation_by_id)):
-    if conversation.source_type == ChatSourceTypes.openai_web:
+    if conversation.source == ChatSourceTypes.openai_web:
         try:
             result = await openai_web_manager.get_conversation_history(conversation.conversation_id)
             if result.current_model != conversation.current_model or not conversation.is_valid:
@@ -114,7 +114,7 @@ async def delete_conversation(conversation: BaseConversation = Depends(_get_conv
     """
     if not conversation.is_valid:
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
-    if conversation.source_type == ChatSourceTypes.openai_web:
+    if conversation.source == ChatSourceTypes.openai_web:
         try:
             await openai_web_manager.delete_conversation(conversation.conversation_id)
         except revChatGPTError as e:
@@ -137,7 +137,7 @@ async def vanish_conversation(conversation: BaseConversation = Depends(_get_conv
     """
     if conversation.is_valid:
         await delete_conversation(conversation)
-    if conversation.source_type == ChatSourceTypes.openai_web:
+    if conversation.source == ChatSourceTypes.openai_web:
         doc = await OpenaiWebConversationHistoryDocument.get(conversation.conversation_id)
     else:  # api
         doc = await OpenaiApiConversationHistoryDocument.get(conversation.conversation_id)
@@ -152,7 +152,7 @@ async def vanish_conversation(conversation: BaseConversation = Depends(_get_conv
 
 @router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=BaseConversationSchema)
 async def update_conversation_title(title: str, conversation: BaseConversation = Depends(_get_conversation_by_id)):
-    if conversation.source_type == ChatSourceTypes.openai_web:
+    if conversation.source == ChatSourceTypes.openai_web:
         await openai_web_manager.set_conversation_title(conversation.conversation_id,
                                                         title)
     else:  # api

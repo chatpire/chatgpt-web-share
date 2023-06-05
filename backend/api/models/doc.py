@@ -34,7 +34,7 @@ class OpenaiWebChatMessageMetadataCite(BaseModel):
 
 
 class OpenaiWebChatMessageMetadata(BaseModel):
-    source_type: Literal["openai_web"]
+    source: Literal["openai_web"]
     # 以下只有assistant有
     # mapping[id].message.metadata 中的内容 加上 mapping[id].message 中的 weight, end_turn
     finish_details: Optional[dict[str, Any]]
@@ -53,7 +53,7 @@ class OpenaiWebChatMessageMetadata(BaseModel):
 
 
 class OpenaiApiChatMessageMetadata(BaseModel):
-    source_type: Literal['openai_api']
+    source: Literal['openai_api']
     usage: Optional[OpenAIChatResponseUsage]
     finish_reason: Optional[str]
 
@@ -108,7 +108,7 @@ class OpenaiApiChatMessageTextContent(BaseModel):
 
 class BaseChatMessage(BaseModel):
     id: uuid.UUID
-    source_type: SourceTypeLiteral
+    source: SourceTypeLiteral
     role: Literal['system', 'user', 'assistant', 'tool'] | str
     author_name: Optional[Literal['browser'] | str]  # rev: mapping[id].message.author.name
     model: Optional[str]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
@@ -121,16 +121,16 @@ class BaseChatMessage(BaseModel):
     这里的 str 仅方便前端临时使用，实际上不可以直接存储 str
     """
     metadata: Optional[
-        Annotated[Union[OpenaiWebChatMessageMetadata, OpenaiApiChatMessageMetadata], Field(discriminator='source_type')]]
+        Annotated[Union[OpenaiWebChatMessageMetadata, OpenaiApiChatMessageMetadata], Field(discriminator='source')]]
 
 
 class OpenaiWebChatMessage(BaseChatMessage):
-    source_type: Literal["openai_web"]
+    source: Literal["openai_web"]
     content: Optional[OpenaiWebChatMessageContent]
 
 
 class OpenaiApiChatMessage(BaseChatMessage):
-    source_type: Literal["openai_api"]
+    source: Literal["openai_api"]
     # content: Union[ApiChatMessageTextContent] = Field(..., discriminator='content_type')
     content: Optional[OpenaiApiChatMessageTextContent]
 
@@ -139,18 +139,18 @@ class OpenaiApiChatMessage(BaseChatMessage):
 
 
 class OpenaiWebConversationHistoryMeta(BaseModel):
-    source_type: Literal["openai_web"]
+    source: Literal["openai_web"]
     moderation_results: Optional[list[Any]]
     plugin_ids: Optional[list[str]]
 
 
 class OpenaiApiConversationHistoryMeta(BaseModel):
-    source_type: Literal["openai_api"]
+    source: Literal["openai_api"]
 
 
 class BaseConversationHistory(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    source_type: SourceTypeLiteral
+    source: SourceTypeLiteral
     title: str
     create_time: datetime.datetime
     update_time: datetime.datetime
@@ -158,12 +158,12 @@ class BaseConversationHistory(BaseModel):
     current_node: Optional[uuid.UUID]
     current_model: Optional[str]
     meta: Optional[Annotated[
-        Union[OpenaiWebConversationHistoryMeta, OpenaiApiConversationHistoryMeta], Field(discriminator='source_type')]]
+        Union[OpenaiWebConversationHistoryMeta, OpenaiApiConversationHistoryMeta], Field(discriminator='source')]]
 
 
 class OpenaiWebConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    source_type: Literal["openai_web"]
+    source: Literal["openai_web"]
     mapping: dict[str, OpenaiWebChatMessage]
     meta: Optional[OpenaiWebConversationHistoryMeta]
 
@@ -174,7 +174,7 @@ class OpenaiWebConversationHistoryDocument(Document, BaseConversationHistory):
 
 class OpenaiApiConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    source_type: Literal["openai_api"]
+    source: Literal["openai_api"]
     mapping: dict[str, OpenaiApiChatMessage]
 
     class Settings:
@@ -205,18 +205,18 @@ class RequestLogDocument(Document):
 
 
 class OpenaiWebAskLogMeta(BaseModel):
-    source_type: Literal['openai_web']
+    source: Literal['openai_web']
     model: OpenaiWebChatModels
 
 
 class OpenaiApiAskLogMeta(BaseModel):
-    source_type: Literal['openai_api']
+    source: Literal['openai_api']
     model: OpenaiApiChatModels
 
 
 class AskLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source_type')
+    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
     user_id: int
     queueing_time: Optional[float]
     ask_time: Optional[float]

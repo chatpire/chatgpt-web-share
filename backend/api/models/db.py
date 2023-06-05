@@ -63,12 +63,12 @@ class BaseConversation(Base):
 
     __tablename__ = "conversation"
     __mapper_args__ = {
-        "polymorphic_on": "source_type",
+        "polymorphic_on": "source",
         "polymorphic_identity": "base",
     }
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    source_type: Mapped[ChatSourceTypes] = mapped_column(Enum(ChatSourceTypes), comment="对话类型")
+    source: Mapped[ChatSourceTypes] = mapped_column(Enum(ChatSourceTypes), comment="对话类型")
     conversation_id: Mapped[uuid.UUID] = mapped_column(GUID, index=True, unique=True, comment="uuid")
     current_model: Mapped[Optional[str]] = mapped_column(default=None, use_existing_column=True)
     title: Mapped[Optional[str]] = mapped_column(comment="对话标题")

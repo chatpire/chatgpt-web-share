@@ -55,7 +55,7 @@ class RequestLogAggregation(BaseModel):
 
 class AskLogAggregationID(BaseModel):
     start_time: datetime
-    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source_type')
+    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
 
 
 class AskLogAggregation(BaseModel):

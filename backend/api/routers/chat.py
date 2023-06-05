@@ -140,7 +140,7 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
         conv_count = await session.execute(
             select(func.count(BaseConversation.id)).filter(
                 and_(BaseConversation.user_id == user.id, BaseConversation.is_valid,
-                     BaseConversation.source_type == ask_request.type)))
+                     BaseConversation.source == ask_request.type)))
         conv_count = conv_count.scalar()
 
     max_conv_count = source_setting.max_conv_count
@@ -394,7 +394,7 @@ async def chat(websocket: WebSocket):
                 content = OpenaiApiChatMessageTextContent(content_type="text", text=content)
 
             ask_message = OpenaiApiChatMessage(
-                source_type="openai_api",
+                source="openai_api",
                 id=message.parent,
                 role="user",
                 create_time=request_start_time.astimezone(tz=timezone.utc),
@@ -406,7 +406,7 @@ async def chat(websocket: WebSocket):
             # 对于api新对话，添加历史记录到mongodb
             if ask_request.new_conversation:
                 new_conv_history = OpenaiApiConversationHistoryDocument(
-                    source_type="openai_api",
+                    source="openai_api",
                     id=conversation_id,
                     title=ask_request.new_title or "New Chat",
                     create_time=request_start_time.astimezone(tz=timezone.utc),
@@ -458,7 +458,7 @@ async def chat(websocket: WebSocket):
 
                 current_time = datetime.now().astimezone(tz=timezone.utc)
                 new_conv = BaseConversationSchema(
-                    source_type=ask_request.type,
+                    source=ask_request.type,
                     is_valid=True,
                     conversation_id=conversation_id,
                     title=ask_request.new_title,
@@ -501,9 +501,9 @@ async def chat(websocket: WebSocket):
             await session.commit()
 
             if ask_request.type == ChatSourceTypes.openai_web:
-                meta = OpenaiWebAskLogMeta(source_type="openai_web", model=OpenaiWebChatModels(ask_request.model))
+                meta = OpenaiWebAskLogMeta(source="openai_web", model=OpenaiWebChatModels(ask_request.model))
             else:
-                meta = OpenaiApiAskLogMeta(source_type="openai_api", model=OpenaiApiChatModels(ask_request.model))
+                meta = OpenaiApiAskLogMeta(source="openai_api", model=OpenaiApiChatModels(ask_request.model))
 
             # 写入到 scope 中，供统计
             await AskLogDocument(

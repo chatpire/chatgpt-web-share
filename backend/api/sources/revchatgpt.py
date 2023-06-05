@@ -50,7 +50,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
 
     message_id = message_id or item["message"]["id"]
     result = OpenaiWebChatMessage(
-        source_type="openai_web",
+        source="openai_web",
         id=message_id,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
         role=item["message"]["author"]["role"],
         author_name=item["message"]["author"].get("name"),
@@ -60,7 +60,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         children=item.get("children", []),
         content=content,
         metadata=OpenaiWebChatMessageMetadata(
-            source_type="openai_web",
+            source="openai_web",
             weight=item["message"].get("weight"),
             end_turn=item["message"].get("end_turn"),
             recipient=item["message"].get("recipient"),
@@ -183,7 +183,7 @@ class RevChatGPTManager:
         if mapping.get(result.get("current_node")):
             current_model = get_latest_model_from_mapping(result["current_node"], mapping)
         doc = OpenaiWebConversationHistoryDocument(
-            source_type="openai_web",
+            source="openai_web",
             id=conversation_id,
             title=result.get("title"),
             create_time=result.get("create_time"),

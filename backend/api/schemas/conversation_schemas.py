@@ -58,13 +58,13 @@ class AskResponse(BaseModel):
     tip: str = None
     conversation_id: uuid.UUID = None
     message: Optional[
-        Annotated[Union[OpenaiWebChatMessage, OpenaiApiChatMessage], Field(discriminator='source_type')]] = None
+        Annotated[Union[OpenaiWebChatMessage, OpenaiApiChatMessage], Field(discriminator='source')]] = None
     error_detail: str = None
 
 
 class BaseConversationSchema(BaseModel):
     id: int = -1
-    source_type: ChatSourceTypes
+    source: ChatSourceTypes
     conversation_id: uuid.UUID | None
     title: str | None
     user_id: int | None
@@ -83,8 +83,8 @@ class BaseConversationSchema(BaseModel):
 
 
 class RevConversationSchema(BaseConversationSchema):
-    source_type: Literal["openai_web"]
+    source: Literal["openai_web"]
 
 
 class ApiConversationSchema(BaseConversationSchema):
-    source_type: Literal["openai_api"]
+    source: Literal["openai_api"]
