@@ -10,12 +10,12 @@ from pydantic import parse_obj_as, ValidationError
 from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
-from api.enums import RevChatModels, ChatSourceTypes
+from api.enums import OpenaiWebChatModels, ChatSourceTypes
 from api.exceptions import InvalidParamsException, OpenaiWebException
-from api.models.doc import RevChatMessageMetadata, RevConversationHistoryDocument, \
-    RevConversationHistoryExtra, RevChatMessage, RevChatMessageTextContent, RevChatMessageCodeContent, \
-    RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageContent, \
-    RevChatMessageSystemErrorContent
+from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHistoryDocument, \
+    OpenaiWebConversationHistoryMeta, OpenaiWebChatMessage, OpenaiWebChatMessageTextContent, OpenaiWebChatMessageCodeContent, \
+    OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, OpenaiWebChatMessageContent, \
+    OpenaiWebChatMessageSystemErrorContent
 from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -25,7 +25,7 @@ credentials = Credentials()
 logger = get_logger(__name__)
 
 
-def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMessage | None:
+def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebChatMessage | None:
     if not item.get("message"):
         return None
     if not item["message"].get("author"):
@@ -36,11 +36,11 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMes
     if item["message"].get("content"):
         content_type = item["message"]["content"].get("content_type")
         content_map = {
-            "text": RevChatMessageTextContent,
-            "code": RevChatMessageCodeContent,
-            "tether_browsing_display": RevChatMessageTetherBrowsingDisplayContent,
-            "tether_quote": RevChatMessageTetherQuoteContent,
-            "system_error": RevChatMessageSystemErrorContent
+            "text": OpenaiWebChatMessageTextContent,
+            "code": OpenaiWebChatMessageCodeContent,
+            "tether_browsing_display": OpenaiWebChatMessageTetherBrowsingDisplayContent,
+            "tether_quote": OpenaiWebChatMessageTetherQuoteContent,
+            "system_error": OpenaiWebChatMessageSystemErrorContent
         }
         if content_type not in content_map:
             logger.debug(f"Parse message: Unknown content type {content_type}")
@@ -49,8 +49,8 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMes
             content = content_map[content_type](**item["message"]["content"])
 
     message_id = message_id or item["message"]["id"]
-    result = RevChatMessage(
-        type="rev",
+    result = OpenaiWebChatMessage(
+        source_type="openai_web",
         id=message_id,  # 这里观察到message_id和mapping中的id不一样，暂时先使用mapping中的id
         role=item["message"]["author"]["role"],
         author_name=item["message"]["author"].get("name"),
@@ -59,8 +59,8 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMes
         parent=item.get("parent"),
         children=item.get("children", []),
         content=content,
-        metadata=RevChatMessageMetadata(
-            type="rev",
+        metadata=OpenaiWebChatMessageMetadata(
+            source_type="openai_web",
             weight=item["message"].get("weight"),
             end_turn=item["message"].get("end_turn"),
             recipient=item["message"].get("recipient"),
@@ -79,11 +79,11 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> RevChatMes
         )
         result.metadata.cite_metadata = item["message"]["metadata"].get("_cite_metadata")
         model_code = item["message"]["metadata"].get("model_slug")
-        result.model = RevChatModels.from_code(model_code) or model_code
+        result.model = OpenaiWebChatModels.from_code(model_code) or model_code
     return result
 
 
-def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, RevChatMessage]:
+def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, OpenaiWebChatMessage]:
     result = {}
     if not mapping:
         return result
@@ -95,12 +95,12 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, RevChatMessage]
 
 
 def get_latest_model_from_mapping(current_node_uuid: str | None,
-                                  mapping: dict[str, RevChatMessage]) -> RevChatModels | None:
+                                  mapping: dict[str, OpenaiWebChatMessage]) -> OpenaiWebChatModels | None:
     model = None
     if not current_node_uuid:
         return model
     try:
-        msg: RevChatMessage = mapping.get(current_node_uuid)
+        msg: OpenaiWebChatMessage = mapping.get(current_node_uuid)
         while msg:
             if msg.model:
                 model = msg.model
@@ -167,7 +167,7 @@ class RevChatGPTManager:
             offset += 80
         return all_conversations
 
-    async def get_conversation_history(self, conversation_id: uuid.UUID | str) -> RevConversationHistoryDocument:
+    async def get_conversation_history(self, conversation_id: uuid.UUID | str) -> OpenaiWebConversationHistoryDocument:
         # result = await self.chatbot.get_msg_history(conversation_id)
         url = f"{self.chatbot.base_url}conversation/{conversation_id}"
         response = await self.chatbot.session.get(url, timeout=None)
@@ -182,8 +182,8 @@ class RevChatGPTManager:
         current_model = None
         if mapping.get(result.get("current_node")):
             current_model = get_latest_model_from_mapping(result["current_node"], mapping)
-        doc = RevConversationHistoryDocument(
-            type="rev",
+        doc = OpenaiWebConversationHistoryDocument(
+            source_type="openai_web",
             id=conversation_id,
             title=result.get("title"),
             create_time=result.get("create_time"),
@@ -191,7 +191,7 @@ class RevChatGPTManager:
             mapping=mapping,
             current_node=result.get("current_node"),
             current_model=current_model,
-            rev_extra=RevConversationHistoryExtra(
+            rev_extra=OpenaiWebConversationHistoryMeta(
                 plugin_ids=result.get("plugin_ids"),
                 moderation_results=result.get("moderation_results"),
             )
@@ -203,19 +203,19 @@ class RevChatGPTManager:
         await self.chatbot.clear_conversations()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  model: RevChatModels = None, plugin_ids: list[str] = None):
+                  model: OpenaiWebChatModels = None, plugin_ids: list[str] = None):
 
-        model = model or RevChatModels.gpt_3_5
+        model = model or OpenaiWebChatModels.gpt_3_5
 
         if conversation_id or parent_id:
             assert parent_id and conversation_id, "parent_id must be set with conversation_id"
         else:
             parent_id = str(uuid.uuid4())
 
-        if plugin_ids is not None and model != RevChatModels.gpt_4_plugins:
+        if plugin_ids is not None and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
-        content = RevChatMessageTextContent(content_type="text", parts=[content])
+        content = OpenaiWebChatMessageTextContent(content_type="text", parts=[content])
 
         messages = [
             {

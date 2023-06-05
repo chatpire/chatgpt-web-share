@@ -17,11 +17,11 @@ from websockets.exceptions import ConnectionClosed
 from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
-from api.enums import RevChatStatus, ChatSourceTypes, RevChatModels, ApiChatModels
+from api.enums import WebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
 from api.exceptions import InternalException, InvalidParamsException
-from api.models.db import RevConversation, User, BaseConversation
-from api.models.doc import RevChatMessage, ApiChatMessage, RevConversationHistoryDocument, \
-    ApiConversationHistoryDocument, ApiChatMessageTextContent, AskLogDocument, RevAskLogMeta, ApiAskLogMeta
+from api.models.db import OpenaiWebConversation, User, BaseConversation
+from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
+    OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, OpenaiApiAskLogMeta
 from api.routers.conv import _get_conversation_by_id
 from api.schemas import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
@@ -32,12 +32,12 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-rev_manager = RevChatGPTManager()
-api_manager = OpenAIChatManager()
+openai_web_manager = RevChatGPTManager()
+openai_api_manager = OpenAIChatManager()
 config = Config()
 
 
-async def change_user_chat_status(user_id: int, status: RevChatStatus):
+async def change_user_chat_status(user_id: int, status: WebChatStatus):
     async with get_async_session_context() as session:
         user = await session.get(User, user_id)
         user.rev_chat_status = status
@@ -55,7 +55,7 @@ _plugins_result_last_update_time = None
 async def get_chat_plugins(_user: User = Depends(current_active_user)):
     global _plugins_result, _plugins_result_last_update_time
     if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600:
-        _plugins_result = await rev_manager.get_plugin_manifests()
+        _plugins_result = await openai_web_manager.get_plugin_manifests()
         _plugins_result_last_update_time = time.time()
     return _plugins_result
 
@@ -65,7 +65,7 @@ async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenAIChatP
                                            _user: User = Depends(current_active_user)):
     if settings.is_authenticated is not None:
         raise InvalidParamsException("can not set is_authenticated")
-    result = await rev_manager.change_plugin_user_settings(plugin_id, settings)
+    result = await openai_web_manager.change_plugin_user_settings(plugin_id, settings)
     assert isinstance(result, OpenAIChatPlugin)
 
     global _plugins_result, _plugins_result_last_update_time
@@ -99,7 +99,7 @@ class WebsocketInvalidAskException(WebsocketException):
 
 
 async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
-    source_setting = user.setting.rev if ask_request.type == ChatSourceTypes.rev else user.setting.api
+    source_setting = user.setting.openai_web if ask_request.type == ChatSourceTypes.openai_web else user.setting.openai_api
 
     # 是否允许使用当前提问类型
     if not source_setting.allow_to_use:
@@ -120,8 +120,8 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     # TODO: 时间窗口频率限制
 
     # 判断是否能使用该模型
-    if ask_request.type == ChatSourceTypes.rev and ask_request.model not in user.setting.rev.available_models or \
-            ask_request.type == ChatSourceTypes.api and ask_request.model not in user.setting.api.available_models:
+    if ask_request.type == ChatSourceTypes.openai_web and ask_request.model not in user.setting.openai_web.available_models or \
+            ask_request.type == ChatSourceTypes.openai_api and ask_request.model not in user.setting.openai_api.available_models:
         # await websocket.close(1007, "errors.userNotAllowToUseModel")
         raise WebsocketInvalidAskException("errors.userNotAllowToUseModel")
 
@@ -140,7 +140,7 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
         conv_count = await session.execute(
             select(func.count(BaseConversation.id)).filter(
                 and_(BaseConversation.user_id == user.id, BaseConversation.is_valid,
-                     BaseConversation.type == ask_request.type)))
+                     BaseConversation.source_type == ask_request.type)))
         conv_count = conv_count.scalar()
 
     max_conv_count = source_setting.max_conv_count
@@ -176,7 +176,7 @@ async def chat(websocket: WebSocket):
 
     user = UserReadAdmin.from_orm(user_db)
 
-    if user.rev_chat_status != RevChatStatus.idling:
+    if user.rev_chat_status != WebChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
         return
 
@@ -219,20 +219,20 @@ async def chat(websocket: WebSocket):
     queueing_end_time = None
 
     # rev: 排队
-    if ask_request.type == ChatSourceTypes.rev:
-        if rev_manager.is_busy():
+    if ask_request.type == ChatSourceTypes.openai_web:
+        if openai_web_manager.is_busy():
             await reply(AskResponse(
                 type=AskResponseType.queueing,
                 tip="tips.queueing"
             ))
-        await change_user_chat_status(user.id, RevChatStatus.queueing)
+        await change_user_chat_status(user.id, WebChatStatus.queueing)
         queueing_start_time = time.time()
-        await rev_manager.semaphore.acquire()
+        await openai_web_manager.semaphore.acquire()
         queueing_end_time = time.time()
         # 如果 websocket 关闭了，则直接退出
         if websocket.state == WebSocketState.DISCONNECTED:
-            await change_user_chat_status(user.id, RevChatStatus.idling)
-            await rev_manager.semaphore.release()
+            await change_user_chat_status(user.id, WebChatStatus.idling)
+            await openai_web_manager.semaphore.release()
             logger.debug(f"{user.username} websocket disconnected while queueing")
             return
 
@@ -241,9 +241,9 @@ async def chat(websocket: WebSocket):
 
     try:
         # rev: 更改状态为 asking
-        if ask_request.type == ChatSourceTypes.rev:
-            await change_user_chat_status(user.id, RevChatStatus.asking)
-            rev_manager.reset_chat()
+        if ask_request.type == ChatSourceTypes.openai_web:
+            await change_user_chat_status(user.id, WebChatStatus.asking)
+            openai_web_manager.reset_chat()
 
         await reply(AskResponse(
             type=AskResponseType.waiting,
@@ -252,13 +252,13 @@ async def chat(websocket: WebSocket):
 
         ask_start_time = time.time()
 
-        manager = rev_manager if ask_request.type == ChatSourceTypes.rev else api_manager
+        manager = openai_web_manager if ask_request.type == ChatSourceTypes.openai_web else openai_api_manager
 
         # 设置 timeout
-        if ask_request.type == ChatSourceTypes.rev:
-            model = RevChatModels(ask_request.model)
+        if ask_request.type == ChatSourceTypes.openai_web:
+            model = OpenaiWebChatModels(ask_request.model)
         else:
-            model = ApiChatModels(ask_request.model)
+            model = OpenaiApiChatModels(ask_request.model)
 
         # stream 传输
         async for data in manager.ask(content=ask_request.content,
@@ -268,12 +268,12 @@ async def chat(websocket: WebSocket):
             has_got_reply = True
 
             try:
-                if ask_request.type == ChatSourceTypes.rev:
+                if ask_request.type == ChatSourceTypes.openai_web:
                     message = convert_revchatgpt_message(data)
                     if conversation_id is None:
                         conversation_id = data["conversation_id"]
                 else:
-                    assert isinstance(data, ApiChatMessage)
+                    assert isinstance(data, OpenaiApiChatMessage)
                     message = data
                     if conversation_id is None:
                         assert ask_request.new_conversation
@@ -347,10 +347,10 @@ async def chat(websocket: WebSocket):
         websocket_reason = "errors.unknownError"
 
     finally:
-        if ask_request.type == ChatSourceTypes.rev:
-            rev_manager.semaphore.release()
-            await change_user_chat_status(user.id, RevChatStatus.idling)
-        rev_manager.reset_chat()
+        if ask_request.type == ChatSourceTypes.openai_web:
+            openai_web_manager.semaphore.release()
+            await change_user_chat_status(user.id, WebChatStatus.idling)
+        openai_web_manager.reset_chat()
 
     ask_stop_time = time.time()
     queueing_time = 0
@@ -386,15 +386,15 @@ async def chat(websocket: WebSocket):
     if has_got_reply:
         assert message is not None, "has_got_reply but message is None"
 
-        if ask_request.type == ChatSourceTypes.api:
+        if ask_request.type == ChatSourceTypes.openai_api:
             assert message.parent is not None, "message.parent is None"
 
             content = ask_request.content
             if isinstance(content, str):
-                content = ApiChatMessageTextContent(content_type="text", text=content)
+                content = OpenaiApiChatMessageTextContent(content_type="text", text=content)
 
-            ask_message = ApiChatMessage(
-                type="api",
+            ask_message = OpenaiApiChatMessage(
+                source_type="openai_api",
                 id=message.parent,
                 role="user",
                 create_time=request_start_time.astimezone(tz=timezone.utc),
@@ -405,8 +405,8 @@ async def chat(websocket: WebSocket):
 
             # 对于api新对话，添加历史记录到mongodb
             if ask_request.new_conversation:
-                new_conv_history = ApiConversationHistoryDocument(
-                    type="api",
+                new_conv_history = OpenaiApiConversationHistoryDocument(
+                    source_type="openai_api",
                     id=conversation_id,
                     title=ask_request.new_title or "New Chat",
                     create_time=request_start_time.astimezone(tz=timezone.utc),
@@ -423,7 +423,7 @@ async def chat(websocket: WebSocket):
                 logger.debug(f"saved new api conversation history {conversation_id} to mongodb")
             else:
                 # 更新mongodb历史记录
-                conv_history = await ApiConversationHistoryDocument.get(conversation_id)
+                conv_history = await OpenaiApiConversationHistoryDocument.get(conversation_id)
                 assert conv_history is not None, f"update api: conversation history {conversation_id} is None"
                 conv_history.update_time = datetime.now().astimezone(tz=timezone.utc)
 
@@ -449,16 +449,16 @@ async def chat(websocket: WebSocket):
                 assert conversation_id is not None, "has_got_reply but conversation_id is None"
 
                 # rev设置默认标题
-                if ask_request.type == ChatSourceTypes.rev:
+                if ask_request.type == ChatSourceTypes.openai_web:
                     try:
                         if ask_request.new_title is not None:
-                            await rev_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
+                            await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
                     except Exception as e:
                         logger.warning(e)
 
                 current_time = datetime.now().astimezone(tz=timezone.utc)
                 new_conv = BaseConversationSchema(
-                    type=ask_request.type,
+                    source_type=ask_request.type,
                     is_valid=True,
                     conversation_id=conversation_id,
                     title=ask_request.new_title,
@@ -479,7 +479,7 @@ async def chat(websocket: WebSocket):
                 session.add(conversation)
 
             # 扣除对话次数
-            source_setting = user.setting.rev if ask_request.type == ChatSourceTypes.rev else user.setting.api
+            source_setting = user.setting.openai_web if ask_request.type == ChatSourceTypes.openai_web else user.setting.openai_api
 
             total_ask_count = source_setting.total_ask_count
             model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model)
@@ -500,10 +500,10 @@ async def chat(websocket: WebSocket):
 
             await session.commit()
 
-            if ask_request.type == ChatSourceTypes.rev:
-                meta = RevAskLogMeta(type="rev", model=RevChatModels(ask_request.model))
+            if ask_request.type == ChatSourceTypes.openai_web:
+                meta = OpenaiWebAskLogMeta(source_type="openai_web", model=OpenaiWebChatModels(ask_request.model))
             else:
-                meta = ApiAskLogMeta(type="api", model=ApiChatModels(ask_request.model))
+                meta = OpenaiApiAskLogMeta(source_type="openai_api", model=OpenaiApiChatModels(ask_request.model))
 
             # 写入到 scope 中，供统计
             await AskLogDocument(

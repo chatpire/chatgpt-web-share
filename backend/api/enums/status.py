@@ -2,7 +2,7 @@ from enum import auto
 from strenum import StrEnum
 
 
-class RevChatStatus(StrEnum):
+class WebChatStatus(StrEnum):
     asking = auto()
     queueing = auto()
     idling = auto()

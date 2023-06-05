@@ -5,7 +5,8 @@ from typing import Optional, Any, Literal, Union, Annotated, Dict
 from beanie import Document, TimeSeriesConfig, Granularity
 from pydantic import BaseModel, Field
 
-from api.enums import RevChatModels, ApiChatModels
+from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
+from api.models.types import SourceTypeLiteral
 from api.schemas.openai_schemas import OpenAIChatResponseUsage
 from api.conf import Config
 
@@ -14,26 +15,26 @@ config = Config()
 
 # metadata 相关
 
-class RevChatMessageMetadataPlugin(BaseModel):
+class OpenaiWebChatMessageMetadataPlugin(BaseModel):
     http_response_status: Optional[int]
     namespace: Optional[str]
     plugin_id: Optional[str]
     type: Optional[str]
 
 
-class RevChatMessageMetadataCiteData(BaseModel):
+class OpenaiWebChatMessageMetadataCiteData(BaseModel):
     title: Optional[str]
     url: Optional[str]
     text: Optional[str]
 
 
-class RevChatMessageMetadataCite(BaseModel):
+class OpenaiWebChatMessageMetadataCite(BaseModel):
     citation_format: Optional[dict[str, Any]]
-    metadata_list: Optional[list[RevChatMessageMetadataCiteData]]
+    metadata_list: Optional[list[OpenaiWebChatMessageMetadataCiteData]]
 
 
-class RevChatMessageMetadata(BaseModel):
-    type: Literal["rev"]
+class OpenaiWebChatMessageMetadata(BaseModel):
+    source_type: Literal["openai_web"]
     # 以下只有assistant有
     # mapping[id].message.metadata 中的内容 加上 mapping[id].message 中的 weight, end_turn
     finish_details: Optional[dict[str, Any]]
@@ -43,16 +44,16 @@ class RevChatMessageMetadata(BaseModel):
     recipient: Optional[Literal['all', 'browser'] | str]
     fallback_content: Optional[Any]  # 当解析content_type失败时，此字段存储原始的content
     # plugins 相关
-    invoked_plugin: Optional[RevChatMessageMetadataPlugin]
+    invoked_plugin: Optional[OpenaiWebChatMessageMetadataPlugin]
     # browsing 相关
     command: Optional[Literal['search'] | str]
     args: Optional[list[str]]  # 例如：['May 17, 2023 stock market news']
     status: Optional[Literal['finished'] | str]
-    cite_metadata: Optional[RevChatMessageMetadataCite]  # _cite_metadata
+    cite_metadata: Optional[OpenaiWebChatMessageMetadataCite]  # _cite_metadata
 
 
-class ApiChatMessageMetadata(BaseModel):
-    type: Literal['api']
+class OpenaiApiChatMessageMetadata(BaseModel):
+    source_type: Literal['openai_api']
     usage: Optional[OpenAIChatResponseUsage]
     finish_reason: Optional[str]
 
@@ -60,23 +61,23 @@ class ApiChatMessageMetadata(BaseModel):
 # content 相关
 
 
-class RevChatMessageTextContent(BaseModel):
+class OpenaiWebChatMessageTextContent(BaseModel):
     content_type: Literal['text']
     parts: Optional[list[str]]
 
 
-class RevChatMessageCodeContent(BaseModel):
+class OpenaiWebChatMessageCodeContent(BaseModel):
     content_type: Literal['code']
     language: Optional[str]
     text: Optional[str]
 
 
-class RevChatMessageTetherBrowsingDisplayContent(BaseModel):
+class OpenaiWebChatMessageTetherBrowsingDisplayContent(BaseModel):
     content_type: Literal['tether_browsing_display']
     result: Optional[str]
 
 
-class RevChatMessageTetherQuoteContent(BaseModel):
+class OpenaiWebChatMessageTetherQuoteContent(BaseModel):
     content_type: Literal['tether_quote']
     url: Optional[str]
     domain: Optional[str]
@@ -84,20 +85,21 @@ class RevChatMessageTetherQuoteContent(BaseModel):
     title: Optional[str]
 
 
-class RevChatMessageSystemErrorContent(BaseModel):
+class OpenaiWebChatMessageSystemErrorContent(BaseModel):
     content_type: Literal['system_error']
     name: Optional[Literal['tool_error'] | str]
     text: Optional[str]
 
 
-RevChatMessageContent = Annotated[
+OpenaiWebChatMessageContent = Annotated[
     Union[
-        RevChatMessageTextContent, RevChatMessageCodeContent, RevChatMessageTetherBrowsingDisplayContent,
-        RevChatMessageTetherQuoteContent, RevChatMessageSystemErrorContent
+        OpenaiWebChatMessageTextContent, OpenaiWebChatMessageCodeContent,
+        OpenaiWebChatMessageTetherBrowsingDisplayContent,
+        OpenaiWebChatMessageTetherQuoteContent, OpenaiWebChatMessageSystemErrorContent
     ], Field(discriminator='content_type')]
 
 
-class ApiChatMessageTextContent(BaseModel):
+class OpenaiApiChatMessageTextContent(BaseModel):
     content_type: Literal['text']
     text: str
 
@@ -106,70 +108,77 @@ class ApiChatMessageTextContent(BaseModel):
 
 class BaseChatMessage(BaseModel):
     id: uuid.UUID
-    type: Literal["rev", "api"]
+    source_type: SourceTypeLiteral
     role: Literal['system', 'user', 'assistant', 'tool'] | str
     author_name: Optional[Literal['browser'] | str]  # rev: mapping[id].message.author.name
     model: Optional[str]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
     create_time: Optional[datetime.datetime]
     parent: Optional[uuid.UUID]
     children: list[uuid.UUID]
-    content: Optional[RevChatMessageContent | ApiChatMessageTextContent | str]
+    content: Optional[OpenaiWebChatMessageContent | OpenaiApiChatMessageTextContent | str]
     """
     关于 content:
     这里的 str 仅方便前端临时使用，实际上不可以直接存储 str
     """
-    # metadata: Union[RevChatMessageMetadata, ApiChatMessageMetadata] = Field(discriminator='type')
-    metadata: Optional[Annotated[Union[RevChatMessageMetadata, ApiChatMessageMetadata], Field(discriminator='type')]]
+    metadata: Optional[
+        Annotated[Union[OpenaiWebChatMessageMetadata, OpenaiApiChatMessageMetadata], Field(discriminator='source_type')]]
 
 
-class RevChatMessage(BaseChatMessage):
-    type: Literal["rev"]
-    content: Optional[RevChatMessageContent]
+class OpenaiWebChatMessage(BaseChatMessage):
+    source_type: Literal["openai_web"]
+    content: Optional[OpenaiWebChatMessageContent]
 
 
-class ApiChatMessage(BaseChatMessage):
-    type: Literal["api"]
+class OpenaiApiChatMessage(BaseChatMessage):
+    source_type: Literal["openai_api"]
     # content: Union[ApiChatMessageTextContent] = Field(..., discriminator='content_type')
-    content: Optional[ApiChatMessageTextContent]
+    content: Optional[OpenaiApiChatMessageTextContent]
 
 
 # history document
 
 
-class RevConversationHistoryExtra(BaseModel):
+class OpenaiWebConversationHistoryMeta(BaseModel):
+    source_type: Literal["openai_web"]
     moderation_results: Optional[list[Any]]
     plugin_ids: Optional[list[str]]
 
 
+class OpenaiApiConversationHistoryMeta(BaseModel):
+    source_type: Literal["openai_api"]
+
+
 class BaseConversationHistory(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    type: Literal["rev", "api"]
+    source_type: SourceTypeLiteral
     title: str
     create_time: datetime.datetime
     update_time: datetime.datetime
     mapping: dict[str, BaseChatMessage]
     current_node: Optional[uuid.UUID]
     current_model: Optional[str]
-    rev_extra: Optional[RevConversationHistoryExtra]
+    meta: Optional[Annotated[
+        Union[OpenaiWebConversationHistoryMeta, OpenaiApiConversationHistoryMeta], Field(discriminator='source_type')]]
 
 
-class RevConversationHistoryDocument(Document, BaseConversationHistory):
+class OpenaiWebConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    type: Literal["rev"]
-    mapping: dict[str, RevChatMessage]
+    source_type: Literal["openai_web"]
+    mapping: dict[str, OpenaiWebChatMessage]
+    meta: Optional[OpenaiWebConversationHistoryMeta]
 
     class Settings:
-        name = "rev_conversation_history"
+        name = "openai_web_conversation_history"
         validate_on_save = True
 
 
-class ApiConversationHistoryDocument(Document, BaseConversationHistory):
+class OpenaiApiConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
-    type: Literal["api"]
-    mapping: dict[str, ApiChatMessage]
+    source_type: Literal["openai_api"]
+    mapping: dict[str, OpenaiApiChatMessage]
 
     class Settings:
-        name = "api_conversation_history"
+        name = "openai_api_conversation_history"
         validate_on_save = True
 
 
@@ -195,19 +204,19 @@ class RequestLogDocument(Document):
         )
 
 
-class RevAskLogMeta(BaseModel):
-    type: Literal['rev']
-    model: RevChatModels
+class OpenaiWebAskLogMeta(BaseModel):
+    source_type: Literal['openai_web']
+    model: OpenaiWebChatModels
 
 
-class ApiAskLogMeta(BaseModel):
-    type: Literal['api']
-    model: ApiChatModels
+class OpenaiApiAskLogMeta(BaseModel):
+    source_type: Literal['openai_api']
+    model: OpenaiApiChatModels
 
 
 class AskLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    meta: Union[RevAskLogMeta, ApiAskLogMeta] = Field(discriminator='type')
+    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source_type')
     user_id: int
     queueing_time: Optional[float]
     ask_time: Optional[float]

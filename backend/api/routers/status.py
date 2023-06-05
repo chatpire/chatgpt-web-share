@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter
 
 from api.models.db import User
-from api.routers.conv import rev_manager
+from api.routers.conv import openai_web_manager
 from api.routers.system import check_users
 from api.schemas import ServerStatusSchema
 from api.users import current_active_user
@@ -18,7 +18,7 @@ async def get_server_status(_user: User = Depends(current_active_user)):
         active_user_in_5m=active_user_in_5m,
         active_user_in_1h=active_user_in_1h,
         active_user_in_1d=active_user_in_1d,
-        is_chatbot_busy=rev_manager.is_busy(),
+        is_chatbot_busy=openai_web_manager.is_busy(),
         chatbot_waiting_count=queueing_count
     )
     return result

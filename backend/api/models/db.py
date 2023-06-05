@@ -7,9 +7,9 @@ from sqlalchemy import String, Enum, Boolean, ForeignKey, func, Float
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import GUID, Pydantic, UTCDateTime
-from api.enums import RevChatStatus, RevChatModels, ApiChatModels, ChatSourceTypes
+from api.enums import WebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels, ChatSourceTypes
 from api.models.json import CustomOpenaiApiSettings
-from api.schemas import UserSettingSchema, RevSourceSettingSchema, ApiSourceSettingSchema
+from api.schemas import UserSettingSchema, OpenaiWebSourceSettingSchema, OpenaiApiSourceSettingSchema
 
 
 # declarative base class
@@ -26,7 +26,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(32), unique=True, index=True, comment="用户名")
     nickname: Mapped[str] = mapped_column(String(64), comment="昵称")
     email: Mapped[str]
-    rev_chat_status: Mapped[RevChatStatus] = mapped_column(Enum(RevChatStatus), default=RevChatStatus.idling,
+    rev_chat_status: Mapped[WebChatStatus] = mapped_column(Enum(WebChatStatus), default=WebChatStatus.idling,
                                                            comment="对话状态")
     last_active_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="最后活跃时间")
     create_time: Mapped[datetime] = mapped_column(UTCDateTime(timezone=True),
@@ -51,8 +51,8 @@ class UserSetting(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="用户id")
     user: Mapped[User] = relationship("User", back_populates="setting", lazy="joined")
     credits: Mapped[float] = mapped_column(Float, default=0, comment="积分")
-    rev: Mapped[RevSourceSettingSchema] = mapped_column(Pydantic(RevSourceSettingSchema), comment="rev对话设置")
-    api: Mapped[ApiSourceSettingSchema] = mapped_column(Pydantic(ApiSourceSettingSchema), comment="api对话设置")
+    openai_web: Mapped[OpenaiWebSourceSettingSchema] = mapped_column(Pydantic(OpenaiWebSourceSettingSchema))
+    openai_api: Mapped[OpenaiApiSourceSettingSchema] = mapped_column(Pydantic(OpenaiApiSourceSettingSchema))
 
 
 class BaseConversation(Base):
@@ -63,12 +63,12 @@ class BaseConversation(Base):
 
     __tablename__ = "conversation"
     __mapper_args__ = {
-        "polymorphic_on": "type",
+        "polymorphic_on": "source_type",
         "polymorphic_identity": "base",
     }
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    type: Mapped[ChatSourceTypes] = mapped_column(Enum(ChatSourceTypes), comment="对话类型")
+    source_type: Mapped[ChatSourceTypes] = mapped_column(Enum(ChatSourceTypes), comment="对话类型")
     conversation_id: Mapped[uuid.UUID] = mapped_column(GUID, index=True, unique=True, comment="uuid")
     current_model: Mapped[Optional[str]] = mapped_column(default=None, use_existing_column=True)
     title: Mapped[Optional[str]] = mapped_column(comment="对话标题")
@@ -79,23 +79,23 @@ class BaseConversation(Base):
     update_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="最后更新时间")
 
 
-class RevConversation(BaseConversation):
+class OpenaiWebConversation(BaseConversation):
     __mapper_args__ = {
-        "polymorphic_identity": "rev",
+        "polymorphic_identity": "openai_web",
     }
 
-    current_model: Mapped[Optional[Enum["RevChatModels"]]] = mapped_column(
-        Enum(RevChatModels),
+    current_model: Mapped[Optional[Enum["OpenaiWebChatModels"]]] = mapped_column(
+        Enum(OpenaiWebChatModels),
         default=None,
         use_existing_column=True)
 
 
-class ApiConversation(BaseConversation):
+class OpenaiApiConversation(BaseConversation):
     __mapper_args__ = {
-        "polymorphic_identity": "api",
+        "polymorphic_identity": "openai_api",
     }
 
-    current_model: Mapped[Optional[Enum["ApiChatModels"]]] = mapped_column(
-        Enum(ApiChatModels),
+    current_model: Mapped[Optional[Enum["OpenaiApiChatModels"]]] = mapped_column(
+        Enum(OpenaiApiChatModels),
         default=None,
         use_existing_column=True)

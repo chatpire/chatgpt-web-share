@@ -4,9 +4,9 @@ from typing import Optional, Generic, TypeVar, get_args
 from pydantic import BaseModel, Field, create_model, root_validator
 from pydantic.generics import GenericModel
 
-from api.enums import RevChatModels, ApiChatModels
+from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 
-ModelT = TypeVar('ModelT', bound=RevChatModels | ApiChatModels)
+ModelT = TypeVar('ModelT', bound=OpenaiWebChatModels | OpenaiApiChatModels)
 
 
 class RevPerModelAskCount(BaseModel):
@@ -19,7 +19,7 @@ class RevPerModelAskCount(BaseModel):
     @root_validator(pre=True)
     def check(cls, values):
         # 如果某个值缺失，则默认设置为0
-        for model in list(RevChatModels):
+        for model in list(OpenaiWebChatModels):
             if model not in values:
                 values[model] = 0
         return values
@@ -39,7 +39,7 @@ class ApiPerModelAskCount(BaseModel):
 
     @root_validator(pre=True)
     def check(cls, values):
-        for model in list(ApiChatModels):
+        for model in list(OpenaiApiChatModels):
             if model not in values:
                 values[model] = 0
         return values

@@ -1,2 +1,2 @@
-from .models import ChatSourceTypes, chat_model_definitions, RevChatModels, ApiChatModels
-from .status import RevChatStatus
+from .models import ChatSourceTypes, chat_model_definitions, OpenaiWebChatModels, OpenaiApiChatModels
+from .status import WebChatStatus

@@ -3,7 +3,7 @@ from typing import Optional, Literal, Union
 
 from pydantic import BaseModel, validator, Field
 
-from api.models.doc import RevAskLogMeta, ApiAskLogMeta
+from api.models.doc import OpenaiWebAskLogMeta, OpenaiApiAskLogMeta
 
 
 class ServerStatusSchema(BaseModel):
@@ -55,7 +55,7 @@ class RequestLogAggregation(BaseModel):
 
 class AskLogAggregationID(BaseModel):
     start_time: datetime
-    meta: Union[RevAskLogMeta, ApiAskLogMeta] = Field(discriminator='type')
+    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source_type')
 
 
 class AskLogAggregation(BaseModel):

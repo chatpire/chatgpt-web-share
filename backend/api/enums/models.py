@@ -4,32 +4,28 @@ from strenum import StrEnum
 
 
 class ChatSourceTypes(StrEnum):
-    rev = auto()
-    api = auto()
+    openai_web = auto()
+    openai_api = auto()
 
 
 chat_model_definitions = {
-    "rev": {
+    "openai_web": {
         "gpt_3_5": "text-davinci-002-render-sha",
         "gpt_4": "gpt-4",
         "gpt_4_mobile": "gpt-4-mobile",
         "gpt_4_browsing": "gpt-4-browsing",
         "gpt_4_plugins": "gpt-4-plugins",
     },
-    "api": {
+    "openai_api": {
         "gpt_3_5": "gpt-3.5-turbo",
         "gpt_4": "gpt-4",
     }
 }
 
-# 这里处理model定义的逻辑是：
-# rev 和 api 各自有不同的model code, model name可以重复
-# 在需要并集的场景下，如 ChatMessage，使用 str 类型
-
 
 cls_to_source_type = {
-    "RevChatModels": ChatSourceTypes.rev,
-    "ApiChatModels": ChatSourceTypes.api,
+    "OpenaiWebChatModels": ChatSourceTypes.openai_web,
+    "OpenaiApiChatModels": ChatSourceTypes.openai_api,
 }
 
 
@@ -49,7 +45,7 @@ class BaseChatModelEnum(StrEnum):
         return None
 
 
-class RevChatModels(BaseChatModelEnum):
+class OpenaiWebChatModels(BaseChatModelEnum):
     gpt_3_5 = auto()
     gpt_4 = auto()
     gpt_4_mobile = auto()
@@ -57,10 +53,10 @@ class RevChatModels(BaseChatModelEnum):
     gpt_4_plugins = auto()
 
 
-class ApiChatModels(BaseChatModelEnum):
+class OpenaiApiChatModels(BaseChatModelEnum):
     gpt_3_5 = auto()
     gpt_4 = auto()
 
 
 if __name__ == "__main__":
-    print(list(RevChatModels))
+    print(list(OpenaiWebChatModels))

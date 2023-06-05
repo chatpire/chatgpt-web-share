@@ -6,8 +6,8 @@ from typing import Literal, Optional, Annotated, Union
 from pydantic import BaseModel, root_validator, validator, Field
 from strenum import StrEnum
 
-from api.enums import ChatSourceTypes, RevChatModels, ApiChatModels
-from api.models.doc import RevChatMessage, ApiChatMessage
+from api.enums import ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
+from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -16,10 +16,10 @@ logger = get_logger(__name__)
 def _validate_model(_type: ChatSourceTypes, model: str | None):
     if model is None:
         return None
-    if _type == ChatSourceTypes.rev and model in list(RevChatModels):
-        return RevChatModels(model)
-    elif _type == ChatSourceTypes.api and model in list(ApiChatModels):
-        return ApiChatModels(model)
+    if _type == ChatSourceTypes.openai_web and model in list(OpenaiWebChatModels):
+        return OpenaiWebChatModels(model)
+    elif _type == ChatSourceTypes.openai_api and model in list(OpenaiApiChatModels):
+        return OpenaiApiChatModels(model)
     else:
         logger.warning(f"unknown model: {model} for type {_type}")
 
@@ -57,13 +57,14 @@ class AskResponse(BaseModel):
     type: AskResponseType
     tip: str = None
     conversation_id: uuid.UUID = None
-    message: Optional[Annotated[Union[RevChatMessage, ApiChatMessage], Field(discriminator='type')]] = None
+    message: Optional[
+        Annotated[Union[OpenaiWebChatMessage, OpenaiApiChatMessage], Field(discriminator='source_type')]] = None
     error_detail: str = None
 
 
 class BaseConversationSchema(BaseModel):
     id: int = -1
-    type: ChatSourceTypes
+    source_type: ChatSourceTypes
     conversation_id: uuid.UUID | None
     title: str | None
     user_id: int | None
@@ -82,8 +83,8 @@ class BaseConversationSchema(BaseModel):
 
 
 class RevConversationSchema(BaseConversationSchema):
-    type: Literal['rev'] = 'rev'
+    source_type: Literal["openai_web"]
 
 
 class ApiConversationSchema(BaseConversationSchema):
-    type: Literal['api'] = 'api'
+    source_type: Literal["openai_api"]

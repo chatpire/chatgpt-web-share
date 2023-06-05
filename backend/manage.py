@@ -28,10 +28,10 @@ def get_credentials_schema(args):
 
 
 def get_model_definitions(args):
-    from api.enums.models import RevChatModels, ApiChatModels
+    from api.enums.models import OpenaiWebChatModels, OpenaiApiChatModels
     result = {
-        "rev": [model.__str__() for model in RevChatModels],
-        "api": [model.__str__() for model in ApiChatModels]
+        "openai_web": [model.__str__() for model in OpenaiWebChatModels],
+        "openai_api": [model.__str__() for model in OpenaiApiChatModels]
     }
     print(json.dumps(result))
 

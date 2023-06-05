@@ -2,7 +2,7 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.conf import Config
-from api.models.doc import ApiConversationHistoryDocument, RevConversationHistoryDocument, AskLogDocument, \
+from api.models.doc import OpenaiApiConversationHistoryDocument, OpenaiWebConversationHistoryDocument, AskLogDocument, \
     RequestLogDocument
 from utils.logger import get_logger
 
@@ -17,7 +17,7 @@ async def init_mongodb():
     global client
     client = AsyncIOMotorClient(config.data.mongodb_url)
     await init_beanie(database=client[DATABASE_NAME],
-                      document_models=[ApiConversationHistoryDocument, RevConversationHistoryDocument, AskLogDocument,
+                      document_models=[OpenaiApiConversationHistoryDocument, OpenaiWebConversationHistoryDocument, AskLogDocument,
                                        RequestLogDocument])
     # 展示当前mongodb数据库用量
     db = client[DATABASE_NAME]

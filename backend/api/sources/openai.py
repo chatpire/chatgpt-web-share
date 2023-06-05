@@ -7,9 +7,9 @@ import httpx
 from pydantic import ValidationError
 
 from api.conf import Config, Credentials
-from api.enums import ApiChatModels
-from api.models.doc import ApiChatMessage, ApiConversationHistoryDocument, ApiChatMessageMetadata, \
-    ApiChatMessageTextContent
+from api.enums import OpenaiApiChatModels, ChatSourceTypes
+from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageMetadata, \
+    OpenaiApiChatMessageTextContent
 from api.schemas.openai_schemas import OpenAIChatResponse
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -56,21 +56,21 @@ class OpenAIChatManager:
         self.client = httpx.AsyncClient(timeout=None)  # TODO: support proxies
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None,
-                  parent_id: uuid.UUID = None, model: ApiChatModels = None,
+                  parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
                   context_message_count: int = -1, extra_args: Optional[dict] = None):
 
         now_time = datetime.now().astimezone(tz=timezone.utc)
         message_id = uuid.uuid4()
-        new_message = ApiChatMessage(
-            type="api",
+        new_message = OpenaiApiChatMessage(
+            source_type="openai_api",
             id=message_id,
             role="user",
             create_time=now_time,
             parent=parent_id,
             children=[],
-            content=ApiChatMessageTextContent(content_type="text", text=content),
-            metadata=ApiChatMessageMetadata(
-                type="api",
+            content=OpenaiApiChatMessageTextContent(content_type="text", text=content),
+            metadata=OpenaiApiChatMessageMetadata(
+                source_type="openai_api",
             )
         )
 
@@ -80,10 +80,10 @@ class OpenAIChatManager:
             assert parent_id is None, "parent_id must be None when conversation_id is None"
             messages = [new_message]
         else:
-            conv_history = await ApiConversationHistoryDocument.get(conversation_id)
+            conv_history = await OpenaiApiConversationHistoryDocument.get(conversation_id)
             if not conv_history:
                 raise ValueError("conversation_id not found")
-            if conv_history.type != "api":
+            if conv_history.source_type != ChatSourceTypes.openai_api:
                 raise ValueError(f"{conversation_id} is not api conversation")
             if not conv_history.mapping.get(str(parent_id)):
                 raise ValueError(f"{parent_id} is not a valid parent of {conversation_id}")
@@ -151,22 +151,22 @@ class OpenAIChatManager:
                     if resp.choices[0].delta is not None:
                         text_content += resp.choices[0].delta.get("content", "")
                     if reply_message is None:
-                        reply_message = ApiChatMessage(
-                            type="api",
+                        reply_message = OpenaiApiChatMessage(
+                            source_type="openai_api",
                             id=uuid.uuid4(),
                             role="assistant",
                             model=model,
                             create_time=datetime.now().astimezone(tz=timezone.utc),
                             parent=message_id,
                             children=[],
-                            content=ApiChatMessageTextContent(content_type="text", text=text_content),
-                            metadata=ApiChatMessageMetadata(
-                                type="api",
+                            content=OpenaiApiChatMessageTextContent(content_type="text", text=text_content),
+                            metadata=OpenaiApiChatMessageMetadata(
+                                source_type="openai_api",
                                 finish_reason=resp.choices[0].finish_reason,
                             )
                         )
                     else:
-                        reply_message.content = ApiChatMessageTextContent(content_type="text", text=text_content)
+                        reply_message.content = OpenaiApiChatMessageTextContent(content_type="text", text=text_content)
 
                     if resp.usage:
                         reply_message.metadata.usage = resp.usage

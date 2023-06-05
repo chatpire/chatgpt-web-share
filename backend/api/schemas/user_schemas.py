@@ -1,15 +1,12 @@
 import datetime
-from typing import TypeVar, Generic, Type, Optional
+from typing import Optional
 
 from fastapi_users import schemas
 from pydantic import BaseModel, EmailStr
-from pydantic.generics import GenericModel
 
-from api.enums import RevChatStatus, RevChatModels, ApiChatModels
+from api.enums import WebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels
 from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot, \
     RevPerModelAskCount, ApiPerModelAskCount
-
-ModelT = TypeVar('ModelT', bound=RevChatModels | ApiChatModels)
 
 
 class BaseSourceSettingSchema(BaseModel):
@@ -45,22 +42,22 @@ class BaseSourceSettingSchema(BaseModel):
         )
 
 
-class RevSourceSettingSchema(BaseSourceSettingSchema):
-    available_models: list[RevChatModels]
+class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
+    available_models: list[OpenaiWebChatModels]
     per_model_ask_count: RevPerModelAskCount
 
     @staticmethod
     def default():
-        return RevSourceSettingSchema(
-            available_models=[RevChatModels(m) for m in RevChatModels],
+        return OpenaiWebSourceSettingSchema(
+            available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
             per_model_ask_count=RevPerModelAskCount.default(),
             **BaseSourceSettingSchema.default().dict()
         )
 
     @staticmethod
     def unlimited():
-        return RevSourceSettingSchema(
-            available_models=[RevChatModels(m) for m in RevChatModels],
+        return OpenaiWebSourceSettingSchema(
+            available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
             per_model_ask_count=RevPerModelAskCount.unlimited(),
             **BaseSourceSettingSchema.unlimited().dict()
         )
@@ -69,16 +66,16 @@ class RevSourceSettingSchema(BaseSourceSettingSchema):
         orm_mode = True
 
 
-class ApiSourceSettingSchema(BaseSourceSettingSchema):
-    available_models: list[ApiChatModels]
+class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
+    available_models: list[OpenaiApiChatModels]
     per_model_ask_count: ApiPerModelAskCount
     allow_custom_openai_api: bool
     custom_openai_api_settings: CustomOpenaiApiSettings
 
     @staticmethod
     def default():
-        return ApiSourceSettingSchema(
-            available_models=[ApiChatModels(m) for m in ApiChatModels],
+        return OpenaiApiSourceSettingSchema(
+            available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
             per_model_ask_count=ApiPerModelAskCount.default(),
             **BaseSourceSettingSchema.default().dict(),
             allow_custom_openai_api=False,
@@ -87,8 +84,8 @@ class ApiSourceSettingSchema(BaseSourceSettingSchema):
 
     @staticmethod
     def unlimited():
-        return ApiSourceSettingSchema(
-            available_models=[ApiChatModels(m) for m in ApiChatModels],
+        return OpenaiApiSourceSettingSchema(
+            available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
             per_model_ask_count=ApiPerModelAskCount.unlimited(),
             **BaseSourceSettingSchema.unlimited().dict(),
             allow_custom_openai_api=True,
@@ -103,23 +100,23 @@ class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
     credits: float
-    rev: RevSourceSettingSchema
-    api: ApiSourceSettingSchema
+    openai_web: OpenaiWebSourceSettingSchema
+    openai_api: OpenaiApiSourceSettingSchema
 
     @staticmethod
     def default():
         return UserSettingSchema(
             credits=0,
-            rev=RevSourceSettingSchema.default(),
-            api=ApiSourceSettingSchema.default()
+            openai_web=OpenaiWebSourceSettingSchema.default(),
+            openai_api=OpenaiApiSourceSettingSchema.default()
         )
 
     @staticmethod
     def unlimited():
         return UserSettingSchema(
             credits=-1,
-            rev=RevSourceSettingSchema.unlimited(),
-            api=ApiSourceSettingSchema.unlimited()
+            openai_web=OpenaiWebSourceSettingSchema.unlimited(),
+            openai_api=OpenaiApiSourceSettingSchema.unlimited()
         )
 
     class Config:
@@ -140,7 +137,7 @@ class UserRead(schemas.BaseUser[int]):
     username: str
     nickname: str
     email: EmailStr
-    rev_chat_status: RevChatStatus
+    rev_chat_status: WebChatStatus
     last_active_time: datetime.datetime | None
     create_time: datetime.datetime
     avatar: str | None

@@ -5,7 +5,7 @@ from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 
 from api.database import get_async_session_context
-from api.models.db import RevConversation
+from api.models.db import OpenaiWebConversation
 from api.sources import RevChatGPTManager
 from utils.logger import get_logger
 
@@ -21,7 +21,7 @@ async def sync_conversations():
         logger.info(f"Fetched {len(result)} conversations from ChatGPT account.")
         openai_conversations_map = {conv['id']: conv for conv in result}
         async with get_async_session_context() as session:
-            r = await session.execute(select(RevConversation))
+            r = await session.execute(select(OpenaiWebConversation))
             results = r.scalars().all()
 
             for conv_db in results:
@@ -48,7 +48,7 @@ async def sync_conversations():
 
             # 新增对话
             for openai_conv in openai_conversations_map.values():
-                new_conv = RevConversation(
+                new_conv = OpenaiWebConversation(
                     conversation_id=openai_conv["id"],
                     title=openai_conv["title"],
                     is_valid=True,

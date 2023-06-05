@@ -12,12 +12,12 @@ from api.conf import Config, Credentials
 from api.conf.config import ConfigModel
 from api.conf.credentials import CredentialsModel
 from api.database import get_async_session_context, get_user_db_context
-from api.enums import RevChatStatus
+from api.enums import WebChatStatus
 from api.exceptions import InvalidParamsException
-from api.models.db import User, RevConversation
+from api.models.db import User, OpenaiWebConversation
 from api.models.doc import RequestLogDocument, AskLogDocument
-from api.schemas import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, RevSourceSettingSchema, \
-    ApiSourceSettingSchema, RequestLogAggregation, AskLogAggregation
+from api.schemas import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, OpenaiWebSourceSettingSchema, \
+    OpenaiApiSourceSettingSchema, RequestLogAggregation, AskLogAggregation
 from api.users import current_super_user, get_user_manager_context
 from utils.logger import get_logger
 
@@ -57,7 +57,7 @@ async def check_users(refresh_cache: bool = False):
     for user in users:
         if not user.last_active_time:
             continue
-        if user.rev_chat_status == RevChatStatus.queueing:
+        if user.rev_chat_status == WebChatStatus.queueing:
             queueing_count += 1
         if user.is_superuser:  # 管理员不计入在线人数
             continue
@@ -77,7 +77,7 @@ async def get_system_info(_user: User = Depends(current_super_user)):
     active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, users = await check_users(
         refresh_cache=True)
     async with get_async_session_context() as session:
-        conversations = await session.execute(select(RevConversation))
+        conversations = await session.execute(select(OpenaiWebConversation))
         conversations = conversations.scalars().all()
     result = SystemInfo(
         startup_time=g.startup_time,
@@ -101,7 +101,7 @@ def make_fake_requests_count(total=100, max=500):
 
 def make_fake_ask_records(total=100, days=2):
     result = []
-    model_names = list(api.enums.models.RevChatModels)
+    model_names = list(api.enums.models.OpenaiWebChatModels)
     for i in range(total):
         ask_time = random.random() * 60 + 1
         total_time = ask_time + random.random() * 30
@@ -304,15 +304,15 @@ async def import_users(file: UploadFile = File(...), _user: User = Depends(curre
 
                     user_setting = UserSettingSchema(
                         credits=0,
-                        rev=RevSourceSettingSchema.default(),
-                        api=ApiSourceSettingSchema.default(),
+                        openai_web=OpenaiWebSourceSettingSchema.default(),
+                        openai_api=OpenaiApiSourceSettingSchema.default(),
                     )
-                    user_setting.rev.available_models = ["gpt_3_5", "gpt_4"]
+                    user_setting.openai_web.available_models = ["gpt_3_5", "gpt_4"]
                     if not row["can_use_gpt4"]:
-                        user_setting.rev.available_models = ["gpt_3_5"]
-                    user_setting.rev.per_model_ask_count.gpt_3_5 = max(
+                        user_setting.openai_web.available_models = ["gpt_3_5"]
+                    user_setting.openai_web.per_model_ask_count.gpt_3_5 = max(
                         int(row["available_ask_count"]) - int(row["available_gpt4_ask_count"]), 0)
-                    user_setting.rev.per_model_ask_count.gpt_4 = int(row["available_gpt4_ask_count"])
-                    user_setting.rev.max_conv_count = int(row["max_conv_count"])
+                    user_setting.openai_web.per_model_ask_count.gpt_4 = int(row["available_gpt4_ask_count"])
+                    user_setting.openai_web.max_conv_count = int(row["max_conv_count"])
 
                     await user_manager.create_with_user_dict(user_dict, user_setting)
