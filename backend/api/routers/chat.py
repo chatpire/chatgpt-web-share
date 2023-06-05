@@ -23,7 +23,7 @@ from api.models.db import OpenaiWebConversation, User, BaseConversation
 from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
     OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, OpenaiApiAskLogMeta
 from api.routers.conv import _get_conversation_by_id
-from api.schemas import RevConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
+from api.schemas import OpenaiWebConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
 from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from api.sources import RevChatGPTManager, convert_revchatgpt_message, OpenAIChatManager, OpenAIChatException

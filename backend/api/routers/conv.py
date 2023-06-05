@@ -13,7 +13,7 @@ from api.exceptions import InvalidParamsException, AuthorityDenyException, Inter
 from api.models.db import User, OpenaiWebConversation, BaseConversation
 from api.models.doc import OpenaiApiConversationHistoryDocument, OpenaiWebConversationHistoryDocument, BaseConversationHistory
 from api.response import response
-from api.schemas import RevConversationSchema, BaseConversationSchema, ApiConversationSchema
+from api.schemas import OpenaiWebConversationSchema, BaseConversationSchema, OpenaiApiConversationSchema
 from api.sources import RevChatGPTManager
 from api.users import current_active_user, current_super_user
 from utils.logger import get_logger
@@ -36,7 +36,7 @@ async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User =
 
 
 @router.get("/conv", tags=["conversation"],
-            response_model=List[Union[BaseConversationSchema, RevConversationSchema, ApiConversationSchema]])
+            response_model=List[Union[BaseConversationSchema, OpenaiWebConversationSchema, OpenaiApiConversationSchema]])
 async def get_my_conversations(user: User = Depends(current_active_user)):
     """
     返回自己的有效会话
@@ -193,7 +193,7 @@ async def delete_all_conversation(_user: User = Depends(current_super_user)):
     return response(200)
 
 
-@router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=RevConversationSchema)
+@router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=OpenaiWebConversationSchema)
 async def generate_conversation_title(message_id: str,
                                       conversation: OpenaiWebConversation = Depends(_get_conversation_by_id)):
     if conversation.title is not None:

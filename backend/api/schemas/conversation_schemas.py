@@ -82,9 +82,9 @@ class BaseConversationSchema(BaseModel):
         return v
 
 
-class RevConversationSchema(BaseConversationSchema):
+class OpenaiWebConversationSchema(BaseConversationSchema):
     source: Literal["openai_web"]
 
 
-class ApiConversationSchema(BaseConversationSchema):
+class OpenaiApiConversationSchema(BaseConversationSchema):
     source: Literal["openai_api"]
