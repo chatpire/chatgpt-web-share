@@ -40,8 +40,8 @@ config = Config()
 async def change_user_chat_status(user_id: int, status: WebChatStatus):
     async with get_async_session_context() as session:
         user = await session.get(User, user_id)
-        user.rev_chat_status = status
-        session.add(user)
+        user.setting.openai_web_chat_status = status
+        session.add(user.setting)
         await session.commit()
         await session.refresh(user)
     return user

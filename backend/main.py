@@ -114,8 +114,8 @@ async def on_startup():
         r = await session.execute(select(User))
         results = r.scalars().all()
         for user in results:
-            user.rev_chat_status = WebChatStatus.idling
-            session.add(user)
+            user.setting.openai_web_chat_status = WebChatStatus.idling
+            session.add(user.setting)
         await session.commit()
 
     logger.info(

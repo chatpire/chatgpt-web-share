@@ -26,8 +26,8 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(32), unique=True, index=True, comment="用户名")
     nickname: Mapped[str] = mapped_column(String(64), comment="昵称")
     email: Mapped[str]
-    rev_chat_status: Mapped[WebChatStatus] = mapped_column(Enum(WebChatStatus), default=WebChatStatus.idling,
-                                                           comment="对话状态")
+    # openai_web_chat_status: Mapped[WebChatStatus] = mapped_column(Enum(WebChatStatus), default=WebChatStatus.idling,
+    #                                                               comment="对话状态")
     last_active_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="最后活跃时间")
     create_time: Mapped[datetime] = mapped_column(UTCDateTime(timezone=True),
                                                   server_default=func.now(), comment="创建时间")
@@ -51,6 +51,8 @@ class UserSetting(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="用户id")
     user: Mapped[User] = relationship("User", back_populates="setting", lazy="joined")
     credits: Mapped[float] = mapped_column(Float, default=0, comment="积分")
+    openai_web_chat_status: Mapped[WebChatStatus] = mapped_column(Enum(WebChatStatus), default=WebChatStatus.idling,
+                                                                  comment="对话状态")
     openai_web: Mapped[OpenaiWebSourceSettingSchema] = mapped_column(Pydantic(OpenaiWebSourceSettingSchema))
     openai_api: Mapped[OpenaiApiSourceSettingSchema] = mapped_column(Pydantic(OpenaiApiSourceSettingSchema))
 

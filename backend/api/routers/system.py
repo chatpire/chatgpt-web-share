@@ -57,7 +57,7 @@ async def check_users(refresh_cache: bool = False):
     for user in users:
         if not user.last_active_time:
             continue
-        if user.rev_chat_status == WebChatStatus.queueing:
+        if user.setting.openai_web_chat_status == WebChatStatus.queueing:
             queueing_count += 1
         if user.is_superuser:  # 管理员不计入在线人数
             continue

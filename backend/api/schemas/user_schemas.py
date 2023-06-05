@@ -100,6 +100,7 @@ class UserSettingSchema(BaseModel):
     id: int | None
     user_id: int | None
     credits: float
+    openai_web_chat_status: WebChatStatus
     openai_web: OpenaiWebSourceSettingSchema
     openai_api: OpenaiApiSourceSettingSchema
 
@@ -107,6 +108,7 @@ class UserSettingSchema(BaseModel):
     def default():
         return UserSettingSchema(
             credits=0,
+            openai_web_chat_status=WebChatStatus.idling,
             openai_web=OpenaiWebSourceSettingSchema.default(),
             openai_api=OpenaiApiSourceSettingSchema.default()
         )
@@ -115,6 +117,7 @@ class UserSettingSchema(BaseModel):
     def unlimited():
         return UserSettingSchema(
             credits=-1,
+            openai_web_chat_status=WebChatStatus.idling,
             openai_web=OpenaiWebSourceSettingSchema.unlimited(),
             openai_api=OpenaiApiSourceSettingSchema.unlimited()
         )
@@ -137,7 +140,6 @@ class UserRead(schemas.BaseUser[int]):
     username: str
     nickname: str
     email: EmailStr
-    rev_chat_status: WebChatStatus
     last_active_time: datetime.datetime | None
     create_time: datetime.datetime
     avatar: str | None
