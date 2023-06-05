@@ -1738,7 +1738,7 @@ export interface operations {
     /** Get Conversation History */
     parameters: {
       query?: {
-        refresh?: boolean;
+        fallback_cache?: boolean;
       };
       path: {
         conversation_id: string | string;

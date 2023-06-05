@@ -25,7 +25,7 @@ const conversationId = route.params.conversation_id as string;
 const loading = ref(true);
 
 conversationStore
-  .fetchConversationHistory(conversationId)
+  .fetchConversationHistory(conversationId, true)
   .then(() => {
     // console.log(conversationStore.conversationDetailMap);
   })

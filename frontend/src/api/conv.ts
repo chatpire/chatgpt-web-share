@@ -14,9 +14,9 @@ export function getAdminAllConversationsApi(valid_only = false) {
   });
 }
 
-export function getConversationHistoryApi(conversation_id: string, refresh = true) {
+export function getConversationHistoryApi(conversation_id: string, fallback_cache = true) {
   return axios.get<BaseConversationHistory>(ApiUrl.Conversation + '/' + conversation_id, {
-    params: { refresh },
+    params: { fallback_cache: fallback_cache },
   });
 }
 

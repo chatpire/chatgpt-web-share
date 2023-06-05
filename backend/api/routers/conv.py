@@ -8,7 +8,7 @@ from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, and_, delete
 
 from api.database import get_async_session_context
-from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException
+from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException, OpenaiWebException
 from api.models.db import User, RevConversation, BaseConversation
 from api.models.doc import ApiConversationHistoryDocument, RevConversationHistoryDocument, BaseConversationHistory
 from api.response import response
@@ -64,27 +64,43 @@ async def get_all_conversations(_user: User = Depends(current_super_user), valid
 
 @router.get("/conv/{conversation_id}", tags=["conversation"],
             response_model=ApiConversationHistoryDocument | RevConversationHistoryDocument | BaseConversationHistory)
-async def get_conversation_history(refresh: bool = False,
+async def get_conversation_history(fallback_cache: bool = False,
                                    conversation: BaseConversation = Depends(_get_conversation_by_id)):
+    # TODO 仅允许管理员查看
+    # TODO 优化字段，分离 deleted_at 和 is_valid
     if conversation.type == "rev":
         try:
-            result = await rev_manager.get_conversation_history(conversation.conversation_id, refresh=refresh)
-            if result.current_model != conversation.current_model:
+            result = await rev_manager.get_conversation_history(conversation.conversation_id)
+            if result.current_model != conversation.current_model or not conversation.is_valid:
                 async with get_async_session_context() as session:
                     conversation = await session.get(BaseConversation, conversation.id)
                     conversation.current_model = result.current_model
+                    conversation.is_valid = True
                     await session.commit()
+            return result
         except httpx.TimeoutException as e:
             logger.warning(f"{conversation.conversation_id} get conversation history timeout: {e.__class__.__name__}")
             raise InternalException("errors.revChatGPTTimeout")
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 404:
-                raise InvalidParamsException("errors.conversationNotFound")
-            raise InternalException()
+        except OpenaiWebException as e:
+            if e.code == 404:
+                if conversation.is_valid:
+                    async with get_async_session_context() as session:
+                        conversation = await session.get(BaseConversation, conversation.id)
+                        conversation.is_valid = False
+                        await session.commit()
+                # TODO 提示使用缓存
+                doc = None
+                if fallback_cache:
+                    doc = await RevConversationHistoryDocument.get(conversation.conversation_id)
+                    logger.debug(f"{conversation.conversation_id} get conversation history failed, use cached instead")
+                if doc is None:
+                    raise e
+                return doc
+            else:
+                raise e
         except Exception as e:
-            logger.warning(f"{conversation.conversation_id} get conversation history failed: {e}")
+            logger.warning(f"{conversation.conversation_id} get conversation history failed: {e.__class__.__name__} {e}")
             raise e
-        return result
     else:
         doc = await ApiConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:

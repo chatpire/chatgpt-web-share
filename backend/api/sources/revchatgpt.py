@@ -11,7 +11,7 @@ from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
 from api.enums import RevChatModels, ChatSourceTypes
-from api.exceptions import InvalidParamsException
+from api.exceptions import InvalidParamsException, OpenaiWebException
 from api.models.doc import RevChatMessageMetadata, RevConversationHistoryDocument, \
     RevConversationHistoryExtra, RevChatMessage, RevChatMessageTextContent, RevChatMessageCodeContent, \
     RevChatMessageTetherBrowsingDisplayContent, RevChatMessageTetherQuoteContent, RevChatMessageContent, \
@@ -124,8 +124,7 @@ async def _check_response(response: httpx.Response) -> None:
         response.raise_for_status()
     except httpx.HTTPStatusError as ex:
         await response.aread()
-        error = revChatGPT.typings.Error(
-            source="OpenAI",
+        error = OpenaiWebException(
             message=response.text,
             code=response.status_code,
         )
@@ -168,12 +167,7 @@ class RevChatGPTManager:
             offset += 80
         return all_conversations
 
-    async def get_conversation_history(self, conversation_id: uuid.UUID | str,
-                                       refresh=True) -> RevConversationHistoryDocument:
-        if not refresh:
-            doc = await RevConversationHistoryDocument.get(conversation_id)
-            if doc:
-                return doc
+    async def get_conversation_history(self, conversation_id: uuid.UUID | str) -> RevConversationHistoryDocument:
         # result = await self.chatbot.get_msg_history(conversation_id)
         url = f"{self.chatbot.base_url}conversation/{conversation_id}"
         response = await self.chatbot.session.get(url, timeout=None)

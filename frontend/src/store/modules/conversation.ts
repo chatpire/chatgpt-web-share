@@ -26,12 +26,12 @@ const useConversationStore = defineStore('conversation', {
       this.$patch({ conversations: result });
     },
 
-    async fetchConversationHistory(conversation_id: string) {
+    async fetchConversationHistory(conversation_id: string, fallback_cache = false) {
       // 解析历史记录
       if (this.conversationHistoryMap[conversation_id]) {
         return this.conversationHistoryMap[conversation_id];
       }
-      const result = (await getConversationHistoryApi(conversation_id)).data;
+      const result = (await getConversationHistoryApi(conversation_id, fallback_cache)).data;
       this.$patch({
         conversationHistoryMap: {
           [conversation_id]: result,

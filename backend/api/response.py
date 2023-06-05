@@ -95,7 +95,7 @@ def handle_exception_response(e: Exception) -> CustomJSONResponse:
     if isinstance(e, ValidationError):
         return response(-1, f"errors.validationError", e.errors())
     elif isinstance(e, SelfDefinedException):
-        return response(-1, e.reason, e.message)
+        return response(e.code, e.reason, e.message)
     elif isinstance(e, StarletteHTTPException):
         if e.detail == ErrorCode.REGISTER_USER_ALREADY_EXISTS:
             message = "errors.userAlreadyExists"
