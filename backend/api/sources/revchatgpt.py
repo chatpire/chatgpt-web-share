@@ -260,7 +260,11 @@ class RevChatGPTManager:
                 except json.decoder.JSONDecodeError:
                     continue
                 if not _check_fields(line):
-                    raise ValueError(f"Field missing. Details: {str(line)}")
+                    if "error" in line:
+                        raise OpenaiWebException(line["error"])
+                    else:
+                        logger.warning(f"Field missing. Details: {str(line)}")
+                        continue
 
                 yield line
 
