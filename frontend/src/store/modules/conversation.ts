@@ -40,12 +40,12 @@ const useConversationStore = defineStore('conversation', {
     },
 
     createNewConversation(info: NewConversationInfo) {
-      if (!info.title || !info.type || !info.model || !(info.type === 'api' || info.type === 'rev')) {
+      if (!info.title || !info.source || !info.model || !(info.source === 'openai_api' || info.source === 'openai_web')) {
         throw new Error('Invalid conversation info');
       }
       const currentTime = new Date().toISOString();
       this.newConversation = {
-        type: info.type,
+        source: info.source,
         conversation_id: newConversationId,
         title: info.title,
         current_model: info.model,
@@ -54,7 +54,7 @@ const useConversationStore = defineStore('conversation', {
       };
       this.conversationHistoryMap[newConversationId] = {
         _id: newConversationId,
-        type: info.type,
+        source: info.source,
         title: info.title,
         current_model: info.model,
         create_time: currentTime,

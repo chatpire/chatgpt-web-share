@@ -1482,7 +1482,7 @@ packages:
       '@vueuse/shared': 9.13.0(vue@3.2.47)
       vue-demi: 0.13.11(vue@3.2.47)
     transitivePeerDependencies:
-      - '@vue/composition-api'
+      - '@vue/composition-openai_api'
       - vue
     dev: false
 
@@ -1495,7 +1495,7 @@ packages:
     dependencies:
       vue-demi: 0.13.11(vue@3.2.47)
     transitivePeerDependencies:
-      - '@vue/composition-api'
+      - '@vue/composition-openai_api'
       - vue
     dev: false
 

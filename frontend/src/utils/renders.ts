@@ -105,11 +105,6 @@ export const popupResetUserPasswordDialog = (
   popupInputDialog(t('commons.resetPassword'), t('tips.resetPassword'), callback, success, fail);
 };
 
-// export interface NewConversationInfo {
-//   title: string;
-//   type: 'rev' | 'api';
-//   model: string;
-// }
 export const popupNewConversationDialog = (callback: (newConversationInfo: NewConversationInfo) => Promise<void>) => {
   let input = null as NewConversationInfo | null;
   const d = Dialog.info({
@@ -118,7 +113,7 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
     negativeText: t('commons.cancel'),
     content: () =>
       h(NewConversationForm, {
-        onInput: (newConversationInfo) => {
+        onInput: (newConversationInfo: NewConversationInfo) => {
           input = newConversationInfo;
         },
       }),

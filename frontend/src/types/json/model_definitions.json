@@ -1,1 +1,1 @@
-{"rev": ["gpt_3_5", "gpt_4", "gpt_4_mobile", "gpt_4_browsing", "gpt_4_plugins"], "api": ["gpt_3_5", "gpt_4"]}
+{"openai_web": ["gpt_3_5", "gpt_4", "gpt_4_mobile", "gpt_4_browsing", "gpt_4_plugins"], "openai_api": ["gpt_3_5", "gpt_4"]}

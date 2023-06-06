@@ -1,5 +1,5 @@
 export interface NewConversationInfo {
   title: string | null;
-  type: string | null;
+  source: string | null;
   model: string | null;
 }

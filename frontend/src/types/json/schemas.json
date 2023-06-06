@@ -22,770 +22,6 @@
       }
     }
   },
-  "ApiAskLogMeta": {
-    "title": "ApiAskLogMeta",
-    "required": [
-      "type",
-      "model"
-    ],
-    "type": "object",
-    "properties": {
-      "type": {
-        "title": "Type",
-        "enum": [
-          "api"
-        ],
-        "type": "string"
-      },
-      "model": {
-        "title": "ApiChatModels",
-        "enum": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
-        "type": "string",
-        "description": "An enumeration."
-      }
-    }
-  },
-  "ApiChatMessage": {
-    "title": "ApiChatMessage",
-    "required": [
-      "id",
-      "type",
-      "role",
-      "children"
-    ],
-    "type": "object",
-    "properties": {
-      "id": {
-        "title": "Id",
-        "type": "string",
-        "format": "uuid"
-      },
-      "type": {
-        "title": "Type",
-        "enum": [
-          "api"
-        ],
-        "type": "string"
-      },
-      "role": {
-        "title": "Role",
-        "anyOf": [
-          {
-            "enum": [
-              "system",
-              "user",
-              "assistant",
-              "tool"
-            ],
-            "type": "string"
-          },
-          {
-            "type": "string"
-          }
-        ]
-      },
-      "author_name": {
-        "title": "Author Name",
-        "anyOf": [
-          {
-            "enum": [
-              "browser"
-            ],
-            "type": "string"
-          },
-          {
-            "type": "string"
-          }
-        ]
-      },
-      "model": {
-        "title": "Model",
-        "type": "string"
-      },
-      "create_time": {
-        "title": "Create Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "parent": {
-        "title": "Parent",
-        "type": "string",
-        "format": "uuid"
-      },
-      "children": {
-        "title": "Children",
-        "type": "array",
-        "items": {
-          "type": "string",
-          "format": "uuid"
-        }
-      },
-      "content": {
-        "title": "ApiChatMessageTextContent",
-        "required": [
-          "content_type",
-          "text"
-        ],
-        "type": "object",
-        "properties": {
-          "content_type": {
-            "title": "Content Type",
-            "enum": [
-              "text"
-            ],
-            "type": "string"
-          },
-          "text": {
-            "title": "Text",
-            "type": "string"
-          }
-        }
-      },
-      "metadata": {
-        "title": "Metadata",
-        "anyOf": [
-          {
-            "title": "RevChatMessageMetadata",
-            "required": [
-              "type"
-            ],
-            "type": "object",
-            "properties": {
-              "type": {
-                "title": "Type",
-                "enum": [
-                  "rev"
-                ],
-                "type": "string"
-              },
-              "finish_details": {
-                "title": "Finish Details",
-                "type": "object"
-              },
-              "weight": {
-                "title": "Weight",
-                "type": "number"
-              },
-              "end_turn": {
-                "title": "End Turn",
-                "type": "boolean"
-              },
-              "message_status": {
-                "title": "Message Status",
-                "type": "string"
-              },
-              "recipient": {
-                "title": "Recipient",
-                "anyOf": [
-                  {
-                    "enum": [
-                      "all",
-                      "browser"
-                    ],
-                    "type": "string"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "fallback_content": {
-                "title": "Fallback Content"
-              },
-              "invoked_plugin": {
-                "title": "RevChatMessageMetadataPlugin",
-                "type": "object",
-                "properties": {
-                  "http_response_status": {
-                    "title": "Http Response Status",
-                    "type": "integer"
-                  },
-                  "namespace": {
-                    "title": "Namespace",
-                    "type": "string"
-                  },
-                  "plugin_id": {
-                    "title": "Plugin Id",
-                    "type": "string"
-                  },
-                  "type": {
-                    "title": "Type",
-                    "type": "string"
-                  }
-                }
-              },
-              "command": {
-                "title": "Command",
-                "anyOf": [
-                  {
-                    "enum": [
-                      "search"
-                    ],
-                    "type": "string"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "args": {
-                "title": "Args",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "status": {
-                "title": "Status",
-                "anyOf": [
-                  {
-                    "enum": [
-                      "finished"
-                    ],
-                    "type": "string"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "cite_metadata": {
-                "title": "RevChatMessageMetadataCite",
-                "type": "object",
-                "properties": {
-                  "citation_format": {
-                    "title": "Citation Format",
-                    "type": "object"
-                  },
-                  "metadata_list": {
-                    "title": "Metadata List",
-                    "type": "array",
-                    "items": {
-                      "title": "RevChatMessageMetadataCiteData",
-                      "type": "object",
-                      "properties": {
-                        "title": {
-                          "title": "Title",
-                          "type": "string"
-                        },
-                        "url": {
-                          "title": "Url",
-                          "type": "string"
-                        },
-                        "text": {
-                          "title": "Text",
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "title": "ApiChatMessageMetadata",
-            "required": [
-              "type"
-            ],
-            "type": "object",
-            "properties": {
-              "type": {
-                "title": "Type",
-                "enum": [
-                  "api"
-                ],
-                "type": "string"
-              },
-              "usage": {
-                "title": "OpenAIChatResponseUsage",
-                "type": "object",
-                "properties": {
-                  "prompt_tokens": {
-                    "title": "Prompt Tokens",
-                    "type": "integer"
-                  },
-                  "completion_tokens": {
-                    "title": "Completion Tokens",
-                    "type": "integer"
-                  }
-                }
-              },
-              "finish_reason": {
-                "title": "Finish Reason",
-                "type": "string"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "ApiChatMessageMetadata": {
-    "title": "ApiChatMessageMetadata",
-    "required": [
-      "type"
-    ],
-    "type": "object",
-    "properties": {
-      "type": {
-        "title": "Type",
-        "enum": [
-          "api"
-        ],
-        "type": "string"
-      },
-      "usage": {
-        "title": "OpenAIChatResponseUsage",
-        "type": "object",
-        "properties": {
-          "prompt_tokens": {
-            "title": "Prompt Tokens",
-            "type": "integer"
-          },
-          "completion_tokens": {
-            "title": "Completion Tokens",
-            "type": "integer"
-          }
-        }
-      },
-      "finish_reason": {
-        "title": "Finish Reason",
-        "type": "string"
-      }
-    }
-  },
-  "ApiChatMessageTextContent": {
-    "title": "ApiChatMessageTextContent",
-    "required": [
-      "content_type",
-      "text"
-    ],
-    "type": "object",
-    "properties": {
-      "content_type": {
-        "title": "Content Type",
-        "enum": [
-          "text"
-        ],
-        "type": "string"
-      },
-      "text": {
-        "title": "Text",
-        "type": "string"
-      }
-    }
-  },
-  "ApiChatModels": {
-    "title": "ApiChatModels",
-    "enum": [
-      "gpt_3_5",
-      "gpt_4"
-    ],
-    "type": "string",
-    "description": "An enumeration."
-  },
-  "ApiConversationHistoryDocument": {
-    "title": "ApiConversationHistoryDocument",
-    "required": [
-      "type",
-      "title",
-      "create_time",
-      "update_time",
-      "mapping"
-    ],
-    "type": "object",
-    "properties": {
-      "_id": {
-        "title": " Id",
-        "type": "string",
-        "format": "uuid"
-      },
-      "type": {
-        "title": "Type",
-        "enum": [
-          "api"
-        ],
-        "type": "string"
-      },
-      "title": {
-        "title": "Title",
-        "type": "string"
-      },
-      "create_time": {
-        "title": "Create Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "update_time": {
-        "title": "Update Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "mapping": {
-        "title": "Mapping",
-        "type": "object",
-        "additionalProperties": {
-          "title": "ApiChatMessage",
-          "required": [
-            "id",
-            "type",
-            "role",
-            "children"
-          ],
-          "type": "object",
-          "properties": {
-            "id": {
-              "title": "Id",
-              "type": "string",
-              "format": "uuid"
-            },
-            "type": {
-              "title": "Type",
-              "enum": [
-                "api"
-              ],
-              "type": "string"
-            },
-            "role": {
-              "title": "Role",
-              "anyOf": [
-                {
-                  "enum": [
-                    "system",
-                    "user",
-                    "assistant",
-                    "tool"
-                  ],
-                  "type": "string"
-                },
-                {
-                  "type": "string"
-                }
-              ]
-            },
-            "author_name": {
-              "title": "Author Name",
-              "anyOf": [
-                {
-                  "enum": [
-                    "browser"
-                  ],
-                  "type": "string"
-                },
-                {
-                  "type": "string"
-                }
-              ]
-            },
-            "model": {
-              "title": "Model",
-              "type": "string"
-            },
-            "create_time": {
-              "title": "Create Time",
-              "type": "string",
-              "format": "date-time"
-            },
-            "parent": {
-              "title": "Parent",
-              "type": "string",
-              "format": "uuid"
-            },
-            "children": {
-              "title": "Children",
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "uuid"
-              }
-            },
-            "content": {
-              "title": "ApiChatMessageTextContent",
-              "required": [
-                "content_type",
-                "text"
-              ],
-              "type": "object",
-              "properties": {
-                "content_type": {
-                  "title": "Content Type",
-                  "enum": [
-                    "text"
-                  ],
-                  "type": "string"
-                },
-                "text": {
-                  "title": "Text",
-                  "type": "string"
-                }
-              }
-            },
-            "metadata": {
-              "title": "Metadata",
-              "anyOf": [
-                {
-                  "title": "RevChatMessageMetadata",
-                  "required": [
-                    "type"
-                  ],
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "title": "Type",
-                      "enum": [
-                        "rev"
-                      ],
-                      "type": "string"
-                    },
-                    "finish_details": {
-                      "title": "Finish Details",
-                      "type": "object"
-                    },
-                    "weight": {
-                      "title": "Weight",
-                      "type": "number"
-                    },
-                    "end_turn": {
-                      "title": "End Turn",
-                      "type": "boolean"
-                    },
-                    "message_status": {
-                      "title": "Message Status",
-                      "type": "string"
-                    },
-                    "recipient": {
-                      "title": "Recipient",
-                      "anyOf": [
-                        {
-                          "enum": [
-                            "all",
-                            "browser"
-                          ],
-                          "type": "string"
-                        },
-                        {
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "fallback_content": {
-                      "title": "Fallback Content"
-                    },
-                    "invoked_plugin": {
-                      "title": "RevChatMessageMetadataPlugin",
-                      "type": "object",
-                      "properties": {
-                        "http_response_status": {
-                          "title": "Http Response Status",
-                          "type": "integer"
-                        },
-                        "namespace": {
-                          "title": "Namespace",
-                          "type": "string"
-                        },
-                        "plugin_id": {
-                          "title": "Plugin Id",
-                          "type": "string"
-                        },
-                        "type": {
-                          "title": "Type",
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "command": {
-                      "title": "Command",
-                      "anyOf": [
-                        {
-                          "enum": [
-                            "search"
-                          ],
-                          "type": "string"
-                        },
-                        {
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "args": {
-                      "title": "Args",
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "status": {
-                      "title": "Status",
-                      "anyOf": [
-                        {
-                          "enum": [
-                            "finished"
-                          ],
-                          "type": "string"
-                        },
-                        {
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "cite_metadata": {
-                      "title": "RevChatMessageMetadataCite",
-                      "type": "object",
-                      "properties": {
-                        "citation_format": {
-                          "title": "Citation Format",
-                          "type": "object"
-                        },
-                        "metadata_list": {
-                          "title": "Metadata List",
-                          "type": "array",
-                          "items": {
-                            "title": "RevChatMessageMetadataCiteData",
-                            "type": "object",
-                            "properties": {
-                              "title": {
-                                "title": "Title",
-                                "type": "string"
-                              },
-                              "url": {
-                                "title": "Url",
-                                "type": "string"
-                              },
-                              "text": {
-                                "title": "Text",
-                                "type": "string"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                {
-                  "title": "ApiChatMessageMetadata",
-                  "required": [
-                    "type"
-                  ],
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "title": "Type",
-                      "enum": [
-                        "api"
-                      ],
-                      "type": "string"
-                    },
-                    "usage": {
-                      "title": "OpenAIChatResponseUsage",
-                      "type": "object",
-                      "properties": {
-                        "prompt_tokens": {
-                          "title": "Prompt Tokens",
-                          "type": "integer"
-                        },
-                        "completion_tokens": {
-                          "title": "Completion Tokens",
-                          "type": "integer"
-                        }
-                      }
-                    },
-                    "finish_reason": {
-                      "title": "Finish Reason",
-                      "type": "string"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      },
-      "current_node": {
-        "title": "Current Node",
-        "type": "string",
-        "format": "uuid"
-      },
-      "current_model": {
-        "title": "Current Model",
-        "type": "string"
-      },
-      "rev_extra": {
-        "title": "RevConversationHistoryExtra",
-        "type": "object",
-        "properties": {
-          "moderation_results": {
-            "title": "Moderation Results",
-            "type": "array",
-            "items": {}
-          },
-          "plugin_ids": {
-            "title": "Plugin Ids",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
-  },
-  "ApiConversationSchema": {
-    "title": "ApiConversationSchema",
-    "type": "object",
-    "properties": {
-      "id": {
-        "title": "Id",
-        "type": "integer",
-        "default": -1
-      },
-      "type": {
-        "title": "Type",
-        "enum": [
-          "api"
-        ],
-        "type": "string",
-        "default": "api"
-      },
-      "conversation_id": {
-        "title": "Conversation Id",
-        "type": "string",
-        "format": "uuid"
-      },
-      "title": {
-        "title": "Title",
-        "type": "string"
-      },
-      "user_id": {
-        "title": "User Id",
-        "type": "integer"
-      },
-      "is_valid": {
-        "title": "Is Valid",
-        "type": "boolean",
-        "default": true
-      },
-      "current_model": {
-        "title": "Current Model",
-        "type": "string"
-      },
-      "create_time": {
-        "title": "Create Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "update_time": {
-        "title": "Update Time",
-        "type": "string",
-        "format": "date-time"
-      }
-    }
-  },
   "ApiPerModelAskCount": {
     "title": "ApiPerModelAskCount",
     "type": "object",
@@ -799,136 +35,6 @@
         "title": "Gpt 4",
         "type": "integer",
         "default": 0
-      }
-    }
-  },
-  "ApiSourceSettingSchema": {
-    "title": "ApiSourceSettingSchema",
-    "required": [
-      "allow_to_use",
-      "max_conv_count",
-      "total_ask_count",
-      "rate_limits",
-      "daily_available_time_slots",
-      "available_models",
-      "per_model_ask_count",
-      "allow_custom_openai_api",
-      "custom_openai_api_settings"
-    ],
-    "type": "object",
-    "properties": {
-      "allow_to_use": {
-        "title": "Allow To Use",
-        "type": "boolean"
-      },
-      "valid_until": {
-        "title": "Valid Until",
-        "type": "string",
-        "format": "date-time"
-      },
-      "max_conv_count": {
-        "title": "Max Conv Count",
-        "type": "integer"
-      },
-      "total_ask_count": {
-        "title": "Total Ask Count",
-        "type": "integer"
-      },
-      "rate_limits": {
-        "title": "Rate Limits",
-        "type": "array",
-        "items": {
-          "title": "TimeWindowRateLimit",
-          "required": [
-            "window_seconds",
-            "max_requests"
-          ],
-          "type": "object",
-          "properties": {
-            "window_seconds": {
-              "title": "Window Seconds",
-              "type": "integer",
-              "description": "时间窗口大小，单位为秒"
-            },
-            "max_requests": {
-              "title": "Max Requests",
-              "type": "integer",
-              "description": "在给定时间窗口内最多的请求次数"
-            }
-          }
-        }
-      },
-      "daily_available_time_slots": {
-        "title": "Daily Available Time Slots",
-        "type": "array",
-        "items": {
-          "title": "DailyTimeSlot",
-          "required": [
-            "start_time",
-            "end_time"
-          ],
-          "type": "object",
-          "properties": {
-            "start_time": {
-              "title": "Start Time",
-              "type": "string",
-              "description": "每天可使用的开始时间",
-              "format": "time"
-            },
-            "end_time": {
-              "title": "End Time",
-              "type": "string",
-              "description": "每天可使用的结束时间",
-              "format": "time"
-            }
-          }
-        }
-      },
-      "available_models": {
-        "type": "array",
-        "items": {
-          "title": "ApiChatModels",
-          "enum": [
-            "gpt_3_5",
-            "gpt_4"
-          ],
-          "type": "string",
-          "description": "An enumeration."
-        }
-      },
-      "per_model_ask_count": {
-        "title": "ApiPerModelAskCount",
-        "type": "object",
-        "properties": {
-          "gpt_3_5": {
-            "title": "Gpt 3 5",
-            "type": "integer",
-            "default": 0
-          },
-          "gpt_4": {
-            "title": "Gpt 4",
-            "type": "integer",
-            "default": 0
-          }
-        }
-      },
-      "allow_custom_openai_api": {
-        "title": "Allow Custom Openai Api",
-        "type": "boolean"
-      },
-      "custom_openai_api_settings": {
-        "title": "CustomOpenaiApiSettings",
-        "type": "object",
-        "properties": {
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "key": {
-            "title": "Key",
-            "type": "string"
-          }
-        }
       }
     }
   },
@@ -957,22 +63,22 @@
             "title": "Meta",
             "oneOf": [
               {
-                "title": "RevAskLogMeta",
+                "title": "OpenaiWebAskLogMeta",
                 "required": [
-                  "type",
+                  "source",
                   "model"
                 ],
                 "type": "object",
                 "properties": {
-                  "type": {
-                    "title": "Type",
+                  "source": {
+                    "title": "Source",
                     "enum": [
-                      "rev"
+                      "openai_web"
                     ],
                     "type": "string"
                   },
                   "model": {
-                    "title": "RevChatModels",
+                    "title": "OpenaiWebChatModels",
                     "enum": [
                       "gpt_3_5",
                       "gpt_4",
@@ -986,22 +92,22 @@
                 }
               },
               {
-                "title": "ApiAskLogMeta",
+                "title": "OpenaiApiAskLogMeta",
                 "required": [
-                  "type",
+                  "source",
                   "model"
                 ],
                 "type": "object",
                 "properties": {
-                  "type": {
-                    "title": "Type",
+                  "source": {
+                    "title": "Source",
                     "enum": [
-                      "api"
+                      "openai_api"
                     ],
                     "type": "string"
                   },
                   "model": {
-                    "title": "ApiChatModels",
+                    "title": "OpenaiApiChatModels",
                     "enum": [
                       "gpt_3_5",
                       "gpt_4"
@@ -1013,10 +119,10 @@
               }
             ],
             "discriminator": {
-              "propertyName": "type",
+              "propertyName": "source",
               "mapping": {
-                "rev": "#/components/schemas/RevAskLogMeta",
-                "api": "#/components/schemas/ApiAskLogMeta"
+                "openai_web": "#/components/schemas/OpenaiWebAskLogMeta",
+                "openai_api": "#/components/schemas/OpenaiApiAskLogMeta"
               }
             }
           }
@@ -1060,22 +166,22 @@
         "title": "Meta",
         "oneOf": [
           {
-            "title": "RevAskLogMeta",
+            "title": "OpenaiWebAskLogMeta",
             "required": [
-              "type",
+              "source",
               "model"
             ],
             "type": "object",
             "properties": {
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "rev"
+                  "openai_web"
                 ],
                 "type": "string"
               },
               "model": {
-                "title": "RevChatModels",
+                "title": "OpenaiWebChatModels",
                 "enum": [
                   "gpt_3_5",
                   "gpt_4",
@@ -1089,22 +195,22 @@
             }
           },
           {
-            "title": "ApiAskLogMeta",
+            "title": "OpenaiApiAskLogMeta",
             "required": [
-              "type",
+              "source",
               "model"
             ],
             "type": "object",
             "properties": {
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "api"
+                  "openai_api"
                 ],
                 "type": "string"
               },
               "model": {
-                "title": "ApiChatModels",
+                "title": "OpenaiApiChatModels",
                 "enum": [
                   "gpt_3_5",
                   "gpt_4"
@@ -1116,10 +222,10 @@
           }
         ],
         "discriminator": {
-          "propertyName": "type",
+          "propertyName": "source",
           "mapping": {
-            "rev": "#/components/schemas/RevAskLogMeta",
-            "api": "#/components/schemas/ApiAskLogMeta"
+            "openai_web": "#/components/schemas/OpenaiWebAskLogMeta",
+            "openai_api": "#/components/schemas/OpenaiApiAskLogMeta"
           }
         }
       }
@@ -1128,18 +234,18 @@
   "AskRequest": {
     "title": "AskRequest",
     "required": [
-      "type",
+      "source",
       "model",
       "new_conversation",
       "content"
     ],
     "type": "object",
     "properties": {
-      "type": {
+      "source": {
         "title": "ChatSourceTypes",
         "enum": [
-          "rev",
-          "api"
+          "openai_web",
+          "openai_api"
         ],
         "type": "string",
         "description": "An enumeration."
@@ -1209,10 +315,10 @@
         "title": "Message",
         "anyOf": [
           {
-            "title": "RevChatMessage",
+            "title": "OpenaiWebChatMessage",
             "required": [
               "id",
-              "type",
+              "source",
               "role",
               "children"
             ],
@@ -1223,10 +329,10 @@
                 "type": "string",
                 "format": "uuid"
               },
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "rev"
+                  "openai_web"
                 ],
                 "type": "string"
               },
@@ -1287,7 +393,7 @@
                 "title": "Content",
                 "anyOf": [
                   {
-                    "title": "RevChatMessageTextContent",
+                    "title": "OpenaiWebChatMessageTextContent",
                     "required": [
                       "content_type"
                     ],
@@ -1310,7 +416,7 @@
                     }
                   },
                   {
-                    "title": "RevChatMessageCodeContent",
+                    "title": "OpenaiWebChatMessageCodeContent",
                     "required": [
                       "content_type"
                     ],
@@ -1334,7 +440,7 @@
                     }
                   },
                   {
-                    "title": "RevChatMessageTetherBrowsingDisplayContent",
+                    "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
                     "required": [
                       "content_type"
                     ],
@@ -1354,7 +460,7 @@
                     }
                   },
                   {
-                    "title": "RevChatMessageTetherQuoteContent",
+                    "title": "OpenaiWebChatMessageTetherQuoteContent",
                     "required": [
                       "content_type"
                     ],
@@ -1386,7 +492,7 @@
                     }
                   },
                   {
-                    "title": "RevChatMessageSystemErrorContent",
+                    "title": "OpenaiWebChatMessageSystemErrorContent",
                     "required": [
                       "content_type"
                     ],
@@ -1425,16 +531,16 @@
                 "title": "Metadata",
                 "anyOf": [
                   {
-                    "title": "RevChatMessageMetadata",
+                    "title": "OpenaiWebChatMessageMetadata",
                     "required": [
-                      "type"
+                      "source"
                     ],
                     "type": "object",
                     "properties": {
-                      "type": {
-                        "title": "Type",
+                      "source": {
+                        "title": "Source",
                         "enum": [
-                          "rev"
+                          "openai_web"
                         ],
                         "type": "string"
                       },
@@ -1473,7 +579,7 @@
                         "title": "Fallback Content"
                       },
                       "invoked_plugin": {
-                        "title": "RevChatMessageMetadataPlugin",
+                        "title": "OpenaiWebChatMessageMetadataPlugin",
                         "type": "object",
                         "properties": {
                           "http_response_status": {
@@ -1530,7 +636,7 @@
                         ]
                       },
                       "cite_metadata": {
-                        "title": "RevChatMessageMetadataCite",
+                        "title": "OpenaiWebChatMessageMetadataCite",
                         "type": "object",
                         "properties": {
                           "citation_format": {
@@ -1541,7 +647,7 @@
                             "title": "Metadata List",
                             "type": "array",
                             "items": {
-                              "title": "RevChatMessageMetadataCiteData",
+                              "title": "OpenaiWebChatMessageMetadataCiteData",
                               "type": "object",
                               "properties": {
                                 "title": {
@@ -1564,16 +670,16 @@
                     }
                   },
                   {
-                    "title": "ApiChatMessageMetadata",
+                    "title": "OpenaiApiChatMessageMetadata",
                     "required": [
-                      "type"
+                      "source"
                     ],
                     "type": "object",
                     "properties": {
-                      "type": {
-                        "title": "Type",
+                      "source": {
+                        "title": "Source",
                         "enum": [
-                          "api"
+                          "openai_api"
                         ],
                         "type": "string"
                       },
@@ -1602,10 +708,10 @@
             }
           },
           {
-            "title": "ApiChatMessage",
+            "title": "OpenaiApiChatMessage",
             "required": [
               "id",
-              "type",
+              "source",
               "role",
               "children"
             ],
@@ -1616,10 +722,10 @@
                 "type": "string",
                 "format": "uuid"
               },
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "api"
+                  "openai_api"
                 ],
                 "type": "string"
               },
@@ -1677,7 +783,7 @@
                 }
               },
               "content": {
-                "title": "ApiChatMessageTextContent",
+                "title": "OpenaiApiChatMessageTextContent",
                 "required": [
                   "content_type",
                   "text"
@@ -1701,16 +807,16 @@
                 "title": "Metadata",
                 "anyOf": [
                   {
-                    "title": "RevChatMessageMetadata",
+                    "title": "OpenaiWebChatMessageMetadata",
                     "required": [
-                      "type"
+                      "source"
                     ],
                     "type": "object",
                     "properties": {
-                      "type": {
-                        "title": "Type",
+                      "source": {
+                        "title": "Source",
                         "enum": [
-                          "rev"
+                          "openai_web"
                         ],
                         "type": "string"
                       },
@@ -1749,7 +855,7 @@
                         "title": "Fallback Content"
                       },
                       "invoked_plugin": {
-                        "title": "RevChatMessageMetadataPlugin",
+                        "title": "OpenaiWebChatMessageMetadataPlugin",
                         "type": "object",
                         "properties": {
                           "http_response_status": {
@@ -1806,7 +912,7 @@
                         ]
                       },
                       "cite_metadata": {
-                        "title": "RevChatMessageMetadataCite",
+                        "title": "OpenaiWebChatMessageMetadataCite",
                         "type": "object",
                         "properties": {
                           "citation_format": {
@@ -1817,7 +923,7 @@
                             "title": "Metadata List",
                             "type": "array",
                             "items": {
-                              "title": "RevChatMessageMetadataCiteData",
+                              "title": "OpenaiWebChatMessageMetadataCiteData",
                               "type": "object",
                               "properties": {
                                 "title": {
@@ -1840,16 +946,16 @@
                     }
                   },
                   {
-                    "title": "ApiChatMessageMetadata",
+                    "title": "OpenaiApiChatMessageMetadata",
                     "required": [
-                      "type"
+                      "source"
                     ],
                     "type": "object",
                     "properties": {
-                      "type": {
-                        "title": "Type",
+                      "source": {
+                        "title": "Source",
                         "enum": [
-                          "api"
+                          "openai_api"
                         ],
                         "type": "string"
                       },
@@ -1933,7 +1039,7 @@
     "title": "BaseChatMessage",
     "required": [
       "id",
-      "type",
+      "source",
       "role",
       "children"
     ],
@@ -1944,11 +1050,11 @@
         "type": "string",
         "format": "uuid"
       },
-      "type": {
-        "title": "Type",
+      "source": {
+        "title": "Source",
         "enum": [
-          "rev",
-          "api"
+          "openai_web",
+          "openai_api"
         ],
         "type": "string"
       },
@@ -2011,7 +1117,7 @@
           {
             "oneOf": [
               {
-                "title": "RevChatMessageTextContent",
+                "title": "OpenaiWebChatMessageTextContent",
                 "required": [
                   "content_type"
                 ],
@@ -2034,7 +1140,7 @@
                 }
               },
               {
-                "title": "RevChatMessageCodeContent",
+                "title": "OpenaiWebChatMessageCodeContent",
                 "required": [
                   "content_type"
                 ],
@@ -2058,7 +1164,7 @@
                 }
               },
               {
-                "title": "RevChatMessageTetherBrowsingDisplayContent",
+                "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
                 "required": [
                   "content_type"
                 ],
@@ -2078,7 +1184,7 @@
                 }
               },
               {
-                "title": "RevChatMessageTetherQuoteContent",
+                "title": "OpenaiWebChatMessageTetherQuoteContent",
                 "required": [
                   "content_type"
                 ],
@@ -2110,7 +1216,7 @@
                 }
               },
               {
-                "title": "RevChatMessageSystemErrorContent",
+                "title": "OpenaiWebChatMessageSystemErrorContent",
                 "required": [
                   "content_type"
                 ],
@@ -2146,7 +1252,7 @@
             ]
           },
           {
-            "title": "ApiChatMessageTextContent",
+            "title": "OpenaiApiChatMessageTextContent",
             "required": [
               "content_type",
               "text"
@@ -2175,16 +1281,16 @@
         "title": "Metadata",
         "anyOf": [
           {
-            "title": "RevChatMessageMetadata",
+            "title": "OpenaiWebChatMessageMetadata",
             "required": [
-              "type"
+              "source"
             ],
             "type": "object",
             "properties": {
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "rev"
+                  "openai_web"
                 ],
                 "type": "string"
               },
@@ -2223,7 +1329,7 @@
                 "title": "Fallback Content"
               },
               "invoked_plugin": {
-                "title": "RevChatMessageMetadataPlugin",
+                "title": "OpenaiWebChatMessageMetadataPlugin",
                 "type": "object",
                 "properties": {
                   "http_response_status": {
@@ -2280,7 +1386,7 @@
                 ]
               },
               "cite_metadata": {
-                "title": "RevChatMessageMetadataCite",
+                "title": "OpenaiWebChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
                   "citation_format": {
@@ -2291,7 +1397,7 @@
                     "title": "Metadata List",
                     "type": "array",
                     "items": {
-                      "title": "RevChatMessageMetadataCiteData",
+                      "title": "OpenaiWebChatMessageMetadataCiteData",
                       "type": "object",
                       "properties": {
                         "title": {
@@ -2314,16 +1420,16 @@
             }
           },
           {
-            "title": "ApiChatMessageMetadata",
+            "title": "OpenaiApiChatMessageMetadata",
             "required": [
-              "type"
+              "source"
             ],
             "type": "object",
             "properties": {
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "api"
+                  "openai_api"
                 ],
                 "type": "string"
               },
@@ -2354,7 +1460,7 @@
   "BaseConversationHistory": {
     "title": "BaseConversationHistory",
     "required": [
-      "type",
+      "source",
       "title",
       "create_time",
       "update_time",
@@ -2367,11 +1473,11 @@
         "type": "string",
         "format": "uuid"
       },
-      "type": {
-        "title": "Type",
+      "source": {
+        "title": "Source",
         "enum": [
-          "rev",
-          "api"
+          "openai_web",
+          "openai_api"
         ],
         "type": "string"
       },
@@ -2396,7 +1502,7 @@
           "title": "BaseChatMessage",
           "required": [
             "id",
-            "type",
+            "source",
             "role",
             "children"
           ],
@@ -2407,11 +1513,11 @@
               "type": "string",
               "format": "uuid"
             },
-            "type": {
-              "title": "Type",
+            "source": {
+              "title": "Source",
               "enum": [
-                "rev",
-                "api"
+                "openai_web",
+                "openai_api"
               ],
               "type": "string"
             },
@@ -2474,7 +1580,7 @@
                 {
                   "oneOf": [
                     {
-                      "title": "RevChatMessageTextContent",
+                      "title": "OpenaiWebChatMessageTextContent",
                       "required": [
                         "content_type"
                       ],
@@ -2497,7 +1603,7 @@
                       }
                     },
                     {
-                      "title": "RevChatMessageCodeContent",
+                      "title": "OpenaiWebChatMessageCodeContent",
                       "required": [
                         "content_type"
                       ],
@@ -2521,7 +1627,7 @@
                       }
                     },
                     {
-                      "title": "RevChatMessageTetherBrowsingDisplayContent",
+                      "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
                       "required": [
                         "content_type"
                       ],
@@ -2541,7 +1647,7 @@
                       }
                     },
                     {
-                      "title": "RevChatMessageTetherQuoteContent",
+                      "title": "OpenaiWebChatMessageTetherQuoteContent",
                       "required": [
                         "content_type"
                       ],
@@ -2573,7 +1679,7 @@
                       }
                     },
                     {
-                      "title": "RevChatMessageSystemErrorContent",
+                      "title": "OpenaiWebChatMessageSystemErrorContent",
                       "required": [
                         "content_type"
                       ],
@@ -2609,7 +1715,7 @@
                   ]
                 },
                 {
-                  "title": "ApiChatMessageTextContent",
+                  "title": "OpenaiApiChatMessageTextContent",
                   "required": [
                     "content_type",
                     "text"
@@ -2638,16 +1744,16 @@
               "title": "Metadata",
               "anyOf": [
                 {
-                  "title": "RevChatMessageMetadata",
+                  "title": "OpenaiWebChatMessageMetadata",
                   "required": [
-                    "type"
+                    "source"
                   ],
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "title": "Type",
+                    "source": {
+                      "title": "Source",
                       "enum": [
-                        "rev"
+                        "openai_web"
                       ],
                       "type": "string"
                     },
@@ -2686,7 +1792,7 @@
                       "title": "Fallback Content"
                     },
                     "invoked_plugin": {
-                      "title": "RevChatMessageMetadataPlugin",
+                      "title": "OpenaiWebChatMessageMetadataPlugin",
                       "type": "object",
                       "properties": {
                         "http_response_status": {
@@ -2743,7 +1849,7 @@
                       ]
                     },
                     "cite_metadata": {
-                      "title": "RevChatMessageMetadataCite",
+                      "title": "OpenaiWebChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
                         "citation_format": {
@@ -2754,7 +1860,7 @@
                           "title": "Metadata List",
                           "type": "array",
                           "items": {
-                            "title": "RevChatMessageMetadataCiteData",
+                            "title": "OpenaiWebChatMessageMetadataCiteData",
                             "type": "object",
                             "properties": {
                               "title": {
@@ -2777,16 +1883,16 @@
                   }
                 },
                 {
-                  "title": "ApiChatMessageMetadata",
+                  "title": "OpenaiApiChatMessageMetadata",
                   "required": [
-                    "type"
+                    "source"
                   ],
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "title": "Type",
+                    "source": {
+                      "title": "Source",
                       "enum": [
-                        "api"
+                        "openai_api"
                       ],
                       "type": "string"
                     },
@@ -2824,30 +1930,61 @@
         "title": "Current Model",
         "type": "string"
       },
-      "rev_extra": {
-        "title": "RevConversationHistoryExtra",
-        "type": "object",
-        "properties": {
-          "moderation_results": {
-            "title": "Moderation Results",
-            "type": "array",
-            "items": {}
+      "meta": {
+        "title": "Meta",
+        "anyOf": [
+          {
+            "title": "OpenaiWebConversationHistoryMeta",
+            "required": [
+              "source"
+            ],
+            "type": "object",
+            "properties": {
+              "source": {
+                "title": "Source",
+                "enum": [
+                  "openai_web"
+                ],
+                "type": "string"
+              },
+              "moderation_results": {
+                "title": "Moderation Results",
+                "type": "array",
+                "items": {}
+              },
+              "plugin_ids": {
+                "title": "Plugin Ids",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           },
-          "plugin_ids": {
-            "title": "Plugin Ids",
-            "type": "array",
-            "items": {
-              "type": "string"
+          {
+            "title": "OpenaiApiConversationHistoryMeta",
+            "required": [
+              "source"
+            ],
+            "type": "object",
+            "properties": {
+              "source": {
+                "title": "Source",
+                "enum": [
+                  "openai_api"
+                ],
+                "type": "string"
+              }
             }
           }
-        }
+        ]
       }
     }
   },
   "BaseConversationSchema": {
     "title": "BaseConversationSchema",
     "required": [
-      "type"
+      "source"
     ],
     "type": "object",
     "properties": {
@@ -2856,11 +1993,11 @@
         "type": "integer",
         "default": -1
       },
-      "type": {
+      "source": {
         "title": "ChatSourceTypes",
         "enum": [
-          "rev",
-          "api"
+          "openai_web",
+          "openai_api"
         ],
         "type": "string",
         "description": "An enumeration."
@@ -2952,8 +2089,8 @@
   "ChatSourceTypes": {
     "title": "ChatSourceTypes",
     "enum": [
-      "rev",
-      "api"
+      "openai_web",
+      "openai_api"
     ],
     "type": "string",
     "description": "An enumeration."
@@ -3705,96 +2842,966 @@
       }
     }
   },
-  "RequestLogAggregation": {
-    "title": "RequestLogAggregation",
+  "OpenaiApiAskLogMeta": {
+    "title": "OpenaiApiAskLogMeta",
     "required": [
-      "_id",
-      "count"
-    ],
-    "type": "object",
-    "properties": {
-      "_id": {
-        "title": "RequestLogAggregationID",
-        "required": [
-          "start_time",
-          "route_path",
-          "method"
-        ],
-        "type": "object",
-        "properties": {
-          "start_time": {
-            "title": "Start Time",
-            "type": "string",
-            "format": "date-time"
-          },
-          "route_path": {
-            "title": "Route Path",
-            "type": "string"
-          },
-          "method": {
-            "title": "Method",
-            "type": "string"
-          }
-        }
-      },
-      "count": {
-        "title": "Count",
-        "type": "integer"
-      },
-      "user_ids": {
-        "title": "User Ids",
-        "type": "array",
-        "items": {
-          "type": "integer"
-        }
-      },
-      "avg_elapsed_ms": {
-        "title": "Avg Elapsed Ms",
-        "type": "number"
-      }
-    }
-  },
-  "RequestLogAggregationID": {
-    "title": "RequestLogAggregationID",
-    "required": [
-      "start_time",
-      "route_path",
-      "method"
-    ],
-    "type": "object",
-    "properties": {
-      "start_time": {
-        "title": "Start Time",
-        "type": "string",
-        "format": "date-time"
-      },
-      "route_path": {
-        "title": "Route Path",
-        "type": "string"
-      },
-      "method": {
-        "title": "Method",
-        "type": "string"
-      }
-    }
-  },
-  "RevAskLogMeta": {
-    "title": "RevAskLogMeta",
-    "required": [
-      "type",
+      "source",
       "model"
     ],
     "type": "object",
     "properties": {
-      "type": {
-        "title": "Type",
+      "source": {
+        "title": "Source",
         "enum": [
-          "rev"
+          "openai_api"
         ],
         "type": "string"
       },
       "model": {
-        "title": "RevChatModels",
+        "title": "OpenaiApiChatModels",
+        "enum": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      }
+    }
+  },
+  "OpenaiApiChatMessage": {
+    "title": "OpenaiApiChatMessage",
+    "required": [
+      "id",
+      "source",
+      "role",
+      "children"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "source": {
+        "title": "Source",
+        "enum": [
+          "openai_api"
+        ],
+        "type": "string"
+      },
+      "role": {
+        "title": "Role",
+        "anyOf": [
+          {
+            "enum": [
+              "system",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "author_name": {
+        "title": "Author Name",
+        "anyOf": [
+          {
+            "enum": [
+              "browser"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "model": {
+        "title": "Model",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "parent": {
+        "title": "Parent",
+        "type": "string",
+        "format": "uuid"
+      },
+      "children": {
+        "title": "Children",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "content": {
+        "title": "OpenaiApiChatMessageTextContent",
+        "required": [
+          "content_type",
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "content_type": {
+            "title": "Content Type",
+            "enum": [
+              "text"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        }
+      },
+      "metadata": {
+        "title": "Metadata",
+        "anyOf": [
+          {
+            "title": "OpenaiWebChatMessageMetadata",
+            "required": [
+              "source"
+            ],
+            "type": "object",
+            "properties": {
+              "source": {
+                "title": "Source",
+                "enum": [
+                  "openai_web"
+                ],
+                "type": "string"
+              },
+              "finish_details": {
+                "title": "Finish Details",
+                "type": "object"
+              },
+              "weight": {
+                "title": "Weight",
+                "type": "number"
+              },
+              "end_turn": {
+                "title": "End Turn",
+                "type": "boolean"
+              },
+              "message_status": {
+                "title": "Message Status",
+                "type": "string"
+              },
+              "recipient": {
+                "title": "Recipient",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "all",
+                      "browser"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "fallback_content": {
+                "title": "Fallback Content"
+              },
+              "invoked_plugin": {
+                "title": "OpenaiWebChatMessageMetadataPlugin",
+                "type": "object",
+                "properties": {
+                  "http_response_status": {
+                    "title": "Http Response Status",
+                    "type": "integer"
+                  },
+                  "namespace": {
+                    "title": "Namespace",
+                    "type": "string"
+                  },
+                  "plugin_id": {
+                    "title": "Plugin Id",
+                    "type": "string"
+                  },
+                  "type": {
+                    "title": "Type",
+                    "type": "string"
+                  }
+                }
+              },
+              "command": {
+                "title": "Command",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "search"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "args": {
+                "title": "Args",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "title": "Status",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "finished"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "cite_metadata": {
+                "title": "OpenaiWebChatMessageMetadataCite",
+                "type": "object",
+                "properties": {
+                  "citation_format": {
+                    "title": "Citation Format",
+                    "type": "object"
+                  },
+                  "metadata_list": {
+                    "title": "Metadata List",
+                    "type": "array",
+                    "items": {
+                      "title": "OpenaiWebChatMessageMetadataCiteData",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "OpenaiApiChatMessageMetadata",
+            "required": [
+              "source"
+            ],
+            "type": "object",
+            "properties": {
+              "source": {
+                "title": "Source",
+                "enum": [
+                  "openai_api"
+                ],
+                "type": "string"
+              },
+              "usage": {
+                "title": "OpenAIChatResponseUsage",
+                "type": "object",
+                "properties": {
+                  "prompt_tokens": {
+                    "title": "Prompt Tokens",
+                    "type": "integer"
+                  },
+                  "completion_tokens": {
+                    "title": "Completion Tokens",
+                    "type": "integer"
+                  }
+                }
+              },
+              "finish_reason": {
+                "title": "Finish Reason",
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "OpenaiApiChatMessageMetadata": {
+    "title": "OpenaiApiChatMessageMetadata",
+    "required": [
+      "source"
+    ],
+    "type": "object",
+    "properties": {
+      "source": {
+        "title": "Source",
+        "enum": [
+          "openai_api"
+        ],
+        "type": "string"
+      },
+      "usage": {
+        "title": "OpenAIChatResponseUsage",
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "title": "Prompt Tokens",
+            "type": "integer"
+          },
+          "completion_tokens": {
+            "title": "Completion Tokens",
+            "type": "integer"
+          }
+        }
+      },
+      "finish_reason": {
+        "title": "Finish Reason",
+        "type": "string"
+      }
+    }
+  },
+  "OpenaiApiChatMessageTextContent": {
+    "title": "OpenaiApiChatMessageTextContent",
+    "required": [
+      "content_type",
+      "text"
+    ],
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "text"
+        ],
+        "type": "string"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      }
+    }
+  },
+  "OpenaiApiChatModels": {
+    "title": "OpenaiApiChatModels",
+    "enum": [
+      "gpt_3_5",
+      "gpt_4"
+    ],
+    "type": "string",
+    "description": "An enumeration."
+  },
+  "OpenaiApiConversationHistoryDocument": {
+    "title": "OpenaiApiConversationHistoryDocument",
+    "required": [
+      "source",
+      "title",
+      "create_time",
+      "update_time",
+      "mapping"
+    ],
+    "type": "object",
+    "properties": {
+      "_id": {
+        "title": " Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "source": {
+        "title": "Source",
+        "enum": [
+          "openai_api"
+        ],
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "mapping": {
+        "title": "Mapping",
+        "type": "object",
+        "additionalProperties": {
+          "title": "OpenaiApiChatMessage",
+          "required": [
+            "id",
+            "source",
+            "role",
+            "children"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "source": {
+              "title": "Source",
+              "enum": [
+                "openai_api"
+              ],
+              "type": "string"
+            },
+            "role": {
+              "title": "Role",
+              "anyOf": [
+                {
+                  "enum": [
+                    "system",
+                    "user",
+                    "assistant",
+                    "tool"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "author_name": {
+              "title": "Author Name",
+              "anyOf": [
+                {
+                  "enum": [
+                    "browser"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "model": {
+              "title": "Model",
+              "type": "string"
+            },
+            "create_time": {
+              "title": "Create Time",
+              "type": "string",
+              "format": "date-time"
+            },
+            "parent": {
+              "title": "Parent",
+              "type": "string",
+              "format": "uuid"
+            },
+            "children": {
+              "title": "Children",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "content": {
+              "title": "OpenaiApiChatMessageTextContent",
+              "required": [
+                "content_type",
+                "text"
+              ],
+              "type": "object",
+              "properties": {
+                "content_type": {
+                  "title": "Content Type",
+                  "enum": [
+                    "text"
+                  ],
+                  "type": "string"
+                },
+                "text": {
+                  "title": "Text",
+                  "type": "string"
+                }
+              }
+            },
+            "metadata": {
+              "title": "Metadata",
+              "anyOf": [
+                {
+                  "title": "OpenaiWebChatMessageMetadata",
+                  "required": [
+                    "source"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "title": "Source",
+                      "enum": [
+                        "openai_web"
+                      ],
+                      "type": "string"
+                    },
+                    "finish_details": {
+                      "title": "Finish Details",
+                      "type": "object"
+                    },
+                    "weight": {
+                      "title": "Weight",
+                      "type": "number"
+                    },
+                    "end_turn": {
+                      "title": "End Turn",
+                      "type": "boolean"
+                    },
+                    "message_status": {
+                      "title": "Message Status",
+                      "type": "string"
+                    },
+                    "recipient": {
+                      "title": "Recipient",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "all",
+                            "browser"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "fallback_content": {
+                      "title": "Fallback Content"
+                    },
+                    "invoked_plugin": {
+                      "title": "OpenaiWebChatMessageMetadataPlugin",
+                      "type": "object",
+                      "properties": {
+                        "http_response_status": {
+                          "title": "Http Response Status",
+                          "type": "integer"
+                        },
+                        "namespace": {
+                          "title": "Namespace",
+                          "type": "string"
+                        },
+                        "plugin_id": {
+                          "title": "Plugin Id",
+                          "type": "string"
+                        },
+                        "type": {
+                          "title": "Type",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "command": {
+                      "title": "Command",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "search"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "args": {
+                      "title": "Args",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "status": {
+                      "title": "Status",
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "finished"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "cite_metadata": {
+                      "title": "OpenaiWebChatMessageMetadataCite",
+                      "type": "object",
+                      "properties": {
+                        "citation_format": {
+                          "title": "Citation Format",
+                          "type": "object"
+                        },
+                        "metadata_list": {
+                          "title": "Metadata List",
+                          "type": "array",
+                          "items": {
+                            "title": "OpenaiWebChatMessageMetadataCiteData",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "title": "Title",
+                                "type": "string"
+                              },
+                              "url": {
+                                "title": "Url",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "OpenaiApiChatMessageMetadata",
+                  "required": [
+                    "source"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "title": "Source",
+                      "enum": [
+                        "openai_api"
+                      ],
+                      "type": "string"
+                    },
+                    "usage": {
+                      "title": "OpenAIChatResponseUsage",
+                      "type": "object",
+                      "properties": {
+                        "prompt_tokens": {
+                          "title": "Prompt Tokens",
+                          "type": "integer"
+                        },
+                        "completion_tokens": {
+                          "title": "Completion Tokens",
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "finish_reason": {
+                      "title": "Finish Reason",
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "current_node": {
+        "title": "Current Node",
+        "type": "string",
+        "format": "uuid"
+      },
+      "current_model": {
+        "title": "Current Model",
+        "type": "string"
+      },
+      "meta": {
+        "title": "Meta",
+        "anyOf": [
+          {
+            "title": "OpenaiWebConversationHistoryMeta",
+            "required": [
+              "source"
+            ],
+            "type": "object",
+            "properties": {
+              "source": {
+                "title": "Source",
+                "enum": [
+                  "openai_web"
+                ],
+                "type": "string"
+              },
+              "moderation_results": {
+                "title": "Moderation Results",
+                "type": "array",
+                "items": {}
+              },
+              "plugin_ids": {
+                "title": "Plugin Ids",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "title": "OpenaiApiConversationHistoryMeta",
+            "required": [
+              "source"
+            ],
+            "type": "object",
+            "properties": {
+              "source": {
+                "title": "Source",
+                "enum": [
+                  "openai_api"
+                ],
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
+  },
+  "OpenaiApiConversationHistoryMeta": {
+    "title": "OpenaiApiConversationHistoryMeta",
+    "required": [
+      "source"
+    ],
+    "type": "object",
+    "properties": {
+      "source": {
+        "title": "Source",
+        "enum": [
+          "openai_api"
+        ],
+        "type": "string"
+      }
+    }
+  },
+  "OpenaiApiConversationSchema": {
+    "title": "OpenaiApiConversationSchema",
+    "required": [
+      "source"
+    ],
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "integer",
+        "default": -1
+      },
+      "source": {
+        "title": "Source",
+        "enum": [
+          "openai_api"
+        ],
+        "type": "string"
+      },
+      "conversation_id": {
+        "title": "Conversation Id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "user_id": {
+        "title": "User Id",
+        "type": "integer"
+      },
+      "is_valid": {
+        "title": "Is Valid",
+        "type": "boolean",
+        "default": true
+      },
+      "current_model": {
+        "title": "Current Model",
+        "type": "string"
+      },
+      "create_time": {
+        "title": "Create Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "OpenaiApiSourceSettingSchema": {
+    "title": "OpenaiApiSourceSettingSchema",
+    "required": [
+      "allow_to_use",
+      "max_conv_count",
+      "total_ask_count",
+      "rate_limits",
+      "daily_available_time_slots",
+      "available_models",
+      "per_model_ask_count",
+      "allow_custom_openai_api",
+      "custom_openai_api_settings"
+    ],
+    "type": "object",
+    "properties": {
+      "allow_to_use": {
+        "title": "Allow To Use",
+        "type": "boolean"
+      },
+      "valid_until": {
+        "title": "Valid Until",
+        "type": "string",
+        "format": "date-time"
+      },
+      "max_conv_count": {
+        "title": "Max Conv Count",
+        "type": "integer"
+      },
+      "total_ask_count": {
+        "title": "Total Ask Count",
+        "type": "integer"
+      },
+      "rate_limits": {
+        "title": "Rate Limits",
+        "type": "array",
+        "items": {
+          "title": "TimeWindowRateLimit",
+          "required": [
+            "window_seconds",
+            "max_requests"
+          ],
+          "type": "object",
+          "properties": {
+            "window_seconds": {
+              "title": "Window Seconds",
+              "type": "integer",
+              "description": "时间窗口大小，单位为秒"
+            },
+            "max_requests": {
+              "title": "Max Requests",
+              "type": "integer",
+              "description": "在给定时间窗口内最多的请求次数"
+            }
+          }
+        }
+      },
+      "daily_available_time_slots": {
+        "title": "Daily Available Time Slots",
+        "type": "array",
+        "items": {
+          "title": "DailyTimeSlot",
+          "required": [
+            "start_time",
+            "end_time"
+          ],
+          "type": "object",
+          "properties": {
+            "start_time": {
+              "title": "Start Time",
+              "type": "string",
+              "description": "每天可使用的开始时间",
+              "format": "time"
+            },
+            "end_time": {
+              "title": "End Time",
+              "type": "string",
+              "description": "每天可使用的结束时间",
+              "format": "time"
+            }
+          }
+        }
+      },
+      "available_models": {
+        "type": "array",
+        "items": {
+          "title": "OpenaiApiChatModels",
+          "enum": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        }
+      },
+      "per_model_ask_count": {
+        "title": "ApiPerModelAskCount",
+        "type": "object",
+        "properties": {
+          "gpt_3_5": {
+            "title": "Gpt 3 5",
+            "type": "integer",
+            "default": 0
+          },
+          "gpt_4": {
+            "title": "Gpt 4",
+            "type": "integer",
+            "default": 0
+          }
+        }
+      },
+      "allow_custom_openai_api": {
+        "title": "Allow Custom Openai Api",
+        "type": "boolean"
+      },
+      "custom_openai_api_settings": {
+        "title": "CustomOpenaiApiSettings",
+        "type": "object",
+        "properties": {
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "OpenaiWebAskLogMeta": {
+    "title": "OpenaiWebAskLogMeta",
+    "required": [
+      "source",
+      "model"
+    ],
+    "type": "object",
+    "properties": {
+      "source": {
+        "title": "Source",
+        "enum": [
+          "openai_web"
+        ],
+        "type": "string"
+      },
+      "model": {
+        "title": "OpenaiWebChatModels",
         "enum": [
           "gpt_3_5",
           "gpt_4",
@@ -3807,38 +3814,11 @@
       }
     }
   },
-  "RevChatGPTSetting": {
-    "title": "RevChatGPTSetting",
-    "type": "object",
-    "properties": {
-      "is_plus_account": {
-        "title": "Is Plus Account",
-        "type": "boolean",
-        "default": false
-      },
-      "chatgpt_base_url": {
-        "title": "Chatgpt Base Url",
-        "type": "string"
-      },
-      "common_timeout": {
-        "title": "Common Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 10
-      },
-      "ask_timeout": {
-        "title": "Ask Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 600
-      }
-    }
-  },
-  "RevChatMessage": {
-    "title": "RevChatMessage",
+  "OpenaiWebChatMessage": {
+    "title": "OpenaiWebChatMessage",
     "required": [
       "id",
-      "type",
+      "source",
       "role",
       "children"
     ],
@@ -3849,10 +3829,10 @@
         "type": "string",
         "format": "uuid"
       },
-      "type": {
-        "title": "Type",
+      "source": {
+        "title": "Source",
         "enum": [
-          "rev"
+          "openai_web"
         ],
         "type": "string"
       },
@@ -3913,7 +3893,7 @@
         "title": "Content",
         "anyOf": [
           {
-            "title": "RevChatMessageTextContent",
+            "title": "OpenaiWebChatMessageTextContent",
             "required": [
               "content_type"
             ],
@@ -3936,7 +3916,7 @@
             }
           },
           {
-            "title": "RevChatMessageCodeContent",
+            "title": "OpenaiWebChatMessageCodeContent",
             "required": [
               "content_type"
             ],
@@ -3960,7 +3940,7 @@
             }
           },
           {
-            "title": "RevChatMessageTetherBrowsingDisplayContent",
+            "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
             "required": [
               "content_type"
             ],
@@ -3980,7 +3960,7 @@
             }
           },
           {
-            "title": "RevChatMessageTetherQuoteContent",
+            "title": "OpenaiWebChatMessageTetherQuoteContent",
             "required": [
               "content_type"
             ],
@@ -4012,7 +3992,7 @@
             }
           },
           {
-            "title": "RevChatMessageSystemErrorContent",
+            "title": "OpenaiWebChatMessageSystemErrorContent",
             "required": [
               "content_type"
             ],
@@ -4051,16 +4031,16 @@
         "title": "Metadata",
         "anyOf": [
           {
-            "title": "RevChatMessageMetadata",
+            "title": "OpenaiWebChatMessageMetadata",
             "required": [
-              "type"
+              "source"
             ],
             "type": "object",
             "properties": {
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "rev"
+                  "openai_web"
                 ],
                 "type": "string"
               },
@@ -4099,7 +4079,7 @@
                 "title": "Fallback Content"
               },
               "invoked_plugin": {
-                "title": "RevChatMessageMetadataPlugin",
+                "title": "OpenaiWebChatMessageMetadataPlugin",
                 "type": "object",
                 "properties": {
                   "http_response_status": {
@@ -4156,7 +4136,7 @@
                 ]
               },
               "cite_metadata": {
-                "title": "RevChatMessageMetadataCite",
+                "title": "OpenaiWebChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
                   "citation_format": {
@@ -4167,7 +4147,7 @@
                     "title": "Metadata List",
                     "type": "array",
                     "items": {
-                      "title": "RevChatMessageMetadataCiteData",
+                      "title": "OpenaiWebChatMessageMetadataCiteData",
                       "type": "object",
                       "properties": {
                         "title": {
@@ -4190,16 +4170,16 @@
             }
           },
           {
-            "title": "ApiChatMessageMetadata",
+            "title": "OpenaiApiChatMessageMetadata",
             "required": [
-              "type"
+              "source"
             ],
             "type": "object",
             "properties": {
-              "type": {
-                "title": "Type",
+              "source": {
+                "title": "Source",
                 "enum": [
-                  "api"
+                  "openai_api"
                 ],
                 "type": "string"
               },
@@ -4227,8 +4207,8 @@
       }
     }
   },
-  "RevChatMessageCodeContent": {
-    "title": "RevChatMessageCodeContent",
+  "OpenaiWebChatMessageCodeContent": {
+    "title": "OpenaiWebChatMessageCodeContent",
     "required": [
       "content_type"
     ],
@@ -4251,17 +4231,17 @@
       }
     }
   },
-  "RevChatMessageMetadata": {
-    "title": "RevChatMessageMetadata",
+  "OpenaiWebChatMessageMetadata": {
+    "title": "OpenaiWebChatMessageMetadata",
     "required": [
-      "type"
+      "source"
     ],
     "type": "object",
     "properties": {
-      "type": {
-        "title": "Type",
+      "source": {
+        "title": "Source",
         "enum": [
-          "rev"
+          "openai_web"
         ],
         "type": "string"
       },
@@ -4300,7 +4280,7 @@
         "title": "Fallback Content"
       },
       "invoked_plugin": {
-        "title": "RevChatMessageMetadataPlugin",
+        "title": "OpenaiWebChatMessageMetadataPlugin",
         "type": "object",
         "properties": {
           "http_response_status": {
@@ -4357,7 +4337,7 @@
         ]
       },
       "cite_metadata": {
-        "title": "RevChatMessageMetadataCite",
+        "title": "OpenaiWebChatMessageMetadataCite",
         "type": "object",
         "properties": {
           "citation_format": {
@@ -4368,7 +4348,7 @@
             "title": "Metadata List",
             "type": "array",
             "items": {
-              "title": "RevChatMessageMetadataCiteData",
+              "title": "OpenaiWebChatMessageMetadataCiteData",
               "type": "object",
               "properties": {
                 "title": {
@@ -4390,8 +4370,8 @@
       }
     }
   },
-  "RevChatMessageMetadataCite": {
-    "title": "RevChatMessageMetadataCite",
+  "OpenaiWebChatMessageMetadataCite": {
+    "title": "OpenaiWebChatMessageMetadataCite",
     "type": "object",
     "properties": {
       "citation_format": {
@@ -4402,7 +4382,7 @@
         "title": "Metadata List",
         "type": "array",
         "items": {
-          "title": "RevChatMessageMetadataCiteData",
+          "title": "OpenaiWebChatMessageMetadataCiteData",
           "type": "object",
           "properties": {
             "title": {
@@ -4422,8 +4402,8 @@
       }
     }
   },
-  "RevChatMessageMetadataCiteData": {
-    "title": "RevChatMessageMetadataCiteData",
+  "OpenaiWebChatMessageMetadataCiteData": {
+    "title": "OpenaiWebChatMessageMetadataCiteData",
     "type": "object",
     "properties": {
       "title": {
@@ -4440,8 +4420,8 @@
       }
     }
   },
-  "RevChatMessageMetadataPlugin": {
-    "title": "RevChatMessageMetadataPlugin",
+  "OpenaiWebChatMessageMetadataPlugin": {
+    "title": "OpenaiWebChatMessageMetadataPlugin",
     "type": "object",
     "properties": {
       "http_response_status": {
@@ -4462,8 +4442,8 @@
       }
     }
   },
-  "RevChatMessageSystemErrorContent": {
-    "title": "RevChatMessageSystemErrorContent",
+  "OpenaiWebChatMessageSystemErrorContent": {
+    "title": "OpenaiWebChatMessageSystemErrorContent",
     "required": [
       "content_type"
     ],
@@ -4496,8 +4476,8 @@
       }
     }
   },
-  "RevChatMessageTetherBrowsingDisplayContent": {
-    "title": "RevChatMessageTetherBrowsingDisplayContent",
+  "OpenaiWebChatMessageTetherBrowsingDisplayContent": {
+    "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
     "required": [
       "content_type"
     ],
@@ -4516,8 +4496,8 @@
       }
     }
   },
-  "RevChatMessageTetherQuoteContent": {
-    "title": "RevChatMessageTetherQuoteContent",
+  "OpenaiWebChatMessageTetherQuoteContent": {
+    "title": "OpenaiWebChatMessageTetherQuoteContent",
     "required": [
       "content_type"
     ],
@@ -4548,8 +4528,8 @@
       }
     }
   },
-  "RevChatMessageTextContent": {
-    "title": "RevChatMessageTextContent",
+  "OpenaiWebChatMessageTextContent": {
+    "title": "OpenaiWebChatMessageTextContent",
     "required": [
       "content_type"
     ],
@@ -4571,8 +4551,8 @@
       }
     }
   },
-  "RevChatModels": {
-    "title": "RevChatModels",
+  "OpenaiWebChatModels": {
+    "title": "OpenaiWebChatModels",
     "enum": [
       "gpt_3_5",
       "gpt_4",
@@ -4583,8 +4563,8 @@
     "type": "string",
     "description": "An enumeration."
   },
-  "RevChatStatus": {
-    "title": "RevChatStatus",
+  "OpenaiWebChatStatus": {
+    "title": "OpenaiWebChatStatus",
     "enum": [
       "asking",
       "queueing",
@@ -4593,10 +4573,10 @@
     "type": "string",
     "description": "An enumeration."
   },
-  "RevConversationHistoryDocument": {
-    "title": "RevConversationHistoryDocument",
+  "OpenaiWebConversationHistoryDocument": {
+    "title": "OpenaiWebConversationHistoryDocument",
     "required": [
-      "type",
+      "source",
       "title",
       "create_time",
       "update_time",
@@ -4609,10 +4589,10 @@
         "type": "string",
         "format": "uuid"
       },
-      "type": {
-        "title": "Type",
+      "source": {
+        "title": "Source",
         "enum": [
-          "rev"
+          "openai_web"
         ],
         "type": "string"
       },
@@ -4634,10 +4614,10 @@
         "title": "Mapping",
         "type": "object",
         "additionalProperties": {
-          "title": "RevChatMessage",
+          "title": "OpenaiWebChatMessage",
           "required": [
             "id",
-            "type",
+            "source",
             "role",
             "children"
           ],
@@ -4648,10 +4628,10 @@
               "type": "string",
               "format": "uuid"
             },
-            "type": {
-              "title": "Type",
+            "source": {
+              "title": "Source",
               "enum": [
-                "rev"
+                "openai_web"
               ],
               "type": "string"
             },
@@ -4712,7 +4692,7 @@
               "title": "Content",
               "anyOf": [
                 {
-                  "title": "RevChatMessageTextContent",
+                  "title": "OpenaiWebChatMessageTextContent",
                   "required": [
                     "content_type"
                   ],
@@ -4735,7 +4715,7 @@
                   }
                 },
                 {
-                  "title": "RevChatMessageCodeContent",
+                  "title": "OpenaiWebChatMessageCodeContent",
                   "required": [
                     "content_type"
                   ],
@@ -4759,7 +4739,7 @@
                   }
                 },
                 {
-                  "title": "RevChatMessageTetherBrowsingDisplayContent",
+                  "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
                   "required": [
                     "content_type"
                   ],
@@ -4779,7 +4759,7 @@
                   }
                 },
                 {
-                  "title": "RevChatMessageTetherQuoteContent",
+                  "title": "OpenaiWebChatMessageTetherQuoteContent",
                   "required": [
                     "content_type"
                   ],
@@ -4811,7 +4791,7 @@
                   }
                 },
                 {
-                  "title": "RevChatMessageSystemErrorContent",
+                  "title": "OpenaiWebChatMessageSystemErrorContent",
                   "required": [
                     "content_type"
                   ],
@@ -4850,16 +4830,16 @@
               "title": "Metadata",
               "anyOf": [
                 {
-                  "title": "RevChatMessageMetadata",
+                  "title": "OpenaiWebChatMessageMetadata",
                   "required": [
-                    "type"
+                    "source"
                   ],
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "title": "Type",
+                    "source": {
+                      "title": "Source",
                       "enum": [
-                        "rev"
+                        "openai_web"
                       ],
                       "type": "string"
                     },
@@ -4898,7 +4878,7 @@
                       "title": "Fallback Content"
                     },
                     "invoked_plugin": {
-                      "title": "RevChatMessageMetadataPlugin",
+                      "title": "OpenaiWebChatMessageMetadataPlugin",
                       "type": "object",
                       "properties": {
                         "http_response_status": {
@@ -4955,7 +4935,7 @@
                       ]
                     },
                     "cite_metadata": {
-                      "title": "RevChatMessageMetadataCite",
+                      "title": "OpenaiWebChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
                         "citation_format": {
@@ -4966,7 +4946,7 @@
                           "title": "Metadata List",
                           "type": "array",
                           "items": {
-                            "title": "RevChatMessageMetadataCiteData",
+                            "title": "OpenaiWebChatMessageMetadataCiteData",
                             "type": "object",
                             "properties": {
                               "title": {
@@ -4989,16 +4969,16 @@
                   }
                 },
                 {
-                  "title": "ApiChatMessageMetadata",
+                  "title": "OpenaiApiChatMessageMetadata",
                   "required": [
-                    "type"
+                    "source"
                   ],
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "title": "Type",
+                    "source": {
+                      "title": "Source",
                       "enum": [
-                        "api"
+                        "openai_api"
                       ],
                       "type": "string"
                     },
@@ -5036,10 +5016,20 @@
         "title": "Current Model",
         "type": "string"
       },
-      "rev_extra": {
-        "title": "RevConversationHistoryExtra",
+      "meta": {
+        "title": "OpenaiWebConversationHistoryMeta",
+        "required": [
+          "source"
+        ],
         "type": "object",
         "properties": {
+          "source": {
+            "title": "Source",
+            "enum": [
+              "openai_web"
+            ],
+            "type": "string"
+          },
           "moderation_results": {
             "title": "Moderation Results",
             "type": "array",
@@ -5057,10 +5047,20 @@
     },
     "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class\n\nInherited from:\n\n- Pydantic BaseModel\n- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)"
   },
-  "RevConversationHistoryExtra": {
-    "title": "RevConversationHistoryExtra",
+  "OpenaiWebConversationHistoryMeta": {
+    "title": "OpenaiWebConversationHistoryMeta",
+    "required": [
+      "source"
+    ],
     "type": "object",
     "properties": {
+      "source": {
+        "title": "Source",
+        "enum": [
+          "openai_web"
+        ],
+        "type": "string"
+      },
       "moderation_results": {
         "title": "Moderation Results",
         "type": "array",
@@ -5075,8 +5075,11 @@
       }
     }
   },
-  "RevConversationSchema": {
-    "title": "RevConversationSchema",
+  "OpenaiWebConversationSchema": {
+    "title": "OpenaiWebConversationSchema",
+    "required": [
+      "source"
+    ],
     "type": "object",
     "properties": {
       "id": {
@@ -5084,13 +5087,12 @@
         "type": "integer",
         "default": -1
       },
-      "type": {
-        "title": "Type",
+      "source": {
+        "title": "Source",
         "enum": [
-          "rev"
+          "openai_web"
         ],
-        "type": "string",
-        "default": "rev"
+        "type": "string"
       },
       "conversation_id": {
         "title": "Conversation Id",
@@ -5126,39 +5128,8 @@
       }
     }
   },
-  "RevPerModelAskCount": {
-    "title": "RevPerModelAskCount",
-    "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_mobile": {
-        "title": "Gpt 4 Mobile",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_browsing": {
-        "title": "Gpt 4 Browsing",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_plugins": {
-        "title": "Gpt 4 Plugins",
-        "type": "integer",
-        "default": 0
-      }
-    }
-  },
-  "RevSourceSettingSchema": {
-    "title": "RevSourceSettingSchema",
+  "OpenaiWebSourceSettingSchema": {
+    "title": "OpenaiWebSourceSettingSchema",
     "required": [
       "allow_to_use",
       "max_conv_count",
@@ -5240,7 +5211,7 @@
       "available_models": {
         "type": "array",
         "items": {
-          "title": "RevChatModels",
+          "title": "OpenaiWebChatModels",
           "enum": [
             "gpt_3_5",
             "gpt_4",
@@ -5282,6 +5253,137 @@
             "default": 0
           }
         }
+      }
+    }
+  },
+  "RequestLogAggregation": {
+    "title": "RequestLogAggregation",
+    "required": [
+      "_id",
+      "count"
+    ],
+    "type": "object",
+    "properties": {
+      "_id": {
+        "title": "RequestLogAggregationID",
+        "required": [
+          "start_time",
+          "route_path",
+          "method"
+        ],
+        "type": "object",
+        "properties": {
+          "start_time": {
+            "title": "Start Time",
+            "type": "string",
+            "format": "date-time"
+          },
+          "route_path": {
+            "title": "Route Path",
+            "type": "string"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          }
+        }
+      },
+      "count": {
+        "title": "Count",
+        "type": "integer"
+      },
+      "user_ids": {
+        "title": "User Ids",
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      },
+      "avg_elapsed_ms": {
+        "title": "Avg Elapsed Ms",
+        "type": "number"
+      }
+    }
+  },
+  "RequestLogAggregationID": {
+    "title": "RequestLogAggregationID",
+    "required": [
+      "start_time",
+      "route_path",
+      "method"
+    ],
+    "type": "object",
+    "properties": {
+      "start_time": {
+        "title": "Start Time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "route_path": {
+        "title": "Route Path",
+        "type": "string"
+      },
+      "method": {
+        "title": "Method",
+        "type": "string"
+      }
+    }
+  },
+  "RevChatGPTSetting": {
+    "title": "RevChatGPTSetting",
+    "type": "object",
+    "properties": {
+      "is_plus_account": {
+        "title": "Is Plus Account",
+        "type": "boolean",
+        "default": false
+      },
+      "chatgpt_base_url": {
+        "title": "Chatgpt Base Url",
+        "type": "string"
+      },
+      "common_timeout": {
+        "title": "Common Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 10
+      },
+      "ask_timeout": {
+        "title": "Ask Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 600
+      }
+    }
+  },
+  "RevPerModelAskCount": {
+    "title": "RevPerModelAskCount",
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4_mobile": {
+        "title": "Gpt 4 Mobile",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4_browsing": {
+        "title": "Gpt 4 Browsing",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4_plugins": {
+        "title": "Gpt 4 Plugins",
+        "type": "integer",
+        "default": 0
       }
     }
   },
@@ -5447,7 +5549,6 @@
       "is_verified",
       "username",
       "nickname",
-      "rev_chat_status",
       "create_time",
       "setting"
     ],
@@ -5482,16 +5583,6 @@
         "title": "Nickname",
         "type": "string"
       },
-      "rev_chat_status": {
-        "title": "RevChatStatus",
-        "enum": [
-          "asking",
-          "queueing",
-          "idling"
-        ],
-        "type": "string",
-        "description": "An enumeration."
-      },
       "last_active_time": {
         "title": "Last Active Time",
         "type": "string",
@@ -5510,8 +5601,9 @@
         "title": "UserSettingSchema",
         "required": [
           "credits",
-          "rev",
-          "api"
+          "openai_web_chat_status",
+          "openai_web",
+          "openai_api"
         ],
         "type": "object",
         "properties": {
@@ -5527,8 +5619,18 @@
             "title": "Credits",
             "type": "number"
           },
-          "rev": {
-            "title": "RevSourceSettingSchema",
+          "openai_web_chat_status": {
+            "title": "OpenaiWebChatStatus",
+            "enum": [
+              "asking",
+              "queueing",
+              "idling"
+            ],
+            "type": "string",
+            "description": "An enumeration."
+          },
+          "openai_web": {
+            "title": "OpenaiWebSourceSettingSchema",
             "required": [
               "allow_to_use",
               "max_conv_count",
@@ -5610,7 +5712,7 @@
               "available_models": {
                 "type": "array",
                 "items": {
-                  "title": "RevChatModels",
+                  "title": "OpenaiWebChatModels",
                   "enum": [
                     "gpt_3_5",
                     "gpt_4",
@@ -5655,8 +5757,8 @@
               }
             }
           },
-          "api": {
-            "title": "ApiSourceSettingSchema",
+          "openai_api": {
+            "title": "OpenaiApiSourceSettingSchema",
             "required": [
               "allow_to_use",
               "max_conv_count",
@@ -5740,7 +5842,7 @@
               "available_models": {
                 "type": "array",
                 "items": {
-                  "title": "ApiChatModels",
+                  "title": "OpenaiApiChatModels",
                   "enum": [
                     "gpt_3_5",
                     "gpt_4"
@@ -5800,7 +5902,6 @@
       "is_verified",
       "username",
       "nickname",
-      "rev_chat_status",
       "create_time",
       "setting"
     ],
@@ -5835,16 +5936,6 @@
         "title": "Nickname",
         "type": "string"
       },
-      "rev_chat_status": {
-        "title": "RevChatStatus",
-        "enum": [
-          "asking",
-          "queueing",
-          "idling"
-        ],
-        "type": "string",
-        "description": "An enumeration."
-      },
       "last_active_time": {
         "title": "Last Active Time",
         "type": "string",
@@ -5863,8 +5954,9 @@
         "title": "UserSettingSchema",
         "required": [
           "credits",
-          "rev",
-          "api"
+          "openai_web_chat_status",
+          "openai_web",
+          "openai_api"
         ],
         "type": "object",
         "properties": {
@@ -5880,8 +5972,18 @@
             "title": "Credits",
             "type": "number"
           },
-          "rev": {
-            "title": "RevSourceSettingSchema",
+          "openai_web_chat_status": {
+            "title": "OpenaiWebChatStatus",
+            "enum": [
+              "asking",
+              "queueing",
+              "idling"
+            ],
+            "type": "string",
+            "description": "An enumeration."
+          },
+          "openai_web": {
+            "title": "OpenaiWebSourceSettingSchema",
             "required": [
               "allow_to_use",
               "max_conv_count",
@@ -5963,7 +6065,7 @@
               "available_models": {
                 "type": "array",
                 "items": {
-                  "title": "RevChatModels",
+                  "title": "OpenaiWebChatModels",
                   "enum": [
                     "gpt_3_5",
                     "gpt_4",
@@ -6008,8 +6110,8 @@
               }
             }
           },
-          "api": {
-            "title": "ApiSourceSettingSchema",
+          "openai_api": {
+            "title": "OpenaiApiSourceSettingSchema",
             "required": [
               "allow_to_use",
               "max_conv_count",
@@ -6093,7 +6195,7 @@
               "available_models": {
                 "type": "array",
                 "items": {
-                  "title": "ApiChatModels",
+                  "title": "OpenaiApiChatModels",
                   "enum": [
                     "gpt_3_5",
                     "gpt_4"
@@ -6151,8 +6253,9 @@
     "title": "UserSettingSchema",
     "required": [
       "credits",
-      "rev",
-      "api"
+      "openai_web_chat_status",
+      "openai_web",
+      "openai_api"
     ],
     "type": "object",
     "properties": {
@@ -6168,8 +6271,18 @@
         "title": "Credits",
         "type": "number"
       },
-      "rev": {
-        "title": "RevSourceSettingSchema",
+      "openai_web_chat_status": {
+        "title": "OpenaiWebChatStatus",
+        "enum": [
+          "asking",
+          "queueing",
+          "idling"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "openai_web": {
+        "title": "OpenaiWebSourceSettingSchema",
         "required": [
           "allow_to_use",
           "max_conv_count",
@@ -6251,7 +6364,7 @@
           "available_models": {
             "type": "array",
             "items": {
-              "title": "RevChatModels",
+              "title": "OpenaiWebChatModels",
               "enum": [
                 "gpt_3_5",
                 "gpt_4",
@@ -6296,8 +6409,8 @@
           }
         }
       },
-      "api": {
-        "title": "ApiSourceSettingSchema",
+      "openai_api": {
+        "title": "OpenaiApiSourceSettingSchema",
         "required": [
           "allow_to_use",
           "max_conv_count",
@@ -6381,7 +6494,7 @@
           "available_models": {
             "type": "array",
             "items": {
-              "title": "ApiChatModels",
+              "title": "OpenaiApiChatModels",
               "enum": [
                 "gpt_3_5",
                 "gpt_4"

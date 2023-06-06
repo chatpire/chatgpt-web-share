@@ -91,7 +91,7 @@ import { useI18n } from 'vue-i18n';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useAppStore } from '@/store';
-import { ApiChatMessageMetadata, BaseChatMessage, RevChatMessageMetadata } from '@/types/schema';
+import { BaseChatMessage, OpenaiApiChatMessageMetadata, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getContentRawText } from '@/utils/chat';
 import md from '@/utils/markdown';
 import { Message } from '@/utils/tips';
@@ -126,9 +126,9 @@ const shrinkMessage = computed(() => {
   return false;
 });
 
-const revMetadata = computed<RevChatMessageMetadata | null>(() => {
-  if (props.message.type == 'rev') {
-    return props.message.metadata as RevChatMessageMetadata;
+const revMetadata = computed<OpenaiWebChatMessageMetadata | null>(() => {
+  if (props.message.source == 'openai_web') {
+    return props.message.metadata as OpenaiWebChatMessageMetadata;
   }
   return null;
 });

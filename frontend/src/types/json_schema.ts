@@ -1,13 +1,13 @@
 import modelDefinitions from './json/model_definitions.json';
 import jsonSchemas from './json/schemas.json';
-import { ApiChatModels, RevChatModels } from './schema';
+import { OpenaiApiChatModels, OpenaiWebChatModels } from './schema';
 
-export const jsonRevSourceSettingSchema = jsonSchemas.RevSourceSettingSchema;
-export const jsonApiSourceSettingSchema = jsonSchemas.ApiSourceSettingSchema;
+export const jsonRevSourceSettingSchema = jsonSchemas.OpenaiWebSourceSettingSchema;
+export const jsonApiSourceSettingSchema = jsonSchemas.OpenaiApiSourceSettingSchema;
 
 export const jsonConfigModelSchema = jsonSchemas.ConfigModel;
 export const jsonCredentialsModelSchema = jsonSchemas.CredentialsModel;
 
-export const revChatModelNames = modelDefinitions.rev as RevChatModels[];
-export const apiChatModelNames = modelDefinitions.api as ApiChatModels[];
-export const allChatModelNames = [...revChatModelNames, ...apiChatModelNames] as string[];
+export const openaiWebChatModelNames = modelDefinitions.openai_web as OpenaiWebChatModels[];
+export const openaiApiChatModelNames = modelDefinitions.openai_api as OpenaiApiChatModels[];
+export const allChatModelNames = [...openaiWebChatModelNames, ...openaiApiChatModelNames] as string[];

@@ -17,7 +17,7 @@ export interface HttpResponse<T = unknown> {
 }
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-// axios.defaults.baseURL = "/api/";
+// axios.defaults.baseURL = "/openai_api/";
 
 axios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {

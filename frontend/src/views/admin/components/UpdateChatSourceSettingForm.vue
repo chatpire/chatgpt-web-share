@@ -29,16 +29,16 @@ import VueForm from '@lljj/vue3-form-naive';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { jsonApiSourceSettingSchema, jsonRevSourceSettingSchema } from '@/types/json_schema';
-import { ApiSourceSettingSchema, RevSourceSettingSchema, UserReadAdmin, UserSettingSchema } from '@/types/schema';
+import { jsonApiSourceSettingSchema as jsonOpenaiApiSourceSettingSchema, jsonRevSourceSettingSchema as jsonOpenaiWebSourceSettingSchema } from '@/types/json_schema';
+import { OpenaiApiSourceSettingSchema, OpenaiWebSourceSettingSchema, UserReadAdmin, UserSettingSchema } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 
 const gtsm = screenWidthGreaterThan('sm');
 
 const { t } = useI18n();
 const settingModel = ref<UserSettingSchema | null>(null);
-const revChatSourceSettingModel = ref<RevSourceSettingSchema | null>(null);
-const apiChatSourceSettingModel = ref<ApiSourceSettingSchema | null>(null);
+const openaiWebChatSourceSettingModel = ref<OpenaiWebSourceSettingSchema | null>(null);
+const openaiApiChatSourceSettingModel = ref<OpenaiApiSourceSettingSchema | null>(null);
 
 
 // 对于 enum array 需要设置 uniqueItems 才能渲染为复选框
@@ -54,12 +54,12 @@ const setUniqueItemsForEnumProperties = (obj: any) => {
   }
 };
 
-setUniqueItemsForEnumProperties(jsonRevSourceSettingSchema);
-setUniqueItemsForEnumProperties(jsonApiSourceSettingSchema);
+setUniqueItemsForEnumProperties(jsonOpenaiWebSourceSettingSchema);
+setUniqueItemsForEnumProperties(jsonOpenaiApiSourceSettingSchema);
 
 const chatSourceSettingGroup = [
-  {type: 'rev', model: revChatSourceSettingModel, schema: jsonRevSourceSettingSchema},
-  {type: 'api', model: apiChatSourceSettingModel, schema: jsonApiSourceSettingSchema}
+  {type: 'openai_web', model: openaiWebChatSourceSettingModel, schema: jsonOpenaiWebSourceSettingSchema},
+  {type: 'openai_api', model: openaiApiChatSourceSettingModel, schema: jsonOpenaiApiSourceSettingSchema}
 ];
 
 // console.log(configJsonSchema, credentialsJsonSchema);
@@ -78,8 +78,8 @@ watch(
       return;
     }
     settingModel.value = user.setting;
-    revChatSourceSettingModel.value = user.setting.rev;
-    apiChatSourceSettingModel.value = user.setting.api;
+    openaiWebChatSourceSettingModel.value = user.setting.openai_web;
+    openaiApiChatSourceSettingModel.value = user.setting.openai_api;
   },
   { immediate: true }
 );
@@ -155,11 +155,11 @@ const uiSchema = {
 };
 
 const handleSave = () => {
-  if (!settingModel.value || !revChatSourceSettingModel.value || ! apiChatSourceSettingModel.value) {
+  if (!settingModel.value || !openaiWebChatSourceSettingModel.value || ! openaiApiChatSourceSettingModel.value) {
     return;
   }
-  settingModel.value!.rev = revChatSourceSettingModel.value;
-  settingModel.value!.api = apiChatSourceSettingModel.value;
+  settingModel.value!.openai_web = openaiWebChatSourceSettingModel.value;
+  settingModel.value!.openai_api = openaiApiChatSourceSettingModel.value;
   emits('save', settingModel.value);
 };
 </script>

@@ -163,166 +163,6 @@ export interface components {
        */
       read_timeout?: number;
     };
-    /** ApiAskLogMeta */
-    ApiAskLogMeta: {
-      /**
-       * Type 
-       * @enum {string}
-       */
-      type: "api";
-      model: components["schemas"]["ApiChatModels"];
-    };
-    /** ApiChatMessage */
-    ApiChatMessage: {
-      /**
-       * Id 
-       * Format: uuid
-       */
-      id: string;
-      /**
-       * Type 
-       * @enum {string}
-       */
-      type: "api";
-      /** Role */
-      role: ("system" | "user" | "assistant" | "tool") | string;
-      /** Author Name */
-      author_name?: "browser" | string;
-      /** Model */
-      model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Parent 
-       * Format: uuid
-       */
-      parent?: string;
-      /** Children */
-      children: (string)[];
-      content?: components["schemas"]["ApiChatMessageTextContent"];
-      /** Metadata */
-      metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
-    };
-    /** ApiChatMessageMetadata */
-    ApiChatMessageMetadata: {
-      /**
-       * Type 
-       * @enum {string}
-       */
-      type: "api";
-      usage?: components["schemas"]["OpenAIChatResponseUsage"];
-      /** Finish Reason */
-      finish_reason?: string;
-    };
-    /** ApiChatMessageTextContent */
-    ApiChatMessageTextContent: {
-      /**
-       * Content Type 
-       * @enum {string}
-       */
-      content_type: "text";
-      /** Text */
-      text: string;
-    };
-    /**
-     * ApiChatModels 
-     * @description An enumeration. 
-     * @enum {string}
-     */
-    ApiChatModels: "gpt_3_5" | "gpt_4";
-    /**
-     * ApiConversationHistoryDocument 
-     * @description Document Mapping class.
-     * 
-     * Fields:
-     * 
-     * - `id` - MongoDB document ObjectID "_id" field.
-     * Mapped to the PydanticObjectId class
-     * 
-     * Inherited from:
-     * 
-     * - Pydantic BaseModel
-     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
-     */
-    ApiConversationHistoryDocument: {
-      /**
-       * Id 
-       * Format: uuid
-       */
-      _id?: string;
-      /**
-       * Type 
-       * @enum {string}
-       */
-      type: "api";
-      /** Title */
-      title: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time: string;
-      /**
-       * Update Time 
-       * Format: date-time
-       */
-      update_time: string;
-      /** Mapping */
-      mapping: {
-        [key: string]: components["schemas"]["ApiChatMessage"] | undefined;
-      };
-      /**
-       * Current Node 
-       * Format: uuid
-       */
-      current_node?: string;
-      /** Current Model */
-      current_model?: string;
-      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
-    };
-    /** ApiConversationSchema */
-    ApiConversationSchema: {
-      /**
-       * Id 
-       * @default -1
-       */
-      id?: number;
-      /**
-       * Type 
-       * @default api 
-       * @enum {string}
-       */
-      type?: "api";
-      /**
-       * Conversation Id 
-       * Format: uuid
-       */
-      conversation_id?: string;
-      /** Title */
-      title?: string;
-      /** User Id */
-      user_id?: number;
-      /**
-       * Is Valid 
-       * @default true
-       */
-      is_valid?: boolean;
-      /** Current Model */
-      current_model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Update Time 
-       * Format: date-time
-       */
-      update_time?: string;
-    };
     /** ApiPerModelAskCount */
     ApiPerModelAskCount: {
       /**
@@ -335,29 +175,6 @@ export interface components {
        * @default 0
        */
       gpt_4?: number;
-    };
-    /** ApiSourceSettingSchema */
-    ApiSourceSettingSchema: {
-      /** Allow To Use */
-      allow_to_use: boolean;
-      /**
-       * Valid Until 
-       * Format: date-time
-       */
-      valid_until?: string;
-      /** Max Conv Count */
-      max_conv_count: number;
-      /** Total Ask Count */
-      total_ask_count: number;
-      /** Rate Limits */
-      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
-      /** Daily Available Time Slots */
-      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      available_models: (components["schemas"]["ApiChatModels"])[];
-      per_model_ask_count: components["schemas"]["ApiPerModelAskCount"];
-      /** Allow Custom Openai Api */
-      allow_custom_openai_api: boolean;
-      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
     };
     /** AskLogAggregation */
     AskLogAggregation: {
@@ -379,11 +196,11 @@ export interface components {
        */
       start_time: string;
       /** Meta */
-      meta: components["schemas"]["RevAskLogMeta"] | components["schemas"]["ApiAskLogMeta"];
+      meta: components["schemas"]["OpenaiWebAskLogMeta"] | components["schemas"]["OpenaiApiAskLogMeta"];
     };
     /** AskRequest */
     AskRequest: {
-      type: components["schemas"]["ChatSourceTypes"];
+      source: components["schemas"]["ChatSourceTypes"];
       /** Model */
       model: string;
       /** New Conversation */
@@ -419,7 +236,7 @@ export interface components {
        */
       conversation_id?: string;
       /** Message */
-      message?: components["schemas"]["RevChatMessage"] | components["schemas"]["ApiChatMessage"];
+      message?: components["schemas"]["OpenaiWebChatMessage"] | components["schemas"]["OpenaiApiChatMessage"];
       /** Error Detail */
       error_detail?: string;
     };
@@ -465,10 +282,10 @@ export interface components {
        */
       id: string;
       /**
-       * Type 
+       * Source 
        * @enum {string}
        */
-      type: "rev" | "api";
+      source: "openai_web" | "openai_api";
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
@@ -488,9 +305,9 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: (components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"] | components["schemas"]["RevChatMessageSystemErrorContent"]) | components["schemas"]["ApiChatMessageTextContent"] | string;
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
       /** Metadata */
-      metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
+      metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
     /** BaseConversationHistory */
     BaseConversationHistory: {
@@ -500,10 +317,10 @@ export interface components {
        */
       _id?: string;
       /**
-       * Type 
+       * Source 
        * @enum {string}
        */
-      type: "rev" | "api";
+      source: "openai_web" | "openai_api";
       /** Title */
       title: string;
       /**
@@ -527,7 +344,8 @@ export interface components {
       current_node?: string;
       /** Current Model */
       current_model?: string;
-      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
+      /** Meta */
+      meta?: components["schemas"]["OpenaiWebConversationHistoryMeta"] | components["schemas"]["OpenaiApiConversationHistoryMeta"];
     };
     /** BaseConversationSchema */
     BaseConversationSchema: {
@@ -536,7 +354,7 @@ export interface components {
        * @default -1
        */
       id?: number;
-      type: components["schemas"]["ChatSourceTypes"];
+      source: components["schemas"]["ChatSourceTypes"];
       /**
        * Conversation Id 
        * Format: uuid
@@ -595,7 +413,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    ChatSourceTypes: "rev" | "api";
+    ChatSourceTypes: "openai_web" | "openai_api";
     /** CommonSetting */
     CommonSetting: {
       /**
@@ -881,69 +699,27 @@ export interface components {
       /** Completion Tokens */
       completion_tokens?: number;
     };
-    /** RequestLogAggregation */
-    RequestLogAggregation: {
-      _id: components["schemas"]["RequestLogAggregationID"];
-      /** Count */
-      count: number;
-      /** User Ids */
-      user_ids?: (number)[];
-      /** Avg Elapsed Ms */
-      avg_elapsed_ms?: number;
-    };
-    /** RequestLogAggregationID */
-    RequestLogAggregationID: {
+    /** OpenaiApiAskLogMeta */
+    OpenaiApiAskLogMeta: {
       /**
-       * Start Time 
-       * Format: date-time
-       */
-      start_time: string;
-      /** Route Path */
-      route_path: string;
-      /** Method */
-      method: string;
-    };
-    /** RevAskLogMeta */
-    RevAskLogMeta: {
-      /**
-       * Type 
+       * Source 
        * @enum {string}
        */
-      type: "rev";
-      model: components["schemas"]["RevChatModels"];
+      source: "openai_api";
+      model: components["schemas"]["OpenaiApiChatModels"];
     };
-    /** RevChatGPTSetting */
-    RevChatGPTSetting: {
-      /**
-       * Is Plus Account 
-       * @default false
-       */
-      is_plus_account?: boolean;
-      /** Chatgpt Base Url */
-      chatgpt_base_url?: string;
-      /**
-       * Common Timeout 
-       * @default 10
-       */
-      common_timeout?: number;
-      /**
-       * Ask Timeout 
-       * @default 600
-       */
-      ask_timeout?: number;
-    };
-    /** RevChatMessage */
-    RevChatMessage: {
+    /** OpenaiApiChatMessage */
+    OpenaiApiChatMessage: {
       /**
        * Id 
        * Format: uuid
        */
       id: string;
       /**
-       * Type 
+       * Source 
        * @enum {string}
        */
-      type: "rev";
+      source: "openai_api";
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
@@ -962,140 +738,39 @@ export interface components {
       parent?: string;
       /** Children */
       children: (string)[];
-      /** Content */
-      content?: components["schemas"]["RevChatMessageTextContent"] | components["schemas"]["RevChatMessageCodeContent"] | components["schemas"]["RevChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["RevChatMessageTetherQuoteContent"] | components["schemas"]["RevChatMessageSystemErrorContent"];
+      content?: components["schemas"]["OpenaiApiChatMessageTextContent"];
       /** Metadata */
-      metadata?: components["schemas"]["RevChatMessageMetadata"] | components["schemas"]["ApiChatMessageMetadata"];
+      metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
-    /** RevChatMessageCodeContent */
-    RevChatMessageCodeContent: {
+    /** OpenaiApiChatMessageMetadata */
+    OpenaiApiChatMessageMetadata: {
       /**
-       * Content Type 
+       * Source 
        * @enum {string}
        */
-      content_type: "code";
-      /** Language */
-      language?: string;
-      /** Text */
-      text?: string;
+      source: "openai_api";
+      usage?: components["schemas"]["OpenAIChatResponseUsage"];
+      /** Finish Reason */
+      finish_reason?: string;
     };
-    /** RevChatMessageMetadata */
-    RevChatMessageMetadata: {
-      /**
-       * Type 
-       * @enum {string}
-       */
-      type: "rev";
-      /** Finish Details */
-      finish_details?: Record<string, never>;
-      /** Weight */
-      weight?: number;
-      /** End Turn */
-      end_turn?: boolean;
-      /** Message Status */
-      message_status?: string;
-      /** Recipient */
-      recipient?: ("all" | "browser") | string;
-      /** Fallback Content */
-      fallback_content?: Record<string, never>;
-      invoked_plugin?: components["schemas"]["RevChatMessageMetadataPlugin"];
-      /** Command */
-      command?: "search" | string;
-      /** Args */
-      args?: (string)[];
-      /** Status */
-      status?: "finished" | string;
-      cite_metadata?: components["schemas"]["RevChatMessageMetadataCite"];
-    };
-    /** RevChatMessageMetadataCite */
-    RevChatMessageMetadataCite: {
-      /** Citation Format */
-      citation_format?: Record<string, never>;
-      /** Metadata List */
-      metadata_list?: (components["schemas"]["RevChatMessageMetadataCiteData"])[];
-    };
-    /** RevChatMessageMetadataCiteData */
-    RevChatMessageMetadataCiteData: {
-      /** Title */
-      title?: string;
-      /** Url */
-      url?: string;
-      /** Text */
-      text?: string;
-    };
-    /** RevChatMessageMetadataPlugin */
-    RevChatMessageMetadataPlugin: {
-      /** Http Response Status */
-      http_response_status?: number;
-      /** Namespace */
-      namespace?: string;
-      /** Plugin Id */
-      plugin_id?: string;
-      /** Type */
-      type?: string;
-    };
-    /** RevChatMessageSystemErrorContent */
-    RevChatMessageSystemErrorContent: {
-      /**
-       * Content Type 
-       * @enum {string}
-       */
-      content_type: "system_error";
-      /** Name */
-      name?: "tool_error" | string;
-      /** Text */
-      text?: string;
-    };
-    /** RevChatMessageTetherBrowsingDisplayContent */
-    RevChatMessageTetherBrowsingDisplayContent: {
-      /**
-       * Content Type 
-       * @enum {string}
-       */
-      content_type: "tether_browsing_display";
-      /** Result */
-      result?: string;
-    };
-    /** RevChatMessageTetherQuoteContent */
-    RevChatMessageTetherQuoteContent: {
-      /**
-       * Content Type 
-       * @enum {string}
-       */
-      content_type: "tether_quote";
-      /** Url */
-      url?: string;
-      /** Domain */
-      domain?: string;
-      /** Text */
-      text?: string;
-      /** Title */
-      title?: string;
-    };
-    /** RevChatMessageTextContent */
-    RevChatMessageTextContent: {
+    /** OpenaiApiChatMessageTextContent */
+    OpenaiApiChatMessageTextContent: {
       /**
        * Content Type 
        * @enum {string}
        */
       content_type: "text";
-      /** Parts */
-      parts?: (string)[];
+      /** Text */
+      text: string;
     };
     /**
-     * RevChatModels 
+     * OpenaiApiChatModels 
      * @description An enumeration. 
      * @enum {string}
      */
-    RevChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins";
+    OpenaiApiChatModels: "gpt_3_5" | "gpt_4";
     /**
-     * RevChatStatus 
-     * @description An enumeration. 
-     * @enum {string}
-     */
-    RevChatStatus: "asking" | "queueing" | "idling";
-    /**
-     * RevConversationHistoryDocument 
+     * OpenaiApiConversationHistoryDocument 
      * @description Document Mapping class.
      * 
      * Fields:
@@ -1108,17 +783,17 @@ export interface components {
      * - Pydantic BaseModel
      * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
      */
-    RevConversationHistoryDocument: {
+    OpenaiApiConversationHistoryDocument: {
       /**
        * Id 
        * Format: uuid
        */
       _id?: string;
       /**
-       * Type 
+       * Source 
        * @enum {string}
        */
-      type: "rev";
+      source: "openai_api";
       /** Title */
       title: string;
       /**
@@ -1133,7 +808,7 @@ export interface components {
       update_time: string;
       /** Mapping */
       mapping: {
-        [key: string]: components["schemas"]["RevChatMessage"] | undefined;
+        [key: string]: components["schemas"]["OpenaiApiChatMessage"] | undefined;
       };
       /**
        * Current Node 
@@ -1142,28 +817,29 @@ export interface components {
       current_node?: string;
       /** Current Model */
       current_model?: string;
-      rev_extra?: components["schemas"]["RevConversationHistoryExtra"];
+      /** Meta */
+      meta?: components["schemas"]["OpenaiWebConversationHistoryMeta"] | components["schemas"]["OpenaiApiConversationHistoryMeta"];
     };
-    /** RevConversationHistoryExtra */
-    RevConversationHistoryExtra: {
-      /** Moderation Results */
-      moderation_results?: (Record<string, never>)[];
-      /** Plugin Ids */
-      plugin_ids?: (string)[];
+    /** OpenaiApiConversationHistoryMeta */
+    OpenaiApiConversationHistoryMeta: {
+      /**
+       * Source 
+       * @enum {string}
+       */
+      source: "openai_api";
     };
-    /** RevConversationSchema */
-    RevConversationSchema: {
+    /** OpenaiApiConversationSchema */
+    OpenaiApiConversationSchema: {
       /**
        * Id 
        * @default -1
        */
       id?: number;
       /**
-       * Type 
-       * @default rev 
+       * Source 
        * @enum {string}
        */
-      type?: "rev";
+      source: "openai_api";
       /**
        * Conversation Id 
        * Format: uuid
@@ -1190,6 +866,363 @@ export interface components {
        * Format: date-time
        */
       update_time?: string;
+    };
+    /** OpenaiApiSourceSettingSchema */
+    OpenaiApiSourceSettingSchema: {
+      /** Allow To Use */
+      allow_to_use: boolean;
+      /**
+       * Valid Until 
+       * Format: date-time
+       */
+      valid_until?: string;
+      /** Max Conv Count */
+      max_conv_count: number;
+      /** Total Ask Count */
+      total_ask_count: number;
+      /** Rate Limits */
+      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      /** Daily Available Time Slots */
+      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
+      available_models: (components["schemas"]["OpenaiApiChatModels"])[];
+      per_model_ask_count: components["schemas"]["ApiPerModelAskCount"];
+      /** Allow Custom Openai Api */
+      allow_custom_openai_api: boolean;
+      custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
+    };
+    /** OpenaiWebAskLogMeta */
+    OpenaiWebAskLogMeta: {
+      /**
+       * Source 
+       * @enum {string}
+       */
+      source: "openai_web";
+      model: components["schemas"]["OpenaiWebChatModels"];
+    };
+    /** OpenaiWebChatMessage */
+    OpenaiWebChatMessage: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Source 
+       * @enum {string}
+       */
+      source: "openai_web";
+      /** Role */
+      role: ("system" | "user" | "assistant" | "tool") | string;
+      /** Author Name */
+      author_name?: "browser" | string;
+      /** Model */
+      model?: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time?: string;
+      /**
+       * Parent 
+       * Format: uuid
+       */
+      parent?: string;
+      /** Children */
+      children: (string)[];
+      /** Content */
+      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
+      /** Metadata */
+      metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
+    };
+    /** OpenaiWebChatMessageCodeContent */
+    OpenaiWebChatMessageCodeContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "code";
+      /** Language */
+      language?: string;
+      /** Text */
+      text?: string;
+    };
+    /** OpenaiWebChatMessageMetadata */
+    OpenaiWebChatMessageMetadata: {
+      /**
+       * Source 
+       * @enum {string}
+       */
+      source: "openai_web";
+      /** Finish Details */
+      finish_details?: Record<string, never>;
+      /** Weight */
+      weight?: number;
+      /** End Turn */
+      end_turn?: boolean;
+      /** Message Status */
+      message_status?: string;
+      /** Recipient */
+      recipient?: ("all" | "browser") | string;
+      /** Fallback Content */
+      fallback_content?: Record<string, never>;
+      invoked_plugin?: components["schemas"]["OpenaiWebChatMessageMetadataPlugin"];
+      /** Command */
+      command?: "search" | string;
+      /** Args */
+      args?: (string)[];
+      /** Status */
+      status?: "finished" | string;
+      cite_metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCite"];
+    };
+    /** OpenaiWebChatMessageMetadataCite */
+    OpenaiWebChatMessageMetadataCite: {
+      /** Citation Format */
+      citation_format?: Record<string, never>;
+      /** Metadata List */
+      metadata_list?: (components["schemas"]["OpenaiWebChatMessageMetadataCiteData"])[];
+    };
+    /** OpenaiWebChatMessageMetadataCiteData */
+    OpenaiWebChatMessageMetadataCiteData: {
+      /** Title */
+      title?: string;
+      /** Url */
+      url?: string;
+      /** Text */
+      text?: string;
+    };
+    /** OpenaiWebChatMessageMetadataPlugin */
+    OpenaiWebChatMessageMetadataPlugin: {
+      /** Http Response Status */
+      http_response_status?: number;
+      /** Namespace */
+      namespace?: string;
+      /** Plugin Id */
+      plugin_id?: string;
+      /** Type */
+      type?: string;
+    };
+    /** OpenaiWebChatMessageSystemErrorContent */
+    OpenaiWebChatMessageSystemErrorContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "system_error";
+      /** Name */
+      name?: "tool_error" | string;
+      /** Text */
+      text?: string;
+    };
+    /** OpenaiWebChatMessageTetherBrowsingDisplayContent */
+    OpenaiWebChatMessageTetherBrowsingDisplayContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "tether_browsing_display";
+      /** Result */
+      result?: string;
+    };
+    /** OpenaiWebChatMessageTetherQuoteContent */
+    OpenaiWebChatMessageTetherQuoteContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "tether_quote";
+      /** Url */
+      url?: string;
+      /** Domain */
+      domain?: string;
+      /** Text */
+      text?: string;
+      /** Title */
+      title?: string;
+    };
+    /** OpenaiWebChatMessageTextContent */
+    OpenaiWebChatMessageTextContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "text";
+      /** Parts */
+      parts?: (string)[];
+    };
+    /**
+     * OpenaiWebChatModels 
+     * @description An enumeration. 
+     * @enum {string}
+     */
+    OpenaiWebChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins";
+    /**
+     * OpenaiWebChatStatus 
+     * @description An enumeration. 
+     * @enum {string}
+     */
+    OpenaiWebChatStatus: "asking" | "queueing" | "idling";
+    /**
+     * OpenaiWebConversationHistoryDocument 
+     * @description Document Mapping class.
+     * 
+     * Fields:
+     * 
+     * - `id` - MongoDB document ObjectID "_id" field.
+     * Mapped to the PydanticObjectId class
+     * 
+     * Inherited from:
+     * 
+     * - Pydantic BaseModel
+     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+     */
+    OpenaiWebConversationHistoryDocument: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      _id?: string;
+      /**
+       * Source 
+       * @enum {string}
+       */
+      source: "openai_web";
+      /** Title */
+      title: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time: string;
+      /** Mapping */
+      mapping: {
+        [key: string]: components["schemas"]["OpenaiWebChatMessage"] | undefined;
+      };
+      /**
+       * Current Node 
+       * Format: uuid
+       */
+      current_node?: string;
+      /** Current Model */
+      current_model?: string;
+      meta?: components["schemas"]["OpenaiWebConversationHistoryMeta"];
+    };
+    /** OpenaiWebConversationHistoryMeta */
+    OpenaiWebConversationHistoryMeta: {
+      /**
+       * Source 
+       * @enum {string}
+       */
+      source: "openai_web";
+      /** Moderation Results */
+      moderation_results?: (Record<string, never>)[];
+      /** Plugin Ids */
+      plugin_ids?: (string)[];
+    };
+    /** OpenaiWebConversationSchema */
+    OpenaiWebConversationSchema: {
+      /**
+       * Id 
+       * @default -1
+       */
+      id?: number;
+      /**
+       * Source 
+       * @enum {string}
+       */
+      source: "openai_web";
+      /**
+       * Conversation Id 
+       * Format: uuid
+       */
+      conversation_id?: string;
+      /** Title */
+      title?: string;
+      /** User Id */
+      user_id?: number;
+      /**
+       * Is Valid 
+       * @default true
+       */
+      is_valid?: boolean;
+      /** Current Model */
+      current_model?: string;
+      /**
+       * Create Time 
+       * Format: date-time
+       */
+      create_time?: string;
+      /**
+       * Update Time 
+       * Format: date-time
+       */
+      update_time?: string;
+    };
+    /** OpenaiWebSourceSettingSchema */
+    OpenaiWebSourceSettingSchema: {
+      /** Allow To Use */
+      allow_to_use: boolean;
+      /**
+       * Valid Until 
+       * Format: date-time
+       */
+      valid_until?: string;
+      /** Max Conv Count */
+      max_conv_count: number;
+      /** Total Ask Count */
+      total_ask_count: number;
+      /** Rate Limits */
+      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      /** Daily Available Time Slots */
+      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
+      available_models: (components["schemas"]["OpenaiWebChatModels"])[];
+      per_model_ask_count: components["schemas"]["RevPerModelAskCount"];
+    };
+    /** RequestLogAggregation */
+    RequestLogAggregation: {
+      _id: components["schemas"]["RequestLogAggregationID"];
+      /** Count */
+      count: number;
+      /** User Ids */
+      user_ids?: (number)[];
+      /** Avg Elapsed Ms */
+      avg_elapsed_ms?: number;
+    };
+    /** RequestLogAggregationID */
+    RequestLogAggregationID: {
+      /**
+       * Start Time 
+       * Format: date-time
+       */
+      start_time: string;
+      /** Route Path */
+      route_path: string;
+      /** Method */
+      method: string;
+    };
+    /** RevChatGPTSetting */
+    RevChatGPTSetting: {
+      /**
+       * Is Plus Account 
+       * @default false
+       */
+      is_plus_account?: boolean;
+      /** Chatgpt Base Url */
+      chatgpt_base_url?: string;
+      /**
+       * Common Timeout 
+       * @default 10
+       */
+      common_timeout?: number;
+      /**
+       * Ask Timeout 
+       * @default 600
+       */
+      ask_timeout?: number;
     };
     /** RevPerModelAskCount */
     RevPerModelAskCount: {
@@ -1218,26 +1251,6 @@ export interface components {
        * @default 0
        */
       gpt_4_plugins?: number;
-    };
-    /** RevSourceSettingSchema */
-    RevSourceSettingSchema: {
-      /** Allow To Use */
-      allow_to_use: boolean;
-      /**
-       * Valid Until 
-       * Format: date-time
-       */
-      valid_until?: string;
-      /** Max Conv Count */
-      max_conv_count: number;
-      /** Total Ask Count */
-      total_ask_count: number;
-      /** Rate Limits */
-      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
-      /** Daily Available Time Slots */
-      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      available_models: (components["schemas"]["RevChatModels"])[];
-      per_model_ask_count: components["schemas"]["RevPerModelAskCount"];
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {
@@ -1351,7 +1364,6 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
-      rev_chat_status: components["schemas"]["RevChatStatus"];
       /**
        * Last Active Time 
        * Format: date-time
@@ -1388,7 +1400,6 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
-      rev_chat_status: components["schemas"]["RevChatStatus"];
       /**
        * Last Active Time 
        * Format: date-time
@@ -1413,8 +1424,9 @@ export interface components {
       user_id?: number;
       /** Credits */
       credits: number;
-      rev: components["schemas"]["RevSourceSettingSchema"];
-      api: components["schemas"]["ApiSourceSettingSchema"];
+      openai_web_chat_status: components["schemas"]["OpenaiWebChatStatus"];
+      openai_web: components["schemas"]["OpenaiWebSourceSettingSchema"];
+      openai_api: components["schemas"]["OpenaiApiSourceSettingSchema"];
     };
     /** UserUpdate */
     UserUpdate: {

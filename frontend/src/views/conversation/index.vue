@@ -208,8 +208,8 @@ const sendDisabled = computed(() => {
 const makeNewConversation = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
-    if (!newConversationInfo.type || !newConversationInfo.model) return;
-    newConversationInfo.title = newConversationInfo.title || `New Chat (${t('labels.' + newConversationInfo.type)})`;
+    if (!newConversationInfo.source || !newConversationInfo.model) return;
+    newConversationInfo.title = newConversationInfo.title || `New Chat (${t('labels.' + newConversationInfo.source)})`;
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
   });
@@ -249,7 +249,7 @@ const sendMsg = async () => {
   let hasGotReply = false;
 
   const askRequest: AskRequest = {
-    type: currentConversation.value!.type,
+    source: currentConversation.value!.source,
     new_conversation: currentConversationId.value!.startsWith('new_conversation'),
     model: currentConversation.value!.current_model!,
     content: message,
@@ -265,7 +265,7 @@ const sendMsg = async () => {
   const random_strid = Math.random().toString(36).substring(2, 16);
   currentSendMessage.value = {
     id: `send_${random_strid}`,
-    type: currentConversation.value!.type,
+    source: currentConversation.value!.source,
     content: message,
     role: 'user',
     parent: currentConvHistory.value?.current_node || undefined,
@@ -273,7 +273,7 @@ const sendMsg = async () => {
   };
   currentRecvMessage.value = {
     id: `recv_${random_strid}`,
-    type: currentConversation.value!.type,
+    source: currentConversation.value!.source,
     content: '',
     role: 'assistent',
     parent: `send_${random_strid}`,
@@ -329,7 +329,7 @@ const sendMsg = async () => {
         if (currentConversationId.value == newConversationId) {
           const newConvHistory = {
             _id: respConversationId!,
-            type: 'rev',
+            source: 'openai_web',
             title: currentConvHistory.value!.title,
             current_model: currentConvHistory.value!.current_model,
             create_time: currentConvHistory.value!.create_time,

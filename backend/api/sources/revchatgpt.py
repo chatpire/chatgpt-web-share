@@ -192,6 +192,7 @@ class RevChatGPTManager:
             current_node=result.get("current_node"),
             current_model=current_model,
             rev_extra=OpenaiWebConversationHistoryMeta(
+                source="openai_web",
                 plugin_ids=result.get("plugin_ids"),
                 moderation_results=result.get("moderation_results"),
             )

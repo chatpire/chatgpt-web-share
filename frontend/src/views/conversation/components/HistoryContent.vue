@@ -11,7 +11,7 @@
       <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
         <n-text>
           {{ $t('commons.currentConversationModel') }}: {{ getChatModelNameTrans(convHistory?.current_model || null) }}
-          {{ t(`labels.${convHistory?.type}`) }}
+          {{ t(`labels.${convHistory?.source}`) }}
         </n-text>
         <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
           <template #icon>
@@ -44,7 +44,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useConversationStore } from '@/store';
-import { BaseChatMessage, BaseConversationHistory, RevChatMessageMetadata } from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getMessageListFromHistory } from '@/utils/conversation';
 import { Message } from '@/utils/tips';

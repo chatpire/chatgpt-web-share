@@ -72,7 +72,7 @@ function makeDataset(askRecords: AskLogAggregation[]) {
 
   // 对askRecords按照_id.meta.type和_id.meta.model进行聚合
   const askRecordsGroupByTypeAndModel = askRecords.reduce((acc, cur) => {
-    const key = `${cur._id.meta.type}|${cur._id.meta.model}`;
+    const key = `${cur._id.meta.source}|${cur._id.meta.model}`;
     if (acc[key]) {
       acc[key].push(cur);
     } else {
@@ -267,7 +267,7 @@ const option = computed(() => {
         //   return true;
         // },
         lineStyle: {
-          // type: 'dashed',
+          // source: 'dashed',
           color: isDark.value ? '#2E2E30' : '#E5E8EF',
         },
       },

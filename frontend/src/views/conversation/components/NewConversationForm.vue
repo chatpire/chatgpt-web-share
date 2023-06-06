@@ -3,8 +3,8 @@
     <n-form-item :label="t('labels.title')">
       <n-input v-model:value="newConversationInfo.title" />
     </n-form-item>
-    <n-form-item :label="t('labels.type')">
-      <n-select v-model:value="newConversationInfo.type" :options="availableChatSourceTypes" />
+    <n-form-item :label="t('labels.source')">
+      <n-select v-model:value="newConversationInfo.source" :options="availableChatSourceTypes" />
     </n-form-item>
     <n-form-item :label="t('labels.model')">
       <n-select v-model:value="newConversationInfo.model" :options="availableModels" />
@@ -30,14 +30,14 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
     return [];
   }
   return [
-    {label: t('labels.rev'), value: 'rev', disabled: !userStore.user.setting.rev.allow_to_use},
-    {label: t('labels.api'), value: 'api', disabled: !userStore.user.setting.api.allow_to_use},
+    {label: t('labels.openai_web'), value: 'openai_web', disabled: !userStore.user.setting.openai_web.allow_to_use},
+    {label: t('labels.openai_api'), value: 'openai_api', disabled: !userStore.user.setting.openai_api.allow_to_use},
   ];
 });
 
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,
-  type: availableChatSourceTypes.value.length > 0 ? availableChatSourceTypes.value[0].value as string : null,
+  source: availableChatSourceTypes.value.length > 0 ? availableChatSourceTypes.value[0].value as string : null,
   model: null,
 });
 
@@ -45,13 +45,13 @@ const availableModels = computed<SelectOption[]>(() => {
   if (!userStore.user) {
     return [];
   }
-  if (newConversationInfo.value.type === 'rev') {
-    return userStore.user.setting.rev.available_models.map((model) => ({
+  if (newConversationInfo.value.source === 'openai_web') {
+    return userStore.user.setting.openai_web.available_models.map((model) => ({
       label: t(`models.${model}`),
       value: model,
     }));
   } else {
-    return userStore.user.setting.api.available_models.map((model) => ({
+    return userStore.user.setting.openai_api.available_models.map((model) => ({
       label: t(`models.${model}`),
       value: model,
     }));
@@ -66,7 +66,7 @@ watch(
   () => {
     return {
       title: newConversationInfo.value.title,
-      type: newConversationInfo.value.type,
+      source: newConversationInfo.value.source,
       model: newConversationInfo.value.model,
     } as NewConversationInfo;
   },
@@ -78,7 +78,7 @@ watch(
 );
 
 watch(
-  () => newConversationInfo.value.type,
+  () => newConversationInfo.value.source,
   () => {
     newConversationInfo.value.model = null;
   }

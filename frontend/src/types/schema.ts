@@ -7,34 +7,34 @@ export type UserUpdate = components['schemas']['UserUpdate'];
 export type UserUpdateAdmin = components['schemas']['UserUpdateAdmin'];
 
 export type UserSettingSchema = components['schemas']['UserSettingSchema'];
-export type RevSourceSettingSchema = components['schemas']['RevSourceSettingSchema'];
-export type ApiSourceSettingSchema = components['schemas']['ApiSourceSettingSchema'];
+export type OpenaiWebSourceSettingSchema = components['schemas']['OpenaiWebSourceSettingSchema'];
+export type OpenaiApiSourceSettingSchema = components['schemas']['OpenaiApiSourceSettingSchema'];
 
 export type ServerStatusSchema = components['schemas']['ServerStatusSchema'];
-export type RevChatStatus = components['schemas']['RevChatStatus'];
+export type OpenaiWebChatStatus = components['schemas']['OpenaiWebChatStatus'];
 
-export type RevChatModels = components['schemas']['RevChatModels'];
-export type ApiChatModels = components['schemas']['ApiChatModels'];
+export type OpenaiWebChatModels = components['schemas']['OpenaiWebChatModels'];
+export type OpenaiApiChatModels = components['schemas']['OpenaiApiChatModels'];
 
-export type RevChatMessageMetadata = components['schemas']['RevChatMessageMetadata'];
-export type ApiChatMessageMetadata = components['schemas']['ApiChatMessageMetadata'];
-export type RevChatMessageTextContent = components['schemas']['RevChatMessageTextContent'];
-export type RevChatMessageCodeContent = components['schemas']['RevChatMessageCodeContent'];
-export type RevChatMessageTetherBrowsingDisplayContent = components['schemas']['RevChatMessageTetherBrowsingDisplayContent'];
-export type RevChatMessageTetherQuoteContent = components['schemas']['RevChatMessageTetherQuoteContent'];
-export type RevChatMessageSystemErrorContent = components['schemas']['RevChatMessageSystemErrorContent'];
-export type ApiChatMessageTextContent  = components['schemas']['ApiChatMessageTextContent'];
+export type OpenaiWebChatMessageMetadata = components['schemas']['OpenaiWebChatMessageMetadata'];
+export type OpenaiApiChatMessageMetadata = components['schemas']['OpenaiApiChatMessageMetadata'];
+export type OpenaiWebChatMessageTextContent = components['schemas']['OpenaiWebChatMessageTextContent'];
+export type OpenaiWebChatMessageCodeContent = components['schemas']['OpenaiWebChatMessageCodeContent'];
+export type OpenaiWebChatMessageTetherBrowsingDisplayContent = components['schemas']['OpenaiWebChatMessageTetherBrowsingDisplayContent'];
+export type OpenaiWebChatMessageTetherQuoteContent = components['schemas']['OpenaiWebChatMessageTetherQuoteContent'];
+export type OpenaiWebChatMessageSystemErrorContent = components['schemas']['OpenaiWebChatMessageSystemErrorContent'];
+export type OpenaiApiChatMessageTextContent = components['schemas']['OpenaiApiChatMessageTextContent'];
 export type BaseChatMessage = components['schemas']['BaseChatMessage'];
-export type ApiChatMessage = components['schemas']['ApiChatMessage'];
-export type RevChatMessage = components['schemas']['RevChatMessage'];
+export type OpenaiApiChatMessage = components['schemas']['OpenaiApiChatMessage'];
+export type OpenaiWebChatMessage = components['schemas']['OpenaiWebChatMessage'];
 
 export type BaseConversationSchema = components['schemas']['BaseConversationSchema'];
-export type RevConversationSchema = components['schemas']['RevConversationSchema'];
-export type ApiConversationSchema = components['schemas']['ApiConversationSchema'];
+// export source OpenaiWebConversationSchema = components['schemas']['OpenaiWebConversationSchema'];
+// export source OpenaiApiConversationSchema = components['schemas']['OpenaiApiConversationSchema'];
 
 export type BaseConversationHistory = components['schemas']['BaseConversationHistory'];
-export type ApiConversationHistoryDocument = components['schemas']['ApiConversationHistoryDocument'];
-export type RevConversationHistoryDocument = components['schemas']['RevConversationHistoryDocument'];
+export type OpenaiApiConversationHistoryDocument = components['schemas']['OpenaiApiConversationHistoryDocument'];
+export type OpenaiWebConversationHistoryDocument = components['schemas']['OpenaiWebConversationHistoryDocument'];
 
 export type OpenAIChatPluginCategory = components['schemas']['OpenAIChatPluginCategory'];
 export type OpenAIChatPluginManifest = components['schemas']['OpenAIChatPluginManifest'];

@@ -91,7 +91,7 @@ const columns: DataTableColumns<UserReadAdmin> = [
     title: t('commons.status'),
     key: 'rev_chat_status',
     render(row) {
-      return row.rev_chat_status ? t(chatStatusMap[row.rev_chat_status as keyof typeof chatStatusMap]) : '';
+      return row.setting.openai_web_chat_status ? t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap]) : '';
     },
     sorter: 'default',
   },
@@ -109,8 +109,8 @@ const columns: DataTableColumns<UserReadAdmin> = [
     render(row) {
       return h(ChatTypeTagInfoCell, {
         value: {
-          rev: getCountTrans(row.setting.rev.max_conv_count),
-          api: getCountTrans(row.setting.api.max_conv_count),
+          openai_web: getCountTrans(row.setting.openai_web.max_conv_count),
+          openai_api: getCountTrans(row.setting.openai_api.max_conv_count),
         },
       });
     },

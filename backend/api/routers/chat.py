@@ -99,7 +99,7 @@ class WebsocketInvalidAskException(WebsocketException):
 
 
 async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
-    source_setting = user.setting.openai_web if ask_request.type == ChatSourceTypes.openai_web else user.setting.openai_api
+    source_setting = user.setting.openai_web if ask_request.source == ChatSourceTypes.openai_web else user.setting.openai_api
 
     # 是否允许使用当前提问类型
     if not source_setting.allow_to_use:
@@ -120,8 +120,8 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     # TODO: 时间窗口频率限制
 
     # 判断是否能使用该模型
-    if ask_request.type == ChatSourceTypes.openai_web and ask_request.model not in user.setting.openai_web.available_models or \
-            ask_request.type == ChatSourceTypes.openai_api and ask_request.model not in user.setting.openai_api.available_models:
+    if ask_request.source == ChatSourceTypes.openai_web and ask_request.model not in user.setting.openai_web.available_models or \
+            ask_request.source == ChatSourceTypes.openai_api and ask_request.model not in user.setting.openai_api.available_models:
         # await websocket.close(1007, "errors.userNotAllowToUseModel")
         raise WebsocketInvalidAskException("errors.userNotAllowToUseModel")
 
@@ -140,7 +140,7 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
         conv_count = await session.execute(
             select(func.count(BaseConversation.id)).filter(
                 and_(BaseConversation.user_id == user.id, BaseConversation.is_valid,
-                     BaseConversation.source == ask_request.type)))
+                     BaseConversation.source == ask_request.source)))
         conv_count = conv_count.scalar()
 
     max_conv_count = source_setting.max_conv_count
@@ -176,7 +176,7 @@ async def chat(websocket: WebSocket):
 
     user = UserReadAdmin.from_orm(user_db)
 
-    if user.rev_chat_status != OpenaiWebChatStatus.idling:
+    if user.setting.openai_web_chat_status != OpenaiWebChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
         return
 
@@ -219,7 +219,7 @@ async def chat(websocket: WebSocket):
     queueing_end_time = None
 
     # rev: 排队
-    if ask_request.type == ChatSourceTypes.openai_web:
+    if ask_request.source == ChatSourceTypes.openai_web:
         if openai_web_manager.is_busy():
             await reply(AskResponse(
                 type=AskResponseType.queueing,
@@ -241,7 +241,7 @@ async def chat(websocket: WebSocket):
 
     try:
         # rev: 更改状态为 asking
-        if ask_request.type == ChatSourceTypes.openai_web:
+        if ask_request.source == ChatSourceTypes.openai_web:
             await change_user_chat_status(user.id, OpenaiWebChatStatus.asking)
             openai_web_manager.reset_chat()
 
@@ -252,10 +252,10 @@ async def chat(websocket: WebSocket):
 
         ask_start_time = time.time()
 
-        manager = openai_web_manager if ask_request.type == ChatSourceTypes.openai_web else openai_api_manager
+        manager = openai_web_manager if ask_request.source == ChatSourceTypes.openai_web else openai_api_manager
 
         # 设置 timeout
-        if ask_request.type == ChatSourceTypes.openai_web:
+        if ask_request.source == ChatSourceTypes.openai_web:
             model = OpenaiWebChatModels(ask_request.model)
         else:
             model = OpenaiApiChatModels(ask_request.model)
@@ -268,7 +268,7 @@ async def chat(websocket: WebSocket):
             has_got_reply = True
 
             try:
-                if ask_request.type == ChatSourceTypes.openai_web:
+                if ask_request.source == ChatSourceTypes.openai_web:
                     message = convert_revchatgpt_message(data)
                     if conversation_id is None:
                         conversation_id = data["conversation_id"]
@@ -347,7 +347,7 @@ async def chat(websocket: WebSocket):
         websocket_reason = "errors.unknownError"
 
     finally:
-        if ask_request.type == ChatSourceTypes.openai_web:
+        if ask_request.source == ChatSourceTypes.openai_web:
             openai_web_manager.semaphore.release()
             await change_user_chat_status(user.id, OpenaiWebChatStatus.idling)
         openai_web_manager.reset_chat()
@@ -386,7 +386,7 @@ async def chat(websocket: WebSocket):
     if has_got_reply:
         assert message is not None, "has_got_reply but message is None"
 
-        if ask_request.type == ChatSourceTypes.openai_api:
+        if ask_request.source == ChatSourceTypes.openai_api:
             assert message.parent is not None, "message.parent is None"
 
             content = ask_request.content
@@ -449,7 +449,7 @@ async def chat(websocket: WebSocket):
                 assert conversation_id is not None, "has_got_reply but conversation_id is None"
 
                 # rev设置默认标题
-                if ask_request.type == ChatSourceTypes.openai_web:
+                if ask_request.source == ChatSourceTypes.openai_web:
                     try:
                         if ask_request.new_title is not None:
                             await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
@@ -458,7 +458,7 @@ async def chat(websocket: WebSocket):
 
                 current_time = datetime.now().astimezone(tz=timezone.utc)
                 new_conv = BaseConversationSchema(
-                    source=ask_request.type,
+                    source=ask_request.source,
                     is_valid=True,
                     conversation_id=conversation_id,
                     title=ask_request.new_title,
@@ -479,7 +479,7 @@ async def chat(websocket: WebSocket):
                 session.add(conversation)
 
             # 扣除对话次数
-            source_setting = user.setting.openai_web if ask_request.type == ChatSourceTypes.openai_web else user.setting.openai_api
+            source_setting = user.setting.openai_web if ask_request.source == ChatSourceTypes.openai_web else user.setting.openai_api
 
             total_ask_count = source_setting.total_ask_count
             model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model)
@@ -494,13 +494,13 @@ async def chat(websocket: WebSocket):
                     setattr(source_setting.per_model_ask_count, ask_request.model, model_ask_count - 1)
 
                 user_db = await session.get(User, user.id)
-                setattr(user_db.setting, ask_request.type, source_setting)
+                setattr(user_db.setting, ask_request.source, source_setting)
 
                 session.add(user_db.setting)
 
             await session.commit()
 
-            if ask_request.type == ChatSourceTypes.openai_web:
+            if ask_request.source == ChatSourceTypes.openai_web:
                 meta = OpenaiWebAskLogMeta(source="openai_web", model=OpenaiWebChatModels(ask_request.model))
             else:
                 meta = OpenaiApiAskLogMeta(source="openai_api", model=OpenaiApiChatModels(ask_request.model))
