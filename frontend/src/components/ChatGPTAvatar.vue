@@ -95,6 +95,7 @@ const colorMap = {
   lightblue: '#9ECBFB',
   darkblue: '#2F94FF',
   darkgreen: '#0E7C7B',
+  darkpurple: '#6F2C91',
 };
 
 const color = computed(() => {

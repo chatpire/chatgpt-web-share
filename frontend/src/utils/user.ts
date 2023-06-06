@@ -4,7 +4,7 @@ import { h } from 'vue';
 import ChatModelTagsRow from '@/components/ChatModelTagsRow.vue';
 import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { i18n } from '@/i18n';
-import { openaiApiChatModelNames, openaiWebChatModelNames } from '@/types/json_schema';
+import { openaiApiChatModelNames, openaiWebChatModelNames} from '@/types/json_schema';
 import { chatStatusMap, UserRead, UserSettingSchema } from '@/types/schema';
 import { getCountTrans } from '@/utils/chat';
 
@@ -13,23 +13,14 @@ const t = i18n.global.t as any;
 export const renderUserPerModelCounts = (setting: UserSettingSchema, availableOnly = false) => {
   const openaiWebCounts = {} as Record<string, string>;
   const openaiApiCounts = {} as Record<string, string>;
-  if (availableOnly) {
-    setting.openai_web.available_models.forEach((model) => {
-      openaiWebCounts[model] = getCountTrans(setting.openai_web.per_model_ask_count[model]);
-    });
-    setting.openai_api.available_models.forEach((model) => {
-      openaiApiCounts[model] = getCountTrans(setting.openai_api.per_model_ask_count[model]);
-    });
-  } else {
-    openaiWebChatModelNames.forEach((model) => {
-      openaiWebCounts[model] = getCountTrans(setting.openai_web.per_model_ask_count[model]);
-    }
-    );
-    openaiApiChatModelNames.forEach((model) => {
-      openaiApiCounts[model] = getCountTrans(setting.openai_api.per_model_ask_count[model]);
-    }
-    );
-  }
+  openaiWebChatModelNames.forEach((model) => {
+    if (availableOnly && setting.openai_web.per_model_ask_count[model] == undefined) return;
+    openaiWebCounts[model] = getCountTrans(setting.openai_web.per_model_ask_count[model]);
+  });
+  openaiApiChatModelNames.forEach((model) => {
+    if (availableOnly && setting.openai_api.per_model_ask_count[model] == undefined) return;
+    openaiApiCounts[model] = getCountTrans(setting.openai_api.per_model_ask_count[model]);
+  });
   // console.log(revCounts, apiCounts);
   return h(ChatTypeTagInfoCell, {
     value: {
