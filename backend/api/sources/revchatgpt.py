@@ -140,9 +140,9 @@ class RevChatGPTManager:
     def __init__(self):
         self.chatbot = AsyncChatbot({
             "access_token": credentials.chatgpt_access_token,
-            "paid": config.revchatgpt.is_plus_account,
+            "paid": config.openai_web.is_plus_account,
             "model": "text-davinci-002-render-sha",  # default model
-        }, base_url=config.revchatgpt.chatgpt_base_url)
+        }, base_url=config.openai_web.chatgpt_base_url)
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):
@@ -155,7 +155,7 @@ class RevChatGPTManager:
         while True:
             url = f"{self.chatbot.base_url}conversations?offset={offset}&limit={limit}"
             if timeout is None:
-                timeout = httpx.Timeout(config.revchatgpt.common_timeout)
+                timeout = httpx.Timeout(config.openai_web.common_timeout)
             response = await self.chatbot.session.get(url, timeout=timeout)
             await _check_response(response)
             data = json.loads(response.text)
@@ -238,7 +238,7 @@ class RevChatGPTManager:
         if plugin_ids:
             data["plugin_ids"] = plugin_ids
 
-        timeout = httpx.Timeout(Config().revchatgpt.common_timeout, read=Config().revchatgpt.ask_timeout)
+        timeout = httpx.Timeout(Config().openai_web.common_timeout, read=Config().openai_web.ask_timeout)
 
         async with self.chatbot.session.stream(
                 method="POST",
@@ -293,7 +293,7 @@ class RevChatGPTManager:
         response = await self.chatbot.session.get(
             url=f"{self.chatbot.base_url}aip/p",
             params=params,
-            timeout=config.revchatgpt.ask_timeout
+            timeout=config.openai_web.ask_timeout
         )
         await _check_response(response)
         return parse_obj_as(list[OpenAIChatPlugin], response.json().get("items"))

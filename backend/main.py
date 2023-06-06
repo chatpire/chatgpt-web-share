@@ -119,7 +119,7 @@ async def on_startup():
         await session.commit()
 
     logger.info(
-        f"Using {config.revchatgpt.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
+        f"Using {config.openai_web.chatgpt_base_url or 'env: ' + os.environ.get('CHATGPT_BASE_URL', '<default_bypass>')} as ChatGPT base url")
 
     if not config.common.sync_conversations_on_startup:
         return

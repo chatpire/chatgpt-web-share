@@ -113,7 +113,7 @@ class OpenAIChatManager:
 
         # TODO: credits 判断
 
-        base_url = config.api.openai_base_url
+        base_url = config.openai_api.openai_base_url
         data = {
             "model": model.code(),
             "messages": [{"role": msg.role, "content": msg.content.text} for msg in messages],
@@ -124,7 +124,7 @@ class OpenAIChatManager:
         reply_message = None
         text_content = ""
 
-        timeout = httpx.Timeout(config.api.read_timeout, connect=config.api.connect_timeout)
+        timeout = httpx.Timeout(config.openai_api.read_timeout, connect=config.openai_api.connect_timeout)
 
         async with self.client.stream(
                 method="POST",

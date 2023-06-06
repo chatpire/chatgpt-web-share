@@ -2,6 +2,33 @@
   "title": "ConfigModel",
   "type": "object",
   "properties": {
+    "openai_web": {
+      "title": "Openai Web",
+      "default": {
+        "is_plus_account": false,
+        "chatgpt_base_url": null,
+        "common_timeout": 10,
+        "ask_timeout": 600
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/OpenaiWebChatGPTSetting"
+        }
+      ]
+    },
+    "openai_api": {
+      "title": "Openai Api",
+      "default": {
+        "openai_base_url": "https://api.openai.com/v1/",
+        "connect_timeout": 10,
+        "read_timeout": 20
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/OpenaiAPISetting"
+        }
+      ]
+    },
     "common": {
       "title": "Common",
       "default": {
@@ -63,44 +90,6 @@
         }
       ]
     },
-    "revchatgpt": {
-      "title": "Revchatgpt",
-      "default": {
-        "is_plus_account": false,
-        "chatgpt_base_url": null,
-        "common_timeout": 10,
-        "ask_timeout": 600
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/RevChatGPTSetting"
-        }
-      ]
-    },
-    "api": {
-      "title": "Api",
-      "default": {
-        "openai_base_url": "https://api.openai.com/v1/",
-        "connect_timeout": 10,
-        "read_timeout": 20
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/APISetting"
-        }
-      ]
-    },
-    "log": {
-      "title": "Log",
-      "default": {
-        "console_log_level": "INFO"
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/LogSetting"
-        }
-      ]
-    },
     "stats": {
       "title": "Stats",
       "default": {
@@ -115,9 +104,70 @@
           "$ref": "#/definitions/StatsSetting"
         }
       ]
+    },
+    "log": {
+      "title": "Log",
+      "default": {
+        "console_log_level": "INFO"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/LogSetting"
+        }
+      ]
     }
   },
   "definitions": {
+    "OpenaiWebChatGPTSetting": {
+      "title": "OpenaiWebChatGPTSetting",
+      "type": "object",
+      "properties": {
+        "is_plus_account": {
+          "title": "Is Plus Account",
+          "default": false,
+          "type": "boolean"
+        },
+        "chatgpt_base_url": {
+          "title": "Chatgpt Base Url",
+          "type": "string"
+        },
+        "common_timeout": {
+          "title": "Common Timeout",
+          "default": 10,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "ask_timeout": {
+          "title": "Ask Timeout",
+          "default": 600,
+          "minimum": 1,
+          "type": "integer"
+        }
+      }
+    },
+    "OpenaiAPISetting": {
+      "title": "OpenaiAPISetting",
+      "type": "object",
+      "properties": {
+        "openai_base_url": {
+          "title": "Openai Base Url",
+          "default": "https://api.openai.com/v1/",
+          "type": "string"
+        },
+        "connect_timeout": {
+          "title": "Connect Timeout",
+          "default": 10,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "read_timeout": {
+          "title": "Read Timeout",
+          "default": 20,
+          "minimum": 1,
+          "type": "integer"
+        }
+      }
+    },
     "CommonSetting": {
       "title": "CommonSetting",
       "type": "object",
@@ -242,72 +292,6 @@
         }
       }
     },
-    "RevChatGPTSetting": {
-      "title": "RevChatGPTSetting",
-      "type": "object",
-      "properties": {
-        "is_plus_account": {
-          "title": "Is Plus Account",
-          "default": false,
-          "type": "boolean"
-        },
-        "chatgpt_base_url": {
-          "title": "Chatgpt Base Url",
-          "type": "string"
-        },
-        "common_timeout": {
-          "title": "Common Timeout",
-          "default": 10,
-          "minimum": 1,
-          "type": "integer"
-        },
-        "ask_timeout": {
-          "title": "Ask Timeout",
-          "default": 600,
-          "minimum": 1,
-          "type": "integer"
-        }
-      }
-    },
-    "APISetting": {
-      "title": "APISetting",
-      "type": "object",
-      "properties": {
-        "openai_base_url": {
-          "title": "Openai Base Url",
-          "default": "https://api.openai.com/v1/",
-          "type": "string"
-        },
-        "connect_timeout": {
-          "title": "Connect Timeout",
-          "default": 10,
-          "minimum": 1,
-          "type": "integer"
-        },
-        "read_timeout": {
-          "title": "Read Timeout",
-          "default": 20,
-          "minimum": 1,
-          "type": "integer"
-        }
-      }
-    },
-    "LogSetting": {
-      "title": "LogSetting",
-      "type": "object",
-      "properties": {
-        "console_log_level": {
-          "title": "Console Log Level",
-          "default": "INFO",
-          "enum": [
-            "INFO",
-            "DEBUG",
-            "WARNING"
-          ],
-          "type": "string"
-        }
-      }
-    },
     "StatsSetting": {
       "title": "StatsSetting",
       "type": "object",
@@ -331,6 +315,22 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "LogSetting": {
+      "title": "LogSetting",
+      "type": "object",
+      "properties": {
+        "console_log_level": {
+          "title": "Console Log Level",
+          "default": "INFO",
+          "enum": [
+            "INFO",
+            "DEBUG",
+            "WARNING"
+          ],
+          "type": "string"
         }
       }
     }

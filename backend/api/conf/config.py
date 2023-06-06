@@ -50,7 +50,7 @@ class AuthSetting(BaseModel):
     user_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
 
 
-class RevChatGPTSetting(BaseModel):
+class OpenaiWebChatGPTSetting(BaseModel):
     is_plus_account: bool = False
     chatgpt_base_url: Optional[str] = None
     common_timeout: int = Field(10, ge=1)   # connect, read, write
@@ -63,7 +63,7 @@ class RevChatGPTSetting(BaseModel):
         return v
 
 
-class APISetting(BaseModel):
+class OpenaiAPISetting(BaseModel):
     openai_base_url: str = 'https://api.openai.com/v1/'
     connect_timeout: int = Field(10, ge=1)
     read_timeout: int = Field(20, ge=1)
@@ -80,14 +80,14 @@ class StatsSetting(BaseModel):
 
 
 class ConfigModel(BaseModel):
+    openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
+    openai_api: OpenaiAPISetting = OpenaiAPISetting()
     common: CommonSetting = CommonSetting()
     http: HttpSetting = HttpSetting()
     data: DataSetting = DataSetting()
     auth: AuthSetting = AuthSetting()
-    revchatgpt: RevChatGPTSetting = RevChatGPTSetting()
-    api: APISetting = APISetting()
-    log: LogSetting = LogSetting()
     stats: StatsSetting = StatsSetting()
+    log: LogSetting = LogSetting()
 
     class Config:
         underscore_attrs_are_private = True
@@ -96,14 +96,14 @@ class ConfigModel(BaseModel):
 @singleton_with_lock
 class Config(BaseConfig[ConfigModel]):
     if _TYPE_CHECKING:
+        openai_api: OpenaiAPISetting = OpenaiAPISetting()
         common: CommonSetting = CommonSetting()
         http: HttpSetting = HttpSetting()
-        data: DataSetting = DataSetting()
-        auth: AuthSetting = AuthSetting()
-        revchatgpt: RevChatGPTSetting = RevChatGPTSetting()
-        api: APISetting = APISetting()
+        openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
         log: LogSetting = LogSetting()
         stats: StatsSetting = StatsSetting()
+        data: DataSetting = DataSetting()
+        auth: AuthSetting = AuthSetting()
 
     def __init__(self):
         super().__init__(ConfigModel, "config.yaml")

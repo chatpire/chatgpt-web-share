@@ -151,7 +151,7 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
 
 def check_message(msg: str):
     # 检查消息中的敏感信息
-    url = Config().revchatgpt.chatgpt_base_url
+    url = Config().openai_web.chatgpt_base_url
     if url and url in msg:
         return msg.replace(url, "<chatgpt_base_url>")
 
