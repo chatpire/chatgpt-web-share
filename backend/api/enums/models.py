@@ -11,6 +11,7 @@ class ChatSourceTypes(StrEnum):
 chat_model_definitions = {
     "openai_web": {
         "gpt_3_5": "text-davinci-002-render-sha",
+        "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
         "gpt_4": "gpt-4",
         "gpt_4_mobile": "gpt-4-mobile",
         "gpt_4_browsing": "gpt-4-browsing",
@@ -47,6 +48,7 @@ class BaseChatModelEnum(StrEnum):
 
 class OpenaiWebChatModels(BaseChatModelEnum):
     gpt_3_5 = auto()
+    gpt_3_5_mobile = auto()
     gpt_4 = auto()
     gpt_4_mobile = auto()
     gpt_4_browsing = auto()

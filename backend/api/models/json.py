@@ -9,8 +9,9 @@ from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 ModelT = TypeVar('ModelT', bound=OpenaiWebChatModels | OpenaiApiChatModels)
 
 
-class RevPerModelAskCount(BaseModel):
+class OpenaiWebPerModelAskCount(BaseModel):
     gpt_3_5: int = 0
+    gpt_3_5_mobile: int = 0
     gpt_4: int = 0
     gpt_4_mobile: int = 0
     gpt_4_browsing: int = 0
@@ -26,14 +27,16 @@ class RevPerModelAskCount(BaseModel):
 
     @staticmethod
     def default():
-        return RevPerModelAskCount(gpt_3_5=0, gpt_4=0, gpt_4_mobile=0, gpt_4_browsing=0, gpt_4_plugins=0)
+        return OpenaiWebPerModelAskCount(gpt_3_5=0, gpt_3_5_mobile=0, gpt_4=0, gpt_4_mobile=0, gpt_4_browsing=0,
+                                         gpt_4_plugins=0)
 
     @staticmethod
     def unlimited():
-        return RevPerModelAskCount(gpt_3_5=-1, gpt_4=-1, gpt_4_mobile=-1, gpt_4_browsing=-1, gpt_4_plugins=-1)
+        return OpenaiWebPerModelAskCount(gpt_3_5=-1, gpt_3_5_mobile=-1, gpt_4=-1, gpt_4_mobile=-1, gpt_4_browsing=-1,
+                                         gpt_4_plugins=-1)
 
 
-class ApiPerModelAskCount(BaseModel):
+class OpenaiApiPerModelAskCount(BaseModel):
     gpt_3_5: int = 0
     gpt_4: int = 0
 
@@ -46,11 +49,11 @@ class ApiPerModelAskCount(BaseModel):
 
     @staticmethod
     def default():
-        return ApiPerModelAskCount(gpt_3_5=0, gpt_4=0)
+        return OpenaiApiPerModelAskCount(gpt_3_5=0, gpt_4=0)
 
     @staticmethod
     def unlimited():
-        return ApiPerModelAskCount(gpt_3_5=-1, gpt_4=-1)
+        return OpenaiApiPerModelAskCount(gpt_3_5=-1, gpt_4=-1)
 
 
 class TimeWindowRateLimit(BaseModel):

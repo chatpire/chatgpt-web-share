@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr
 
 from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels
 from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot, \
-    RevPerModelAskCount, ApiPerModelAskCount
+    OpenaiWebPerModelAskCount, OpenaiApiPerModelAskCount
 
 
 class BaseSourceSettingSchema(BaseModel):
@@ -44,13 +44,13 @@ class BaseSourceSettingSchema(BaseModel):
 
 class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     available_models: list[OpenaiWebChatModels]
-    per_model_ask_count: RevPerModelAskCount
+    per_model_ask_count: OpenaiWebPerModelAskCount
 
     @staticmethod
     def default():
         return OpenaiWebSourceSettingSchema(
             available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
-            per_model_ask_count=RevPerModelAskCount.default(),
+            per_model_ask_count=OpenaiWebPerModelAskCount.default(),
             **BaseSourceSettingSchema.default().dict()
         )
 
@@ -58,7 +58,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     def unlimited():
         return OpenaiWebSourceSettingSchema(
             available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
-            per_model_ask_count=RevPerModelAskCount.unlimited(),
+            per_model_ask_count=OpenaiWebPerModelAskCount.unlimited(),
             **BaseSourceSettingSchema.unlimited().dict()
         )
 
@@ -68,7 +68,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
 
 class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
     available_models: list[OpenaiApiChatModels]
-    per_model_ask_count: ApiPerModelAskCount
+    per_model_ask_count: OpenaiApiPerModelAskCount
     allow_custom_openai_api: bool
     custom_openai_api_settings: CustomOpenaiApiSettings
 
@@ -76,7 +76,7 @@ class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
     def default():
         return OpenaiApiSourceSettingSchema(
             available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
-            per_model_ask_count=ApiPerModelAskCount.default(),
+            per_model_ask_count=OpenaiApiPerModelAskCount.default(),
             **BaseSourceSettingSchema.default().dict(),
             allow_custom_openai_api=False,
             custom_openai_api_settings=CustomOpenaiApiSettings()
@@ -86,7 +86,7 @@ class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
     def unlimited():
         return OpenaiApiSourceSettingSchema(
             available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
-            per_model_ask_count=ApiPerModelAskCount.unlimited(),
+            per_model_ask_count=OpenaiApiPerModelAskCount.unlimited(),
             **BaseSourceSettingSchema.unlimited().dict(),
             allow_custom_openai_api=True,
             custom_openai_api_settings=CustomOpenaiApiSettings()
