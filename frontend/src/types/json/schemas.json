@@ -1,43 +1,4 @@
 {
-  "APISetting": {
-    "title": "APISetting",
-    "type": "object",
-    "properties": {
-      "openai_base_url": {
-        "title": "Openai Base Url",
-        "type": "string",
-        "default": "https://api.openai.com/v1/"
-      },
-      "connect_timeout": {
-        "title": "Connect Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 10
-      },
-      "read_timeout": {
-        "title": "Read Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 20
-      }
-    }
-  },
-  "ApiPerModelAskCount": {
-    "title": "ApiPerModelAskCount",
-    "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "integer",
-        "default": 0
-      }
-    }
-  },
   "AskLogAggregation": {
     "title": "AskLogAggregation",
     "required": [
@@ -81,6 +42,7 @@
                     "title": "OpenaiWebChatModels",
                     "enum": [
                       "gpt_3_5",
+                      "gpt_3_5_mobile",
                       "gpt_4",
                       "gpt_4_mobile",
                       "gpt_4_browsing",
@@ -184,6 +146,7 @@
                 "title": "OpenaiWebChatModels",
                 "enum": [
                   "gpt_3_5",
+                  "gpt_3_5_mobile",
                   "gpt_4",
                   "gpt_4_mobile",
                   "gpt_4_browsing",
@@ -2135,6 +2098,76 @@
     "title": "ConfigModel",
     "type": "object",
     "properties": {
+      "openai_web": {
+        "title": "Openai Web",
+        "allOf": [
+          {
+            "title": "OpenaiWebChatGPTSetting",
+            "type": "object",
+            "properties": {
+              "is_plus_account": {
+                "title": "Is Plus Account",
+                "type": "boolean",
+                "default": false
+              },
+              "chatgpt_base_url": {
+                "title": "Chatgpt Base Url",
+                "type": "string"
+              },
+              "common_timeout": {
+                "title": "Common Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 10
+              },
+              "ask_timeout": {
+                "title": "Ask Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 600
+              }
+            }
+          }
+        ],
+        "default": {
+          "is_plus_account": false,
+          "common_timeout": 10,
+          "ask_timeout": 600
+        }
+      },
+      "openai_api": {
+        "title": "Openai Api",
+        "allOf": [
+          {
+            "title": "OpenaiAPISetting",
+            "type": "object",
+            "properties": {
+              "openai_base_url": {
+                "title": "Openai Base Url",
+                "type": "string",
+                "default": "https://api.openai.com/v1/"
+              },
+              "connect_timeout": {
+                "title": "Connect Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 10
+              },
+              "read_timeout": {
+                "title": "Read Timeout",
+                "minimum": 1,
+                "type": "integer",
+                "default": 20
+              }
+            }
+          }
+        ],
+        "default": {
+          "openai_base_url": "https://api.openai.com/v1/",
+          "connect_timeout": 10,
+          "read_timeout": 20
+        }
+      },
       "common": {
         "title": "Common",
         "allOf": [
@@ -2308,100 +2341,6 @@
           "user_secret": "MODIFY_THIS_TO_RANDOM_SECRET"
         }
       },
-      "revchatgpt": {
-        "title": "Revchatgpt",
-        "allOf": [
-          {
-            "title": "RevChatGPTSetting",
-            "type": "object",
-            "properties": {
-              "is_plus_account": {
-                "title": "Is Plus Account",
-                "type": "boolean",
-                "default": false
-              },
-              "chatgpt_base_url": {
-                "title": "Chatgpt Base Url",
-                "type": "string"
-              },
-              "common_timeout": {
-                "title": "Common Timeout",
-                "minimum": 1,
-                "type": "integer",
-                "default": 10
-              },
-              "ask_timeout": {
-                "title": "Ask Timeout",
-                "minimum": 1,
-                "type": "integer",
-                "default": 600
-              }
-            }
-          }
-        ],
-        "default": {
-          "is_plus_account": false,
-          "common_timeout": 10,
-          "ask_timeout": 600
-        }
-      },
-      "api": {
-        "title": "Api",
-        "allOf": [
-          {
-            "title": "APISetting",
-            "type": "object",
-            "properties": {
-              "openai_base_url": {
-                "title": "Openai Base Url",
-                "type": "string",
-                "default": "https://api.openai.com/v1/"
-              },
-              "connect_timeout": {
-                "title": "Connect Timeout",
-                "minimum": 1,
-                "type": "integer",
-                "default": 10
-              },
-              "read_timeout": {
-                "title": "Read Timeout",
-                "minimum": 1,
-                "type": "integer",
-                "default": 20
-              }
-            }
-          }
-        ],
-        "default": {
-          "openai_base_url": "https://api.openai.com/v1/",
-          "connect_timeout": 10,
-          "read_timeout": 20
-        }
-      },
-      "log": {
-        "title": "Log",
-        "allOf": [
-          {
-            "title": "LogSetting",
-            "type": "object",
-            "properties": {
-              "console_log_level": {
-                "title": "Console Log Level",
-                "enum": [
-                  "INFO",
-                  "DEBUG",
-                  "WARNING"
-                ],
-                "type": "string",
-                "default": "INFO"
-              }
-            }
-          }
-        ],
-        "default": {
-          "console_log_level": "INFO"
-        }
-      },
       "stats": {
         "title": "Stats",
         "allOf": [
@@ -2438,6 +2377,30 @@
           "request_stats_filter_keywords": [
             "/status"
           ]
+        }
+      },
+      "log": {
+        "title": "Log",
+        "allOf": [
+          {
+            "title": "LogSetting",
+            "type": "object",
+            "properties": {
+              "console_log_level": {
+                "title": "Console Log Level",
+                "enum": [
+                  "INFO",
+                  "DEBUG",
+                  "WARNING"
+                ],
+                "type": "string",
+                "default": "INFO"
+              }
+            }
+          }
+        ],
+        "default": {
+          "console_log_level": "INFO"
         }
       }
     }
@@ -2839,6 +2802,29 @@
       "completion_tokens": {
         "title": "Completion Tokens",
         "type": "integer"
+      }
+    }
+  },
+  "OpenaiAPISetting": {
+    "title": "OpenaiAPISetting",
+    "type": "object",
+    "properties": {
+      "openai_base_url": {
+        "title": "Openai Base Url",
+        "type": "string",
+        "default": "https://api.openai.com/v1/"
+      },
+      "connect_timeout": {
+        "title": "Connect Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 10
+      },
+      "read_timeout": {
+        "title": "Read Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 20
       }
     }
   },
@@ -3655,6 +3641,22 @@
       }
     }
   },
+  "OpenaiApiPerModelAskCount": {
+    "title": "OpenaiApiPerModelAskCount",
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "integer",
+        "default": 0
+      }
+    }
+  },
   "OpenaiApiSourceSettingSchema": {
     "title": "OpenaiApiSourceSettingSchema",
     "required": [
@@ -3750,7 +3752,7 @@
         }
       },
       "per_model_ask_count": {
-        "title": "ApiPerModelAskCount",
+        "title": "OpenaiApiPerModelAskCount",
         "type": "object",
         "properties": {
           "gpt_3_5": {
@@ -3804,6 +3806,7 @@
         "title": "OpenaiWebChatModels",
         "enum": [
           "gpt_3_5",
+          "gpt_3_5_mobile",
           "gpt_4",
           "gpt_4_mobile",
           "gpt_4_browsing",
@@ -3811,6 +3814,33 @@
         ],
         "type": "string",
         "description": "An enumeration."
+      }
+    }
+  },
+  "OpenaiWebChatGPTSetting": {
+    "title": "OpenaiWebChatGPTSetting",
+    "type": "object",
+    "properties": {
+      "is_plus_account": {
+        "title": "Is Plus Account",
+        "type": "boolean",
+        "default": false
+      },
+      "chatgpt_base_url": {
+        "title": "Chatgpt Base Url",
+        "type": "string"
+      },
+      "common_timeout": {
+        "title": "Common Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 10
+      },
+      "ask_timeout": {
+        "title": "Ask Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 600
       }
     }
   },
@@ -4555,6 +4585,7 @@
     "title": "OpenaiWebChatModels",
     "enum": [
       "gpt_3_5",
+      "gpt_3_5_mobile",
       "gpt_4",
       "gpt_4_mobile",
       "gpt_4_browsing",
@@ -5128,6 +5159,42 @@
       }
     }
   },
+  "OpenaiWebPerModelAskCount": {
+    "title": "OpenaiWebPerModelAskCount",
+    "type": "object",
+    "properties": {
+      "gpt_3_5": {
+        "title": "Gpt 3 5",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_3_5_mobile": {
+        "title": "Gpt 3 5 Mobile",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4": {
+        "title": "Gpt 4",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4_mobile": {
+        "title": "Gpt 4 Mobile",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4_browsing": {
+        "title": "Gpt 4 Browsing",
+        "type": "integer",
+        "default": 0
+      },
+      "gpt_4_plugins": {
+        "title": "Gpt 4 Plugins",
+        "type": "integer",
+        "default": 0
+      }
+    }
+  },
   "OpenaiWebSourceSettingSchema": {
     "title": "OpenaiWebSourceSettingSchema",
     "required": [
@@ -5214,6 +5281,7 @@
           "title": "OpenaiWebChatModels",
           "enum": [
             "gpt_3_5",
+            "gpt_3_5_mobile",
             "gpt_4",
             "gpt_4_mobile",
             "gpt_4_browsing",
@@ -5224,11 +5292,16 @@
         }
       },
       "per_model_ask_count": {
-        "title": "RevPerModelAskCount",
+        "title": "OpenaiWebPerModelAskCount",
         "type": "object",
         "properties": {
           "gpt_3_5": {
             "title": "Gpt 3 5",
+            "type": "integer",
+            "default": 0
+          },
+          "gpt_3_5_mobile": {
+            "title": "Gpt 3 5 Mobile",
             "type": "integer",
             "default": 0
           },
@@ -5326,64 +5399,6 @@
       "method": {
         "title": "Method",
         "type": "string"
-      }
-    }
-  },
-  "RevChatGPTSetting": {
-    "title": "RevChatGPTSetting",
-    "type": "object",
-    "properties": {
-      "is_plus_account": {
-        "title": "Is Plus Account",
-        "type": "boolean",
-        "default": false
-      },
-      "chatgpt_base_url": {
-        "title": "Chatgpt Base Url",
-        "type": "string"
-      },
-      "common_timeout": {
-        "title": "Common Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 10
-      },
-      "ask_timeout": {
-        "title": "Ask Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 600
-      }
-    }
-  },
-  "RevPerModelAskCount": {
-    "title": "RevPerModelAskCount",
-    "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_mobile": {
-        "title": "Gpt 4 Mobile",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_browsing": {
-        "title": "Gpt 4 Browsing",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_plugins": {
-        "title": "Gpt 4 Plugins",
-        "type": "integer",
-        "default": 0
       }
     }
   },
@@ -5715,6 +5730,7 @@
                   "title": "OpenaiWebChatModels",
                   "enum": [
                     "gpt_3_5",
+                    "gpt_3_5_mobile",
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
@@ -5725,11 +5741,16 @@
                 }
               },
               "per_model_ask_count": {
-                "title": "RevPerModelAskCount",
+                "title": "OpenaiWebPerModelAskCount",
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
                     "title": "Gpt 3 5",
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "gpt_3_5_mobile": {
+                    "title": "Gpt 3 5 Mobile",
                     "type": "integer",
                     "default": 0
                   },
@@ -5852,7 +5873,7 @@
                 }
               },
               "per_model_ask_count": {
-                "title": "ApiPerModelAskCount",
+                "title": "OpenaiApiPerModelAskCount",
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
@@ -6068,6 +6089,7 @@
                   "title": "OpenaiWebChatModels",
                   "enum": [
                     "gpt_3_5",
+                    "gpt_3_5_mobile",
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
@@ -6078,11 +6100,16 @@
                 }
               },
               "per_model_ask_count": {
-                "title": "RevPerModelAskCount",
+                "title": "OpenaiWebPerModelAskCount",
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
                     "title": "Gpt 3 5",
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "gpt_3_5_mobile": {
+                    "title": "Gpt 3 5 Mobile",
                     "type": "integer",
                     "default": 0
                   },
@@ -6205,7 +6232,7 @@
                 }
               },
               "per_model_ask_count": {
-                "title": "ApiPerModelAskCount",
+                "title": "OpenaiApiPerModelAskCount",
                 "type": "object",
                 "properties": {
                   "gpt_3_5": {
@@ -6367,6 +6394,7 @@
               "title": "OpenaiWebChatModels",
               "enum": [
                 "gpt_3_5",
+                "gpt_3_5_mobile",
                 "gpt_4",
                 "gpt_4_mobile",
                 "gpt_4_browsing",
@@ -6377,11 +6405,16 @@
             }
           },
           "per_model_ask_count": {
-            "title": "RevPerModelAskCount",
+            "title": "OpenaiWebPerModelAskCount",
             "type": "object",
             "properties": {
               "gpt_3_5": {
                 "title": "Gpt 3 5",
+                "type": "integer",
+                "default": 0
+              },
+              "gpt_3_5_mobile": {
+                "title": "Gpt 3 5 Mobile",
                 "type": "integer",
                 "default": 0
               },
@@ -6504,7 +6537,7 @@
             }
           },
           "per_model_ask_count": {
-            "title": "ApiPerModelAskCount",
+            "title": "OpenaiApiPerModelAskCount",
             "type": "object",
             "properties": {
               "gpt_3_5": {

@@ -145,37 +145,6 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    /** APISetting */
-    APISetting: {
-      /**
-       * Openai Base Url 
-       * @default https://api.openai.com/v1/
-       */
-      openai_base_url?: string;
-      /**
-       * Connect Timeout 
-       * @default 10
-       */
-      connect_timeout?: number;
-      /**
-       * Read Timeout 
-       * @default 20
-       */
-      read_timeout?: number;
-    };
-    /** ApiPerModelAskCount */
-    ApiPerModelAskCount: {
-      /**
-       * Gpt 3 5 
-       * @default 0
-       */
-      gpt_3_5?: number;
-      /**
-       * Gpt 4 
-       * @default 0
-       */
-      gpt_4?: number;
-    };
     /** AskLogAggregation */
     AskLogAggregation: {
       _id: components["schemas"]["AskLogAggregationID"];
@@ -450,6 +419,24 @@ export interface components {
     /** ConfigModel */
     ConfigModel: {
       /**
+       * Openai Web 
+       * @default {
+       *   "is_plus_account": false,
+       *   "common_timeout": 10,
+       *   "ask_timeout": 600
+       * }
+       */
+      openai_web?: components["schemas"]["OpenaiWebChatGPTSetting"];
+      /**
+       * Openai Api 
+       * @default {
+       *   "openai_base_url": "https://api.openai.com/v1/",
+       *   "connect_timeout": 10,
+       *   "read_timeout": 20
+       * }
+       */
+      openai_api?: components["schemas"]["OpenaiAPISetting"];
+      /**
        * Common 
        * @default {
        *   "print_sql": false,
@@ -495,31 +482,6 @@ export interface components {
        */
       auth?: components["schemas"]["AuthSetting"];
       /**
-       * Revchatgpt 
-       * @default {
-       *   "is_plus_account": false,
-       *   "common_timeout": 10,
-       *   "ask_timeout": 600
-       * }
-       */
-      revchatgpt?: components["schemas"]["RevChatGPTSetting"];
-      /**
-       * Api 
-       * @default {
-       *   "openai_base_url": "https://api.openai.com/v1/",
-       *   "connect_timeout": 10,
-       *   "read_timeout": 20
-       * }
-       */
-      api?: components["schemas"]["APISetting"];
-      /**
-       * Log 
-       * @default {
-       *   "console_log_level": "INFO"
-       * }
-       */
-      log?: components["schemas"]["LogSetting"];
-      /**
        * Stats 
        * @default {
        *   "ask_stats_ttl": 7776000,
@@ -530,6 +492,13 @@ export interface components {
        * }
        */
       stats?: components["schemas"]["StatsSetting"];
+      /**
+       * Log 
+       * @default {
+       *   "console_log_level": "INFO"
+       * }
+       */
+      log?: components["schemas"]["LogSetting"];
     };
     /** CredentialsModel */
     CredentialsModel: {
@@ -699,6 +668,24 @@ export interface components {
       /** Completion Tokens */
       completion_tokens?: number;
     };
+    /** OpenaiAPISetting */
+    OpenaiAPISetting: {
+      /**
+       * Openai Base Url 
+       * @default https://api.openai.com/v1/
+       */
+      openai_base_url?: string;
+      /**
+       * Connect Timeout 
+       * @default 10
+       */
+      connect_timeout?: number;
+      /**
+       * Read Timeout 
+       * @default 20
+       */
+      read_timeout?: number;
+    };
     /** OpenaiApiAskLogMeta */
     OpenaiApiAskLogMeta: {
       /**
@@ -867,6 +854,19 @@ export interface components {
        */
       update_time?: string;
     };
+    /** OpenaiApiPerModelAskCount */
+    OpenaiApiPerModelAskCount: {
+      /**
+       * Gpt 3 5 
+       * @default 0
+       */
+      gpt_3_5?: number;
+      /**
+       * Gpt 4 
+       * @default 0
+       */
+      gpt_4?: number;
+    };
     /** OpenaiApiSourceSettingSchema */
     OpenaiApiSourceSettingSchema: {
       /** Allow To Use */
@@ -885,7 +885,7 @@ export interface components {
       /** Daily Available Time Slots */
       daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
       available_models: (components["schemas"]["OpenaiApiChatModels"])[];
-      per_model_ask_count: components["schemas"]["ApiPerModelAskCount"];
+      per_model_ask_count: components["schemas"]["OpenaiApiPerModelAskCount"];
       /** Allow Custom Openai Api */
       allow_custom_openai_api: boolean;
       custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
@@ -898,6 +898,26 @@ export interface components {
        */
       source: "openai_web";
       model: components["schemas"]["OpenaiWebChatModels"];
+    };
+    /** OpenaiWebChatGPTSetting */
+    OpenaiWebChatGPTSetting: {
+      /**
+       * Is Plus Account 
+       * @default false
+       */
+      is_plus_account?: boolean;
+      /** Chatgpt Base Url */
+      chatgpt_base_url?: string;
+      /**
+       * Common Timeout 
+       * @default 10
+       */
+      common_timeout?: number;
+      /**
+       * Ask Timeout 
+       * @default 600
+       */
+      ask_timeout?: number;
     };
     /** OpenaiWebChatMessage */
     OpenaiWebChatMessage: {
@@ -1054,7 +1074,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    OpenaiWebChatModels: "gpt_3_5" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins";
+    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins";
     /**
      * OpenaiWebChatStatus 
      * @description An enumeration. 
@@ -1162,6 +1182,39 @@ export interface components {
        */
       update_time?: string;
     };
+    /** OpenaiWebPerModelAskCount */
+    OpenaiWebPerModelAskCount: {
+      /**
+       * Gpt 3 5 
+       * @default 0
+       */
+      gpt_3_5?: number;
+      /**
+       * Gpt 3 5 Mobile 
+       * @default 0
+       */
+      gpt_3_5_mobile?: number;
+      /**
+       * Gpt 4 
+       * @default 0
+       */
+      gpt_4?: number;
+      /**
+       * Gpt 4 Mobile 
+       * @default 0
+       */
+      gpt_4_mobile?: number;
+      /**
+       * Gpt 4 Browsing 
+       * @default 0
+       */
+      gpt_4_browsing?: number;
+      /**
+       * Gpt 4 Plugins 
+       * @default 0
+       */
+      gpt_4_plugins?: number;
+    };
     /** OpenaiWebSourceSettingSchema */
     OpenaiWebSourceSettingSchema: {
       /** Allow To Use */
@@ -1180,7 +1233,7 @@ export interface components {
       /** Daily Available Time Slots */
       daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
       available_models: (components["schemas"]["OpenaiWebChatModels"])[];
-      per_model_ask_count: components["schemas"]["RevPerModelAskCount"];
+      per_model_ask_count: components["schemas"]["OpenaiWebPerModelAskCount"];
     };
     /** RequestLogAggregation */
     RequestLogAggregation: {
@@ -1203,54 +1256,6 @@ export interface components {
       route_path: string;
       /** Method */
       method: string;
-    };
-    /** RevChatGPTSetting */
-    RevChatGPTSetting: {
-      /**
-       * Is Plus Account 
-       * @default false
-       */
-      is_plus_account?: boolean;
-      /** Chatgpt Base Url */
-      chatgpt_base_url?: string;
-      /**
-       * Common Timeout 
-       * @default 10
-       */
-      common_timeout?: number;
-      /**
-       * Ask Timeout 
-       * @default 600
-       */
-      ask_timeout?: number;
-    };
-    /** RevPerModelAskCount */
-    RevPerModelAskCount: {
-      /**
-       * Gpt 3 5 
-       * @default 0
-       */
-      gpt_3_5?: number;
-      /**
-       * Gpt 4 
-       * @default 0
-       */
-      gpt_4?: number;
-      /**
-       * Gpt 4 Mobile 
-       * @default 0
-       */
-      gpt_4_mobile?: number;
-      /**
-       * Gpt 4 Browsing 
-       * @default 0
-       */
-      gpt_4_browsing?: number;
-      /**
-       * Gpt 4 Plugins 
-       * @default 0
-       */
-      gpt_4_plugins?: number;
     };
     /** ServerStatusSchema */
     ServerStatusSchema: {
