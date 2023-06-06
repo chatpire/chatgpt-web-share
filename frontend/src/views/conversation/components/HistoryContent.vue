@@ -22,7 +22,7 @@
         </n-button>
       </div>
       <!-- 消息记录 -->
-      <MessageRow v-for="message in filteredMessages" :key="message.id" :message="message" />
+      <MessageRow v-for="messages in filteredMessagesList" :key="messages[0].id" :messages="messages" />
     </div>
     <n-empty
       v-else
@@ -44,9 +44,8 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useConversationStore } from '@/store';
-import { BaseChatMessage, BaseConversationHistory, OpenaiWebChatMessageMetadata } from '@/types/schema';
-import { getChatModelNameTrans } from '@/utils/chat';
-import { getMessageListFromHistory } from '@/utils/conversation';
+import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
+import {getChatModelNameTrans, getMessageListFromHistory, mergeMessages} from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';
@@ -74,16 +73,21 @@ const convHistory = computed<BaseConversationHistory | null>(() => {
   return conversationStore.conversationHistoryMap[conversationId];
 });
 
-const messages = computed<BaseChatMessage[]>(() => {
+const rawMessages = computed<BaseChatMessage[]>(() => {
   let result = convHistory.value ? getMessageListFromHistory(convHistory.value) : [];
   result = result.concat(props.extraMessages || []);
   return result;
 });
 
 const filteredMessages = computed<BaseChatMessage[]>(() => {
-  return messages.value ? messages.value.filter((message) => {
-    return message.role !== 'system';
+  return rawMessages.value ? rawMessages.value.filter((message) => {
+    if (message.role == 'system') return false;
+    return true;
   }) : [];
+});
+
+const filteredMessagesList = computed<BaseChatMessage[][]>(() => {
+  return mergeMessages(filteredMessages.value);
 });
 
 watch(

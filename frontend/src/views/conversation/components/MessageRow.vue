@@ -1,29 +1,20 @@
 <template>
   <div class="flex flex-row lt-md:flex-col py-3 lt-md:py-2 px-4 relative" :style="{ backgroundColor: backgroundColor }">
     <div class="w-10 lt-md:ml-0 ml-2 mt-3">
-      <n-avatar v-if="props.message.role == 'user'" size="small">
+      <n-avatar v-if="lastMessage?.role == 'user'" size="small">
         <n-icon>
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <ChatGPTAvatar v-show="!shrinkMessage" v-else size="small" :model="props.message.model" />
+      <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="lt-md:mx-0 mx-4 w-full">
-      <div v-if="shrinkMessage">
-        <n-collapse class="mb-2">
-          <n-collapse-item :title="t('commons.expandResult')">
-            <div class="whitespace-pre-wrap">
-              {{ content }}
-            </div>
-          </n-collapse-item>
-        </n-collapse>
-      </div>
-      <div v-else-if="showRawContent" class="my-3 w-full text-gray-500">
+      <div v-if="showRawMessage" class="my-3 w-full text-gray-500 whitespace-pre-wrap">
         {{ content }}
       </div>
-      <div v-else-if="isPluginMessage" class="my-3">
+      <!-- <div v-else-if="isPluginMessage" class="my-3">
         <n-alert
-          :title="t('commons.invoking_plugin', [revMetadata?.recipient])"
+          :title="t('commons.invoking_plugin', [openaiWebMetadata?.recipient])"
           type="info"
           class="whitespace-pre-wrap"
         >
@@ -31,27 +22,29 @@
         </n-alert>
       </div>
       <div v-else-if="isPluginResult" class="my-3">
-        <n-alert :title="revMetadata?.invoked_plugin?.namespace" type="success" class="whitespace-pre-wrap">
+        <n-alert :title="openaiWebMetadata?.invoked_plugin?.namespace" type="success" class="whitespace-pre-wrap">
           {{ content }}
         </n-alert>
-      </div>
-      <!-- 按 markdown 渲染内容 -->
-      <div
-        v-else-if="!showRawContent && !renderPureText"
-        ref="contentRef"
-        class="message-content w-full"
-        v-html="renderedContent"
-      />
+      </div> -->
+      <!-- 文本内容-->
+      <div v-else>
+        <div
+          v-if="renderPureText"
+          ref="contentRef"
+          class="message-content w-full whitespace-pre-wrap py-4"
+        >
+          {{ renderedContent }}
+        </div>
+        <div
+          v-else
+          ref="contentRef"
+          class="message-content w-full"
+          v-html="renderedContent"
+        />
       <!-- 用户回复不渲染为markdown -->
-      <div
-        v-else-if="!showRawContent && renderPureText"
-        ref="contentRef"
-        class="message-content w-full whitespace-pre-wrap py-4"
-      >
-        {{ renderedContent }}
       </div>
 
-      <div v-if="!shrinkMessage" class="hide-in-print">
+      <div class="hide-in-print">
         <n-button
           text
           ghost
@@ -68,9 +61,9 @@
           text
           ghost
           size="tiny"
-          :type="showRawContent ? 'success' : 'tertiary'"
+          :type="showRawMessage ? 'success' : 'tertiary'"
           class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-2 right-6"
-          @click="toggleShowRawContent"
+          @click="toggleShowRawMessage"
         >
           <n-icon>
             <CodeSlash />
@@ -91,66 +84,39 @@ import { useI18n } from 'vue-i18n';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useAppStore } from '@/store';
-import { BaseChatMessage, OpenaiApiChatMessageMetadata, OpenaiWebChatMessageMetadata } from '@/types/schema';
+import { BaseChatMessage } from '@/types/schema';
 import { getContentRawText } from '@/utils/chat';
 import md from '@/utils/markdown';
 import { Message } from '@/utils/tips';
-// let md: any;
-// let mdLoaded = ref(false);
-
-// onMounted(() => {
-//   import("@/utils/markdown").then((module) => {
-//     md = module.default;
-//     mdLoaded.value = true;
-//   });
-// });
 
 const { t } = useI18n();
 const appStore = useAppStore();
 
 const themeVars = useThemeVars();
 
-let observer = null;
-
 const contentRef = ref<HTMLDivElement>();
-const showRawContent = ref(false);
+const showRawMessage = ref(false); // 显示原始消息
 
 const props = defineProps<{
-  message: BaseChatMessage;
+  messages: BaseChatMessage[];
 }>();
 
-const shrinkMessage = computed(() => {
-  if (props.message.metadata && (props.message.metadata as any).weight != undefined) {
-    return (props.message.metadata as any).weight == 0;
-  }
-  return false;
-});
-
-const revMetadata = computed<OpenaiWebChatMessageMetadata | null>(() => {
-  if (props.message.source == 'openai_web') {
-    return props.message.metadata as OpenaiWebChatMessageMetadata;
-  }
-  return null;
-});
-
-const isPluginMessage = computed(() => {
-  return revMetadata.value && revMetadata.value.recipient && revMetadata.value.recipient != 'all';
-});
-
-const isPluginResult = computed(() => {
-  return revMetadata.value && revMetadata.value.invoked_plugin != null;
+const lastMessage = computed<BaseChatMessage | null>(() => {
+  if (props.messages.length == 0) return null;
+  else return props.messages[props.messages.length - 1];
 });
 
 const renderPureText = computed(() => {
-  return appStore.preference.renderUserMessageInMd === false && props.message.role == 'user';
+  // 对于 user 的内容，默认按纯文本来渲染
+  return appStore.preference.renderUserMessageInMd === false && lastMessage.value?.role == 'user';
 });
 
-const toggleShowRawContent = () => {
-  showRawContent.value = !showRawContent.value;
+const toggleShowRawMessage = () => {
+  showRawMessage.value = !showRawMessage.value;
 };
 
 const backgroundColor = computed(() => {
-  if (props.message.role == 'user') {
+  if (lastMessage.value?.role == 'user') {
     return themeVars.value.bodyColor;
   } else {
     return themeVars.value.actionColor;
@@ -158,20 +124,30 @@ const backgroundColor = computed(() => {
 });
 
 const content = computed(() => {
-  const message = props.message;
-  return getContentRawText(message);
+  // return getContentRawText(lastMessage.value);
+  let result = '';
+  // 遍历 props.messages
+  // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
+  for (let i = 0; i < props.messages.length; i++) {
+    const message = props.messages[i] as BaseChatMessage;
+    if (!message || !message.content) continue;
+    if (typeof message.content == 'string') result += message.content;
+    else if (message.content.content_type == 'text') {
+      result += getContentRawText(message);
+    }
+  }
+  return result;
 });
 
 const renderedContent = computed(() => {
-  // if (!mdLoaded.value) {
-  //   return '';
-  // }
   if (renderPureText.value) {
     return content.value;
   }
   const result = md.render(content.value || '');
   return addButtonsToPreTags(result);
 });
+
+// ---- 用于为代码块添加 copy 按钮 ----
 
 function addButtonsToPreTags(htmlString: string): string {
   // Parse the HTML string into an Element object.
@@ -207,6 +183,7 @@ function addButtonsToPreTags(htmlString: string): string {
   return serializer.serializeToString(doc.documentElement);
 }
 
+let observer = null;
 onMounted(() => {
   if (!contentRef.value) return;
   // eslint-disable-next-line no-undef
@@ -271,16 +248,9 @@ const bindOnclick = () => {
   }
 };
 
+// ------
+
 const copyMessageContent = () => {
-  /* debugger
-  if (!navigator.clipboard) return;
-  navigator.clipboard
-    .writeText(props.message.message || "")
-    .then(() => {
-      // console.log('copied', props.message.message);
-      Message.success(t('commons.copiedToClipboard'))
-    }
-    ).then(); */
   const messageContent = content.value || '';
   clipboard
     .writeText(messageContent)

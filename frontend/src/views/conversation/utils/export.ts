@@ -1,8 +1,7 @@
 import { saveAs } from 'file-saver';
 
 import { BaseConversationHistory } from '@/types/schema';
-import { getChatModelNameTrans, getContentRawText } from '@/utils/chat';
-import { getMessageListFromHistory } from '@/utils/conversation';
+import {getChatModelNameTrans, getContentRawText, getMessageListFromHistory} from '@/utils/chat';
 
 export const saveAsMarkdown = (convHistory: BaseConversationHistory) => {
   const messageList = getMessageListFromHistory(convHistory);
