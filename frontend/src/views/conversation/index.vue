@@ -157,15 +157,17 @@ const currentConvHistory = computed<BaseConversationHistory | null>(() => {
 
 const inputValue = ref('');
 const currentSendMessage = ref<BaseChatMessage | null>(null);
-const currentRecvMessage = ref<BaseChatMessage | null>(null);
+const currentRecvMessages = ref<BaseChatMessage[]>([]);
 
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
   const result: BaseChatMessage[] = [];
-  if (currentSendMessage.value && result.findIndex((message) => message.id === currentSendMessage.value?.id) === -1)
+  if (currentSendMessage.value)
     result.push(currentSendMessage.value);
-  if (currentRecvMessage.value && result.findIndex((message) => message.id === currentRecvMessage.value?.id) === -1)
-    result.push(currentRecvMessage.value);
+  for (const msg of currentRecvMessages.value) {
+    result.push(msg);
+  }
+  console.log('currentActiveMessages', currentActiveMessages.value, currentRecvMessages.value);
   return result;
 });
 
@@ -233,6 +235,18 @@ const scrollToBottomSmooth = () => {
   });
 };
 
+function buildTemporaryMessage(role: string, content: string, parent: string | undefined) {
+  const random_strid = Math.random().toString(36).substring(2, 16);
+  return {
+    id: `temp_${random_strid}`,
+    source: currentConversation.value!.source,
+    content,
+    role: role,
+    // parent,
+    children: [],
+  };
+}
+
 const sendMsg = async () => {
   if (sendDisabled.value || loadingBar.value || currentConvHistory.value == null) {
     Message.error(t('tips.pleaseSelectConversation'));
@@ -241,7 +255,7 @@ const sendMsg = async () => {
 
   LoadingBar.start();
   loadingBar.value = true;
-  const message = inputValue.value;
+  const text = inputValue.value;
   inputValue.value = '';
 
   canAbort.value = false;
@@ -252,7 +266,7 @@ const sendMsg = async () => {
     source: currentConversation.value!.source,
     new_conversation: currentConversationId.value!.startsWith('new_conversation'),
     model: currentConversation.value!.current_model!,
-    content: message,
+    content: text,
   };
   if (conversationStore.newConversation) {
     askRequest.new_title = conversationStore.newConversation.title;
@@ -262,24 +276,8 @@ const sendMsg = async () => {
   }
 
   // 使用临时的随机 id 保持当前更新的两个消息
-  const random_strid = Math.random().toString(36).substring(2, 16);
-  currentSendMessage.value = {
-    id: `send_${random_strid}`,
-    source: currentConversation.value!.source,
-    content: message,
-    role: 'user',
-    parent: currentConvHistory.value?.current_node || undefined,
-    children: [`recv_${random_strid}`],
-  };
-  currentRecvMessage.value = {
-    id: `recv_${random_strid}`,
-    source: currentConversation.value!.source,
-    content: '',
-    role: 'assistent',
-    parent: `send_${random_strid}`,
-    children: [],
-    model: currentConversation.value?.current_model,
-  };
+  currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node);
+  currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id)];
   const wsUrl = getAskWebsocketApiUrl();
   let wsErrorMessage: string | null = null;
   console.log('Connecting to', wsUrl, askRequest);
@@ -288,7 +286,6 @@ const sendMsg = async () => {
   let respConversationId = null as string | null;
 
   webSocket.onopen = (_event: Event) => {
-    // console.log('WebSocket connection is open', askInfo);
     webSocket.send(JSON.stringify(askRequest));
   };
 
@@ -298,19 +295,27 @@ const sendMsg = async () => {
     if (response.type === 'waiting') {
       // 等待回复
       canAbort.value = false;
-      currentRecvMessage.value!.content = t(response.tip || 'tips.waiting');
+      currentRecvMessages.value![0].content = t(response.tip || 'tips.waiting');
     } else if (response.type === 'queueing') {
       // 正在排队
       canAbort.value = true;
-      currentRecvMessage.value!.content = t(response.tip || 'tips.queueing');
+      currentRecvMessages.value![0].content = t(response.tip || 'tips.queueing');
     } else if (response.type === 'message') {
-      // console.log(reply)
-      hasGotReply = true;
-      currentRecvMessage.value = response.message! as BaseChatMessage;
+      if (!hasGotReply) {
+        currentRecvMessages.value = [];
+        hasGotReply = true;
+      }
+      const message = response.message as BaseChatMessage;
+      const index = currentRecvMessages.value.findIndex((msg) => msg.id === message.id);
+      if (index === -1) {
+        currentRecvMessages.value.push(message);
+      } else {
+        currentRecvMessages.value[index] = message;
+      }
+      // console.log('got message', message, index, currentRecvMessages.value);
       respConversationId = response.conversation_id || null;
       canAbort.value = true;
     } else if (response.type === 'error') {
-      currentRecvMessage.value!.content = `${t(response.tip || 'error')}: ${response.error_detail}}`;
       console.error(response);
       if (response.error_detail) {
         wsErrorMessage = response.error_detail;
@@ -326,6 +331,12 @@ const sendMsg = async () => {
     if (isAborted.value || event.code === 1000) {
       // 正常关闭
       if (hasGotReply) {
+        const allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
+        // allNewMessages.concat(currentRecvMessages.value);
+        for (const msg of currentRecvMessages.value) {
+          allNewMessages.push(msg);
+        }
+
         if (currentConversationId.value == newConversationId) {
           const newConvHistory = {
             _id: respConversationId!,
@@ -342,30 +353,14 @@ const sendMsg = async () => {
               [respConversationId!]: newConvHistory,
             },
           });
-
-          const msgSend = currentSendMessage.value;
-          const msgRecv = currentRecvMessage.value;
           currentSendMessage.value = null;
-          currentRecvMessage.value = null;
-          conversationStore.addMessageToConversation(respConversationId!, msgSend!, msgRecv!);
-          currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
-          await conversationStore.fetchAllConversations();
-          conversationStore.removeNewConversation();
-
-          console.log('done', newConvHistory, msgSend, msgRecv, currentConversationId.value);
-        } else {
-          // 将新消息存入 store
-          if (!currentRecvMessage.value!.id!.startsWith('recv')) {
-            // TODO 其它属性
-            conversationStore.addMessageToConversation(
-              currentConversationId.value!,
-              currentSendMessage.value!,
-              currentRecvMessage.value!
-            );
-          }
-          currentSendMessage.value = null;
-          currentRecvMessage.value = null;
+          currentRecvMessages.value = [];
         }
+        conversationStore.addMessagesToConversation(respConversationId!, allNewMessages);
+        currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
+        await conversationStore.fetchAllConversations();
+        conversationStore.removeNewConversation();
+        console.log('done', allNewMessages, currentConversationId.value);
       }
     } else {
       Dialog.error({
@@ -378,7 +373,7 @@ const sendMsg = async () => {
         negativeText: t('commons.cancel'),
         onPositiveClick: () => {
           currentSendMessage.value = null;
-          currentRecvMessage.value = null;
+          currentRecvMessages.value = [];
         },
       });
     }

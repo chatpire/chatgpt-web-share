@@ -39,10 +39,12 @@ const content = computed(() => {
   for (let i = 0; i < props.messages.length; i++) {
     const message = props.messages[i] as BaseChatMessage;
     if (!message || !message.content) continue;
+    else if (typeof message.content == 'string') result += message.content;
     else if (message.content.content_type == 'text') {
       result += getContentRawText(message);
     }
   }
+  // console.log('text display result', result);
   return result;
 });
 

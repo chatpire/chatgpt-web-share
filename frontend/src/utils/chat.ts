@@ -149,6 +149,7 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
         currentMessageListType = 'text';
       } else if (
         message.role == 'assistant' &&
+        typeof message.content !== 'string' &&
         message.content?.content_type == 'text' &&
         metadata.recipient == 'all'
       ) {

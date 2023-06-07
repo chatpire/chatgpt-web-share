@@ -8,7 +8,7 @@
       </n-avatar>
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
-    <div class="lt-md:mx-0 mx-4 w-full py-4">
+    <div class="lt-md:mx-0 mx-4 w-full">
       <div v-for="(item, i) in displayItems" :key="i">
         <div v-if="item.type == 'text'">
           <MessageRowTextDisplay :messages="item.messages" />
@@ -98,11 +98,23 @@ const displayItems = computed<DisplayItem[]>(() => {
   const result = [] as DisplayItem[];
   for (const group of messageGroups.value) {
     let displayType: DisplayItemType | null = null;
-    if (group[0].role == 'user' && group[0].content?.content_type == 'text') {
-      result.push({
-        type: 'text',
-        messages: group,
-      });
+    if (group[0].role == 'user') {
+      if (typeof group[0].content == 'string' || group[0].content?.content_type == 'text')
+        result.push({
+          type: 'text',
+          messages: group,
+        });
+      continue;
+    }
+    if (typeof group[0].content == 'string') {
+      if (group[0].id.startsWith('temp_')) {
+        result.push({
+          type: 'text',
+          messages: group,
+        });
+      } else {
+        console.error('string content mixed in non-user group', group);
+      }
       continue;
     }
     if (group[0].content?.content_type == 'text') {
@@ -121,7 +133,11 @@ const displayItems = computed<DisplayItem[]>(() => {
       continue;
     }
     for (const message of group) {
-      if (message.source !== 'openai_web' || message.content?.content_type === 'text') {
+      if (
+        message.source !== 'openai_web' ||
+        typeof message.content == 'string' ||
+        message.content?.content_type === 'text'
+      ) {
         console.error('wrong message mixed in non-text content group', group);
         continue;
       }
@@ -138,7 +154,7 @@ const displayItems = computed<DisplayItem[]>(() => {
         break;
       }
     }
-    
+
     if (!displayType) console.error('cannot find display type for group', group);
     result.push({
       type: displayType,

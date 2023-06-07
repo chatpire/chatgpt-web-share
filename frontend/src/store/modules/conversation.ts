@@ -90,29 +90,29 @@ const useConversationStore = defineStore('conversation', {
     },
 
     // 仅当收到新信息时调用，为了避免重复获取整个对话历史
-    addMessageToConversation(conversation_id: string, sendMessage: BaseChatMessage, recvMessage: BaseChatMessage) {
+    addMessagesToConversation(conversation_id: string, messages: BaseChatMessage[]) {
       if (!this.conversationHistoryMap[conversation_id]) {
         return;
       }
-      if (!sendMessage.id || !recvMessage.id) {
-        throw new Error('Message id is null');
-      }
 
       const convHistory = this.conversationHistoryMap[conversation_id];
-      convHistory.mapping[sendMessage.id] = sendMessage;
-      convHistory.mapping[recvMessage.id] = recvMessage;
+      // convHistory.mapping[sendMessage.id] = sendMessage;
+      // convHistory.mapping[recvMessage.id] = recvMessage;
+      for (let i = 0; i < messages.length; i++) {
+        if (i > 0) messages[i].parent = messages[i-1].id;
+        if (i < messages.length - 1) messages[i].children = [messages[i+1].id];
+        convHistory.mapping[messages[i].id] = messages[i];
+      }
 
       // 这里只有在新建对话时调用
       if (convHistory.current_node === null) {
-        convHistory.current_node = recvMessage.id;
+        convHistory.current_node = messages[messages.length - 1].id;
       } else {
         const lastTopMessage = convHistory.mapping[convHistory.current_node!];
-        sendMessage.parent = lastTopMessage?.id;
-        lastTopMessage?.children.push(sendMessage.id);
-        convHistory.current_node = recvMessage.id;
+        messages[0].parent = lastTopMessage?.id;
+        lastTopMessage?.children.push(messages[0].id);
+        convHistory.current_node = messages[messages.length - 1].id;
       }
-      sendMessage.children = [recvMessage.id];
-      recvMessage.parent = sendMessage.id;
     },
   },
 });

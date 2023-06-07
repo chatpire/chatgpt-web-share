@@ -274,7 +274,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"];
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
