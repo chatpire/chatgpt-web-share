@@ -12,36 +12,13 @@
       <div v-if="showRawMessage" class="my-3 w-full text-gray-500 whitespace-pre-wrap">
         {{ content }}
       </div>
-      <!-- <div v-else-if="isPluginMessage" class="my-3">
-        <n-alert
-          :title="t('commons.invoking_plugin', [openaiWebMetadata?.recipient])"
-          type="info"
-          class="whitespace-pre-wrap"
-        >
-          {{ content }}
-        </n-alert>
-      </div>
-      <div v-else-if="isPluginResult" class="my-3">
-        <n-alert :title="openaiWebMetadata?.invoked_plugin?.namespace" type="success" class="whitespace-pre-wrap">
-          {{ content }}
-        </n-alert>
-      </div> -->
       <!-- 文本内容-->
       <div v-else>
-        <div
-          v-if="renderPureText"
-          ref="contentRef"
-          class="message-content w-full whitespace-pre-wrap py-4"
-        >
+        <div v-if="renderPureText" ref="contentRef" class="message-content w-full whitespace-pre-wrap py-4">
           {{ renderedContent }}
         </div>
-        <div
-          v-else
-          ref="contentRef"
-          class="message-content w-full"
-          v-html="renderedContent"
-        />
-      <!-- 用户回复不渲染为markdown -->
+        <div v-else ref="contentRef" class="message-content w-full" v-html="renderedContent" />
+        <!-- 用户回复不渲染为markdown -->
       </div>
 
       <div class="hide-in-print">
@@ -88,6 +65,8 @@ import { BaseChatMessage } from '@/types/schema';
 import { getContentRawText } from '@/utils/chat';
 import md from '@/utils/markdown';
 import { Message } from '@/utils/tips';
+
+import { bindOnclick, processPreTags } from '../utils/codeblock';
 
 const { t } = useI18n();
 const appStore = useAppStore();
@@ -144,113 +123,10 @@ const renderedContent = computed(() => {
     return content.value;
   }
   const result = md.render(content.value || '');
-  return addButtonsToPreTags(result);
+  return processPreTags(result, appStore.preference.codeAutoWrap);
 });
 
-// ---- 用于为代码块添加 copy 按钮 ----
-
-function addButtonsToPreTags(htmlString: string): string {
-  // Parse the HTML string into an Element object.
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, 'text/html');
-
-  // Get all the <pre> elements in the document.
-  const preTags = doc.getElementsByTagName('pre');
-
-  // Loop through the <pre> elements and add a <button> to each one.
-  for (let i = 0; i < preTags.length; i++) {
-    const preTag = preTags[i];
-
-    const button = Object.assign(document.createElement('button'), {
-      innerHTML: '',
-      className: 'hljs-copy-button hide-in-print',
-    });
-    button.dataset.copied = 'false';
-    preTag.classList.add('hljs-copy-wrapper');
-
-    // Add a custom proprety to the code block so that the copy button can reference and match its background-color value.
-    preTag.style.setProperty('--hljs-theme-background', window.getComputedStyle(preTag).backgroundColor);
-
-    if (appStore.preference.codeAutoWrap) {
-      preTag.style.cssText += 'white-space: pre-wrap; word-wrap: break-word; word-break: break-all;';
-    }
-
-    preTag.appendChild(button);
-  }
-
-  // Serialize the modified Element object back into a string.
-  const serializer = new XMLSerializer();
-  return serializer.serializeToString(doc.documentElement);
-}
-
-let observer = null;
-onMounted(() => {
-  if (!contentRef.value) return;
-  // eslint-disable-next-line no-undef
-  const callback: MutationCallback = (mutations: MutationRecord[]) => {
-    for (const mutation of mutations) {
-      if (mutation.type === 'childList') {
-        bindOnclick();
-      }
-    }
-  };
-  observer = new MutationObserver(callback);
-  observer.observe(contentRef.value, { subtree: true, childList: true });
-  bindOnclick();
-});
-
-const bindOnclick = () => {
-  // 获取模板引用中的所有 pre 元素和其子元素中的 button 元素
-  const preElements = contentRef.value?.querySelectorAll('pre');
-  if (!preElements) return;
-  for (const preElement of preElements as any) {
-    for (const button of preElement.querySelectorAll('button')) {
-      (button as HTMLButtonElement).onmousedown = () => {
-        // 如果按钮的内容为 "Copied!"，则跳过复制操作
-        if (button.innerHTML === 'Copied!') {
-          return;
-        }
-
-        const preContent = button.parentElement!.cloneNode(true) as HTMLElement;
-        preContent.removeChild(preContent.querySelector('button')!);
-
-        // Remove the alert element if it exists in preContent
-        const alertElement = preContent.querySelector('.hljs-copy-alert');
-        if (alertElement) {
-          preContent.removeChild(alertElement);
-        }
-
-        clipboard
-          .writeText(preContent.textContent || '')
-          .then(function () {
-            button.innerHTML = 'Copied!';
-            button.dataset.copied = 'true';
-
-            let alert: HTMLDivElement | null = Object.assign(document.createElement('div'), {
-              role: 'status',
-              className: 'hljs-copy-alert',
-              innerHTML: 'Copied to clipboard',
-            });
-            button.parentElement!.appendChild(alert);
-
-            setTimeout(() => {
-              if (alert) {
-                button.innerHTML = 'Copy';
-                button.dataset.copied = 'false';
-                button.parentElement!.removeChild(alert);
-                alert = null;
-              }
-            }, 2000);
-          })
-          .then();
-      };
-    }
-  }
-};
-
-// ------
-
-const copyMessageContent = () => {
+function copyMessageContent() {
   const messageContent = content.value || '';
   clipboard
     .writeText(messageContent)
@@ -260,7 +136,23 @@ const copyMessageContent = () => {
     .catch(() => {
       console.error('Failed to copy message content to clipboard.');
     });
-};
+}
+
+let observer = null;
+onMounted(() => {
+  if (!contentRef.value) return;
+  // eslint-disable-next-line no-undef
+  const callback: MutationCallback = (mutations: MutationRecord[]) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') {
+        bindOnclick(contentRef);
+      }
+    }
+  };
+  observer = new MutationObserver(callback);
+  observer.observe(contentRef.value, { subtree: true, childList: true });
+  bindOnclick(contentRef);
+});
 </script>
 
 <style>
