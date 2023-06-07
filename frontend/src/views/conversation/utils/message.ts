@@ -29,7 +29,7 @@ export function processDisplayItems(messages: BaseChatMessage[]) {
     if (message.source == 'openai_web') {
       if (!message || !message.content) continue;
       // 对于文本类型，合并连续内容
-      if (message.content.content_type == 'text') {
+      if (typeof message.content == 'string' || message.content.content_type == 'text') {
         if (currentItem && currentItem.type == 'text') {
           currentItem.content += getContentRawText(message);
           currentItem.mergeCount += 1;
@@ -38,7 +38,6 @@ export function processDisplayItems(messages: BaseChatMessage[]) {
           currentItem = { type: 'text', finishTime: message.create_time, content: getContentRawText(message), mergeCount: 1 };
         }
       }
-      
     }
   }
   return result;
