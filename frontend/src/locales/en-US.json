@@ -136,7 +136,13 @@
     "userSettings": "User Function Settings",
     "usePlugin": "Use Plugin",
     "requestTo": "Request To",
-    "responseTo": "Response From"
+    "responseTo": "Response From",
+    "readingContent": "Reading Content",
+    "quoteContent": "Quote Content",
+    "click": "Click",
+    "error": "Error",
+    "browsingActions": "Browsing History",
+    "browsingHistory": "Browsing History"
   },
   "errors": {
     "403": "403 error: access denied",

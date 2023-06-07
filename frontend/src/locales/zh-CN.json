@@ -136,7 +136,13 @@
     "expandResult": "展开结果",
     "usePlugin": "使用插件",
     "requestTo": "向 {0} 发起的请求",
-    "responseTo": "来自 {0} 的响应"
+    "responseTo": "来自 {0} 的响应",
+    "search": "搜索",
+    "readingContent": "阅读内容",
+    "quoteContent": "引用网页内容",
+    "click": "点击页面",
+    "browsingHistory": "浏览历史",
+    "error": "错误"
   },
   "errors": {
     "403": "403 错误：无访问权限",

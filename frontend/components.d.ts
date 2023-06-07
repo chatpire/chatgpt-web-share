@@ -9,6 +9,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    BrowsingIcon: typeof import('./src/components/BrowsingIcon.vue')['default']
     ChatGPTAvatar: typeof import('./src/components/ChatGPTAvatar.vue')['default']
     ChatModelTagsRow: typeof import('./src/components/ChatModelTagsRow.vue')['default']
     ChatTypeTagInfoCell: typeof import('./src/components/ChatTypeTagInfoCell.vue')['default']

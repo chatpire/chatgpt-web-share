@@ -8,6 +8,7 @@ import { transformerDirectives } from 'unocss';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
+import svgLoader from 'vite-svg-loader';
 
 // import { IconComponentResolver } from './utils/icon-component-resolver';
 
@@ -16,6 +17,7 @@ export default defineConfig({
   base: process.env.VITE_BASE || '/',
   plugins: [
     vue(),
+    svgLoader(),
     UnoCSS({
       presets: [presetUno()],
       transformers: [transformerDirectives()],
