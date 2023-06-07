@@ -98,6 +98,13 @@ const displayItems = computed<DisplayItem[]>(() => {
   const result = [] as DisplayItem[];
   for (const group of messageGroups.value) {
     let displayType: DisplayItemType | null = null;
+    if (group[0].source == 'openai_api') {
+      result.push({
+        type: 'text',
+        messages: group,
+      });
+      continue;
+    }
     if (group[0].role == 'user') {
       if (typeof group[0].content == 'string' || group[0].content?.content_type == 'text')
         result.push({

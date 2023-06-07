@@ -332,7 +332,6 @@ const sendMsg = async () => {
       // 正常关闭
       if (hasGotReply) {
         const allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
-        // allNewMessages.concat(currentRecvMessages.value);
         for (const msg of currentRecvMessages.value) {
           allNewMessages.push(msg);
         }
@@ -353,10 +352,10 @@ const sendMsg = async () => {
               [respConversationId!]: newConvHistory,
             },
           });
-          currentSendMessage.value = null;
-          currentRecvMessages.value = [];
         }
         conversationStore.addMessagesToConversation(respConversationId!, allNewMessages);
+        currentSendMessage.value = null;
+        currentRecvMessages.value = [];
         currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
         await conversationStore.fetchAllConversations();
         conversationStore.removeNewConversation();
