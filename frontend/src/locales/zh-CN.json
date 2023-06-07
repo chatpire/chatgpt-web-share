@@ -133,7 +133,10 @@
     "credentialsSetting": "凭据选项",
     "total": "总",
     "invoking_plugin": "调用 {0}...",
-    "expandResult": "展开结果"
+    "expandResult": "展开结果",
+    "usePlugin": "使用插件",
+    "requestTo": "向 {0} 发起的请求",
+    "responseTo": "来自 {0} 的响应"
   },
   "errors": {
     "403": "403 错误：无访问权限",

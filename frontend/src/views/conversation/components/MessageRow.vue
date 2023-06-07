@@ -8,7 +8,7 @@
       </n-avatar>
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
-    <div class="lt-md:mx-0 mx-4 w-full">
+    <div class="lt-md:mx-0 mx-4 w-full py-4">
       <div v-for="(item, i) in displayItems" :key="i">
         <div v-if="item.type == 'text'">
           <MessageRowTextDisplay :messages="item.messages" />

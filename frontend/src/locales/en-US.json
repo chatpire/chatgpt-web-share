@@ -133,7 +133,10 @@
     "updateUserBasic": "Update basic user information",
     "updateUserSetting": "update user settings",
     "userBasicInfo": "Basic user information",
-    "userSettings": "User Function Settings"
+    "userSettings": "User Function Settings",
+    "usePlugin": "Use Plugin",
+    "requestTo": "Request To",
+    "responseTo": "Response From"
   },
   "errors": {
     "403": "403 error: access denied",
