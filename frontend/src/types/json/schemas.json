@@ -1234,9 +1234,6 @@
                 "type": "string"
               }
             }
-          },
-          {
-            "type": "string"
           }
         ]
       },
@@ -1697,9 +1694,6 @@
                       "type": "string"
                     }
                   }
-                },
-                {
-                  "type": "string"
                 }
               ]
             },

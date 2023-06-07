@@ -9,18 +9,17 @@
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="lt-md:mx-0 mx-4 w-full">
-      <div v-if="showRawMessage" class="my-3 w-full text-gray-500 whitespace-pre-wrap">
-        {{ content }}
-      </div>
-      <!-- 文本内容-->
-      <div v-else>
-        <div v-if="renderPureText" ref="contentRef" class="message-content w-full whitespace-pre-wrap py-4">
-          {{ renderedContent }}
+      <div v-for="(item, i) in displayItems" :key="i">
+        <div v-if="item.type == 'text'">
+          <MessageRowTextDisplay :messages="item.messages" />
         </div>
-        <div v-else ref="contentRef" class="message-content w-full" v-html="renderedContent" />
-        <!-- 用户回复不渲染为markdown -->
+        <div v-else-if="item.type == 'browser'">
+          <MessageRowBrowserDisplay :messages="item.messages" />
+        </div>
+        <div v-else-if="item.type == 'plugin'">
+          <MessageRowPluginDisplay :messages="item.messages" />
+        </div>
       </div>
-
       <div class="hide-in-print">
         <n-button
           text
@@ -61,19 +60,18 @@ import { useI18n } from 'vue-i18n';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useAppStore } from '@/store';
-import { BaseChatMessage } from '@/types/schema';
-import { getContentRawText } from '@/utils/chat';
-import md from '@/utils/markdown';
+import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
+import { splitMessagesInGroup } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
-import { bindOnclick, processPreTags } from '../utils/codeblock';
+import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
+import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
+import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
 
 const { t } = useI18n();
-const appStore = useAppStore();
 
 const themeVars = useThemeVars();
 
-const contentRef = ref<HTMLDivElement>();
 const showRawMessage = ref(false); // 显示原始消息
 
 const props = defineProps<{
@@ -85,14 +83,70 @@ const lastMessage = computed<BaseChatMessage | null>(() => {
   else return props.messages[props.messages.length - 1];
 });
 
-const renderPureText = computed(() => {
-  // 对于 user 的内容，默认按纯文本来渲染
-  return appStore.preference.renderUserMessageInMd === false && lastMessage.value?.role == 'user';
+type DisplayItemType = 'text' | 'browser' | 'plugin' | null;
+
+type DisplayItem = {
+  type: DisplayItemType;
+  messages: BaseChatMessage[];
+};
+
+const messageGroups = computed<BaseChatMessage[][]>(() => {
+  return splitMessagesInGroup(props.messages);
 });
 
-const toggleShowRawMessage = () => {
-  showRawMessage.value = !showRawMessage.value;
-};
+const displayItems = computed<DisplayItem[]>(() => {
+  const result = [] as DisplayItem[];
+  for (const group of messageGroups.value) {
+    let displayType: DisplayItemType | null = null;
+    if (group[0].role == 'user' && group[0].content?.content_type == 'text') {
+      result.push({
+        type: 'text',
+        messages: group,
+      });
+      continue;
+    }
+    if (group[0].content?.content_type == 'text') {
+      const metadata = group[0].metadata as OpenaiWebChatMessageMetadata;
+      if (metadata.recipient == 'all' && group[0].role == 'assistant') {
+        result.push({
+          type: 'text',
+          messages: group,
+        });
+        continue;
+      }
+    }
+    // 简单检查 group 的一致性
+    if (group[0].role == 'user') {
+      console.error('user role has non-text content', group);
+      continue;
+    }
+    for (const message of group) {
+      if (message.source !== 'openai_web' || message.content?.content_type === 'text') {
+        console.error('wrong message mixed in non-text content group', group);
+        continue;
+      }
+    }
+    // 辨认当前 group 的类型
+    for (const message of group) {
+      console.log('try to find message\'s type', message);
+      if (message.role == 'assistant' && message.model == 'gpt_4_plugins') {
+        displayType = 'plugin';
+        break;
+      }
+      if (message.role == 'assistant' && message.model == 'gpt_4_browsing') {
+        displayType = 'browser';
+        break;
+      }
+    }
+    
+    if (!displayType) console.error('cannot find display type for group', group);
+    result.push({
+      type: displayType,
+      messages: group,
+    });
+  }
+  return result;
+});
 
 const backgroundColor = computed(() => {
   if (lastMessage.value?.role == 'user') {
@@ -102,57 +156,21 @@ const backgroundColor = computed(() => {
   }
 });
 
-const content = computed(() => {
-  // return getContentRawText(lastMessage.value);
-  let result = '';
-  // 遍历 props.messages
-  // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
-  for (let i = 0; i < props.messages.length; i++) {
-    const message = props.messages[i] as BaseChatMessage;
-    if (!message || !message.content) continue;
-    if (typeof message.content == 'string') result += message.content;
-    else if (message.content.content_type == 'text') {
-      result += getContentRawText(message);
-    }
-  }
-  return result;
-});
-
-const renderedContent = computed(() => {
-  if (renderPureText.value) {
-    return content.value;
-  }
-  const result = md.render(content.value || '');
-  return processPreTags(result, appStore.preference.codeAutoWrap);
-});
-
-function copyMessageContent() {
-  const messageContent = content.value || '';
-  clipboard
-    .writeText(messageContent)
-    .then(() => {
-      Message.success(t('commons.copiedToClipboard'));
-    })
-    .catch(() => {
-      console.error('Failed to copy message content to clipboard.');
-    });
+function toggleShowRawMessage() {
+  showRawMessage.value = !showRawMessage.value;
 }
 
-let observer = null;
-onMounted(() => {
-  if (!contentRef.value) return;
-  // eslint-disable-next-line no-undef
-  const callback: MutationCallback = (mutations: MutationRecord[]) => {
-    for (const mutation of mutations) {
-      if (mutation.type === 'childList') {
-        bindOnclick(contentRef);
-      }
-    }
-  };
-  observer = new MutationObserver(callback);
-  observer.observe(contentRef.value, { subtree: true, childList: true });
-  bindOnclick(contentRef);
-});
+function copyMessageContent() {
+  // const messageContent = content.value || '';
+  // clipboard
+  //   .writeText(messageContent)
+  //   .then(() => {
+  //     Message.success(t('commons.copiedToClipboard'));
+  //   })
+  //   .catch(() => {
+  //     console.error('Failed to copy message content to clipboard.');
+  //   });
+}
 </script>
 
 <style>

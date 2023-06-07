@@ -1,5 +1,5 @@
-import {i18n} from '@/i18n';
-import {allChatModelNames} from '@/types/json_schema';
+import { i18n } from '@/i18n';
+import { allChatModelNames } from '@/types/json_schema';
 import {
   BaseChatMessage,
   BaseConversationHistory,
@@ -11,7 +11,7 @@ import {
   OpenaiWebChatMessageTetherBrowsingDisplayContent,
   OpenaiWebChatMessageTetherQuoteContent,
   OpenaiWebChatMessageTextContent,
-  OpenaiWebChatModels
+  OpenaiWebChatModels,
 } from '@/types/schema';
 
 const t = i18n.global.t as any;
@@ -38,10 +38,8 @@ export const getChatModelIconStyle = (model_name: OpenaiWebChatModels | OpenaiAp
 
 export const getChatModelNameTrans = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
   if (model_name == null) return t('commons.unknown');
-  if (allChatModelNames.includes(model_name))
-    return t(`models.${model_name}`);
-  else
-    return `${t('commons.unknown')}(${model_name})`;
+  if (allChatModelNames.includes(model_name)) return t(`models.${model_name}`);
+  else return `${t('commons.unknown')}(${model_name})`;
   // else return model_name;
 };
 
@@ -98,11 +96,13 @@ export function getMessageListFromHistory(
   return result;
 }
 
-export function mergeMessages(messages: BaseChatMessage[]): BaseChatMessage[][] {
+// 用于按照连续消息分组，end_turn为true时截断
+export function mergeContinuousMessages(messages: BaseChatMessage[]): BaseChatMessage[][] {
   const result = [] as BaseChatMessage[][];
   let currentMessageList = [] as BaseChatMessage[];
   for (const message of messages) {
-    if (message.role !== 'user' && message.source == 'openai_web') {
+    // 将chatgpt的连续对话划分到一组
+    if (message.source == 'openai_web' && message.role !== 'user') {
       const metadata = message.metadata as OpenaiWebChatMessageMetadata;
       if (metadata && metadata.end_turn != true) {
         currentMessageList.push(message);
@@ -116,6 +116,59 @@ export function mergeMessages(messages: BaseChatMessage[]): BaseChatMessage[][] 
         }
       }
     } else {
+      // TODO: API 暂不支持连续对话合并
+      if (currentMessageList.length > 0) {
+        result.push(currentMessageList);
+        currentMessageList = [];
+      }
+      result.push([message]);
+    }
+  }
+  if (currentMessageList.length > 0) {
+    result.push(currentMessageList);
+  }
+  return result;
+}
+
+// 对于一段连续消息中的消息按照功能性来分组
+
+export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessage[][] {
+  const result = [] as BaseChatMessage[][];
+  let currentMessageList = [] as BaseChatMessage[];
+  let currentMessageListType: 'text' | 'other' | null = null;
+  for (const message of messages) {
+    if (message.source == 'openai_web') {
+      const metadata = message.metadata as OpenaiWebChatMessageMetadata;
+      // text: 连续的 content.content_type == "text" 且 recipient == 'all' 放到一组
+      if (message.role == 'user') {
+        if (messages.length > 1) {
+          console.error('found multiple user message in splitMessagesInGroup', messages);
+          continue;
+        }
+        currentMessageList.push(message);
+        currentMessageListType = 'text';
+      } else if (
+        message.role == 'assistant' &&
+        message.content?.content_type == 'text' &&
+        metadata.recipient == 'all'
+      ) {
+        if (currentMessageListType !== 'text') {
+          currentMessageListType = 'text';
+          if (currentMessageList.length > 0) result.push(currentMessageList);
+          currentMessageList = [];
+        }
+        currentMessageList.push(message);
+        // 由于同一个对话中 plugins 调用和 browser 调用不能同时出现，因此连续的其它情况放到一组
+      } else {
+        if (currentMessageListType !== 'other') {
+          if (currentMessageList.length > 0) result.push(currentMessageList);
+          currentMessageListType = 'other';
+          currentMessageList = [];
+        }
+        currentMessageList.push(message);
+      }
+    } else {
+      // TODO: API 暂不支持连续对话合并
       if (currentMessageList.length > 0) {
         result.push(currentMessageList);
         currentMessageList = [];

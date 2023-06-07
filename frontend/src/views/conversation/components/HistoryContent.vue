@@ -45,7 +45,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useConversationStore } from '@/store';
 import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
-import {getChatModelNameTrans, getMessageListFromHistory, mergeMessages} from '@/utils/chat';
+import {getChatModelNameTrans, getMessageListFromHistory, mergeContinuousMessages} from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';
@@ -87,7 +87,7 @@ const filteredMessages = computed<BaseChatMessage[]>(() => {
 });
 
 const filteredMessagesList = computed<BaseChatMessage[][]>(() => {
-  return mergeMessages(filteredMessages.value);
+  return mergeContinuousMessages(filteredMessages.value);
 });
 
 watch(
