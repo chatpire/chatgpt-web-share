@@ -274,7 +274,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
@@ -950,7 +950,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
+      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
@@ -1020,6 +1020,16 @@ export interface components {
       plugin_id?: string;
       /** Type */
       type?: string;
+    };
+    /** OpenaiWebChatMessageStderrContent */
+    OpenaiWebChatMessageStderrContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "stderr";
+      /** Text */
+      text?: string;
     };
     /** OpenaiWebChatMessageSystemErrorContent */
     OpenaiWebChatMessageSystemErrorContent: {

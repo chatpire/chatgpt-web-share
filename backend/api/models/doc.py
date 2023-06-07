@@ -72,6 +72,11 @@ class OpenaiWebChatMessageCodeContent(BaseModel):
     text: Optional[str]
 
 
+class OpenaiWebChatMessageStderrContent(BaseModel):
+    content_type: Literal['stderr']
+    text: Optional[str]
+
+
 class OpenaiWebChatMessageTetherBrowsingDisplayContent(BaseModel):
     content_type: Literal['tether_browsing_display']
     result: Optional[str]
@@ -93,9 +98,12 @@ class OpenaiWebChatMessageSystemErrorContent(BaseModel):
 
 OpenaiWebChatMessageContent = Annotated[
     Union[
-        OpenaiWebChatMessageTextContent, OpenaiWebChatMessageCodeContent,
+        OpenaiWebChatMessageTextContent,
+        OpenaiWebChatMessageCodeContent,
+        OpenaiWebChatMessageStderrContent,
         OpenaiWebChatMessageTetherBrowsingDisplayContent,
-        OpenaiWebChatMessageTetherQuoteContent, OpenaiWebChatMessageSystemErrorContent
+        OpenaiWebChatMessageTetherQuoteContent,
+        OpenaiWebChatMessageSystemErrorContent
     ], Field(discriminator='content_type')]
 
 

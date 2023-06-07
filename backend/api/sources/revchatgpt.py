@@ -13,9 +13,11 @@ from api.conf import Config, Credentials
 from api.enums import OpenaiWebChatModels, ChatSourceTypes
 from api.exceptions import InvalidParamsException, OpenaiWebException
 from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHistoryDocument, \
-    OpenaiWebConversationHistoryMeta, OpenaiWebChatMessage, OpenaiWebChatMessageTextContent, OpenaiWebChatMessageCodeContent, \
-    OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, OpenaiWebChatMessageContent, \
-    OpenaiWebChatMessageSystemErrorContent
+    OpenaiWebConversationHistoryMeta, OpenaiWebChatMessage, OpenaiWebChatMessageTextContent, \
+    OpenaiWebChatMessageCodeContent, \
+    OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
+    OpenaiWebChatMessageContent, \
+    OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent
 from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -38,6 +40,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         content_map = {
             "text": OpenaiWebChatMessageTextContent,
             "code": OpenaiWebChatMessageCodeContent,
+            "stderr": OpenaiWebChatMessageStderrContent,
             "tether_browsing_display": OpenaiWebChatMessageTetherBrowsingDisplayContent,
             "tether_quote": OpenaiWebChatMessageTetherQuoteContent,
             "system_error": OpenaiWebChatMessageSystemErrorContent
@@ -69,11 +72,6 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         )
     )
     if "metadata" in item["message"] and item["message"]["metadata"] != {}:
-        # result.metadata.finish_details = item["message"]["metadata"].get("finish_details")
-        # result.metadata.invoked_plugin = item["message"]["metadata"].get("invoked_plugin")
-        # result.metadata.command = item["message"]["metadata"].get("command")
-        # result.metadata.args = item["message"]["metadata"].get("args")
-        # result.metadata.status = item["message"]["metadata"].get("status")
         result.metadata = result.metadata.copy(
             update=item["message"]["metadata"]
         )

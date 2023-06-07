@@ -7,6 +7,7 @@ import {
   OpenaiApiChatModels,
   OpenaiWebChatMessageCodeContent,
   OpenaiWebChatMessageMetadata,
+  OpenaiWebChatMessageStderrContent,
   OpenaiWebChatMessageSystemErrorContent,
   OpenaiWebChatMessageTetherBrowsingDisplayContent,
   OpenaiWebChatMessageTetherQuoteContent,
@@ -61,6 +62,9 @@ export const getContentRawText = (message: BaseChatMessage | null): string => {
     }
   } else if (message.content.content_type == 'code') {
     const content = message.content as OpenaiWebChatMessageCodeContent;
+    return content.text || '';
+  } else if (message.content.content_type == 'stderr') {
+    const content = message.content as OpenaiWebChatMessageStderrContent;
     return content.text || '';
   } else if (message.content.content_type == 'tether_browsing_display') {
     const content = message.content as OpenaiWebChatMessageTetherBrowsingDisplayContent;

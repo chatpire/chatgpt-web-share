@@ -403,6 +403,26 @@
                     }
                   },
                   {
+                    "title": "OpenaiWebChatMessageStderrContent",
+                    "required": [
+                      "content_type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "content_type": {
+                        "title": "Content Type",
+                        "enum": [
+                          "stderr"
+                        ],
+                        "type": "string"
+                      },
+                      "text": {
+                        "title": "Text",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
                     "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
                     "required": [
                       "content_type"
@@ -1127,6 +1147,26 @@
                 }
               },
               {
+                "title": "OpenaiWebChatMessageStderrContent",
+                "required": [
+                  "content_type"
+                ],
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "stderr"
+                    ],
+                    "type": "string"
+                  },
+                  "text": {
+                    "title": "Text",
+                    "type": "string"
+                  }
+                }
+              },
+              {
                 "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
                 "required": [
                   "content_type"
@@ -1581,6 +1621,26 @@
                         },
                         "language": {
                           "title": "Language",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "title": "OpenaiWebChatMessageStderrContent",
+                      "required": [
+                        "content_type"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "content_type": {
+                          "title": "Content Type",
+                          "enum": [
+                            "stderr"
+                          ],
                           "type": "string"
                         },
                         "text": {
@@ -3970,6 +4030,26 @@
             }
           },
           {
+            "title": "OpenaiWebChatMessageStderrContent",
+            "required": [
+              "content_type"
+            ],
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "stderr"
+                ],
+                "type": "string"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            }
+          },
+          {
             "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent",
             "required": [
               "content_type"
@@ -4472,6 +4552,26 @@
       }
     }
   },
+  "OpenaiWebChatMessageStderrContent": {
+    "title": "OpenaiWebChatMessageStderrContent",
+    "required": [
+      "content_type"
+    ],
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "stderr"
+        ],
+        "type": "string"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      }
+    }
+  },
   "OpenaiWebChatMessageSystemErrorContent": {
     "title": "OpenaiWebChatMessageSystemErrorContent",
     "required": [
@@ -4761,6 +4861,26 @@
                     },
                     "language": {
                       "title": "Language",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "title": "OpenaiWebChatMessageStderrContent",
+                  "required": [
+                    "content_type"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "stderr"
+                      ],
                       "type": "string"
                     },
                     "text": {
