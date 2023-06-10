@@ -1,5 +1,5 @@
 <template>
-  <div v-if="renderPureText" ref="contentRef" class="message-content w-full whitespace-pre-wrap">
+  <div v-if="renderPureText" ref="contentRef" class="message-content w-full whitespace-pre-wrap py-4">
     {{ renderedContent }}
   </div>
   <div v-else ref="contentRef" class="message-content w-full" v-html="renderedContent" />
