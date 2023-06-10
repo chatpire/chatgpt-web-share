@@ -77,7 +77,9 @@
 
 <script setup lang="ts">
 import 'vue3-json-viewer/dist/index.css';
+import 'highlight.js/styles/atom-one-dark.css';
 
+// import 'highlight.js/lib/common';
 import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
 import { ArticleFilled, ArticleOutlined, PersonFilled } from '@vicons/material';
 import * as clipboard from 'clipboard-polyfill';

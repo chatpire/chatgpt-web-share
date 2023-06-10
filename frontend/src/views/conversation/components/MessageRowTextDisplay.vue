@@ -23,10 +23,6 @@ const props = defineProps<{
   renderMarkdown: boolean
 }>();
 
-const lastMessage = computed<BaseChatMessage | null>(() => {
-  if (props.messages.length == 0) return null;
-  else return props.messages[props.messages.length - 1];
-});
 const content = computed(() => {
   return getTextMessageContent(props.messages);
 });

@@ -2,8 +2,6 @@ import './style.css';
 // eslint-disable-next-line import/no-unresolved
 import 'uno.css';
 import '@/api/interceptor';
-import 'highlight.js/styles/atom-one-dark.css';
-import 'highlight.js/lib/common';
 import 'katex/dist/katex.css';
 
 import { NButton, NCheckbox, NCheckboxGroup, NDatePicker, NForm, NFormItem, NInput, NInputNumber, NPopover, NSelect, NSpace, NSwitch, NTimePicker } from 'naive-ui';
