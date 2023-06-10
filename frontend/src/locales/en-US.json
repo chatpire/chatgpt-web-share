@@ -142,7 +142,9 @@
     "click": "Click",
     "error": "Error",
     "browsingActions": "Browsing History",
-    "browsingHistory": "Browsing History"
+    "browsingHistory": "Browsing History",
+    "shouldRenderMarkdown": "Whether Render Content As Markdown",
+    "showRawMessage": "Show raw messages"
   },
   "errors": {
     "403": "403 error: access denied",

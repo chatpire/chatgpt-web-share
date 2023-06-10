@@ -9,56 +9,90 @@
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="lt-md:mx-0 mx-4 w-full">
-      <div v-for="(item, i) in displayItems" :key="i">
-        <div v-if="item.type == 'text'">
-          <MessageRowTextDisplay :messages="item.messages" />
-        </div>
-        <div v-else-if="item.type == 'browser'">
-          <MessageRowBrowserDisplay :messages="item.messages" />
-        </div>
-        <div v-else-if="item.type == 'plugin'">
-          <MessageRowPluginDisplay :messages="item.messages" />
+      <div v-if="showRawMessage" class="my-3">
+        <JsonViewer :value="props.messages" copyable expanded :expand-depth="3" :theme="appStore.theme" />
+      </div>
+      <div v-else>
+        <div v-for="(item, i) in displayItems" :key="i">
+          <div v-if="item.type == 'text'">
+            <MessageRowTextDisplay :render-markdown="renderMarkdown" :messages="item.messages" />
+          </div>
+          <div v-else-if="item.type == 'browser'">
+            <MessageRowBrowserDisplay :messages="item.messages" />
+          </div>
+          <div v-else-if="item.type == 'plugin'">
+            <MessageRowPluginDisplay :messages="item.messages" />
+          </div>
         </div>
       </div>
       <div class="hide-in-print">
-        <n-button
-          text
-          ghost
-          type="tertiary"
-          size="tiny"
-          class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-3 bottom-2 right-2"
-          @click="copyMessageContent"
-        >
-          <n-icon>
-            <CopyOutline />
-          </n-icon>
-        </n-button>
-        <n-button
-          text
-          ghost
-          size="tiny"
-          :type="showRawMessage ? 'success' : 'tertiary'"
-          class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-2 right-6"
-          @click="toggleShowRawMessage"
-        >
-          <n-icon>
-            <CodeSlash />
-          </n-icon>
-        </n-button>
+        <!-- 复制 -->
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <n-button
+              text
+              ghost
+              type="tertiary"
+              size="tiny"
+              class="mt-2 -ml-3 absolute lt-sm:bottom-3 right-3 bottom-2"
+              @click="copyMessageContent"
+            >
+              <n-icon>
+                <CopyOutline />
+              </n-icon>
+            </n-button>
+          </template>
+          <span>{{ t('commons.copy') }}</span>
+        </n-tooltip>
+        <!-- 是否渲染 markdown -->
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <n-button
+              text
+              ghost
+              size="tiny"
+              :type="'tertiary'"
+              class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-2 right-8"
+              @click="toggleRenderMarkdown"
+            >
+              <n-icon :component="renderMarkdown ? ArticleFilled : ArticleOutlined" />
+            </n-button>
+          </template>
+          <span>{{ t('commons.shouldRenderMarkdown') }}</span>
+        </n-tooltip>
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <n-button
+              text
+              ghost
+              size="tiny"
+              :type="showRawMessage ? 'success' : 'tertiary'"
+              class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-15 bottom-2 right-13"
+              @click="toggleShowRawMessage"
+            >
+              <n-icon :component="CodeSlash" />
+            </n-button>
+          </template>
+          <span>{{ t('commons.showRawMessage') }}</span>
+        </n-tooltip>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import 'vue3-json-viewer/dist/index.css';
+
 import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
-import { PersonFilled } from '@vicons/material';
+import { ArticleFilled, ArticleOutlined, PersonFilled } from '@vicons/material';
 import * as clipboard from 'clipboard-polyfill';
 import { useThemeVars } from 'naive-ui';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { JsonViewer } from 'vue3-json-viewer';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
+import { useAppStore } from '@/store';
 import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
 import { Message } from '@/utils/tips';
@@ -66,12 +100,18 @@ import { Message } from '@/utils/tips';
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
 import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
-
 const { t } = useI18n();
 
 const themeVars = useThemeVars();
 
 const showRawMessage = ref(false); // 显示原始消息
+const appStore = useAppStore();
+const renderMarkdown = ref(true);
+
+watch(() => appStore.preference.renderUserMessageInMd, () => {
+  if (lastMessage.value?.role == 'user')
+    renderMarkdown.value = appStore.preference.renderUserMessageInMd;
+});
 
 const props = defineProps<{
   messages: BaseChatMessage[];
@@ -190,6 +230,10 @@ const backgroundColor = computed(() => {
 
 function toggleShowRawMessage() {
   showRawMessage.value = !showRawMessage.value;
+}
+
+function toggleRenderMarkdown() {
+  renderMarkdown.value = !renderMarkdown.value;
 }
 
 function copyMessageContent() {

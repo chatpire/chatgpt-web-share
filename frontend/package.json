@@ -29,7 +29,8 @@
     "vue": "^3.3.4",
     "vue-echarts": "^6.5.5",
     "vue-i18n": "^9.2.2",
-    "vue-router": "^4.2.2"
+    "vue-router": "^4.2.2",
+    "vue3-json-viewer": "^2.2.2"
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
