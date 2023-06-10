@@ -9,8 +9,8 @@
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="ml-4 lt-md:mx-0 w-full">
-      <div v-if="showRawMessage" class="my-3">
-        <JsonViewer :value="props.messages" copyable expanded :expand-depth="3" :theme="appStore.theme" />
+      <div v-if="showRawMessage" class="my-3 json-viewer">
+        <JsonViewer :value="props.messages" copyable expanded :expand-depth="2" :theme="appStore.theme" />
       </div>
       <div v-else>
         <div v-for="(item, i) in displayItems" :key="i">
@@ -268,6 +268,10 @@ function copyMessageContent() {
 
 pre {
   @apply w-full flex;
+}
+
+.json-viewer * {
+  font-size: 0.6rem;
 }
 
 pre code {
