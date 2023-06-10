@@ -17,7 +17,7 @@ export type Preference = {
 
 interface AppState {
   theme: any;
-  language: any;
+  language: RemovableRef<'zh-CN' | 'en-US' | string>;
   preference: RemovableRef<Preference>;
 }
 

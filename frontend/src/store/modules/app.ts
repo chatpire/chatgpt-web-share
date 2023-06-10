@@ -11,7 +11,7 @@ import { themeRef } from '@/utils/tips';
 const useAppStore = defineStore('app', {
   state: (): AppState => ({
     theme: useStorage('theme', osThemeRef.value),
-    language: useStorage('language', 'zh'),
+    language: useStorage('language', 'zh-CN'),
     preference: useStorage<Preference>('preference', {
       sendKey: 'Enter',
       renderUserMessageInMd: false,

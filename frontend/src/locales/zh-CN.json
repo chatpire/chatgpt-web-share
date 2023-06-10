@@ -145,7 +145,8 @@
     "error": "错误",
     "copy": "复制",
     "shouldRenderMarkdown": "是否渲染为 Markdown",
-    "showRawMessage": "显示原始消息"
+    "showRawMessage": "显示原始消息",
+    "messagesCount": "{0} 条消息"
   },
   "errors": {
     "403": "403 错误：无访问权限",

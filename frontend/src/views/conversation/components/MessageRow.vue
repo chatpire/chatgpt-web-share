@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row lt-md:flex-col py-3 lt-md:py-2 px-4 relative" :style="{ backgroundColor: backgroundColor }">
+  <div class="flex flex-row lt-md:flex-col pt-3 lt-md:pt-2 px-4 relative" :style="{ backgroundColor: backgroundColor }">
     <div class="w-10 lt-md:ml-0 ml-2 mt-3">
       <n-avatar v-if="lastMessage?.role == 'user'" size="small">
         <n-icon>
@@ -8,7 +8,7 @@
       </n-avatar>
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
-    <div class="lt-md:mx-0 mx-4 w-full">
+    <div class="ml-4 lt-md:mx-0 w-full">
       <div v-if="showRawMessage" class="my-3">
         <JsonViewer :value="props.messages" copyable expanded :expand-depth="3" :theme="appStore.theme" />
       </div>
@@ -25,56 +25,51 @@
           </div>
         </div>
       </div>
-      <div class="hide-in-print">
-        <!-- 复制 -->
-        <n-tooltip trigger="hover">
-          <template #trigger>
-            <n-button
-              text
-              ghost
-              type="tertiary"
-              size="tiny"
-              class="mt-2 -ml-3 absolute lt-sm:bottom-3 right-3 bottom-2"
-              @click="copyMessageContent"
-            >
-              <n-icon>
-                <CopyOutline />
-              </n-icon>
-            </n-button>
-          </template>
-          <span>{{ t('commons.copy') }}</span>
-        </n-tooltip>
-        <!-- 是否渲染 markdown -->
-        <n-tooltip trigger="hover">
-          <template #trigger>
-            <n-button
-              text
-              ghost
-              size="tiny"
-              :type="'tertiary'"
-              class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-9 bottom-2 right-8"
-              @click="toggleRenderMarkdown"
-            >
-              <n-icon :component="renderMarkdown ? ArticleFilled : ArticleOutlined" />
-            </n-button>
-          </template>
-          <span>{{ t('commons.shouldRenderMarkdown') }}</span>
-        </n-tooltip>
-        <n-tooltip trigger="hover">
-          <template #trigger>
-            <n-button
-              text
-              ghost
-              size="tiny"
-              :type="showRawMessage ? 'success' : 'tertiary'"
-              class="mt-2 -ml-2 absolute lt-sm:bottom-3 lt-sm:right-15 bottom-2 right-13"
-              @click="toggleShowRawMessage"
-            >
-              <n-icon :component="CodeSlash" />
-            </n-button>
-          </template>
-          <span>{{ t('commons.showRawMessage') }}</span>
-        </n-tooltip>
+      <div class="hide-in-print flex w-full justify-end pb-1 -mt-2">
+        <div class="flex flex-row space-x-4">
+          <n-text class="text-[0.5rem]" depth="3">
+            {{ timeString }}
+          </n-text>
+          <n-text v-if="props.messages.length > 1" class="text-[0.5rem]" depth="3">
+            {{ $t("commons.messagesCount", [props.messages.length]) }}
+          </n-text>
+          <div class="space-x-2">
+            <!-- 复制 -->
+            <n-tooltip trigger="hover">
+              <template #trigger>
+                <n-button text ghost type="tertiary" size="tiny" @click="copyMessageContent">
+                  <n-icon>
+                    <CopyOutline />
+                  </n-icon>
+                </n-button>
+              </template>
+              <span>{{ t('commons.copy') }}</span>
+            </n-tooltip>
+            <!-- 是否渲染 markdown -->
+            <n-tooltip trigger="hover">
+              <template #trigger>
+                <n-button text ghost size="tiny" :type="'tertiary'" @click="toggleRenderMarkdown">
+                  <n-icon :component="renderMarkdown ? ArticleFilled : ArticleOutlined" />
+                </n-button>
+              </template>
+              <span>{{ t('commons.shouldRenderMarkdown') }}</span>
+            </n-tooltip>
+            <n-tooltip trigger="hover">
+              <template #trigger>
+                <n-button
+                  text
+                  ghost
+                  size="tiny"
+                  :type="showRawMessage ? 'success' : 'tertiary'"
+                  @click="toggleShowRawMessage"
+                >
+                  <n-icon :component="CodeSlash" />
+                </n-button>
+              </template>
+              <span>{{ t('commons.showRawMessage') }}</span>
+            </n-tooltip>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -108,10 +103,12 @@ const showRawMessage = ref(false); // 显示原始消息
 const appStore = useAppStore();
 const renderMarkdown = ref(true);
 
-watch(() => appStore.preference.renderUserMessageInMd, () => {
-  if (lastMessage.value?.role == 'user')
-    renderMarkdown.value = appStore.preference.renderUserMessageInMd;
-});
+watch(
+  () => appStore.preference.renderUserMessageInMd,
+  () => {
+    if (lastMessage.value?.role == 'user') renderMarkdown.value = appStore.preference.renderUserMessageInMd;
+  }
+);
 
 const props = defineProps<{
   messages: BaseChatMessage[];
@@ -120,6 +117,22 @@ const props = defineProps<{
 const lastMessage = computed<BaseChatMessage | null>(() => {
   if (props.messages.length == 0) return null;
   else return props.messages[props.messages.length - 1];
+});
+
+const timeString = computed<string>(() => {
+  if (!lastMessage.value || !lastMessage.value.create_time) return '';
+  let create_time = lastMessage.value.create_time;
+  // 如果不以Z结尾，按照UTC时区处理；按Z结尾，或者是+时区的，则不处理
+  if (!create_time.endsWith('Z') && !create_time.includes('+') && !create_time.includes('-')) {
+    create_time += 'Z';
+  }
+  // 根据当前语言是 zhCN 还是 enUS 设置时区
+  const lang = appStore.language;
+  // return new Date(create_time).toLocaleString();
+  return new Date(create_time).toLocaleString(lang == 'zh-CN' ? 'zh-CN' : 'en-US', {
+    hour12: false,
+    timeZone: lang == 'zh-CN' ? 'Asia/Shanghai' : 'America/New_York',
+  });
 });
 
 type DisplayItemType = 'text' | 'browser' | 'plugin' | null;
