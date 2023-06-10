@@ -25,10 +25,7 @@
       />
     </n-layout-sider>
     <!-- 右栏 -->
-    <n-layout-content
-      embeded
-      :class="['flex flex-col overflow-hidden', gtmd() ? '' : 'min-w-100vw']"
-    >
+    <n-layout-content embeded :class="['flex flex-col overflow-hidden', gtmd() ? '' : 'min-w-100vw']">
       <div class="h-full relative flex flex-col">
         <!-- 消息记录内容（用于全屏展示） -->
         <n-scrollbar
@@ -162,8 +159,7 @@ const currentRecvMessages = ref<BaseChatMessage[]>([]);
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
   const result: BaseChatMessage[] = [];
-  if (currentSendMessage.value)
-    result.push(currentSendMessage.value);
+  if (currentSendMessage.value) result.push(currentSendMessage.value);
   for (const msg of currentRecvMessages.value) {
     result.push(msg);
   }
@@ -306,11 +302,13 @@ const sendMsg = async () => {
         hasGotReply = true;
       }
       const message = response.message as BaseChatMessage;
-      const index = currentRecvMessages.value.findIndex((msg) => msg.id === message.id);
-      if (index === -1) {
-        currentRecvMessages.value.push(message);
-      } else {
-        currentRecvMessages.value[index] = message;
+      if (message.role !== 'user') {
+        const index = currentRecvMessages.value.findIndex((msg) => msg.id === message.id);
+        if (index === -1) {
+          currentRecvMessages.value.push(message);
+        } else {
+          currentRecvMessages.value[index] = message;
+        }
       }
       // console.log('got message', message, index, currentRecvMessages.value);
       respConversationId = response.conversation_id || null;
