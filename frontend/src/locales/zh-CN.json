@@ -146,7 +146,10 @@
     "copy": "复制",
     "shouldRenderMarkdown": "是否渲染为 Markdown",
     "showRawMessage": "显示原始消息",
-    "messagesCount": "{0} 条消息"
+    "messagesCount": "合并自 {0} 条消息",
+    "justNow": "刚刚",
+    "hoursMinutesAgo": "{0}小时{1}分钟前",
+    "minutesAgo": "{0}分钟前"
   },
   "errors": {
     "403": "403 错误：无访问权限",

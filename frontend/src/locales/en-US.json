@@ -147,7 +147,10 @@
     "showRawMessage": "Show raw messages",
     "copy": "Copy content",
     "messagesCount": "{0} messages",
-    "search": "Search"
+    "search": "Search",
+    "justNow": "Just now",
+    "hoursMinutes": "{0}h{1}m ago",
+    "minutesAgo": "{0}m ago"
   },
   "errors": {
     "403": "403 error: access denied",

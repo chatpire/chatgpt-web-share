@@ -27,11 +27,16 @@
       </div>
       <div class="hide-in-print flex w-full justify-end pb-1 -mt-2">
         <div class="flex flex-row space-x-4">
-          <n-text class="text-[0.5rem]" depth="3">
-            {{ timeString }}
-          </n-text>
+          <n-tooltip trigger="hover">
+            <template #trigger>
+              <n-text class="text-[0.5rem]" depth="3">
+                {{ relativeTimeString }}
+              </n-text>
+            </template>
+            <span> {{ timeString }}</span>
+          </n-tooltip>
           <n-text v-if="props.messages.length > 1" class="text-[0.5rem]" depth="3">
-            {{ $t("commons.messagesCount", [props.messages.length]) }}
+            {{ $t('commons.messagesCount', [props.messages.length]) }}
           </n-text>
           <div class="space-x-2">
             <!-- 复制 -->
@@ -84,7 +89,7 @@ import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
 import { ArticleFilled, ArticleOutlined, PersonFilled } from '@vicons/material';
 import * as clipboard from 'clipboard-polyfill';
 import { useThemeVars } from 'naive-ui';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { JsonViewer } from 'vue3-json-viewer';
 
@@ -135,6 +140,31 @@ const timeString = computed<string>(() => {
     hour12: false,
     timeZone: lang == 'zh-CN' ? 'Asia/Shanghai' : 'America/New_York',
   });
+});
+
+const relativeTimeString = computed<string>(() => {
+  if (!lastMessage.value || !lastMessage.value.create_time) return '';
+  let create_time = lastMessage.value.create_time;
+  // 如果不以Z结尾，按照UTC时区处理；按Z结尾，或者是+时区的，则不处理
+  if (!create_time.endsWith('Z') && !create_time.includes('+') && !create_time.includes('-')) {
+    create_time += 'Z';
+  }
+
+  const diff = (new Date().getTime() - new Date(create_time).getTime()) / 1000;
+
+  if (diff < 60) {
+    return t('commons.justNow');
+  } else if (diff < 24 * 60 * 60) {
+    const minutes = Math.floor(diff / 60);
+    const hours = Math.floor(minutes / 60);
+    if (hours > 0) {
+      return t('commons.hoursMinutesAgo', [hours, minutes % 60]);
+    } else {
+      return t('commons.minutesAgo', minutes);
+    }
+  } else {
+    return timeString.value;
+  }
 });
 
 type DisplayItemType = 'text' | 'browser' | 'plugin' | null;
