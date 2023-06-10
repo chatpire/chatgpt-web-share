@@ -55,13 +55,12 @@ import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
 import { PersonFilled } from '@vicons/material';
 import * as clipboard from 'clipboard-polyfill';
 import { useThemeVars } from 'naive-ui';
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
-import { useAppStore } from '@/store';
 import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
-import { splitMessagesInGroup } from '@/utils/chat';
+import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
@@ -171,6 +170,16 @@ const displayItems = computed<DisplayItem[]>(() => {
   return result;
 });
 
+const allTextContent = computed(() => {
+  let result = [];
+  for (const item of displayItems.value) {
+    if (item.type == 'text') {
+      result.push(getTextMessageContent(item.messages));
+    }
+  }
+  return result.join('\n\n');
+});
+
 const backgroundColor = computed(() => {
   if (lastMessage.value?.role == 'user') {
     return themeVars.value.bodyColor;
@@ -184,15 +193,14 @@ function toggleShowRawMessage() {
 }
 
 function copyMessageContent() {
-  // const messageContent = content.value || '';
-  // clipboard
-  //   .writeText(messageContent)
-  //   .then(() => {
-  //     Message.success(t('commons.copiedToClipboard'));
-  //   })
-  //   .catch(() => {
-  //     console.error('Failed to copy message content to clipboard.');
-  //   });
+  clipboard
+    .writeText(allTextContent.value)
+    .then(() => {
+      Message.success(t('commons.copiedToClipboard'));
+    })
+    .catch(() => {
+      console.error('Failed to copy message content to clipboard.');
+    });
 }
 </script>
 

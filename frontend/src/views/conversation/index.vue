@@ -163,7 +163,7 @@ const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
   for (const msg of currentRecvMessages.value) {
     result.push(msg);
   }
-  console.log('currentActiveMessages', currentActiveMessages.value, currentRecvMessages.value);
+  // console.log('currentActiveMessages', currentActiveMessages.value, currentRecvMessages.value);
   return result;
 });
 

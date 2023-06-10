@@ -135,7 +135,6 @@ export function mergeContinuousMessages(messages: BaseChatMessage[]): BaseChatMe
 }
 
 // 对于一段连续消息中的消息按照功能性来分组
-
 export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessage[][] {
   const result = [] as BaseChatMessage[][];
   let currentMessageList = [] as BaseChatMessage[];
@@ -184,5 +183,21 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
   if (currentMessageList.length > 0) {
     result.push(currentMessageList);
   }
+  return result;
+}
+
+export function getTextMessageContent(messages: BaseChatMessage[]) {
+  let result = '';
+  // 遍历 props.messages
+  // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
+  for (let i = 0; i < messages.length; i++) {
+    const message = messages[i] as BaseChatMessage;
+    if (!message || !message.content) continue;
+    else if (typeof message.content == 'string') result += message.content;
+    else if (message.content.content_type == 'text') {
+      result += getContentRawText(message);
+    }
+  }
+  // console.log('text display result', result);
   return result;
 }

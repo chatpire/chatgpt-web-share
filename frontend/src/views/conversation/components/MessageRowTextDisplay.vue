@@ -10,7 +10,7 @@ import { computed, onMounted, ref } from 'vue';
 
 import { useAppStore } from '@/store';
 import { BaseChatMessage } from '@/types/schema';
-import { getContentRawText } from '@/utils/chat';
+import { getTextMessageContent } from '@/utils/chat';
 import md from '@/utils/markdown';
 
 import { bindOnclick, processPreTags } from '../utils/codeblock';
@@ -33,19 +33,7 @@ const renderPureText = computed(() => {
 });
 
 const content = computed(() => {
-  let result = '';
-  // 遍历 props.messages
-  // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
-  for (let i = 0; i < props.messages.length; i++) {
-    const message = props.messages[i] as BaseChatMessage;
-    if (!message || !message.content) continue;
-    else if (typeof message.content == 'string') result += message.content;
-    else if (message.content.content_type == 'text') {
-      result += getContentRawText(message);
-    }
-  }
-  // console.log('text display result', result);
-  return result;
+  return getTextMessageContent(props.messages);
 });
 
 const renderedContent = computed(() => {
