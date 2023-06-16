@@ -1,6 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-60" :option="option" :loading="props.loading" />
+    <v-chart class="h-100" :option="option" :loading="props.loading" />
   </div>
 </template>
 
