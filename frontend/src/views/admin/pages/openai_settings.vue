@@ -176,7 +176,7 @@ function changePluginSetting(pluginId: string | undefined, isInstalled: boolean)
     is_installed: isInstalled,
   })
     .then(() => {
-      Message.success(isInstalled ? t('tips.disablePluginSuccess') : t('tips.enablePluginSuccess'));
+      Message.success(isInstalled ? t('tips.enablePluginSuccess') : t('tips.disablePluginSuccess'));
       fetchData();
     })
     .finally(() => {
