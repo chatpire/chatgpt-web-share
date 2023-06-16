@@ -76,6 +76,11 @@ const router = createRouter({
           component: () => import('@/views/admin/pages/log_viewer.vue'),
         },
         {
+          path: 'openai_settings',
+          name: 'openaiSettings',
+          component: () => import('@/views/admin/pages/openai_settings.vue'),
+        },
+        {
           path: 'config',
           name: 'configManagement',
           component: () => import('@/views/admin/pages/config_manager.vue'),

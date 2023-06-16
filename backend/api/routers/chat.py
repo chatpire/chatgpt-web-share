@@ -28,7 +28,7 @@ from api.schemas import OpenaiWebConversationSchema, AskRequest, AskResponse, As
     BaseConversationSchema
 from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
 from api.sources import RevChatGPTManager, convert_revchatgpt_message, OpenAIChatManager, OpenAIChatException
-from api.users import websocket_auth, current_active_user
+from api.users import websocket_auth, current_active_user, current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -52,18 +52,27 @@ _plugins_result: list[OpenAIChatPlugin] | None = None
 _plugins_result_last_update_time = None
 
 
-@router.get("/chat/openai-plugins", tags=["chat"], response_model=list[OpenAIChatPlugin])
-async def get_chat_plugins(_user: User = Depends(current_active_user)):
+@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenAIChatPlugin])
+async def get_all_chat_plugins(_user: User = Depends(current_active_user)):
     global _plugins_result, _plugins_result_last_update_time
-    if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600:
+    if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600 * 24:
         _plugins_result = await openai_web_manager.get_plugin_manifests()
         _plugins_result_last_update_time = time.time()
     return _plugins_result
 
 
-@router.patch("/chat/openai-plugins/{plugin_id}/user-settings", tags=["chat"], response_model=OpenAIChatPlugin)
+@router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=list[OpenAIChatPlugin])
+async def get_installed_chat_plugins(_user: User = Depends(current_active_user)):
+    global _plugins_result, _plugins_result_last_update_time
+    if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600 * 24:
+        _plugins_result = await openai_web_manager.get_plugin_manifests()
+        _plugins_result_last_update_time = time.time()
+    return [plugin for plugin in _plugins_result if plugin.user_settings and plugin.user_settings.is_installed]
+
+
+@router.patch("/chat/openai-plugin/{plugin_id}/user-settings", tags=["chat"], response_model=OpenAIChatPlugin)
 async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenAIChatPluginUserSettings,
-                                           _user: User = Depends(current_active_user)):
+                                           _user: User = Depends(current_super_user)):
     if settings.is_authenticated is not None:
         raise InvalidParamsException("can not set is_authenticated")
     result = await openai_web_manager.change_plugin_user_settings(plugin_id, settings)

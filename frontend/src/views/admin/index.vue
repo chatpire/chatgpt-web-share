@@ -12,7 +12,7 @@
     >
       <n-menu v-model:value="activeKey" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
     </n-layout-sider>
-    <n-layout class="m-4">
+    <n-layout class="m-2 sm:m-4">
       <n-scrollbar>
         <router-view v-slot="{ Component, route }">
           <component :is="Component" :key="route.fullPath" />
@@ -29,6 +29,9 @@ import { NIcon } from 'naive-ui';
 import { h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+
+import ChatGPTIcon from '@/components/ChatGPTIcon.vue';
+
 const { t } = useI18n();
 const router = useRouter();
 
@@ -64,6 +67,11 @@ const menuOptions = [
     label: t('commons.configManager'),
     key: 'configManagement',
     icon: renderIcon(SettingsRound),
+  },
+  {
+    label: t('commons.openaiSettings'),
+    key: 'openaiSettings',
+    icon: () => h(ChatGPTIcon, { size: 28 }),
   },
 ];
 

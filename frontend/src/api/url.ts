@@ -8,7 +8,9 @@ enum ApiUrl {
   AllConversation = '/conv/all',
   UserList = '/user',
 
-  ChatPlugins = '/chat/openai-plugins',
+  ChatPlugin = '/chat/openai-plugin',
+  AllChatPlugins = '/chat/openai-plugins/all',
+  InstalledChatPlugins = '/chat/openai-plugins/installed',
 
   ServerStatus = '/status',
 

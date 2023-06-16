@@ -2766,10 +2766,25 @@
       },
       "user_settings": {
         "title": "User Settings",
-        "type": "object",
-        "additionalProperties": {
-          "type": "string"
-        }
+        "anyOf": [
+          {
+            "title": "OpenAIChatPluginUserSettings",
+            "type": "object",
+            "properties": {
+              "is_authenticated": {
+                "title": "Is Authenticated",
+                "type": "boolean"
+              },
+              "is_installed": {
+                "title": "Is Installed",
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object"
+          }
+        ]
       },
       "oauth_client_id": {
         "title": "Oauth Client Id",

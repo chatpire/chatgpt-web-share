@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     BrowsingIcon: typeof import('./src/components/BrowsingIcon.vue')['default']
     ChatGPTAvatar: typeof import('./src/components/ChatGPTAvatar.vue')['default']
+    ChatGPTIcon: typeof import('./src/components/ChatGPTIcon.vue')['default']
     ChatModelTagsRow: typeof import('./src/components/ChatModelTagsRow.vue')['default']
     ChatTypeTagInfoCell: typeof import('./src/components/ChatTypeTagInfoCell.vue')['default']
     CountNumberInput: typeof import('./src/components/inputs/CountNumberInput.vue')['default']
@@ -46,7 +47,10 @@ declare module '@vue/runtime-core' {
     NLog: typeof import('naive-ui')['NLog']
     NMenu: typeof import('naive-ui')['NMenu']
     NPageHeader: typeof import('naive-ui')['NPageHeader']
+    NPagination: typeof import('naive-ui')['NPagination']
     NPopconfirm: typeof import('naive-ui')['NPopconfirm']
+    NRadio: typeof import('naive-ui')['NRadio']
+    NRadioGroup: typeof import('naive-ui')['NRadioGroup']
     NScrollbar: typeof import('naive-ui')['NScrollbar']
     NSelect: typeof import('naive-ui')['NSelect']
     NSpace: typeof import('naive-ui')['NSpace']

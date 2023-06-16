@@ -50,5 +50,5 @@ class OpenAIChatPlugin(BaseModel):
     categories: Optional[list[OpenAIChatPluginCategory]]
     domain: Optional[str]
     status: Optional[Literal['approved'] | str]
-    user_settings: Optional[dict[str, str]]  # is_authenticated, is_installed
+    user_settings: Optional[OpenAIChatPluginUserSettings | dict[str, Any]]  # is_authenticated, is_installed
     oauth_client_id: Optional[str]

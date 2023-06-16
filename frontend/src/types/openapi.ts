@@ -81,13 +81,17 @@ export interface paths {
     /** Generate Conversation Title */
     patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
   };
-  "/chat/openai-plugins": {
-    /** Get Chat Plugins */
-    get: operations["get_chat_plugins_chat_openai_plugins_get"];
+  "/chat/openai-plugins/all": {
+    /** Get All Chat Plugins */
+    get: operations["get_all_chat_plugins_chat_openai_plugins_all_get"];
   };
-  "/chat/openai-plugins/{plugin_id}/user-settings": {
+  "/chat/openai-plugins/installed": {
+    /** Get Installed Chat Plugins */
+    get: operations["get_installed_chat_plugins_chat_openai_plugins_installed_get"];
+  };
+  "/chat/openai-plugin/{plugin_id}/user-settings": {
     /** Update Chat Plugin User Settings */
-    patch: operations["update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch"];
+    patch: operations["update_chat_plugin_user_settings_chat_openai_plugin__plugin_id__user_settings_patch"];
   };
   "/chat/__schema_types": {
     /**
@@ -618,9 +622,7 @@ export interface components {
       /** Status */
       status?: "approved" | string;
       /** User Settings */
-      user_settings?: {
-        [key: string]: string | undefined;
-      };
+      user_settings?: components["schemas"]["OpenAIChatPluginUserSettings"] | Record<string, never>;
       /** Oauth Client Id */
       oauth_client_id?: string;
     };
@@ -1909,8 +1911,8 @@ export interface operations {
       };
     };
   };
-  get_chat_plugins_chat_openai_plugins_get: {
-    /** Get Chat Plugins */
+  get_all_chat_plugins_chat_openai_plugins_all_get: {
+    /** Get All Chat Plugins */
     responses: {
       /** @description Successful Response */
       200: {
@@ -1920,7 +1922,18 @@ export interface operations {
       };
     };
   };
-  update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch: {
+  get_installed_chat_plugins_chat_openai_plugins_installed_get: {
+    /** Get Installed Chat Plugins */
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+    };
+  };
+  update_chat_plugin_user_settings_chat_openai_plugin__plugin_id__user_settings_patch: {
     /** Update Chat Plugin User Settings */
     parameters: {
       path: {

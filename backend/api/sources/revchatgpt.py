@@ -281,6 +281,8 @@ class RevChatGPTManager:
         self.chatbot.reset_chat()
 
     async def get_plugin_manifests(self, statuses="approved", is_installed=None, offset=0, limit=250):
+        if not config.openai_web.is_plus_account:
+            raise InvalidParamsException("errors.notPlusChatgptAccount")
         params = {
             "statuses": statuses,
             "offset": offset,
@@ -297,6 +299,8 @@ class RevChatGPTManager:
         return parse_obj_as(list[OpenAIChatPlugin], response.json().get("items"))
 
     async def change_plugin_user_settings(self, plugin_id: str, setting: OpenAIChatPluginUserSettings):
+        if not config.openai_web.is_plus_account:
+            raise InvalidParamsException("errors.notPlusChatgptAccount")
         response = await self.chatbot.session.patch(
             url=f"{self.chatbot.base_url}aip/p/{plugin_id}/user-settings",
             json=setting.dict(exclude_unset=True, exclude_none=True),
