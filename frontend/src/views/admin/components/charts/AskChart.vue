@@ -106,7 +106,7 @@ function makeDataset(askRecords: AskLogAggregation[]) {
       // 下面的非echarts配置，用于生成series
       type,
       model,
-      name: `${t('labels.' + type)}-${t('models.' + model)}`,
+      name: `${t('sources.' + type)}-${t('models.' + model)}`,
     });
   });
 

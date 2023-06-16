@@ -207,7 +207,7 @@ const makeNewConversation = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
     if (!newConversationInfo.source || !newConversationInfo.model) return;
-    newConversationInfo.title = newConversationInfo.title || `New Chat (${t('labels.' + newConversationInfo.source)})`;
+    newConversationInfo.title = newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
   });

@@ -30,8 +30,8 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
     return [];
   }
   return [
-    {label: t('labels.openai_web'), value: 'openai_web', disabled: !userStore.user.setting.openai_web.allow_to_use},
-    {label: t('labels.openai_api'), value: 'openai_api', disabled: !userStore.user.setting.openai_api.allow_to_use},
+    {label: t('sources_short.openai_web'), value: 'openai_web', disabled: !userStore.user.setting.openai_web.allow_to_use},
+    {label: t('sources_short.openai_api'), value: 'openai_api', disabled: !userStore.user.setting.openai_api.allow_to_use},
   ];
 });
 

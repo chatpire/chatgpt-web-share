@@ -122,7 +122,7 @@ const columns: DataTableColumns<BaseConversationSchema> = [
     title: t('labels.source'),
     key: 'type',
     render: (row) => {
-      return t(`labels.${row.source}`);
+      return t(`sources_short.${row.source}`);
     },
   },
   {

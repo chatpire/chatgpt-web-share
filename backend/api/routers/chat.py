@@ -21,7 +21,8 @@ from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels,
 from api.exceptions import InternalException, InvalidParamsException
 from api.models.db import OpenaiWebConversation, User, BaseConversation
 from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
-    OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, OpenaiApiAskLogMeta
+    OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, \
+    OpenaiApiAskLogMeta
 from api.routers.conv import _get_conversation_by_id
 from api.schemas import OpenaiWebConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
@@ -103,16 +104,17 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
 
     # 是否允许使用当前提问类型
     if not source_setting.allow_to_use:
-        raise WebsocketInvalidAskException("errors.userNotAllowToUseChatType")
+        raise WebsocketInvalidAskException(tip="errors.userNotAllowToUseChatType")
 
     # 是否到期
     current_datetime = datetime.now().astimezone(tz=timezone.utc)
     if source_setting.valid_until is not None and current_datetime > source_setting.valid_until:
-        raise WebsocketInvalidAskException("errors.userChatTypeExpired")
+        raise WebsocketInvalidAskException(tip="errors.userChatTypeExpired",
+                                           error_detail=f"valid until: {source_setting.valid_until}")
 
     # 当前时间是否允许请求
     time_slots = source_setting.daily_available_time_slots  # list of {start_time, end_time} datetime.time
-    if time_slots is not None:
+    if time_slots is not None and len(time_slots) > 0:
         now_time = datetime.now().time()  # TODO: 时区处理
         if not any(time_slot.start_time <= now_time <= time_slot.end_time for time_slot in time_slots):
             raise WebsocketInvalidAskException("errors.userNotAllowToAskAtThisTime")
@@ -194,7 +196,7 @@ async def chat(websocket: WebSocket):
     try:
         await check_limits(user, ask_request)
     except WebsocketException as e:
-        await reply(AskResponse(type=AskResponseType.error, error_detail=str(e)))
+        await reply(AskResponse(type=AskResponseType.error, tip=e.tip, error_detail=e.error_detail))
         await websocket.close(e.code, e.tip)
         return
 

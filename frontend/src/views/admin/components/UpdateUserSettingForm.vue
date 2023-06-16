@@ -14,9 +14,9 @@
         {{ props.user?.username }}
       </n-text>
     </n-form-item>
-    <n-form-item :label="$t('labels.credits')">
+    <!-- <n-form-item :label="$t('labels.credits')">
       <n-input-number v-model:value="credits" />
-    </n-form-item>
+    </n-form-item> -->
   </n-form>
   <div class="my-2">
     <n-text depth="3">

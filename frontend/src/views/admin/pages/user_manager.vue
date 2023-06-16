@@ -24,7 +24,7 @@
   <n-drawer
     v-if="drawer.show.value"
     v-model:show="drawer.show.value"
-    :width="gtsm() ? '50%' : '80%'"
+    :width="gtsm() ? '60%' : '100%'"
     :placement="'right'"
   >
     <n-drawer-content closable :title="drawer.title.value" :native-scrollbar="false">

@@ -11,7 +11,7 @@
       <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
         <n-text>
           {{ $t('commons.currentConversationModel') }}: {{ getChatModelNameTrans(convHistory?.current_model || null) }}
-          {{ t(`labels.${convHistory?.source}`) }}
+          ({{ t(`sources.${convHistory?.source}`) }})
         </n-text>
         <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
           <template #icon>

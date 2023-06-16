@@ -9,6 +9,8 @@ export type UserUpdateAdmin = components['schemas']['UserUpdateAdmin'];
 export type UserSettingSchema = components['schemas']['UserSettingSchema'];
 export type OpenaiWebSourceSettingSchema = components['schemas']['OpenaiWebSourceSettingSchema'];
 export type OpenaiApiSourceSettingSchema = components['schemas']['OpenaiApiSourceSettingSchema'];
+export type TimeWindowRateLimit = components['schemas']['TimeWindowRateLimit'];
+export type DailyTimeSlot = components['schemas']['DailyTimeSlot'];
 
 export type ServerStatusSchema = components['schemas']['ServerStatusSchema'];
 export type OpenaiWebChatStatus = components['schemas']['OpenaiWebChatStatus'];
