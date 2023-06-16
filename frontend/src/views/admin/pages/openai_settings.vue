@@ -78,9 +78,12 @@
                       </n-button>
                     </div>
                   </div>
-                  <n-text class="h-[60px] text-sm line-clamp-3">
+                  <!-- <n-text class="h-[60px] text-sm line-clamp-3">
+                    
+                  </n-text> -->
+                  <n-ellipsis :line-clamp="3">
                     {{ plugin.manifest?.description_for_human }}
-                  </n-text>
+                  </n-ellipsis>
                 </div>
               </n-card>
             </div>
