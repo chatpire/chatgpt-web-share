@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chatgpt-share-backend"
-version = "0.4.0-alpha3"
+version = "0.4.0-alpha4"
 description = ""
 authors = ["moeakwak <moeakwak@gmail.com>"]
 readme = "README.md"
