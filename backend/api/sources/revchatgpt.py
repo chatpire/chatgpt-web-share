@@ -234,7 +234,7 @@ class RevChatGPTManager:
             "history_and_training_disabled": False,
             "arkose_token": None
         }
-        if plugin_ids:
+        if plugin_ids and conversation_id is None:
             data["plugin_ids"] = plugin_ids
 
         timeout = httpx.Timeout(Config().openai_web.common_timeout, read=Config().openai_web.ask_timeout)

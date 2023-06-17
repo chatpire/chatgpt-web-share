@@ -8,7 +8,7 @@
       </n-avatar>
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
-    <div class="ml-4 lt-md:mx-0 w-full">
+    <div class="ml-4 lt-md:mx-0 w-full min-h-16">
       <div v-if="showRawMessage" class="my-3 json-viewer">
         <JsonViewer :value="props.messages" copyable expanded :expand-depth="2" :theme="appStore.theme" />
       </div>
