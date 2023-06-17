@@ -294,14 +294,15 @@
     "last_active_time": "最后活动时间",
     "rev_chat_status": "Chat 状态",
     "max_conv_count": "最大对话数量",
-    "source": "来源"
+    "source": "来源",
+    "plugins": "插件"
   },
   "models": {
     "gpt_3_5": "GPT-3.5",
     "gpt_3_5_mobile": "GPT-3.5 Mobile",
     "gpt_4": "GPT-4",
     "gpt_4_browsing": "GPT-4 Browsing",
-    "gpt_4_plugins": "GPT-4 Plugins(暂不支持)",
+    "gpt_4_plugins": "GPT-4 Plugins",
     "gpt_4_mobile": "GPT-4 Mobile"
   },
   "sources": {

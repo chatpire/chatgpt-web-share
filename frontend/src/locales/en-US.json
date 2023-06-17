@@ -289,7 +289,7 @@
     "gpt_4": "GPT-4",
     "gpt_4_mobile": "GPT-4 Mobile",
     "gpt_4_browsing": "GPT-4 Browsing",
-    "gpt_4_plugins": "GPT-4 Plugins (not currently supported)"
+    "gpt_4_plugins": "GPT-4 Plugins"
   },
   "sources": {
     "openai_web": "OpenAI Web",

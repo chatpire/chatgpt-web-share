@@ -35,3 +35,7 @@ export function patchOpenaiChatPluginsUsersSettingsApi(pluginId: string, setting
     },
   });
 }
+
+export function getOpenaiChatPluginApi(pluginId: string) {
+  return axios.get<OpenAIChatPlugin>(`${ApiUrl.ChatPlugin}/${pluginId}`);
+}

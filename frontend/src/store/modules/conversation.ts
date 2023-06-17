@@ -40,9 +40,16 @@ const useConversationStore = defineStore('conversation', {
     },
 
     createNewConversation(info: NewConversationInfo) {
-      if (!info.title || !info.source || !info.model || !(info.source === 'openai_api' || info.source === 'openai_web')) {
+      if (
+        !info.title ||
+        !info.source ||
+        !info.model ||
+        !(info.source === 'openai_api' || info.source === 'openai_web') ||
+        (info.model !== 'gpt_4_plugins' && info.openaiWebPlugins)
+      ) {
         throw new Error('Invalid conversation info');
       }
+      console.log(info);
       const currentTime = new Date().toISOString();
       this.newConversation = {
         source: info.source,
@@ -60,6 +67,10 @@ const useConversationStore = defineStore('conversation', {
         create_time: currentTime,
         update_time: currentTime,
         mapping: {},
+        meta: info.openaiWebPlugins ? {
+          source: 'openai_web',
+          plugin_ids: info.openaiWebPlugins,
+        } : undefined
       };
     },
 
@@ -99,8 +110,8 @@ const useConversationStore = defineStore('conversation', {
       // convHistory.mapping[sendMessage.id] = sendMessage;
       // convHistory.mapping[recvMessage.id] = recvMessage;
       for (let i = 0; i < messages.length; i++) {
-        if (i > 0) messages[i].parent = messages[i-1].id;
-        if (i < messages.length - 1) messages[i].children = [messages[i+1].id];
+        if (i > 0) messages[i].parent = messages[i - 1].id;
+        if (i < messages.length - 1) messages[i].children = [messages[i + 1].id];
         convHistory.mapping[messages[i].id] = messages[i];
       }
 

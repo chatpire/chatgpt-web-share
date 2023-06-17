@@ -226,8 +226,7 @@ const displayItems = computed<DisplayItem[]>(() => {
     for (const message of group) {
       if (
         message.source !== 'openai_web' ||
-        typeof message.content == 'string' ||
-        message.content?.content_type === 'text'
+        typeof message.content == 'string'
       ) {
         console.error('wrong message mixed in non-text content group', group);
         continue;
@@ -235,7 +234,6 @@ const displayItems = computed<DisplayItem[]>(() => {
     }
     // 辨认当前 group 的类型
     for (const message of group) {
-      console.log('try to find message\'s type', message);
       if (message.role == 'assistant' && message.model == 'gpt_4_plugins') {
         displayType = 'plugin';
         break;

@@ -189,7 +189,7 @@ class RevChatGPTManager:
             mapping=mapping,
             current_node=result.get("current_node"),
             current_model=current_model,
-            rev_extra=OpenaiWebConversationHistoryMeta(
+            meta=OpenaiWebConversationHistoryMeta(
                 source="openai_web",
                 plugin_ids=result.get("plugin_ids"),
                 moderation_results=result.get("moderation_results"),
@@ -231,7 +231,8 @@ class RevChatGPTManager:
             "conversation_id": str(conversation_id) if conversation_id else None,
             "parent_message_id": str(parent_id) if parent_id else None,
             "model": model.code(),
-            "history_and_training_disabled": False
+            "history_and_training_disabled": False,
+            "arkose_token": None
         }
         if plugin_ids:
             data["plugin_ids"] = plugin_ids

@@ -49,25 +49,39 @@ async def change_user_chat_status(user_id: int, status: OpenaiWebChatStatus):
 
 
 _plugins_result: list[OpenAIChatPlugin] | None = None
+_plugins_result_map: dict[str, OpenAIChatPlugin] | None = None
 _plugins_result_last_update_time = None
 
 
-@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenAIChatPlugin])
-async def get_all_chat_plugins(_user: User = Depends(current_active_user)):
-    global _plugins_result, _plugins_result_last_update_time
+async def _refresh_plugins():
+    global _plugins_result, _plugins_result_map, _plugins_result_last_update_time
     if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600 * 24:
         _plugins_result = await openai_web_manager.get_plugin_manifests()
+        _plugins_result_map = {plugin.id: plugin for plugin in _plugins_result}
         _plugins_result_last_update_time = time.time()
     return _plugins_result
 
 
+@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenAIChatPlugin])
+async def get_all_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
+    plugins = await _refresh_plugins()
+    return plugins
+
+
 @router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=list[OpenAIChatPlugin])
-async def get_installed_chat_plugins(_user: User = Depends(current_active_user)):
-    global _plugins_result, _plugins_result_last_update_time
-    if _plugins_result is None or time.time() - _plugins_result_last_update_time > 3600 * 24:
-        _plugins_result = await openai_web_manager.get_plugin_manifests()
-        _plugins_result_last_update_time = time.time()
-    return [plugin for plugin in _plugins_result if plugin.user_settings and plugin.user_settings.is_installed]
+async def get_installed_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
+    plugins = await _refresh_plugins()
+    return [plugin for plugin in plugins if plugin.user_settings and plugin.user_settings.is_installed]
+
+
+@router.get("/chat/openai-plugin/{plugin_id}", tags=["chat"], response_model=OpenAIChatPlugin)
+async def get_openai_web_plugin(plugin_id: str, _user: User = Depends(current_active_user)):
+    await _refresh_plugins()
+    global _plugins_result_map
+    if plugin_id in _plugins_result_map:
+        return _plugins_result_map[plugin_id]
+    else:
+        raise InvalidParamsException("errors.pluginNotFound")
 
 
 @router.patch("/chat/openai-plugin/{plugin_id}/user-settings", tags=["chat"], response_model=OpenAIChatPlugin)
@@ -275,7 +289,8 @@ async def chat(websocket: WebSocket):
         async for data in manager.ask(content=ask_request.content,
                                       conversation_id=ask_request.conversation_id,
                                       parent_id=ask_request.parent,
-                                      model=model):
+                                      model=model,
+                                      plugin_ids=ask_request.openai_web_plugin_ids):
             has_got_reply = True
 
             try:

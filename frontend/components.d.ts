@@ -14,7 +14,6 @@ declare module '@vue/runtime-core' {
     ChatGPTIcon: typeof import('./src/components/ChatGPTIcon.vue')['default']
     ChatModelTagsRow: typeof import('./src/components/ChatModelTagsRow.vue')['default']
     ChatTypeTagInfoCell: typeof import('./src/components/ChatTypeTagInfoCell.vue')['default']
-    CountNumberInput: typeof import('./src/components/inputs/CountNumberInput.vue')['default']
     HelpTooltip: typeof import('./src/components/HelpTooltip.vue')['default']
     NAutoComplete: typeof import('naive-ui')['NAutoComplete']
     NAvatar: typeof import('naive-ui')['NAvatar']
@@ -70,6 +69,5 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     UserProfileCard: typeof import('./src/components/UserProfileCard.vue')['default']
-    ValidDateTimeInput: typeof import('./src/components/inputs/ValidDateTimeInput.vue')['default']
   }
 }

@@ -206,6 +206,7 @@ const sendDisabled = computed(() => {
 const makeNewConversation = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
+    console.log('makeNewConversation', newConversationInfo);
     if (!newConversationInfo.source || !newConversationInfo.model) return;
     newConversationInfo.title = newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
     conversationStore.createNewConversation(newConversationInfo);
@@ -263,6 +264,7 @@ const sendMsg = async () => {
     new_conversation: currentConversationId.value!.startsWith('new_conversation'),
     model: currentConversation.value!.current_model!,
     content: text,
+    openai_web_plugin_ids: currentConvHistory.value!.meta?.source === 'openai_web' ? currentConvHistory.value!.meta?.plugin_ids : undefined,
   };
   if (conversationStore.newConversation) {
     askRequest.new_title = conversationStore.newConversation.title;
@@ -342,6 +344,7 @@ const sendMsg = async () => {
             current_model: currentConvHistory.value!.current_model,
             create_time: currentConvHistory.value!.create_time,
             update_time: currentConvHistory.value!.update_time,
+            meta: currentConvHistory.value!.meta,
             mapping: {},
             current_node: '',
           } as BaseConversationHistory;

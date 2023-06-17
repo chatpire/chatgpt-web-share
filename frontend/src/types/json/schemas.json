@@ -244,6 +244,13 @@
       "content": {
         "title": "Content",
         "type": "string"
+      },
+      "openai_web_plugin_ids": {
+        "title": "Openai Web Plugin Ids",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
     }
   },

@@ -89,6 +89,10 @@ export interface paths {
     /** Get Installed Chat Plugins */
     get: operations["get_installed_chat_plugins_chat_openai_plugins_installed_get"];
   };
+  "/chat/openai-plugin/{plugin_id}": {
+    /** Get Openai Web Plugin */
+    get: operations["get_openai_web_plugin_chat_openai_plugin__plugin_id__get"];
+  };
   "/chat/openai-plugin/{plugin_id}/user-settings": {
     /** Update Chat Plugin User Settings */
     patch: operations["update_chat_plugin_user_settings_chat_openai_plugin__plugin_id__user_settings_patch"];
@@ -197,6 +201,8 @@ export interface components {
       api_context_message_count?: number;
       /** Content */
       content: string;
+      /** Openai Web Plugin Ids */
+      openai_web_plugin_ids?: (string)[];
     };
     /** AskResponse */
     AskResponse: {
@@ -1929,6 +1935,28 @@ export interface operations {
       200: {
         content: {
           "application/json": string;
+        };
+      };
+    };
+  };
+  get_openai_web_plugin_chat_openai_plugin__plugin_id__get: {
+    /** Get Openai Web Plugin */
+    parameters: {
+      path: {
+        plugin_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

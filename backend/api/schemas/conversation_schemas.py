@@ -33,6 +33,7 @@ class AskRequest(BaseModel):
     parent: Optional[uuid.UUID] = None
     api_context_message_count: int = Field(-1, ge=-1)
     content: str
+    openai_web_plugin_ids: Optional[list[str]] = None
 
     @root_validator
     def check(cls, values):
