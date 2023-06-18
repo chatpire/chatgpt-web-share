@@ -126,11 +126,13 @@ const lastMessage = computed<BaseChatMessage | null>(() => {
   else return props.messages[props.messages.length - 1];
 });
 
+const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[\+-]\d\d:?\d\d/.test(create_time)
+
 const timeString = computed<string>(() => {
   if (!lastMessage.value || !lastMessage.value.create_time) return '';
   let create_time = lastMessage.value.create_time;
   // 如果不以Z结尾，按照UTC时区处理；按Z结尾，或者是+时区的，则不处理
-  if (!create_time.endsWith('Z') && !create_time.includes('+') && !create_time.includes('-')) {
+  if (shouldFixUTC(create_time)) {
     create_time += 'Z';
   }
   // 根据当前语言是 zhCN 还是 enUS 设置时区
@@ -146,7 +148,7 @@ const relativeTimeString = computed<string>(() => {
   if (!lastMessage.value || !lastMessage.value.create_time) return '';
   let create_time = lastMessage.value.create_time;
   // 如果不以Z结尾，按照UTC时区处理；按Z结尾，或者是+时区的，则不处理
-  if (!create_time.endsWith('Z') && !create_time.includes('+') && !create_time.includes('-')) {
+  if (shouldFixUTC(create_time)) {
     create_time += 'Z';
   }
 
@@ -160,7 +162,7 @@ const relativeTimeString = computed<string>(() => {
     if (hours > 0) {
       return t('commons.hoursMinutesAgo', [hours, minutes % 60]);
     } else {
-      return t('commons.minutesAgo', minutes);
+      return t('commons.minutesAgo', [minutes]);
     }
   } else {
     return timeString.value;
