@@ -162,7 +162,7 @@ const toggleInputExpanded = () => {
 
 const shortcutSendMsg = (e: KeyboardEvent) => {
   const sendKey = appStore.preference.sendKey; // "Shift+Enter" or "Ctrl+Enter" or "Enter"
-  if (sendKey === 'Enter' && e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+  if (sendKey === 'Enter' && e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.isComposing) {
     e.preventDefault();
     emits('send-msg');
   } else if (sendKey === 'Shift+Enter' && e.key === 'Enter' && e.shiftKey && !e.ctrlKey) {
