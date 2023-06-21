@@ -625,7 +625,7 @@
                           }
                         ]
                       },
-                      "cite_metadata": {
+                      "_cite_metadata": {
                         "title": "OpenaiWebChatMessageMetadataCite",
                         "type": "object",
                         "properties": {
@@ -637,6 +637,42 @@
                             "title": "Metadata List",
                             "type": "array",
                             "items": {
+                              "title": "OpenaiWebChatMessageMetadataCiteData",
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "title": "Title",
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "title": "Url",
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "title": "Text",
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "citations": {
+                        "title": "Citations",
+                        "type": "array",
+                        "items": {
+                          "title": "OpenaiWebChatMessageMetadataCitation",
+                          "type": "object",
+                          "properties": {
+                            "start_ix": {
+                              "title": "Start Ix",
+                              "type": "integer"
+                            },
+                            "end_ix": {
+                              "title": "End Ix",
+                              "type": "integer"
+                            },
+                            "metadata": {
                               "title": "OpenaiWebChatMessageMetadataCiteData",
                               "type": "object",
                               "properties": {
@@ -901,7 +937,7 @@
                           }
                         ]
                       },
-                      "cite_metadata": {
+                      "_cite_metadata": {
                         "title": "OpenaiWebChatMessageMetadataCite",
                         "type": "object",
                         "properties": {
@@ -913,6 +949,42 @@
                             "title": "Metadata List",
                             "type": "array",
                             "items": {
+                              "title": "OpenaiWebChatMessageMetadataCiteData",
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "title": "Title",
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "title": "Url",
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "title": "Text",
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "citations": {
+                        "title": "Citations",
+                        "type": "array",
+                        "items": {
+                          "title": "OpenaiWebChatMessageMetadataCitation",
+                          "type": "object",
+                          "properties": {
+                            "start_ix": {
+                              "title": "Start Ix",
+                              "type": "integer"
+                            },
+                            "end_ix": {
+                              "title": "End Ix",
+                              "type": "integer"
+                            },
+                            "metadata": {
                               "title": "OpenaiWebChatMessageMetadataCiteData",
                               "type": "object",
                               "properties": {
@@ -1395,7 +1467,7 @@
                   }
                 ]
               },
-              "cite_metadata": {
+              "_cite_metadata": {
                 "title": "OpenaiWebChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
@@ -1407,6 +1479,42 @@
                     "title": "Metadata List",
                     "type": "array",
                     "items": {
+                      "title": "OpenaiWebChatMessageMetadataCiteData",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "citations": {
+                "title": "Citations",
+                "type": "array",
+                "items": {
+                  "title": "OpenaiWebChatMessageMetadataCitation",
+                  "type": "object",
+                  "properties": {
+                    "start_ix": {
+                      "title": "Start Ix",
+                      "type": "integer"
+                    },
+                    "end_ix": {
+                      "title": "End Ix",
+                      "type": "integer"
+                    },
+                    "metadata": {
                       "title": "OpenaiWebChatMessageMetadataCiteData",
                       "type": "object",
                       "properties": {
@@ -1878,7 +1986,7 @@
                         }
                       ]
                     },
-                    "cite_metadata": {
+                    "_cite_metadata": {
                       "title": "OpenaiWebChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
@@ -1890,6 +1998,42 @@
                           "title": "Metadata List",
                           "type": "array",
                           "items": {
+                            "title": "OpenaiWebChatMessageMetadataCiteData",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "title": "Title",
+                                "type": "string"
+                              },
+                              "url": {
+                                "title": "Url",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "citations": {
+                      "title": "Citations",
+                      "type": "array",
+                      "items": {
+                        "title": "OpenaiWebChatMessageMetadataCitation",
+                        "type": "object",
+                        "properties": {
+                          "start_ix": {
+                            "title": "Start Ix",
+                            "type": "integer"
+                          },
+                          "end_ix": {
+                            "title": "End Ix",
+                            "type": "integer"
+                          },
+                          "metadata": {
                             "title": "OpenaiWebChatMessageMetadataCiteData",
                             "type": "object",
                             "properties": {
@@ -3140,7 +3284,7 @@
                   }
                 ]
               },
-              "cite_metadata": {
+              "_cite_metadata": {
                 "title": "OpenaiWebChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
@@ -3152,6 +3296,42 @@
                     "title": "Metadata List",
                     "type": "array",
                     "items": {
+                      "title": "OpenaiWebChatMessageMetadataCiteData",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "citations": {
+                "title": "Citations",
+                "type": "array",
+                "items": {
+                  "title": "OpenaiWebChatMessageMetadataCitation",
+                  "type": "object",
+                  "properties": {
+                    "start_ix": {
+                      "title": "Start Ix",
+                      "type": "integer"
+                    },
+                    "end_ix": {
+                      "title": "End Ix",
+                      "type": "integer"
+                    },
+                    "metadata": {
                       "title": "OpenaiWebChatMessageMetadataCiteData",
                       "type": "object",
                       "properties": {
@@ -3520,7 +3700,7 @@
                         }
                       ]
                     },
-                    "cite_metadata": {
+                    "_cite_metadata": {
                       "title": "OpenaiWebChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
@@ -3532,6 +3712,42 @@
                           "title": "Metadata List",
                           "type": "array",
                           "items": {
+                            "title": "OpenaiWebChatMessageMetadataCiteData",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "title": "Title",
+                                "type": "string"
+                              },
+                              "url": {
+                                "title": "Url",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "citations": {
+                      "title": "Citations",
+                      "type": "array",
+                      "items": {
+                        "title": "OpenaiWebChatMessageMetadataCitation",
+                        "type": "object",
+                        "properties": {
+                          "start_ix": {
+                            "title": "Start Ix",
+                            "type": "integer"
+                          },
+                          "end_ix": {
+                            "title": "End Ix",
+                            "type": "integer"
+                          },
+                          "metadata": {
                             "title": "OpenaiWebChatMessageMetadataCiteData",
                             "type": "object",
                             "properties": {
@@ -4267,7 +4483,7 @@
                   }
                 ]
               },
-              "cite_metadata": {
+              "_cite_metadata": {
                 "title": "OpenaiWebChatMessageMetadataCite",
                 "type": "object",
                 "properties": {
@@ -4279,6 +4495,42 @@
                     "title": "Metadata List",
                     "type": "array",
                     "items": {
+                      "title": "OpenaiWebChatMessageMetadataCiteData",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "title": "Title",
+                          "type": "string"
+                        },
+                        "url": {
+                          "title": "Url",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "citations": {
+                "title": "Citations",
+                "type": "array",
+                "items": {
+                  "title": "OpenaiWebChatMessageMetadataCitation",
+                  "type": "object",
+                  "properties": {
+                    "start_ix": {
+                      "title": "Start Ix",
+                      "type": "integer"
+                    },
+                    "end_ix": {
+                      "title": "End Ix",
+                      "type": "integer"
+                    },
+                    "metadata": {
                       "title": "OpenaiWebChatMessageMetadataCiteData",
                       "type": "object",
                       "properties": {
@@ -4468,7 +4720,7 @@
           }
         ]
       },
-      "cite_metadata": {
+      "_cite_metadata": {
         "title": "OpenaiWebChatMessageMetadataCite",
         "type": "object",
         "properties": {
@@ -4497,6 +4749,74 @@
                 }
               }
             }
+          }
+        }
+      },
+      "citations": {
+        "title": "Citations",
+        "type": "array",
+        "items": {
+          "title": "OpenaiWebChatMessageMetadataCitation",
+          "type": "object",
+          "properties": {
+            "start_ix": {
+              "title": "Start Ix",
+              "type": "integer"
+            },
+            "end_ix": {
+              "title": "End Ix",
+              "type": "integer"
+            },
+            "metadata": {
+              "title": "OpenaiWebChatMessageMetadataCiteData",
+              "type": "object",
+              "properties": {
+                "title": {
+                  "title": "Title",
+                  "type": "string"
+                },
+                "url": {
+                  "title": "Url",
+                  "type": "string"
+                },
+                "text": {
+                  "title": "Text",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "OpenaiWebChatMessageMetadataCitation": {
+    "title": "OpenaiWebChatMessageMetadataCitation",
+    "type": "object",
+    "properties": {
+      "start_ix": {
+        "title": "Start Ix",
+        "type": "integer"
+      },
+      "end_ix": {
+        "title": "End Ix",
+        "type": "integer"
+      },
+      "metadata": {
+        "title": "OpenaiWebChatMessageMetadataCiteData",
+        "type": "object",
+        "properties": {
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
           }
         }
       }
@@ -5107,7 +5427,7 @@
                         }
                       ]
                     },
-                    "cite_metadata": {
+                    "_cite_metadata": {
                       "title": "OpenaiWebChatMessageMetadataCite",
                       "type": "object",
                       "properties": {
@@ -5119,6 +5439,42 @@
                           "title": "Metadata List",
                           "type": "array",
                           "items": {
+                            "title": "OpenaiWebChatMessageMetadataCiteData",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "title": "Title",
+                                "type": "string"
+                              },
+                              "url": {
+                                "title": "Url",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "citations": {
+                      "title": "Citations",
+                      "type": "array",
+                      "items": {
+                        "title": "OpenaiWebChatMessageMetadataCitation",
+                        "type": "object",
+                        "properties": {
+                          "start_ix": {
+                            "title": "Start Ix",
+                            "type": "integer"
+                          },
+                          "end_ix": {
+                            "title": "End Ix",
+                            "type": "integer"
+                          },
+                          "metadata": {
                             "title": "OpenaiWebChatMessageMetadataCiteData",
                             "type": "object",
                             "properties": {

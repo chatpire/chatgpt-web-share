@@ -33,6 +33,12 @@ class OpenaiWebChatMessageMetadataCite(BaseModel):
     metadata_list: Optional[list[OpenaiWebChatMessageMetadataCiteData]]
 
 
+class OpenaiWebChatMessageMetadataCitation(BaseModel):
+    start_ix: Optional[int]
+    end_ix: Optional[int]
+    metadata: Optional[OpenaiWebChatMessageMetadataCiteData]
+
+
 class OpenaiWebChatMessageMetadata(BaseModel):
     source: Literal["openai_web"]
     # 以下只有assistant有
@@ -49,7 +55,8 @@ class OpenaiWebChatMessageMetadata(BaseModel):
     command: Optional[Literal['search'] | str]
     args: Optional[list[str]]  # 例如：['May 17, 2023 stock market news']
     status: Optional[Literal['finished'] | str]
-    cite_metadata: Optional[OpenaiWebChatMessageMetadataCite]  # _cite_metadata
+    cite_metadata: Optional[OpenaiWebChatMessageMetadataCite] = Field(alias="_cite_metadata")  # _cite_metadata
+    citations: Optional[list[OpenaiWebChatMessageMetadataCitation]]
 
 
 class OpenaiApiChatMessageMetadata(BaseModel):

@@ -82,12 +82,12 @@ export interface paths {
     patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
   };
   "/chat/openai-plugins/all": {
-    /** Get All Chat Plugins */
-    get: operations["get_all_chat_plugins_chat_openai_plugins_all_get"];
+    /** Get All Openai Web Chat Plugins */
+    get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_all_get"];
   };
   "/chat/openai-plugins/installed": {
-    /** Get Installed Chat Plugins */
-    get: operations["get_installed_chat_plugins_chat_openai_plugins_installed_get"];
+    /** Get Installed Openai Web Chat Plugins */
+    get: operations["get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get"];
   };
   "/chat/openai-plugin/{plugin_id}": {
     /** Get Openai Web Plugin */
@@ -1000,7 +1000,17 @@ export interface components {
       args?: (string)[];
       /** Status */
       status?: "finished" | string;
-      cite_metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCite"];
+      _cite_metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCite"];
+      /** Citations */
+      citations?: (components["schemas"]["OpenaiWebChatMessageMetadataCitation"])[];
+    };
+    /** OpenaiWebChatMessageMetadataCitation */
+    OpenaiWebChatMessageMetadataCitation: {
+      /** Start Ix */
+      start_ix?: number;
+      /** End Ix */
+      end_ix?: number;
+      metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCiteData"];
     };
     /** OpenaiWebChatMessageMetadataCite */
     OpenaiWebChatMessageMetadataCite: {
@@ -1917,8 +1927,8 @@ export interface operations {
       };
     };
   };
-  get_all_chat_plugins_chat_openai_plugins_all_get: {
-    /** Get All Chat Plugins */
+  get_all_openai_web_chat_plugins_chat_openai_plugins_all_get: {
+    /** Get All Openai Web Chat Plugins */
     responses: {
       /** @description Successful Response */
       200: {
@@ -1928,8 +1938,8 @@ export interface operations {
       };
     };
   };
-  get_installed_chat_plugins_chat_openai_plugins_installed_get: {
-    /** Get Installed Chat Plugins */
+  get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get: {
+    /** Get Installed Openai Web Chat Plugins */
     responses: {
       /** @description Successful Response */
       200: {

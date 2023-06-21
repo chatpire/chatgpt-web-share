@@ -99,7 +99,7 @@ type BrowsingAction = {
   citeMetadata?: CiteMetadata;
 };
 
-type CiteMetadata = OpenaiWebChatMessageMetadata['cite_metadata'];
+type CiteMetadata = OpenaiWebChatMessageMetadata['_cite_metadata'];
 
 const actions = computed(() => {
   const result = [] as BrowsingAction[];
@@ -157,7 +157,7 @@ const actions = computed(() => {
           type: 'click_result',
           message,
         });
-        if (metadata.cite_metadata) currentCiteMetadata = metadata.cite_metadata;
+        if (metadata._cite_metadata) currentCiteMetadata = metadata._cite_metadata;
       } else if (message.content?.content_type === 'tether_quote') {
         result.push({
           type: 'quote_result',

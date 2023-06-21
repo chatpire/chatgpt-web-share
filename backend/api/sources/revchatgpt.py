@@ -75,7 +75,6 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         result.metadata = result.metadata.copy(
             update=item["message"]["metadata"]
         )
-        result.metadata.cite_metadata = item["message"]["metadata"].get("_cite_metadata")
         model_code = item["message"]["metadata"].get("model_slug")
         result.model = OpenaiWebChatModels.from_code(model_code) or model_code
     return result

@@ -24,6 +24,7 @@ export type OpenaiWebChatMessageTextContent = components['schemas']['OpenaiWebCh
 export type OpenaiWebChatMessageCodeContent = components['schemas']['OpenaiWebChatMessageCodeContent'];
 export type OpenaiWebChatMessageStderrContent = components['schemas']['OpenaiWebChatMessageStderrContent'];
 export type OpenaiWebChatMessageTetherBrowsingDisplayContent = components['schemas']['OpenaiWebChatMessageTetherBrowsingDisplayContent'];
+export type OpenaiWebChatMessageMetadataCiteData = components['schemas']['OpenaiWebChatMessageMetadataCiteData'];
 export type OpenaiWebChatMessageTetherQuoteContent = components['schemas']['OpenaiWebChatMessageTetherQuoteContent'];
 export type OpenaiWebChatMessageSystemErrorContent = components['schemas']['OpenaiWebChatMessageSystemErrorContent'];
 export type OpenaiApiChatMessageTextContent = components['schemas']['OpenaiApiChatMessageTextContent'];
