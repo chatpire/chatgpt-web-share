@@ -153,7 +153,9 @@
     "every": "Every",
     "hoursMinutesAgo": "{0}h{1}m ago",
     "minutes": "minute",
-    "times": "Second-rate"
+    "times": "Second-rate",
+    "scrolling_down": "Scrolling down",
+    "detail": "details"
   },
   "errors": {
     "403": "403 error: access denied",

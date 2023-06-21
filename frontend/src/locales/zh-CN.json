@@ -163,7 +163,9 @@
     "noPluginsAvailable": "获取插件列表失败，请检查是否设置 “openai_web.is_plus_account” 项为 true",
     "disable": "禁用",
     "enable": "启用",
-    "enabled": "已启用"
+    "enabled": "已启用",
+    "scrolling_down": "向下浏览",
+    "detail": "详情"
   },
   "errors": {
     "403": "403 错误：无访问权限",
