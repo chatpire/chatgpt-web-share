@@ -201,7 +201,7 @@ class RevChatGPTManager:
         await self.chatbot.clear_conversations()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  model: OpenaiWebChatModels = None, plugin_ids: list[str] = None):
+                  model: OpenaiWebChatModels = None, plugin_ids: list[str] = None, **_kwargs):
 
         model = model or OpenaiWebChatModels.gpt_3_5
 

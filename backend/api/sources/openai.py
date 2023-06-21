@@ -57,7 +57,7 @@ class OpenAIChatManager:
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None,
                   parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
-                  context_message_count: int = -1, extra_args: Optional[dict] = None):
+                  context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
 
         now_time = datetime.now().astimezone(tz=timezone.utc)
         message_id = uuid.uuid4()
