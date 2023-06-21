@@ -25,55 +25,55 @@
           </div>
         </div>
       </div>
-      <div class="hide-in-print flex w-full justify-end pb-1 -mt-2">
-        <div class="flex flex-row space-x-4">
+      <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1 -mt-2">
+        <div class="flex flex-row items-center space-x-4">
           <n-tooltip trigger="hover">
             <template #trigger>
-              <n-text class="text-[0.5rem]" depth="3">
+              <n-text class="text-[10px]" depth="3">
                 {{ relativeTimeString }}
               </n-text>
             </template>
             <span> {{ timeString }}</span>
           </n-tooltip>
-          <n-text v-if="props.messages.length > 1" class="text-[0.5rem]" depth="3">
+          <n-text v-if="props.messages.length > 1" class="text-[10px]" depth="3">
             {{ $t('commons.messagesCount', [props.messages.length]) }}
           </n-text>
-          <div class="space-x-2">
-            <!-- 复制 -->
-            <n-tooltip trigger="hover">
-              <template #trigger>
-                <n-button text ghost type="tertiary" size="tiny" @click="copyMessageContent">
-                  <n-icon>
-                    <CopyOutline />
-                  </n-icon>
-                </n-button>
-              </template>
-              <span>{{ t('commons.copy') }}</span>
-            </n-tooltip>
-            <!-- 是否渲染 markdown -->
-            <n-tooltip trigger="hover">
-              <template #trigger>
-                <n-button text ghost size="tiny" :type="'tertiary'" @click="toggleRenderMarkdown">
-                  <n-icon :component="renderMarkdown ? ArticleFilled : ArticleOutlined" />
-                </n-button>
-              </template>
-              <span>{{ t('commons.shouldRenderMarkdown') }}</span>
-            </n-tooltip>
-            <n-tooltip trigger="hover">
-              <template #trigger>
-                <n-button
-                  text
-                  ghost
-                  size="tiny"
-                  :type="showRawMessage ? 'success' : 'tertiary'"
-                  @click="toggleShowRawMessage"
-                >
-                  <n-icon :component="CodeSlash" />
-                </n-button>
-              </template>
-              <span>{{ t('commons.showRawMessage') }}</span>
-            </n-tooltip>
-          </div>
+        </div>
+        <div class="flex flex-row items-center space-x-2">
+          <!-- 复制 -->
+          <n-tooltip trigger="hover">
+            <template #trigger>
+              <n-button text ghost type="tertiary" size="tiny" @click="copyMessageContent">
+                <n-icon>
+                  <CopyOutline />
+                </n-icon>
+              </n-button>
+            </template>
+            <span>{{ t('commons.copy') }}</span>
+          </n-tooltip>
+          <!-- 是否渲染 markdown -->
+          <n-tooltip trigger="hover">
+            <template #trigger>
+              <n-button text ghost size="tiny" :type="'tertiary'" @click="toggleRenderMarkdown">
+                <n-icon :component="renderMarkdown ? ArticleFilled : ArticleOutlined" />
+              </n-button>
+            </template>
+            <span>{{ t('commons.shouldRenderMarkdown') }}</span>
+          </n-tooltip>
+          <n-tooltip trigger="hover">
+            <template #trigger>
+              <n-button
+                text
+                ghost
+                size="tiny"
+                :type="showRawMessage ? 'success' : 'tertiary'"
+                @click="toggleShowRawMessage"
+              >
+                <n-icon :component="CodeSlash" />
+              </n-button>
+            </template>
+            <span>{{ t('commons.showRawMessage') }}</span>
+          </n-tooltip>
         </div>
       </div>
     </div>
@@ -126,7 +126,7 @@ const lastMessage = computed<BaseChatMessage | null>(() => {
   else return props.messages[props.messages.length - 1];
 });
 
-const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[\+-]\d\d:?\d\d/.test(create_time)
+const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[\+-]\d\d:?\d\d/.test(create_time);
 
 const timeString = computed<string>(() => {
   if (!lastMessage.value || !lastMessage.value.create_time) return '';
