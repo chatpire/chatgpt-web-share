@@ -105,6 +105,7 @@ import {
   BaseChatMessage,
   BaseConversationHistory,
   BaseConversationSchema,
+  OpenaiWebChatMessage,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
@@ -232,15 +233,16 @@ const scrollToBottomSmooth = () => {
   });
 };
 
-function buildTemporaryMessage(role: string, content: string, parent: string | undefined) {
+function buildTemporaryMessage(role: string, content: string, parent: string | undefined, model: string | undefined) {
   const random_strid = Math.random().toString(36).substring(2, 16);
   return {
     id: `temp_${random_strid}`,
     source: currentConversation.value!.source,
     content,
     role: role,
-    // parent,
+    parent, // 其实没有用到parent
     children: [],
+    model
   };
 }
 
@@ -274,8 +276,8 @@ const sendMsg = async () => {
   }
 
   // 使用临时的随机 id 保持当前更新的两个消息
-  currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node);
-  currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id)];
+  currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
+  currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
   const wsUrl = getAskWebsocketApiUrl();
   let wsErrorMessage: string | null = null;
   console.log('Connecting to', wsUrl, askRequest);
