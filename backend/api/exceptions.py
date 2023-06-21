@@ -52,5 +52,6 @@ class ConfigException(SelfDefinedException):
 
 
 class OpenaiWebException(SelfDefinedException):
-    def __init__(self, message: str = ""):
+    def __init__(self, message: str = "", status_code: int = -1):
         super().__init__(reason="errors.openaiWeb", message=message)
+        self.status_code = status_code

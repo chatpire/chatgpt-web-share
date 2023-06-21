@@ -4,6 +4,7 @@ import {
   deleteConversationApi,
   getAllConversationsApi,
   getConversationHistoryApi,
+  getConversationHistoryFromCacheApi,
   setConversationTitleApi,
 } from '@/api/conv';
 import { NewConversationInfo } from '@/types/custom';
@@ -26,17 +27,32 @@ const useConversationStore = defineStore('conversation', {
       this.$patch({ conversations: result });
     },
 
-    async fetchConversationHistory(conversation_id: string, fallback_cache = false) {
-      // 解析历史记录
+    async fetchConversationHistory(conversation_id: string) {
       if (this.conversationHistoryMap[conversation_id]) {
         return this.conversationHistoryMap[conversation_id];
       }
-      const result = (await getConversationHistoryApi(conversation_id, fallback_cache)).data;
+      const result = (await getConversationHistoryApi(conversation_id)).data;
       this.$patch({
         conversationHistoryMap: {
           [conversation_id]: result,
         },
       });
+    },
+
+    async fetchConversationHistoryFromCache(conversation_id: string, fallback_refresh = true) {
+      try {
+        const result = (await getConversationHistoryFromCacheApi(conversation_id)).data;
+        this.$patch({
+          conversationHistoryMap: {
+            [conversation_id]: result,
+          },
+        });
+      } catch (e) {
+        if (fallback_refresh) {
+          return this.fetchConversationHistory(conversation_id);
+        }
+        throw e;
+      }
     },
 
     createNewConversation(info: NewConversationInfo) {

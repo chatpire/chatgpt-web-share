@@ -122,7 +122,8 @@ async def _check_response(response: httpx.Response) -> None:
     except httpx.HTTPStatusError as ex:
         await response.aread()
         error = OpenaiWebException(
-            message=response.text
+            message=response.text,
+            status_code=response.status_code,
         )
         raise error from ex
 
