@@ -89,7 +89,7 @@ import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
 import { ArticleFilled, ArticleOutlined, PersonFilled } from '@vicons/material';
 import * as clipboard from 'clipboard-polyfill';
 import { useThemeVars } from 'naive-ui';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { JsonViewer } from 'vue3-json-viewer';
 
@@ -117,6 +117,10 @@ watch(
   }
 );
 
+onMounted(() => {
+  if (lastMessage.value?.role == 'user') renderMarkdown.value = appStore.preference.renderUserMessageInMd;
+});
+  
 const props = defineProps<{
   messages: BaseChatMessage[];
 }>();
