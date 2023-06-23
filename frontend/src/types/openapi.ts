@@ -531,8 +531,8 @@ export interface components {
     };
     /** CredentialsModel */
     CredentialsModel: {
-      /** Chatgpt Access Token */
-      chatgpt_access_token?: string;
+      /** Openai Web Access Token */
+      openai_web_access_token?: string;
       /** Openai Api Key */
       openai_api_key?: string;
     };
@@ -821,6 +821,8 @@ export interface components {
        * @default https://api.openai.com/v1/
        */
       openai_base_url?: string;
+      /** Proxy */
+      proxy?: string;
       /**
        * Connect Timeout 
        * @default 10
@@ -935,6 +937,8 @@ export interface components {
       is_plus_account?: boolean;
       /** Chatgpt Base Url */
       chatgpt_base_url?: string;
+      /** Proxy */
+      proxy?: string;
       /**
        * Common Timeout 
        * @default 10

@@ -7,6 +7,7 @@
       "default": {
         "is_plus_account": false,
         "chatgpt_base_url": null,
+        "proxy": null,
         "common_timeout": 10,
         "ask_timeout": 600
       },
@@ -20,6 +21,7 @@
       "title": "Openai Api",
       "default": {
         "openai_base_url": "https://api.openai.com/v1/",
+        "proxy": null,
         "connect_timeout": 10,
         "read_timeout": 20
       },
@@ -131,6 +133,10 @@
           "title": "Chatgpt Base Url",
           "type": "string"
         },
+        "proxy": {
+          "title": "Proxy",
+          "type": "string"
+        },
         "common_timeout": {
           "title": "Common Timeout",
           "default": 10,
@@ -152,6 +158,10 @@
         "openai_base_url": {
           "title": "Openai Base Url",
           "default": "https://api.openai.com/v1/",
+          "type": "string"
+        },
+        "proxy": {
+          "title": "Proxy",
           "type": "string"
         },
         "connect_timeout": {

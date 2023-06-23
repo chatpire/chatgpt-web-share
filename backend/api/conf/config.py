@@ -53,6 +53,7 @@ class AuthSetting(BaseModel):
 class OpenaiWebChatGPTSetting(BaseModel):
     is_plus_account: bool = False
     chatgpt_base_url: Optional[str] = None
+    proxy: Optional[str] = None
     common_timeout: int = Field(10, ge=1)   # connect, read, write
     ask_timeout: int = Field(600, ge=1)
 
@@ -65,6 +66,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
 
 class OpenaiApiSetting(BaseModel):
     openai_base_url: str = 'https://api.openai.com/v1/'
+    proxy: Optional[str] = None
     connect_timeout: int = Field(10, ge=1)
     read_timeout: int = Field(20, ge=1)
 

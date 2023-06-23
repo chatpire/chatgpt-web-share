@@ -4,10 +4,8 @@ import uuid
 from typing import AsyncGenerator
 
 import httpx
-import revChatGPT
 from fastapi.encoders import jsonable_encoder
 from pydantic import parse_obj_as, ValidationError
-from revChatGPT.V1 import AsyncChatbot
 
 from api.conf import Config, Credentials
 from api.enums import OpenaiWebChatModels, ChatSourceTypes
@@ -128,6 +126,30 @@ async def _check_response(response: httpx.Response) -> None:
         raise error from ex
 
 
+def make_session() -> httpx.AsyncClient:
+    if config.openai_web.proxy is not None:
+        proxies = {
+            "http://": config.openai_web.proxy,
+            "https://": config.openai_web.proxy,
+        }
+        session = httpx.AsyncClient(proxies=proxies)
+    else:
+        session = httpx.AsyncClient()
+    session.headers.clear()
+    session.headers.update(
+        {
+            "Accept": "text/event-stream",
+            "Authorization": f"Bearer {credentials.openai_web_access_token}",
+            "Content-Type": "application/json",
+            "X-Openai-Assistant-App-Id": "",
+            "Connection": "close",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Referer": "https://chat.openai.com/chat",
+        },
+    )
+    return session
+
+
 @singleton_with_lock
 class OpenaiWebChatManager:
     """
@@ -135,25 +157,24 @@ class OpenaiWebChatManager:
     """
 
     def __init__(self):
-        self.chatbot = AsyncChatbot({
-            "access_token": credentials.chatgpt_access_token,
-            "paid": config.openai_web.is_plus_account,
-            "model": "text-davinci-002-render-sha",  # default model
-        }, base_url=config.openai_web.chatgpt_base_url)
+        self.session = make_session()
         self.semaphore = asyncio.Semaphore(1)
 
     def is_busy(self):
         return self.semaphore.locked()
+
+    def reset_session(self):
+        self.session = make_session()
 
     async def get_conversations(self, timeout=None):
         all_conversations = []
         offset = 0
         limit = 80
         while True:
-            url = f"{self.chatbot.base_url}conversations?offset={offset}&limit={limit}"
+            url = f"{config.openai_web.chatgpt_base_url}conversations?offset={offset}&limit={limit}"
             if timeout is None:
                 timeout = httpx.Timeout(config.openai_web.common_timeout)
-            response = await self.chatbot.session.get(url, timeout=timeout)
+            response = await self.session.get(url, timeout=timeout)
             await _check_response(response)
             data = json.loads(response.text)
             conversations = data["items"]
@@ -165,9 +186,8 @@ class OpenaiWebChatManager:
         return all_conversations
 
     async def get_conversation_history(self, conversation_id: uuid.UUID | str) -> OpenaiWebConversationHistoryDocument:
-        # result = await self.chatbot.get_msg_history(conversation_id)
-        url = f"{self.chatbot.base_url}conversation/{conversation_id}"
-        response = await self.chatbot.session.get(url, timeout=None)
+        url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
+        response = await self.session.get(url, timeout=None)
         response.encoding = 'utf-8'
         await _check_response(response)
         result = json.loads(response.text)
@@ -198,7 +218,10 @@ class OpenaiWebChatManager:
         return doc
 
     async def clear_conversations(self):
-        await self.chatbot.clear_conversations()
+        # await self.chatbot.clear_conversations()
+        url = f"{config.openai_web.chatgpt_base_url}conversations"
+        response = await self.session.patch(url, data={"is_visible": False})
+        await _check_response(response)
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
                   model: OpenaiWebChatModels = None, plugin_ids: list[str] = None, **_kwargs):
@@ -238,9 +261,9 @@ class OpenaiWebChatManager:
 
         timeout = httpx.Timeout(Config().openai_web.common_timeout, read=Config().openai_web.ask_timeout)
 
-        async with self.chatbot.session.stream(
+        async with self.session.stream(
                 method="POST",
-                url=f"{self.chatbot.base_url}conversation",
+                url=f"{config.openai_web.chatgpt_base_url}conversation",
                 data=json.dumps(data),
                 timeout=timeout,
         ) as response:
@@ -267,18 +290,23 @@ class OpenaiWebChatManager:
                 yield line
 
     async def delete_conversation(self, conversation_id: str):
-        await self.chatbot.delete_conversation(conversation_id)
+        # await self.chatbot.delete_conversation(conversation_id)
+        url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
+        response = await self.session.patch(url, data='{"is_visible": false}')
+        await _check_response(response)
 
     async def set_conversation_title(self, conversation_id: str, title: str):
-        """Hack change_title to set title in utf-8"""
-        await self.chatbot.change_title(conversation_id, title)
+        url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
+        response = await self.session.patch(url, data=f'{{"title": "{title}"}}')
+        await _check_response(response)
 
     async def generate_conversation_title(self, conversation_id: str, message_id: str):
-        """Hack gen_title to get title"""
-        await self.chatbot.gen_title(conversation_id, message_id)
-
-    def reset_chat(self):
-        self.chatbot.reset_chat()
+        url = f"{config.openai_web.chatgpt_base_url}conversation/gen_title/{conversation_id}"
+        response = await self.session.post(
+            url,
+            data=json.dumps({"message_id": message_id, "model": "text-davinci-002-render"}),
+        )
+        await _check_response(response)
 
     async def get_plugin_manifests(self, statuses="approved", is_installed=None, offset=0, limit=250):
         if not config.openai_web.is_plus_account:
@@ -290,8 +318,8 @@ class OpenaiWebChatManager:
         }
         if is_installed is not None:
             params["is_installed"] = is_installed
-        response = await self.chatbot.session.get(
-            url=f"{self.chatbot.base_url}aip/p",
+        response = await self.session.get(
+            url=f"{config.openai_web.chatgpt_base_url}aip/p",
             params=params,
             timeout=config.openai_web.ask_timeout
         )
@@ -301,8 +329,8 @@ class OpenaiWebChatManager:
     async def change_plugin_user_settings(self, plugin_id: str, setting: OpenaiChatPluginUserSettings):
         if not config.openai_web.is_plus_account:
             raise InvalidParamsException("errors.notPlusChatgptAccount")
-        response = await self.chatbot.session.patch(
-            url=f"{self.chatbot.base_url}aip/p/{plugin_id}/user-settings",
+        response = await self.session.patch(
+            url=f"{config.openai_web.chatgpt_base_url}aip/p/{plugin_id}/user-settings",
             json=setting.dict(exclude_unset=True, exclude_none=True),
         )
         await _check_response(response)

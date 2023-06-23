@@ -2338,6 +2338,10 @@
                 "title": "Chatgpt Base Url",
                 "type": "string"
               },
+              "proxy": {
+                "title": "Proxy",
+                "type": "string"
+              },
               "common_timeout": {
                 "title": "Common Timeout",
                 "minimum": 1,
@@ -2370,6 +2374,10 @@
                 "title": "Openai Base Url",
                 "type": "string",
                 "default": "https://api.openai.com/v1/"
+              },
+              "proxy": {
+                "title": "Proxy",
+                "type": "string"
               },
               "connect_timeout": {
                 "title": "Connect Timeout",
@@ -2633,8 +2641,8 @@
     "title": "CredentialsModel",
     "type": "object",
     "properties": {
-      "chatgpt_access_token": {
-        "title": "Chatgpt Access Token",
+      "openai_web_access_token": {
+        "title": "Openai Web Access Token",
         "type": "string"
       },
       "openai_api_key": {
@@ -3744,6 +3752,10 @@
         "type": "string",
         "default": "https://api.openai.com/v1/"
       },
+      "proxy": {
+        "title": "Proxy",
+        "type": "string"
+      },
       "connect_timeout": {
         "title": "Connect Timeout",
         "minimum": 1,
@@ -4139,6 +4151,10 @@
       },
       "chatgpt_base_url": {
         "title": "Chatgpt Base Url",
+        "type": "string"
+      },
+      "proxy": {
+        "title": "Proxy",
         "type": "string"
       },
       "common_timeout": {

@@ -46,6 +46,18 @@ async def _check_response(response: httpx.Response) -> None:
         raise error from ex
 
 
+def make_session() -> httpx.AsyncClient:
+    if config.openai_api.proxy is not None:
+        proxies = {
+            "http://": config.openai_api.proxy,
+            "https://": config.openai_api.proxy,
+        }
+        session = httpx.AsyncClient(proxies=proxies, timeout=None)
+    else:
+        session = httpx.AsyncClient(timeout=None)
+    return session
+
+
 @singleton_with_lock
 class OpenaiApiChatManager:
     """
@@ -53,7 +65,10 @@ class OpenaiApiChatManager:
     """
 
     def __init__(self):
-        self.client = httpx.AsyncClient(timeout=None)  # TODO: support proxies
+        self.session = make_session()
+
+    def reset_session(self):
+        self.session = make_session()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None,
                   parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
@@ -126,7 +141,7 @@ class OpenaiApiChatManager:
 
         timeout = httpx.Timeout(config.openai_api.read_timeout, connect=config.openai_api.connect_timeout)
 
-        async with self.client.stream(
+        async with self.session.stream(
                 method="POST",
                 url=f"{base_url}chat/completions",
                 json=data,

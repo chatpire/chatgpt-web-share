@@ -268,7 +268,6 @@ async def chat(websocket: WebSocket):
         # rev: 更改状态为 asking
         if ask_request.source == ChatSourceTypes.openai_web:
             await change_user_chat_status(user.id, OpenaiWebChatStatus.asking)
-            openai_web_manager.reset_chat()
 
         await reply(AskResponse(
             type=AskResponseType.waiting,
@@ -370,7 +369,6 @@ async def chat(websocket: WebSocket):
         if ask_request.source == ChatSourceTypes.openai_web:
             openai_web_manager.semaphore.release()
             await change_user_chat_status(user.id, OpenaiWebChatStatus.idling)
-        openai_web_manager.reset_chat()
 
     ask_stop_time = time.time()
     queueing_time = 0
