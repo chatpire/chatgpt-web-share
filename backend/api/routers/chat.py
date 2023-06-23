@@ -4,17 +4,14 @@ from datetime import datetime, timezone
 from typing import Optional, Any
 
 import httpx
-import requests
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from pydantic import ValidationError
-from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, func, and_
 from starlette.websockets import WebSocket, WebSocketState
 from websockets.exceptions import ConnectionClosed
 
-from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
 from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels

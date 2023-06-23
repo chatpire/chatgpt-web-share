@@ -71,10 +71,12 @@ class PrettyJSONResponse(Response):
         ).encode("utf-8")
 
 
-def response(code: int = 200, message: str = "", result: Optional[Any] = None) -> CustomJSONResponse:
+def response(code: int = 200, message: str = "", result: Optional[Any] = None,
+             headers: Optional[Dict[str, str]] = None) -> CustomJSONResponse:
     return CustomJSONResponse(
         content=ResponseWrapper(code=code, message=message, result=result),
-        status_code=200
+        status_code=200,
+        headers=headers
     )
 
 
@@ -104,6 +106,4 @@ def handle_exception_response(e: Exception) -> CustomJSONResponse:
         else:
             message = get_http_message(e.status_code)
         return response(e.status_code or -1, message or f"{e.status_code} {e.detail}")
-    elif isinstance(e, revChatGPTError):
-        return response(502, "errors.chatgptResponseError", f"{e.source} {e.code}: {e.message}")
     return response(-1, str(e))

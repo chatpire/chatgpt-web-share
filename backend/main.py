@@ -9,7 +9,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import EmailStr
-from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 

@@ -1,10 +1,10 @@
 import dateutil.parser
 from dateutil.tz import tzutc
 from httpx import HTTPError
-from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 
 from api.database import get_async_session_context
+from api.exceptions import OpenaiWebException
 from api.models.db import OpenaiWebConversation
 from api.sources import OpenaiWebChatManager
 from utils.logger import get_logger
@@ -60,7 +60,7 @@ async def sync_conversations():
 
             await session.commit()
         logger.info("Sync conversations finished.")
-    except revChatGPTError as e:
+    except OpenaiWebException as e:
         logger.error(f"Fetch conversation error ({e.__class__.__name__}) {e.source} {e.code}: {e.message}")
         logger.warning("Sync conversations on startup failed!")
     except HTTPError as e:

@@ -4,7 +4,6 @@ from typing import List, Union
 import httpx
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
-from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, and_, delete
 
 from api.database import get_async_session_context
@@ -81,9 +80,9 @@ async def get_conversation_history(conversation: BaseConversation = Depends(_get
         except httpx.TimeoutException as e:
             logger.warning(
                 f"{conversation.conversation_id} get conversation history timeout: {e.__class__.__name__}")
-            raise InternalException("errors.revChatGPTTimeout")
+            raise InternalException("errors.timeout")
         except OpenaiWebException as e:
-            if e.status_code == 404:
+            if e.code == 404:
                 if conversation.is_valid:
                     async with get_async_session_context() as session:
                         conversation = await session.get(BaseConversation, conversation.id)
@@ -124,7 +123,7 @@ async def delete_conversation(conversation: BaseConversation = Depends(_get_conv
     if conversation.source == ChatSourceTypes.openai_web:
         try:
             await openai_web_manager.delete_conversation(conversation.conversation_id)
-        except revChatGPTError as e:
+        except OpenaiWebException as e:
             logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
         except httpx.HTTPStatusError as e:
             if e.response.status_code != 404:
