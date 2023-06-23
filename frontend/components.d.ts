@@ -67,7 +67,6 @@ declare module '@vue/runtime-core' {
     NTooltip: typeof import('naive-ui')['NTooltip']
     OpenaiWebPluginDetailCard: typeof import('./src/components/OpenaiWebPluginDetailCard.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']
-    PluginDetailCard: typeof import('./src/components/PluginDetailCard.vue')['default']
     PreferenceForm: typeof import('./src/components/PreferenceForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

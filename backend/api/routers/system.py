@@ -140,7 +140,7 @@ async def get_request_statistics(
                     }
                 },
                 "route_path": "$meta.route_path",
-                    "method": "$meta.method",
+                "method": "$meta.method",
                 "user_id": 1,
                 "elapsed_ms": 1
             }

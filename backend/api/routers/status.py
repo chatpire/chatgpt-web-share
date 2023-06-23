@@ -19,20 +19,28 @@ async def get_server_status(_user: User = Depends(current_active_user)):
     """普通用户获取服务器状态"""
     refresh_cache = _user.is_superuser
     active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, _ = await check_users(refresh_cache)
-    # use AskLogDocument beanie model to count: metadata.source == 'openai_web' and metadata.model starts with gpt-4
     pipeline = [
         {
-            '$match': {
-                "time": {
-                    "$gte": datetime.utcnow() - timedelta(hours=3)
-                },
-                'meta.source': 'openai_web',
-                'meta.model': {
-                    '$regex': '^gpt_4'
+            '$facet': {
+                'not_found': [
+                    {'$project': {'_id': None, 'total': {'$const': 0}}},
+                    {'$limit': 1}
+                ],
+                'found': [
+                    {'$match': {'time': {'$gte': datetime.utcnow() - timedelta(hours=3)}}},
+                    {'$count': 'total'}
+                ]
+            }
+        },
+        {
+            '$replaceRoot': {
+                'newRoot': {
+                    '$mergeObjects': [
+                        {'$arrayElemAt': ['$not_found', 0]},
+                        {'$arrayElemAt': ['$found', 0]}
+                    ]
                 }
             }
-        }, {
-            '$count': 'total'
         }
     ]
     aggregate_result = await AskLogDocument.aggregate(pipeline).to_list(length=1)
