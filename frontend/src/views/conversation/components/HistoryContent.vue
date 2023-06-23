@@ -33,7 +33,7 @@
           <n-spin :size="16" />
           <span>{{ $t('tips.loading') }}</span>
         </div>
-        <div v-else class="flex flex-row space-x-1 items-center">
+        <div v-else class="flex flex-row space-x-1 lt-md:flex-col lt-md:space-y-1 items-center">
           <n-popover v-for="(plugin, i) of convOpenaiWebPlugins" :key="i" trigger="hover" placement="bottom">
             <template #trigger>
               <n-tag round :bordered="false">
