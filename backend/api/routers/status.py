@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi import Depends, APIRouter
 
 from api.models.db import User
@@ -21,8 +23,11 @@ async def get_server_status(_user: User = Depends(current_active_user)):
     pipeline = [
         {
             '$match': {
-                'metadata.source': 'openai_web',
-                'metadata.model': {
+                "time": {
+                    "$gte": datetime.utcnow() - timedelta(hours=3)
+                },
+                'meta.source': 'openai_web',
+                'meta.model': {
                     '$regex': '^gpt_4'
                 }
             }

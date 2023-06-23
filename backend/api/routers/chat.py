@@ -472,7 +472,7 @@ async def chat(websocket: WebSocket):
                         if ask_request.new_title is not None:
                             await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
                     except Exception as e:
-                        logger.warning(e)
+                        logger.warning(f"set_conversation_title error {e.__class__.__name__}: {str(e)}")
 
                 current_time = datetime.now().astimezone(tz=timezone.utc)
                 new_conv = BaseConversationSchema(
