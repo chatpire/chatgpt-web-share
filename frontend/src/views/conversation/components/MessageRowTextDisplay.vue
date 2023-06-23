@@ -44,10 +44,8 @@ function htmlToElement(html: string) {
 function processCitations() {
   const citationEls = contentRef.value!.querySelectorAll('span.browsing-citation');
   const citationUrls = [] as string[];
-  console.log(citationEls);
   citationEls.forEach(el => {
     let metadata = JSON.parse(decodeURIComponent(el.getAttribute('data-citation') || '')) as OpenaiWebChatMessageMetadataCiteData;
-    console.log(metadata);
     if (!metadata) return;
     let citationIndex = 0;
     if (citationUrls.includes(metadata.url!)) {

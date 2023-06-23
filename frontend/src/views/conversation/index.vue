@@ -266,7 +266,7 @@ const sendMsg = async () => {
     new_conversation: currentConversationId.value!.startsWith('new_conversation'),
     model: currentConversation.value!.current_model!,
     content: text,
-    openai_web_plugin_ids: currentConvHistory.value!.meta?.source === 'openai_web' ? currentConvHistory.value!.meta?.plugin_ids : undefined,
+    openai_web_plugin_ids: currentConvHistory.value!.metadata?.source === 'openai_web' ? currentConvHistory.value!.metadata?.plugin_ids : undefined,
   };
   if (conversationStore.newConversation) {
     askRequest.new_title = conversationStore.newConversation.title;
@@ -279,6 +279,7 @@ const sendMsg = async () => {
   currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
   currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
   const wsUrl = getAskWebsocketApiUrl();
+  let hasError = false;
   let wsErrorMessage: string | null = null;
   console.log('Connecting to', wsUrl, askRequest);
   const webSocket = new WebSocket(wsUrl);
@@ -318,7 +319,8 @@ const sendMsg = async () => {
       respConversationId = response.conversation_id || null;
       canAbort.value = true;
     } else if (response.type === 'error') {
-      console.error(response);
+      hasError = true;
+      console.error('websocket received error message', response);
       if (response.error_detail) {
         wsErrorMessage = response.error_detail;
       }
@@ -330,7 +332,7 @@ const sendMsg = async () => {
     aborter = null;
     canAbort.value = false;
     console.log('WebSocket connection is closed', event, isAborted.value);
-    if (isAborted.value || event.code === 1000) {
+    if ((isAborted.value || event.code === 1000) && !hasError) {
       // 正常关闭
       if (hasGotReply) {
         const allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
@@ -346,7 +348,7 @@ const sendMsg = async () => {
             current_model: currentConvHistory.value!.current_model,
             create_time: currentConvHistory.value!.create_time,
             update_time: currentConvHistory.value!.update_time,
-            meta: currentConvHistory.value!.meta,
+            metadata: currentConvHistory.value!.metadata,
             mapping: {},
             current_node: '',
           } as BaseConversationHistory;
@@ -369,8 +371,8 @@ const sendMsg = async () => {
         title: t('errors.askError'),
         content:
           wsErrorMessage != null
-            ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}`
-            : `[${event.code}] ${t(event.reason)}`,
+            ? `${t(event.reason)}: ${wsErrorMessage}`
+            : `${t(event.reason)}`,
         positiveText: t('commons.withdrawMessage'),
         negativeText: t('commons.cancel'),
         onPositiveClick: () => {
