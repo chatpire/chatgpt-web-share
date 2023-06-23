@@ -54,7 +54,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     is_plus_account: bool = False
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
-    common_timeout: int = Field(10, ge=1)   # connect, read, write
+    common_timeout: int = Field(10, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
 
     @validator("chatgpt_base_url")
@@ -107,5 +107,5 @@ class Config(BaseConfig[ConfigModel]):
         data: DataSetting = DataSetting()
         auth: AuthSetting = AuthSetting()
 
-    def __init__(self):
-        super().__init__(ConfigModel, "config.yaml")
+    def __init__(self, load_config: bool = True):
+        super().__init__(ConfigModel, "config.yaml", load_config=load_config)

@@ -13,9 +13,7 @@ from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from api.conf import Config
 import api.globals as g
-
 from api.database import create_db_and_tables, get_async_session_context, get_user_db_context, init_mongodb
 from api.enums import OpenaiWebChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
@@ -28,6 +26,7 @@ from api.sources import OpenaiWebChatManager
 from api.users import get_user_manager_context
 from utils.admin import sync_conversations
 from utils.logger import setup_logger, get_log_config, get_logger
+from api.conf import Config
 
 config = Config()
 
@@ -70,11 +69,6 @@ async def validation_exception_handler(request, exc):
 
 
 @app.exception_handler(SelfDefinedException)
-async def validation_exception_handler(request, exc):
-    return handle_exception_response(exc)
-
-
-@app.exception_handler(revChatGPTError)
 async def validation_exception_handler(request, exc):
     return handle_exception_response(exc)
 

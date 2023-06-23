@@ -13,8 +13,8 @@ def create_config(args):
         sys.exit(1)
     from api.conf.config import Config
     from api.conf.credentials import Credentials
-    Config().create(config_dir_path)
-    Credentials().create(config_dir_path)
+    Config(load_config=False).create(config_dir_path)
+    Credentials(load_config=False).create(config_dir_path)
 
 
 def get_config_schema(args):

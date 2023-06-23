@@ -15,10 +15,12 @@ class BaseConfig(Generic[T]):
     _config_path = None
     _model_type = None
 
-    def __init__(self, model_type: Type, config_filename: str):
+    def __init__(self, model_type: Type, config_filename: str, load_config: bool = True):
         self._model_type = model_type
         config_dir = os.environ.get('CWS_CONFIG_DIR', './data/config')
         self._config_path = os.path.join(config_dir, config_filename)
+        if load_config:
+            self.load()
 
     def __getattr__(self, key):
         return getattr(self._model, key)

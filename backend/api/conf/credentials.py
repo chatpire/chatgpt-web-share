@@ -23,5 +23,5 @@ class Credentials(BaseConfig[CredentialsModel]):
         # chatgpt_account_password: Optional[str]
         openai_api_key: Optional[str]
 
-    def __init__(self):
-        super().__init__(CredentialsModel, "credentials.yaml")
+    def __init__(self, load_config: bool = True):
+        super().__init__(CredentialsModel, "credentials.yaml", load_config=load_config)
