@@ -262,7 +262,13 @@
     "updateSuccess": "update completed",
     "disablePluginSuccess": "Disable plugin successfully",
     "enablePluginSuccess": "Enable plugin successfully",
-    "installSuccess": "Successful installation"
+    "installSuccess": "Successful installation",
+    "NewConversationForm": {
+      "failedToGetPlugins": "Failed to get list of plugins",
+      "loadingPlugins": "Loading plugins...",
+      "selectPlugins": "select plugin"
+    },
+    "openaiWebPluginsLengthMoreThan3": "The number of plugins cannot exceed 3"
   },
   "labels": {
     "nickname": "Nickname",

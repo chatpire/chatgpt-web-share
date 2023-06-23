@@ -52,7 +52,7 @@
     "vanishConversation": "彻底删除对话",
     "shaModel": "Default",
     "paidModel": "Legacy",
-    "currentConversationModel": "当前对话使用的模型",
+    "currentConversationModel": "当前使用的模型",
     "availableModels": "允许使用的模型",
     "maxConversationCount": "最大对话数",
     "availableTotalAskCount": "总可用提问次数",
@@ -262,7 +262,13 @@
     "modelRequired": "请选择模型",
     "installSuccess": "安装成功",
     "disablePluginSuccess": "禁用插件成功",
-    "enablePluginSuccess": "启用插件成功"
+    "enablePluginSuccess": "启用插件成功",
+    "NewConversationForm": {
+      "loadingPlugins": "加载插件中……",
+      "selectPlugins": "选择插件",
+      "failedToGetPlugins": "获取插件列表失败"
+    },
+    "openaiWebPluginsLengthMoreThan3": "插件数量不能超过3"
   },
   "labels": {
     "nickname": "昵称",

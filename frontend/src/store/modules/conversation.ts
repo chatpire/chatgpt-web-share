@@ -83,7 +83,7 @@ const useConversationStore = defineStore('conversation', {
         create_time: currentTime,
         update_time: currentTime,
         mapping: {},
-        meta: info.openaiWebPlugins ? {
+        metadata: info.openaiWebPlugins ? {
           source: 'openai_web',
           plugin_ids: info.openaiWebPlugins,
         } : undefined

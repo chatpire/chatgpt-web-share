@@ -26,16 +26,25 @@
         class="flex flex-row items-center justify-center pb-4 relative"
         :style="{ backgroundColor: themeVars.baseColor }"
       >
-        <n-text> {{ $t('labels.plugins') }}: </n-text>
-        <div v-if="convOpenaiWebPlugins === null" class="ml-3 flex flex-row space-x-1 items-center">
+        <n-text class="mr-3">
+          {{ $t('labels.plugins') }}:
+        </n-text>
+        <div v-if="convOpenaiWebPlugins === null" class="flex flex-row space-x-1 items-center">
           <n-spin :size="16" />
           <span>{{ $t('tips.loading') }}</span>
         </div>
-        <div v-else>
-          <div v-for="(plugin, i) of convOpenaiWebPlugins" :key="i" class="mx-2 flex flex-row space-x-1 items-center">
-            <img v-if="plugin.manifest?.logo_url" :src="plugin.manifest?.logo_url" class="w-5 h-5">
-            <span>{{ plugin.manifest?.name_for_human }}</span>
-          </div>
+        <div v-else class="flex flex-row space-x-1 items-center">
+          <n-popover v-for="(plugin, i) of convOpenaiWebPlugins" :key="i" trigger="hover" placement="bottom">
+            <template #trigger>
+              <n-tag round :bordered="false">
+                <template #icon>
+                  <img v-if="plugin.manifest?.logo_url" :src="plugin.manifest?.logo_url" class="ml-1 w-5 h-5">
+                </template>
+                <span>{{ plugin.manifest?.name_for_human }}</span>
+              </n-tag>
+            </template>
+            <OpenaiWebPluginDetailCard :plugin="plugin" />
+          </n-popover>
         </div>
       </div>
       <!-- 消息记录 -->
@@ -61,6 +70,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getOpenaiChatPluginApi } from '@/api/chat';
+import OpenaiWebPluginDetailCard from '@/components/OpenaiWebPluginDetailCard.vue';
 import { useConversationStore } from '@/store';
 import { BaseChatMessage, BaseConversationHistory, OpenaiChatPlugin } from '@/types/schema';
 import { getChatModelNameTrans, getMessageListFromHistory, mergeContinuousMessages } from '@/utils/chat';
@@ -126,17 +136,19 @@ watch(
   }
 );
 
-watch(() => convOpenaiWebPluginIds.value, async (pluginIds) => {
-  console.log(1);
-  if (!pluginIds) return;
-  const allRequests = pluginIds.map((pluginId) => getOpenaiChatPluginApi(pluginId));
-  const results = await Promise.all(allRequests);
-  console.log('convOpenaiWebPlugins', results);
-  convOpenaiWebPlugins.value = results.map((result) => result.data);
-}, {
-  immediate: true,
-});
-
+watch(
+  () => convOpenaiWebPluginIds.value,
+  async (pluginIds) => {
+    if (!pluginIds) return;
+    const allRequests = pluginIds.map((pluginId) => getOpenaiChatPluginApi(pluginId));
+    const results = await Promise.all(allRequests);
+    console.log('convOpenaiWebPlugins', results);
+    convOpenaiWebPlugins.value = results.map((result) => result.data);
+  },
+  {
+    immediate: true,
+  }
+);
 
 const toggleFullscreenHistory = (showTips: boolean) => {
   // fullscreenHistory.value = !fullscreenHistory.value;
