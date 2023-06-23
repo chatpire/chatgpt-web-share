@@ -139,7 +139,7 @@ const dataZoomOption = computed(() => {
       type: 'slider',
       show: showDataZoom.value,
       xAxisIndex: 0,
-      startValue: currentTimestamp - 1000 * 60 * 60 * 24 * 3,
+      startValue: currentTimestamp - 1000 * 60 * 60 * 24 * 7,
       endValue: currentTimestamp,
       filterMode: 'filter',
     },
@@ -229,7 +229,7 @@ const option = computed(() => {
         const data = el.data as any;
         return `<div>
                   <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(
-  new Date(data.timestamp).getTime() / 1000 + props.requestStatsGranularity!,
+  new Date(data.timestamp).getTime() + props.requestStatsGranularity! * 1000,
   true
 )}</span>
                   <br />
