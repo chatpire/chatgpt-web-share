@@ -105,7 +105,6 @@ import {
   BaseChatMessage,
   BaseConversationHistory,
   BaseConversationSchema,
-  OpenaiWebChatMessage,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
