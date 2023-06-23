@@ -8,6 +8,7 @@ from pydantic import ValidationError
 
 from api.conf import Config, Credentials
 from api.enums import OpenaiApiChatModels, ChatSourceTypes
+from api.exceptions import OpenaiApiException
 from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageMetadata, \
     OpenaiApiChatMessageTextContent
 from api.schemas.openai_schemas import OpenaiChatResponse
@@ -22,24 +23,13 @@ credentials = Credentials()
 MAX_CONTEXT_MESSAGE_COUNT = 1000
 
 
-class OpenAIChatException(Exception):
-    def __init__(self, source: str, message: str, code: int = None):
-        self.source = source
-        self.message = message
-        self.code = code
-
-    def __str__(self):
-        return f"{self.source} {self.code} error: {self.message}"
-
-
 async def _check_response(response: httpx.Response) -> None:
     # 改成自带的错误处理
     try:
         response.raise_for_status()
     except httpx.HTTPStatusError as ex:
         await response.aread()
-        error = OpenAIChatException(
-            source="OpenAI",
+        error = OpenaiApiException(
             message=response.text,
             code=response.status_code,
         )

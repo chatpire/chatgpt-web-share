@@ -18,7 +18,7 @@ from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
 from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
-from api.exceptions import InternalException, InvalidParamsException
+from api.exceptions import InternalException, InvalidParamsException, OpenaiException
 from api.models.db import OpenaiWebConversation, User, BaseConversation
 from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
     OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, \
@@ -27,7 +27,7 @@ from api.routers.conv import _get_conversation_by_id
 from api.schemas import OpenaiWebConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
-from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager, OpenAIChatException
+from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager, OpenaiApiException
 from api.users import websocket_auth, current_active_user, current_super_user
 from utils.logger import get_logger
 
@@ -326,24 +326,25 @@ async def chat(websocket: WebSocket):
         ))
         websocket_code = 1001
         websocket_reason = "errors.timout"
-    except revChatGPTError as e:
+    except OpenaiException as e:
         logger.error(str(e))
-        content = check_message(f"{e.source} {e.code}: {e.message}")
+        error_detail_map = {
+            401: "errors.openai.401",
+            403: "errors.openai.403",
+            404: "errors.openai.404",
+            429: "errors.openai.429",
+        }
+        if e.code in error_detail_map:
+            tip = error_detail_map[e.code]
+        else:
+            tip = "errors.openai.unknown"
         await reply(AskResponse(
             type=AskResponseType.error,
-            tip="errors.chatgptResponseError",
-            error_detail=content
+            tip=tip,
+            error_detail=check_message(str(e))
         ))
         websocket_code = 1001
-        websocket_reason = "errors.chatgptResponseError"
-    except OpenAIChatException as e:
-        logger.error(str(e))
-        content = check_message(str(e))
-        await reply(AskResponse(
-            type=AskResponseType.error,
-            tip="errors.openaiResponseError",
-            error_detail=str(e)
-        ))
+        websocket_reason = "errors.openaiResponseUnknownError"
     except HTTPError as e:
         logger.error(str(e))
         content = check_message(str(e))
@@ -356,11 +357,10 @@ async def chat(websocket: WebSocket):
         websocket_reason = "errors.httpError"
     except Exception as e:
         logger.error(str(e))
-        content = check_message(str(e))
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.unknownError",
-            error_detail=content
+            error_detail=check_message(str(e))
         ))
         websocket_code = 1011
         websocket_reason = "errors.unknownError"

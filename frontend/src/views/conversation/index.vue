@@ -280,7 +280,7 @@ const sendMsg = async () => {
   currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
-  let wsErrorMessage: string | null = null;
+  let wsErrorMessage: AskResponse | null = null;
   console.log('Connecting to', wsUrl, askRequest);
   const webSocket = new WebSocket(wsUrl);
 
@@ -321,9 +321,7 @@ const sendMsg = async () => {
     } else if (response.type === 'error') {
       hasError = true;
       console.error('websocket received error message', response);
-      if (response.error_detail) {
-        wsErrorMessage = response.error_detail;
-      }
+      wsErrorMessage = response;
     }
     if (autoScrolling.value) scrollToBottom();
   };
@@ -332,7 +330,7 @@ const sendMsg = async () => {
     aborter = null;
     canAbort.value = false;
     console.log('WebSocket connection is closed', event, isAborted.value);
-    if ((isAborted.value || event.code === 1000) && !hasError) {
+    if (!hasError && (event.code == 1000 || isAborted.value)) {
       // 正常关闭
       if (hasGotReply) {
         const allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
@@ -367,12 +365,19 @@ const sendMsg = async () => {
         console.log('done', allNewMessages, currentConversationId.value);
       }
     } else {
+      let content = '';
+      if (wsErrorMessage != null) {
+        if (wsErrorMessage.tip) {
+          content = t(wsErrorMessage.tip);
+        } else {
+          content = wsErrorMessage.error_detail || t('errors.unknown');
+        }
+      } else {
+        content = `WebSocket ${event.code}: ${t(event.reason || 'errors.unknown')}`;
+      }
       Dialog.error({
         title: t('errors.askError'),
-        content:
-          wsErrorMessage != null
-            ? `${t(event.reason)}: ${wsErrorMessage}`
-            : `${t(event.reason)}`,
+        content,
         positiveText: t('commons.withdrawMessage'),
         negativeText: t('commons.cancel'),
         onPositiveClick: () => {

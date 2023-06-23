@@ -8,7 +8,7 @@ class SelfDefinedException(Exception):
         self.code = code    # 错误码：负数为自定义错误；正数为 http 错误码
 
     def __str__(self):
-        return f"{self.__class__.__name__}: {self.code} {self.message}"
+        return f"{self.__class__.__name__}: [{self.code}] {self.reason} {self.message}"
 
 
 class AuthorityDenyException(SelfDefinedException):
@@ -51,7 +51,16 @@ class ConfigException(SelfDefinedException):
         super().__init__(reason="errors.config", message=message)
 
 
-class OpenaiWebException(SelfDefinedException):
-    def __init__(self, message: str = "", status_code: int = -1):
-        super().__init__(reason="errors.openaiWeb", message=message)
-        self.status_code = status_code
+class OpenaiException(SelfDefinedException):
+    def __init__(self, reason: str, message: str = "", code: int = -1):
+        super().__init__(reason=reason, message=message, code=code)
+
+
+class OpenaiWebException(OpenaiException):
+    def __init__(self, message: str = "", code: int = -1):
+        super().__init__(reason="errors.openaiWeb", message=message, code=code)
+
+
+class OpenaiApiException(OpenaiException):
+    def __init__(self, message: str = "", code: int = -1):
+        super().__init__(reason="errors.openaiWeb", message=message, code=code)
