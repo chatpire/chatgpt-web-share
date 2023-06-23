@@ -12,7 +12,7 @@ export type OpenaiApiSourceSettingSchema = components['schemas']['OpenaiApiSourc
 export type TimeWindowRateLimit = components['schemas']['TimeWindowRateLimit'];
 export type DailyTimeSlot = components['schemas']['DailyTimeSlot'];
 
-export type ServerStatusSchema = components['schemas']['ServerStatusSchema'];
+export type CommonStatusSchema = components['schemas']['CommonStatusSchema'];
 export type OpenaiWebChatStatus = components['schemas']['OpenaiWebChatStatus'];
 
 export type OpenaiWebChatModels = components['schemas']['OpenaiWebChatModels'];

@@ -12,7 +12,7 @@
         </n-button>
       </div>
     </template>
-    <div class="grid grid-cols-3 md:grid-cols-5 gap-4">
+    <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
       <n-statistic v-for="item in statistics" :key="item.label" :label="item.label" :value="item.value">
         <template v-if="item.prefixIcon" #prefix>
           <n-icon :component="item.prefixIcon" />
@@ -32,12 +32,12 @@ import { RefreshFilled } from '@vicons/material';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { ServerStatusSchema, SystemInfo } from '@/types/schema';
+import { CommonStatusSchema, SystemInfo } from '@/types/schema';
 const { t } = useI18n();
 
 const props = defineProps<{
   systemInfo?: SystemInfo;
-  serverStatus?: ServerStatusSchema;
+  serverStatus?: CommonStatusSchema;
 }>();
 
 const emits = defineEmits<{
@@ -67,6 +67,12 @@ const statistics = computed(() => {
       value: props.systemInfo?.valid_conversation_count,
       prefixIcon: null,
       suffix: `/ ${props.systemInfo?.total_conversation_count}`,
+    },
+    {
+      label: t('labels.gpt4_count_in_3_hours'),
+      value: props.serverStatus?.gpt4_count_in_3_hours,
+      prefixIcon: null,
+      suffix: '/ 25',
     },
     {
       label: t('commons.chatbotStatus'),
