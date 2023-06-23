@@ -34,7 +34,7 @@ import { getAllOpenaiChatPluginsApi, getInstalledOpenaiChatPluginsApi } from '@/
 import { i18n } from '@/i18n';
 import { useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
-import { OpenAIChatPlugin } from '@/types/schema';
+import { OpenaiChatPlugin } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
@@ -86,7 +86,7 @@ const availableModels = computed<SelectOption[]>(() => {
   }
 });
 
-const availablePlugins = ref<OpenAIChatPlugin[] | null>(null);
+const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
 const loadingPlugins = ref<boolean>(false);
 
 const pluginOptions = computed<SelectOption[]>(() => {

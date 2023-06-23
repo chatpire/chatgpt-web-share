@@ -26,15 +26,15 @@ from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWeb
 from api.routers.conv import _get_conversation_by_id
 from api.schemas import OpenaiWebConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
-from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
-from api.sources import RevChatGPTManager, convert_revchatgpt_message, OpenAIChatManager, OpenAIChatException
+from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
+from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager, OpenAIChatException
 from api.users import websocket_auth, current_active_user, current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-openai_web_manager = RevChatGPTManager()
-openai_api_manager = OpenAIChatManager()
+openai_web_manager = OpenaiWebChatManager()
+openai_api_manager = OpenaiApiChatManager()
 config = Config()
 
 
@@ -48,8 +48,8 @@ async def change_user_chat_status(user_id: int, status: OpenaiWebChatStatus):
     return user
 
 
-_plugins_result: list[OpenAIChatPlugin] | None = None
-_plugins_result_map: dict[str, OpenAIChatPlugin] | None = None
+_plugins_result: list[OpenaiChatPlugin] | None = None
+_plugins_result_map: dict[str, OpenaiChatPlugin] | None = None
 _plugins_result_last_update_time = None
 
 
@@ -62,19 +62,19 @@ async def _refresh_plugins():
     return _plugins_result
 
 
-@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenAIChatPlugin])
+@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenaiChatPlugin])
 async def get_all_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
     plugins = await _refresh_plugins()
     return plugins
 
 
-@router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=list[OpenAIChatPlugin])
+@router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=list[OpenaiChatPlugin])
 async def get_installed_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
     plugins = await _refresh_plugins()
     return [plugin for plugin in plugins if plugin.user_settings and plugin.user_settings.is_installed]
 
 
-@router.get("/chat/openai-plugin/{plugin_id}", tags=["chat"], response_model=OpenAIChatPlugin)
+@router.get("/chat/openai-plugin/{plugin_id}", tags=["chat"], response_model=OpenaiChatPlugin)
 async def get_openai_web_plugin(plugin_id: str, _user: User = Depends(current_active_user)):
     await _refresh_plugins()
     global _plugins_result_map
@@ -84,13 +84,13 @@ async def get_openai_web_plugin(plugin_id: str, _user: User = Depends(current_ac
         raise InvalidParamsException("errors.pluginNotFound")
 
 
-@router.patch("/chat/openai-plugin/{plugin_id}/user-settings", tags=["chat"], response_model=OpenAIChatPlugin)
-async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenAIChatPluginUserSettings,
+@router.patch("/chat/openai-plugin/{plugin_id}/user-settings", tags=["chat"], response_model=OpenaiChatPlugin)
+async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenaiChatPluginUserSettings,
                                            _user: User = Depends(current_super_user)):
     if settings.is_authenticated is not None:
         raise InvalidParamsException("can not set is_authenticated")
     result = await openai_web_manager.change_plugin_user_settings(plugin_id, settings)
-    assert isinstance(result, OpenAIChatPlugin)
+    assert isinstance(result, OpenaiChatPlugin)
 
     global _plugins_result, _plugins_result_last_update_time
     if _plugins_result is not None:
@@ -527,7 +527,7 @@ async def chat(websocket: WebSocket):
 
             # 写入到 scope 中，供统计
             await AskLogDocument(
-                meta=meta,
+                metadata=meta,
                 user_id=user.id,
                 queueing_time=queueing_time,
                 ask_time=ask_time,

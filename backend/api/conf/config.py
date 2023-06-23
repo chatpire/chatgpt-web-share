@@ -63,7 +63,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
         return v
 
 
-class OpenaiAPISetting(BaseModel):
+class OpenaiApiSetting(BaseModel):
     openai_base_url: str = 'https://api.openai.com/v1/'
     connect_timeout: int = Field(10, ge=1)
     read_timeout: int = Field(20, ge=1)
@@ -81,7 +81,7 @@ class StatsSetting(BaseModel):
 
 class ConfigModel(BaseModel):
     openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
-    openai_api: OpenaiAPISetting = OpenaiAPISetting()
+    openai_api: OpenaiApiSetting = OpenaiApiSetting()
     common: CommonSetting = CommonSetting()
     http: HttpSetting = HttpSetting()
     data: DataSetting = DataSetting()
@@ -96,7 +96,7 @@ class ConfigModel(BaseModel):
 @singleton_with_lock
 class Config(BaseConfig[ConfigModel]):
     if _TYPE_CHECKING:
-        openai_api: OpenaiAPISetting = OpenaiAPISetting()
+        openai_api: OpenaiApiSetting = OpenaiApiSetting()
         common: CommonSetting = CommonSetting()
         http: HttpSetting = HttpSetting()
         openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()

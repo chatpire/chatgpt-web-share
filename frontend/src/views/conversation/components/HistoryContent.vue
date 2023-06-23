@@ -62,7 +62,7 @@ import { useI18n } from 'vue-i18n';
 
 import { getOpenaiChatPluginApi } from '@/api/chat';
 import { useConversationStore } from '@/store';
-import { BaseChatMessage, BaseConversationHistory, OpenAIChatPlugin } from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory, OpenaiChatPlugin } from '@/types/schema';
 import { getChatModelNameTrans, getMessageListFromHistory, mergeContinuousMessages } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
@@ -98,7 +98,7 @@ const convOpenaiWebPluginIds = computed<string[] | null>(() => {
   return null;
 });
 
-const convOpenaiWebPlugins = ref<OpenAIChatPlugin[] | null>(null);
+const convOpenaiWebPlugins = ref<OpenaiChatPlugin[] | null>(null);
 
 const rawMessages = computed<BaseChatMessage[]>(() => {
   let result = convHistory.value ? getMessageListFromHistory(convHistory.value) : [];

@@ -710,7 +710,7 @@
                         "type": "string"
                       },
                       "usage": {
-                        "title": "OpenAIChatResponseUsage",
+                        "title": "OpenaiChatResponseUsage",
                         "type": "object",
                         "properties": {
                           "prompt_tokens": {
@@ -1022,7 +1022,7 @@
                         "type": "string"
                       },
                       "usage": {
-                        "title": "OpenAIChatResponseUsage",
+                        "title": "OpenaiChatResponseUsage",
                         "type": "object",
                         "properties": {
                           "prompt_tokens": {
@@ -1552,7 +1552,7 @@
                 "type": "string"
               },
               "usage": {
-                "title": "OpenAIChatResponseUsage",
+                "title": "OpenaiChatResponseUsage",
                 "type": "object",
                 "properties": {
                   "prompt_tokens": {
@@ -2071,7 +2071,7 @@
                       "type": "string"
                     },
                     "usage": {
-                      "title": "OpenAIChatResponseUsage",
+                      "title": "OpenaiChatResponseUsage",
                       "type": "object",
                       "properties": {
                         "prompt_tokens": {
@@ -2104,8 +2104,8 @@
         "title": "Current Model",
         "type": "string"
       },
-      "meta": {
-        "title": "Meta",
+      "metadata": {
+        "title": "Metadata",
         "anyOf": [
           {
             "title": "OpenaiWebConversationHistoryMeta",
@@ -2350,7 +2350,7 @@
         "title": "Openai Api",
         "allOf": [
           {
-            "title": "OpenaiAPISetting",
+            "title": "OpenaiApiSetting",
             "type": "object",
             "properties": {
               "openai_base_url": {
@@ -2821,239 +2821,6 @@
       }
     }
   },
-  "OpenAIChatPlugin": {
-    "title": "OpenAIChatPlugin",
-    "type": "object",
-    "properties": {
-      "id": {
-        "title": "Id",
-        "type": "string"
-      },
-      "namespace": {
-        "title": "Namespace",
-        "type": "string"
-      },
-      "manifest": {
-        "title": "OpenAIChatPluginManifest",
-        "type": "object",
-        "properties": {
-          "api": {
-            "title": "Api",
-            "type": "object"
-          },
-          "auth": {
-            "title": "Auth",
-            "type": "object"
-          },
-          "logo_url": {
-            "title": "Logo Url",
-            "type": "string"
-          },
-          "contact_email": {
-            "title": "Contact Email",
-            "type": "string"
-          },
-          "schema_version": {
-            "title": "Schema Version",
-            "type": "string"
-          },
-          "name_for_model": {
-            "title": "Name For Model",
-            "type": "string"
-          },
-          "name_for_human": {
-            "title": "Name For Human",
-            "type": "string"
-          },
-          "description_for_model": {
-            "title": "Description For Model",
-            "type": "string"
-          },
-          "description_for_human": {
-            "title": "Description For Human",
-            "type": "string"
-          },
-          "legal_info_url": {
-            "title": "Legal Info Url",
-            "type": "string"
-          }
-        }
-      },
-      "categories": {
-        "title": "Categories",
-        "type": "array",
-        "items": {
-          "title": "OpenAIChatPluginCategory",
-          "type": "object",
-          "properties": {
-            "id": {
-              "title": "Id",
-              "type": "string"
-            },
-            "title": {
-              "title": "Title",
-              "type": "string"
-            }
-          }
-        }
-      },
-      "domain": {
-        "title": "Domain",
-        "type": "string"
-      },
-      "status": {
-        "title": "Status",
-        "anyOf": [
-          {
-            "enum": [
-              "approved"
-            ],
-            "type": "string"
-          },
-          {
-            "type": "string"
-          }
-        ]
-      },
-      "user_settings": {
-        "title": "User Settings",
-        "anyOf": [
-          {
-            "title": "OpenAIChatPluginUserSettings",
-            "type": "object",
-            "properties": {
-              "is_authenticated": {
-                "title": "Is Authenticated",
-                "type": "boolean"
-              },
-              "is_installed": {
-                "title": "Is Installed",
-                "type": "boolean"
-              }
-            }
-          },
-          {
-            "type": "object"
-          }
-        ]
-      },
-      "oauth_client_id": {
-        "title": "Oauth Client Id",
-        "type": "string"
-      }
-    }
-  },
-  "OpenAIChatPluginCategory": {
-    "title": "OpenAIChatPluginCategory",
-    "type": "object",
-    "properties": {
-      "id": {
-        "title": "Id",
-        "type": "string"
-      },
-      "title": {
-        "title": "Title",
-        "type": "string"
-      }
-    }
-  },
-  "OpenAIChatPluginManifest": {
-    "title": "OpenAIChatPluginManifest",
-    "type": "object",
-    "properties": {
-      "api": {
-        "title": "Api",
-        "type": "object"
-      },
-      "auth": {
-        "title": "Auth",
-        "type": "object"
-      },
-      "logo_url": {
-        "title": "Logo Url",
-        "type": "string"
-      },
-      "contact_email": {
-        "title": "Contact Email",
-        "type": "string"
-      },
-      "schema_version": {
-        "title": "Schema Version",
-        "type": "string"
-      },
-      "name_for_model": {
-        "title": "Name For Model",
-        "type": "string"
-      },
-      "name_for_human": {
-        "title": "Name For Human",
-        "type": "string"
-      },
-      "description_for_model": {
-        "title": "Description For Model",
-        "type": "string"
-      },
-      "description_for_human": {
-        "title": "Description For Human",
-        "type": "string"
-      },
-      "legal_info_url": {
-        "title": "Legal Info Url",
-        "type": "string"
-      }
-    }
-  },
-  "OpenAIChatPluginUserSettings": {
-    "title": "OpenAIChatPluginUserSettings",
-    "type": "object",
-    "properties": {
-      "is_authenticated": {
-        "title": "Is Authenticated",
-        "type": "boolean"
-      },
-      "is_installed": {
-        "title": "Is Installed",
-        "type": "boolean"
-      }
-    }
-  },
-  "OpenAIChatResponseUsage": {
-    "title": "OpenAIChatResponseUsage",
-    "type": "object",
-    "properties": {
-      "prompt_tokens": {
-        "title": "Prompt Tokens",
-        "type": "integer"
-      },
-      "completion_tokens": {
-        "title": "Completion Tokens",
-        "type": "integer"
-      }
-    }
-  },
-  "OpenaiAPISetting": {
-    "title": "OpenaiAPISetting",
-    "type": "object",
-    "properties": {
-      "openai_base_url": {
-        "title": "Openai Base Url",
-        "type": "string",
-        "default": "https://api.openai.com/v1/"
-      },
-      "connect_timeout": {
-        "title": "Connect Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 10
-      },
-      "read_timeout": {
-        "title": "Read Timeout",
-        "minimum": 1,
-        "type": "integer",
-        "default": 20
-      }
-    }
-  },
   "OpenaiApiAskLogMeta": {
     "title": "OpenaiApiAskLogMeta",
     "required": [
@@ -3369,7 +3136,7 @@
                 "type": "string"
               },
               "usage": {
-                "title": "OpenAIChatResponseUsage",
+                "title": "OpenaiChatResponseUsage",
                 "type": "object",
                 "properties": {
                   "prompt_tokens": {
@@ -3407,7 +3174,7 @@
         "type": "string"
       },
       "usage": {
-        "title": "OpenAIChatResponseUsage",
+        "title": "OpenaiChatResponseUsage",
         "type": "object",
         "properties": {
           "prompt_tokens": {
@@ -3785,7 +3552,7 @@
                       "type": "string"
                     },
                     "usage": {
-                      "title": "OpenAIChatResponseUsage",
+                      "title": "OpenaiChatResponseUsage",
                       "type": "object",
                       "properties": {
                         "prompt_tokens": {
@@ -3818,8 +3585,8 @@
         "title": "Current Model",
         "type": "string"
       },
-      "meta": {
-        "title": "Meta",
+      "metadata": {
+        "title": "Metadata",
         "anyOf": [
           {
             "title": "OpenaiWebConversationHistoryMeta",
@@ -3955,6 +3722,29 @@
       }
     }
   },
+  "OpenaiApiSetting": {
+    "title": "OpenaiApiSetting",
+    "type": "object",
+    "properties": {
+      "openai_base_url": {
+        "title": "Openai Base Url",
+        "type": "string",
+        "default": "https://api.openai.com/v1/"
+      },
+      "connect_timeout": {
+        "title": "Connect Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 10
+      },
+      "read_timeout": {
+        "title": "Read Timeout",
+        "minimum": 1,
+        "type": "integer",
+        "default": 20
+      }
+    }
+  },
   "OpenaiApiSourceSettingSchema": {
     "title": "OpenaiApiSourceSettingSchema",
     "required": [
@@ -4082,6 +3872,216 @@
             "type": "string"
           }
         }
+      }
+    }
+  },
+  "OpenaiChatPlugin": {
+    "title": "OpenaiChatPlugin",
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "namespace": {
+        "title": "Namespace",
+        "type": "string"
+      },
+      "manifest": {
+        "title": "OpenaiChatPluginManifest",
+        "type": "object",
+        "properties": {
+          "api": {
+            "title": "Api",
+            "type": "object"
+          },
+          "auth": {
+            "title": "Auth",
+            "type": "object"
+          },
+          "logo_url": {
+            "title": "Logo Url",
+            "type": "string"
+          },
+          "contact_email": {
+            "title": "Contact Email",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "name_for_model": {
+            "title": "Name For Model",
+            "type": "string"
+          },
+          "name_for_human": {
+            "title": "Name For Human",
+            "type": "string"
+          },
+          "description_for_model": {
+            "title": "Description For Model",
+            "type": "string"
+          },
+          "description_for_human": {
+            "title": "Description For Human",
+            "type": "string"
+          },
+          "legal_info_url": {
+            "title": "Legal Info Url",
+            "type": "string"
+          }
+        }
+      },
+      "categories": {
+        "title": "Categories",
+        "type": "array",
+        "items": {
+          "title": "OpenaiChatPluginCategory",
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "title": {
+              "title": "Title",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "domain": {
+        "title": "Domain",
+        "type": "string"
+      },
+      "status": {
+        "title": "Status",
+        "anyOf": [
+          {
+            "enum": [
+              "approved"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "user_settings": {
+        "title": "User Settings",
+        "anyOf": [
+          {
+            "title": "OpenaiChatPluginUserSettings",
+            "type": "object",
+            "properties": {
+              "is_authenticated": {
+                "title": "Is Authenticated",
+                "type": "boolean"
+              },
+              "is_installed": {
+                "title": "Is Installed",
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "oauth_client_id": {
+        "title": "Oauth Client Id",
+        "type": "string"
+      }
+    }
+  },
+  "OpenaiChatPluginCategory": {
+    "title": "OpenaiChatPluginCategory",
+    "type": "object",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      }
+    }
+  },
+  "OpenaiChatPluginManifest": {
+    "title": "OpenaiChatPluginManifest",
+    "type": "object",
+    "properties": {
+      "api": {
+        "title": "Api",
+        "type": "object"
+      },
+      "auth": {
+        "title": "Auth",
+        "type": "object"
+      },
+      "logo_url": {
+        "title": "Logo Url",
+        "type": "string"
+      },
+      "contact_email": {
+        "title": "Contact Email",
+        "type": "string"
+      },
+      "schema_version": {
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "name_for_model": {
+        "title": "Name For Model",
+        "type": "string"
+      },
+      "name_for_human": {
+        "title": "Name For Human",
+        "type": "string"
+      },
+      "description_for_model": {
+        "title": "Description For Model",
+        "type": "string"
+      },
+      "description_for_human": {
+        "title": "Description For Human",
+        "type": "string"
+      },
+      "legal_info_url": {
+        "title": "Legal Info Url",
+        "type": "string"
+      }
+    }
+  },
+  "OpenaiChatPluginUserSettings": {
+    "title": "OpenaiChatPluginUserSettings",
+    "type": "object",
+    "properties": {
+      "is_authenticated": {
+        "title": "Is Authenticated",
+        "type": "boolean"
+      },
+      "is_installed": {
+        "title": "Is Installed",
+        "type": "boolean"
+      }
+    }
+  },
+  "OpenaiChatResponseUsage": {
+    "title": "OpenaiChatResponseUsage",
+    "type": "object",
+    "properties": {
+      "prompt_tokens": {
+        "title": "Prompt Tokens",
+        "type": "integer"
+      },
+      "completion_tokens": {
+        "title": "Completion Tokens",
+        "type": "integer"
       }
     }
   },
@@ -4568,7 +4568,7 @@
                 "type": "string"
               },
               "usage": {
-                "title": "OpenAIChatResponseUsage",
+                "title": "OpenaiChatResponseUsage",
                 "type": "object",
                 "properties": {
                   "prompt_tokens": {
@@ -5512,7 +5512,7 @@
                       "type": "string"
                     },
                     "usage": {
-                      "title": "OpenAIChatResponseUsage",
+                      "title": "OpenaiChatResponseUsage",
                       "type": "object",
                       "properties": {
                         "prompt_tokens": {
@@ -5545,7 +5545,7 @@
         "title": "Current Model",
         "type": "string"
       },
-      "meta": {
+      "metadata": {
         "title": "OpenaiWebConversationHistoryMeta",
         "required": [
           "source"

@@ -10,7 +10,7 @@ from api.conf import Config, Credentials
 from api.enums import OpenaiApiChatModels, ChatSourceTypes
 from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageMetadata, \
     OpenaiApiChatMessageTextContent
-from api.schemas.openai_schemas import OpenAIChatResponse
+from api.schemas.openai_schemas import OpenaiChatResponse
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -47,7 +47,7 @@ async def _check_response(response: httpx.Response) -> None:
 
 
 @singleton_with_lock
-class OpenAIChatManager:
+class OpenaiApiChatManager:
     """
     OpenAI API Manager
     """
@@ -144,7 +144,7 @@ class OpenAIChatManager:
 
                 try:
                     line = json.loads(line)
-                    resp = OpenAIChatResponse(**line)
+                    resp = OpenaiChatResponse(**line)
 
                     if resp.choices[0].message is not None:
                         text_content = resp.choices[0].message.get("content")

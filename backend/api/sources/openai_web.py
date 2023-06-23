@@ -18,7 +18,7 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent
-from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
+from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -129,7 +129,7 @@ async def _check_response(response: httpx.Response) -> None:
 
 
 @singleton_with_lock
-class RevChatGPTManager:
+class OpenaiWebChatManager:
     """
     TODO: 解除 revChatGPT 依赖
     """
@@ -188,7 +188,7 @@ class RevChatGPTManager:
             mapping=mapping,
             current_node=result.get("current_node"),
             current_model=current_model,
-            meta=OpenaiWebConversationHistoryMeta(
+            metadata=OpenaiWebConversationHistoryMeta(
                 source="openai_web",
                 plugin_ids=result.get("plugin_ids"),
                 moderation_results=result.get("moderation_results"),
@@ -296,9 +296,9 @@ class RevChatGPTManager:
             timeout=config.openai_web.ask_timeout
         )
         await _check_response(response)
-        return parse_obj_as(list[OpenAIChatPlugin], response.json().get("items"))
+        return parse_obj_as(list[OpenaiChatPlugin], response.json().get("items"))
 
-    async def change_plugin_user_settings(self, plugin_id: str, setting: OpenAIChatPluginUserSettings):
+    async def change_plugin_user_settings(self, plugin_id: str, setting: OpenaiChatPluginUserSettings):
         if not config.openai_web.is_plus_account:
             raise InvalidParamsException("errors.notPlusChatgptAccount")
         response = await self.chatbot.session.patch(
@@ -307,7 +307,7 @@ class RevChatGPTManager:
         )
         await _check_response(response)
         try:
-            result = OpenAIChatPlugin.parse_obj(response.json())
+            result = OpenaiChatPlugin.parse_obj(response.json())
             return result
         except ValidationError as e:
             logger.warning(f"Failed to parse plugin: {e}")

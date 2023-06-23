@@ -24,7 +24,7 @@ from api.models.db import User
 from api.response import CustomJSONResponse, handle_exception_response
 from api.routers import users, conv, chat, system, status
 from api.schemas import UserCreate, UserSettingSchema
-from api.sources import RevChatGPTManager
+from api.sources import OpenaiWebChatManager
 from api.users import get_user_manager_context
 from utils.admin import sync_conversations
 from utils.logger import setup_logger, get_log_config, get_logger
@@ -87,7 +87,7 @@ async def on_startup():
     g.startup_time = time.time()
 
     # 初始化 chatgpt_manager
-    g.chatgpt_manager = RevChatGPTManager()
+    g.chatgpt_manager = OpenaiWebChatManager()
 
     if config.common.create_initial_admin_user:
         try:

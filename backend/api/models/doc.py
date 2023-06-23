@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 from api.models.types import SourceTypeLiteral
-from api.schemas.openai_schemas import OpenAIChatResponseUsage
+from api.schemas.openai_schemas import OpenaiChatResponseUsage
 from api.conf import Config
 
 config = Config()
@@ -61,7 +61,7 @@ class OpenaiWebChatMessageMetadata(BaseModel):
 
 class OpenaiApiChatMessageMetadata(BaseModel):
     source: Literal['openai_api']
-    usage: Optional[OpenAIChatResponseUsage]
+    usage: Optional[OpenaiChatResponseUsage]
     finish_reason: Optional[str]
 
 
@@ -172,7 +172,7 @@ class BaseConversationHistory(BaseModel):
     mapping: dict[str, BaseChatMessage]
     current_node: Optional[uuid.UUID]
     current_model: Optional[str]
-    meta: Optional[Annotated[
+    metadata: Optional[Annotated[
         Union[OpenaiWebConversationHistoryMeta, OpenaiApiConversationHistoryMeta], Field(discriminator='source')]]
 
 
@@ -180,7 +180,7 @@ class OpenaiWebConversationHistoryDocument(Document, BaseConversationHistory):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="_id")
     source: Literal["openai_web"]
     mapping: dict[str, OpenaiWebChatMessage]
-    meta: Optional[OpenaiWebConversationHistoryMeta]
+    metadata: Optional[OpenaiWebConversationHistoryMeta]
 
     class Settings:
         name = "openai_web_conversation_history"
@@ -204,7 +204,7 @@ class RequestLogMeta(BaseModel):
 
 class RequestLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    meta: RequestLogMeta
+    metadata: RequestLogMeta
     user_id: Optional[int]
     elapsed_ms: float
     status: Optional[int]
@@ -231,7 +231,7 @@ class OpenaiApiAskLogMeta(BaseModel):
 
 class AskLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
+    metadata: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
     user_id: int
     queueing_time: Optional[float]
     ask_time: Optional[float]

@@ -6,12 +6,12 @@ from sqlalchemy import select
 
 from api.database import get_async_session_context
 from api.models.db import OpenaiWebConversation
-from api.sources import RevChatGPTManager
+from api.sources import OpenaiWebChatManager
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-manager = RevChatGPTManager()
+manager = OpenaiWebChatManager()
 
 
 async def sync_conversations():

@@ -105,7 +105,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getAllOpenaiChatPluginsApi, patchOpenaiChatPluginsUsersSettingsApi } from '@/api/chat';
-import { OpenAIChatPlugin } from '@/types/schema';
+import { OpenaiChatPlugin } from '@/types/schema';
 import { Message } from '@/utils/tips';
 
 const { width } = useWindowSize();
@@ -113,7 +113,7 @@ const { width } = useWindowSize();
 const { t } = useI18n();
 const themeVars = useThemeVars();
 
-const allPlugins = ref<OpenAIChatPlugin[]>([]);
+const allPlugins = ref<OpenaiChatPlugin[]>([]);
 const loading = ref(true);
 const requestingPatchId = ref<string | null>(null);
 const fetchPluginsSuccess = ref(false);

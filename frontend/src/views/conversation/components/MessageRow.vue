@@ -89,7 +89,7 @@ import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
 import { ArticleFilled, ArticleOutlined, PersonFilled } from '@vicons/material';
 import * as clipboard from 'clipboard-polyfill';
 import { useThemeVars } from 'naive-ui';
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { JsonViewer } from 'vue3-json-viewer';
 
@@ -120,7 +120,7 @@ watch(
 onMounted(() => {
   if (lastMessage.value?.role == 'user') renderMarkdown.value = appStore.preference.renderUserMessageInMd;
 });
-  
+
 const props = defineProps<{
   messages: BaseChatMessage[];
 }>();
@@ -130,7 +130,7 @@ const lastMessage = computed<BaseChatMessage | null>(() => {
   else return props.messages[props.messages.length - 1];
 });
 
-const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[\+-]\d\d:?\d\d/.test(create_time);
+const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[+-]\d\d:?\d\d/.test(create_time);
 
 const timeString = computed<string>(() => {
   if (!lastMessage.value || !lastMessage.value.create_time) return '';
@@ -230,10 +230,7 @@ const displayItems = computed<DisplayItem[]>(() => {
       continue;
     }
     for (const message of group) {
-      if (
-        message.source !== 'openai_web' ||
-        typeof message.content == 'string'
-      ) {
+      if (message.source !== 'openai_web' || typeof message.content == 'string') {
         console.error('wrong message mixed in non-text content group', group);
         continue;
       }

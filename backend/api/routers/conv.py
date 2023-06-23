@@ -15,13 +15,13 @@ from api.models.doc import OpenaiApiConversationHistoryDocument, OpenaiWebConver
     BaseConversationHistory
 from api.response import response
 from api.schemas import OpenaiWebConversationSchema, BaseConversationSchema, OpenaiApiConversationSchema
-from api.sources import RevChatGPTManager
+from api.sources import OpenaiWebChatManager
 from api.users import current_active_user, current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-openai_web_manager = RevChatGPTManager()
+openai_web_manager = OpenaiWebChatManager()
 
 
 async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User = Depends(current_active_user)):

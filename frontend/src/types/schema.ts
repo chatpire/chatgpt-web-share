@@ -40,10 +40,10 @@ export type BaseConversationHistory = components['schemas']['BaseConversationHis
 export type OpenaiApiConversationHistoryDocument = components['schemas']['OpenaiApiConversationHistoryDocument'];
 export type OpenaiWebConversationHistoryDocument = components['schemas']['OpenaiWebConversationHistoryDocument'];
 
-export type OpenAIChatPluginCategory = components['schemas']['OpenAIChatPluginCategory'];
-export type OpenAIChatPluginManifest = components['schemas']['OpenAIChatPluginManifest'];
-export type OpenAIChatPluginUserSettings = components['schemas']['OpenAIChatPluginUserSettings'];
-export type OpenAIChatPlugin = components['schemas']['OpenAIChatPlugin'];
+export type OpenaiChatPluginCategory = components['schemas']['OpenaiChatPluginCategory'];
+export type OpenaiChatPluginManifest = components['schemas']['OpenaiChatPluginManifest'];
+export type OpenaiChatPluginUserSettings = components['schemas']['OpenaiChatPluginUserSettings'];
+export type OpenaiChatPlugin = components['schemas']['OpenaiChatPlugin'];
 
 export type AskRequest = components['schemas']['AskRequest'];
 export type AskResponse = components['schemas']['AskResponse'];

@@ -86,7 +86,7 @@ class StatisticsMiddleware:
             elapsed_ms = round(elapsed_ms * 1000, 2)
 
             await RequestLogDocument(
-                meta=RequestLogMeta(route_path=route.path, method=method),
+                metadata=RequestLogMeta(route_path=route.path, method=method),
                 user_id=user_id,
                 elapsed_ms=elapsed_ms,
                 status=body_code or raw_status_code or scope.get("ask_websocket_close_code", None)
