@@ -527,7 +527,7 @@ async def chat(websocket: WebSocket):
 
             # 写入到 scope 中，供统计
             await AskLogDocument(
-                metadata=meta,
+                meta=meta,
                 user_id=user.id,
                 queueing_time=queueing_time,
                 ask_time=ask_time,

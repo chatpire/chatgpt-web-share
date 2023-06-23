@@ -144,12 +144,12 @@ export interface paths {
      */
     post: operations["import_users_system_import_users_post"];
   };
-  "/status": {
+  "/status/common": {
     /**
      * Get Server Status 
      * @description 普通用户获取服务器状态
      */
-    get: operations["get_server_status_status_get"];
+    get: operations["get_server_status_status_common_get"];
   };
 }
 
@@ -159,7 +159,7 @@ export interface components {
   schemas: {
     /** AskLogAggregation */
     AskLogAggregation: {
-      _id: components["schemas"]["AskLogAggregationID"];
+      _id?: components["schemas"]["AskLogAggregationID"];
       /** Count */
       count: number;
       /** User Ids */
@@ -177,7 +177,7 @@ export interface components {
        */
       start_time: string;
       /** Meta */
-      meta: components["schemas"]["OpenaiWebAskLogMeta"] | components["schemas"]["OpenaiApiAskLogMeta"];
+      meta?: components["schemas"]["OpenaiWebAskLogMeta"] | components["schemas"]["OpenaiApiAskLogMeta"];
     };
     /** AskRequest */
     AskRequest: {
@@ -429,6 +429,21 @@ export interface components {
        * @default true
        */
       sync_conversations_regularly?: boolean;
+    };
+    /** CommonStatusSchema */
+    CommonStatusSchema: {
+      /** Active User In 5M */
+      active_user_in_5m?: number;
+      /** Active User In 1H */
+      active_user_in_1h?: number;
+      /** Active User In 1D */
+      active_user_in_1d?: number;
+      /** Is Chatbot Busy */
+      is_chatbot_busy?: boolean;
+      /** Chatbot Waiting Count */
+      chatbot_waiting_count?: number;
+      /** Gpt4 Count In 3 Hours */
+      gpt4_count_in_3_hours?: number;
     };
     /** ConfigModel */
     ConfigModel: {
@@ -1283,24 +1298,11 @@ export interface components {
        * Start Time 
        * Format: date-time
        */
-      start_time: string;
+      start_time?: string;
       /** Route Path */
-      route_path: string;
+      route_path?: string;
       /** Method */
-      method: string;
-    };
-    /** ServerStatusSchema */
-    ServerStatusSchema: {
-      /** Active User In 5M */
-      active_user_in_5m?: number;
-      /** Active User In 1H */
-      active_user_in_1h?: number;
-      /** Active User In 1D */
-      active_user_in_1d?: number;
-      /** Is Chatbot Busy */
-      is_chatbot_busy?: boolean;
-      /** Chatbot Waiting Count */
-      chatbot_waiting_count?: number;
+      method?: string;
     };
     /** StatsSetting */
     StatsSetting: {
@@ -2215,7 +2217,7 @@ export interface operations {
       };
     };
   };
-  get_server_status_status_get: {
+  get_server_status_status_common_get: {
     /**
      * Get Server Status 
      * @description 普通用户获取服务器状态

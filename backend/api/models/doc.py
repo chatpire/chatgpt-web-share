@@ -204,7 +204,7 @@ class RequestLogMeta(BaseModel):
 
 class RequestLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    metadata: RequestLogMeta
+    meta: RequestLogMeta
     user_id: Optional[int]
     elapsed_ms: float
     status: Optional[int]
@@ -231,7 +231,7 @@ class OpenaiApiAskLogMeta(BaseModel):
 
 class AskLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
-    metadata: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
+    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
     user_id: int
     queueing_time: Optional[float]
     ask_time: Optional[float]

@@ -12,7 +12,7 @@ enum ApiUrl {
   AllChatPlugins = '/chat/openai-plugins/all',
   InstalledChatPlugins = '/chat/openai-plugins/installed',
 
-  ServerStatus = '/status',
+  ServerStatus = '/status/common',
 
   SystemInfo = '/system/info',
   SystemRequestStatistics = '/system/stats/request',

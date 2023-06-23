@@ -92,8 +92,8 @@ const convHistory = computed<BaseConversationHistory | null>(() => {
 });
 
 const convOpenaiWebPluginIds = computed<string[] | null>(() => {
-  if (convHistory.value?.meta && convHistory.value.meta.source === 'openai_web') {
-    return convHistory.value.meta.plugin_ids || null;
+  if (convHistory.value?.metadata && convHistory.value.metadata.source === 'openai_web') {
+    return convHistory.value.metadata.plugin_ids || null;
   }
   return null;
 });

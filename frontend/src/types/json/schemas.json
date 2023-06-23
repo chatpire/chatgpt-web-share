@@ -2,7 +2,6 @@
   "AskLogAggregation": {
     "title": "AskLogAggregation",
     "required": [
-      "_id",
       "count"
     ],
     "type": "object",
@@ -10,8 +9,7 @@
       "_id": {
         "title": "AskLogAggregationID",
         "required": [
-          "start_time",
-          "meta"
+          "start_time"
         ],
         "type": "object",
         "properties": {
@@ -22,7 +20,7 @@
           },
           "meta": {
             "title": "Meta",
-            "oneOf": [
+            "anyOf": [
               {
                 "title": "OpenaiWebAskLogMeta",
                 "required": [
@@ -79,14 +77,7 @@
                   }
                 }
               }
-            ],
-            "discriminator": {
-              "propertyName": "source",
-              "mapping": {
-                "openai_web": "#/components/schemas/OpenaiWebAskLogMeta",
-                "openai_api": "#/components/schemas/OpenaiApiAskLogMeta"
-              }
-            }
+            ]
           }
         }
       },
@@ -114,8 +105,7 @@
   "AskLogAggregationID": {
     "title": "AskLogAggregationID",
     "required": [
-      "start_time",
-      "meta"
+      "start_time"
     ],
     "type": "object",
     "properties": {
@@ -126,7 +116,7 @@
       },
       "meta": {
         "title": "Meta",
-        "oneOf": [
+        "anyOf": [
           {
             "title": "OpenaiWebAskLogMeta",
             "required": [
@@ -183,14 +173,7 @@
               }
             }
           }
-        ],
-        "discriminator": {
-          "propertyName": "source",
-          "mapping": {
-            "openai_web": "#/components/schemas/OpenaiWebAskLogMeta",
-            "openai_api": "#/components/schemas/OpenaiApiAskLogMeta"
-          }
-        }
+        ]
       }
     }
   },
@@ -2302,6 +2285,36 @@
         "title": "Sync Conversations Regularly",
         "type": "boolean",
         "default": true
+      }
+    }
+  },
+  "CommonStatusSchema": {
+    "title": "CommonStatusSchema",
+    "type": "object",
+    "properties": {
+      "active_user_in_5m": {
+        "title": "Active User In 5M",
+        "type": "integer"
+      },
+      "active_user_in_1h": {
+        "title": "Active User In 1H",
+        "type": "integer"
+      },
+      "active_user_in_1d": {
+        "title": "Active User In 1D",
+        "type": "integer"
+      },
+      "is_chatbot_busy": {
+        "title": "Is Chatbot Busy",
+        "type": "boolean"
+      },
+      "chatbot_waiting_count": {
+        "title": "Chatbot Waiting Count",
+        "type": "integer"
+      },
+      "gpt4_count_in_3_hours": {
+        "title": "Gpt4 Count In 3 Hours",
+        "type": "integer"
       }
     }
   },
@@ -5837,11 +5850,6 @@
     "properties": {
       "_id": {
         "title": "RequestLogAggregationID",
-        "required": [
-          "start_time",
-          "route_path",
-          "method"
-        ],
         "type": "object",
         "properties": {
           "start_time": {
@@ -5878,11 +5886,6 @@
   },
   "RequestLogAggregationID": {
     "title": "RequestLogAggregationID",
-    "required": [
-      "start_time",
-      "route_path",
-      "method"
-    ],
     "type": "object",
     "properties": {
       "start_time": {
@@ -5897,32 +5900,6 @@
       "method": {
         "title": "Method",
         "type": "string"
-      }
-    }
-  },
-  "ServerStatusSchema": {
-    "title": "ServerStatusSchema",
-    "type": "object",
-    "properties": {
-      "active_user_in_5m": {
-        "title": "Active User In 5M",
-        "type": "integer"
-      },
-      "active_user_in_1h": {
-        "title": "Active User In 1H",
-        "type": "integer"
-      },
-      "active_user_in_1d": {
-        "title": "Active User In 1D",
-        "type": "integer"
-      },
-      "is_chatbot_busy": {
-        "title": "Is Chatbot Busy",
-        "type": "boolean"
-      },
-      "chatbot_waiting_count": {
-        "title": "Chatbot Waiting Count",
-        "type": "integer"
       }
     }
   },
