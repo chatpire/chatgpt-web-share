@@ -6,6 +6,7 @@
   >
     <!-- 左栏 -->
     <n-layout-sider
+      v-model:collapsed="foldLeftBar"
       :native-scrollbar="false"
       :collapsed-width="0"
       collapse-mode="transform"
@@ -17,7 +18,6 @@
       class="h-full"
     >
       <LeftBar
-        v-show="!foldLeftBar"
         v-model:value="currentConversationId"
         :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
         :loading="loadingBar"
@@ -134,12 +134,12 @@ const conversationStore = useConversationStore();
 
 const loadingBar = ref(false);
 const loadingHistory = ref<boolean>(false);
-const autoScrolling = ref<boolean>(true);
+const autoScrolling = useStorage('autoScrolling', true);
 
 const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
 const canContinue = ref<boolean>(false);
-const foldLeftBar = ref<RemovableRef<boolean>>(useStorage('foldLeftBar', false));
+const foldLeftBar = useStorage('foldLeftBar', false);
 let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
