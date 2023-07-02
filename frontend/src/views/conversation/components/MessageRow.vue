@@ -9,11 +9,11 @@
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="ml-4 lt-md:mx-0 w-full min-h-16">
-      <div v-if="showRawMessage" class="my-3 json-viewer">
+      <div v-if="showRawMessage" class="mr-2 my-3 json-viewer">
         <JsonViewer :value="props.messages" copyable expanded :expand-depth="2" :theme="appStore.theme" />
       </div>
       <div v-else>
-        <div v-for="(item, i) in displayItems" :key="i">
+        <div v-for="(item, i) in displayItems" :key="i" class="mr-1">
           <div v-if="item.type == 'text'">
             <MessageRowTextDisplay :render-markdown="renderMarkdown" :messages="item.messages" />
           </div>
