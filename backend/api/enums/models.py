@@ -18,7 +18,7 @@ chat_model_definitions = {
         "gpt_4_plugins": "gpt-4-plugins",
     },
     "openai_api": {
-        "gpt_3_5": "gpt-3.5-turbo",
+        "gpt_3_5": "gpt-3.5-turbo-0613",
         "gpt_4": "gpt-4",
     }
 }
