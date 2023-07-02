@@ -44,6 +44,7 @@
           </div>
           <HistoryContent
             ref="historyContentRef"
+            v-model:can-continue="canContinue"
             :conversation-id="currentConversationId"
             :extra-messages="currentActiveMessages"
             :fullscreen="false"
@@ -76,8 +77,10 @@
           v-model:auto-scrolling="autoScrolling"
           class="sticky bottom-0 z-10"
           :can-abort="canAbort"
+          :can-continue="canContinue"
           :send-disabled="sendDisabled"
           @abort-request="abortRequest"
+          @continue-generating="continueGenerating"
           @export-to-markdown-file="exportToMarkdownFile"
           @export-to-pdf-file="exportToPdfFile"
           @send-msg="sendMsg"
@@ -134,6 +137,7 @@ const autoScrolling = ref<boolean>(true);
 
 const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
+const canContinue = ref<boolean>(false);
 const foldLeftBar = ref<RemovableRef<boolean>>(useStorage('foldLeftBar', false));
 let aborter: (() => void) | null = null;
 
@@ -220,6 +224,11 @@ const abortRequest = () => {
   aborter = null;
 };
 
+const continueGenerating = () => {
+  inputValue.value = ':continue';
+  sendMsg();
+}
+
 const scrollToBottom = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
 };
@@ -253,6 +262,7 @@ const sendMsg = async () => {
 
   LoadingBar.start();
   loadingBar.value = true;
+  canContinue.value = false;
   const text = inputValue.value;
   inputValue.value = '';
 
@@ -275,8 +285,14 @@ const sendMsg = async () => {
   }
 
   // 使用临时的随机 id 保持当前更新的两个消息
-  currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
-  currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
+  if (text == ':continue') {
+    currentSendMessage.value = null;
+    currentRecvMessages.value = []
+  }
+  else {
+    currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
+    currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
+  }
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
   let wsErrorMessage: AskResponse | null = null;
@@ -332,7 +348,11 @@ const sendMsg = async () => {
     if (!hasError && (event.code == 1000 || isAborted.value)) {
       // 正常关闭
       if (hasGotReply) {
-        const allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
+        let allNewMessages = [] as BaseChatMessage[];
+        if (currentSendMessage.value) {
+          allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
+          
+        }
         for (const msg of currentRecvMessages.value) {
           allNewMessages.push(msg);
         }

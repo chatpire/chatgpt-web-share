@@ -236,16 +236,29 @@ class OpenaiWebChatManager:
         if plugin_ids is not None and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
-        content = OpenaiWebChatMessageTextContent(content_type="text", parts=[content])
 
-        messages = [
-            {
-                "id": str(uuid.uuid4()),
-                "role": "user",
-                "author": {"role": "user"},
-                "content": content.dict(),
+        if content == ":continue":
+            data = {
+                "action": "continue",
+                "conversation_id": str(conversation_id) if conversation_id else None,
+                "parent_message_id": str(parent_id) if parent_id else None,
+                "model": model.code(),
+                "timezone_offset_min": -480,
+                "history_and_training_disabled": False,
             }
-        ]
+        else:
+            content = OpenaiWebChatMessageTextContent(
+                content_type="text", parts=[content]
+            )
+
+            messages = [
+                {
+                    "id": str(uuid.uuid4()),
+                    "role": "user",
+                    "author": {"role": "user"},
+                    "content": content.dict(),
+                }
+            ]
 
         data = {
             "action": "next",
