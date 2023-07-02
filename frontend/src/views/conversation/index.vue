@@ -20,7 +20,7 @@
       <LeftBar
         v-model:value="currentConversationId"
         :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
-        :loading="loadingBar"
+        :loading="loadingAsk"
         @new-conversation="makeNewConversation"
       />
     </n-layout-sider>
@@ -78,7 +78,7 @@
           v-model:auto-scrolling="autoScrolling"
           class="sticky bottom-0 z-10"
           :can-abort="canAbort"
-          :can-continue="canContinue"
+          :can-continue="!loadingAsk && canContinue"
           :send-disabled="sendDisabled"
           @abort-request="abortRequest"
           @continue-generating="continueGenerating"
@@ -132,7 +132,7 @@ const userStore = useUserStore();
 const appStore = useAppStore();
 const conversationStore = useConversationStore();
 
-const loadingBar = ref(false);
+const loadingAsk = ref(false);
 const loadingHistory = ref<boolean>(false);
 const autoScrolling = useStorage('autoScrolling', true);
 
@@ -180,8 +180,8 @@ watch(currentConversationId, (newVal, _oldVal) => {
 
 const handleChangeConversation = (key: string | null) => {
   // TODO: 清除当前已询问、得到回复，但是发生错误的两条消息
-  if (loadingBar.value || !key) return;
-  loadingBar.value = true;
+  if (loadingAsk.value || !key) return;
+  loadingAsk.value = true;
   loadingHistory.value = true;
   LoadingBar.start();
   conversationStore
@@ -193,7 +193,7 @@ const handleChangeConversation = (key: string | null) => {
       console.log(err);
     })
     .finally(() => {
-      loadingBar.value = false;
+      loadingAsk.value = false;
       loadingHistory.value = false;
       LoadingBar.finish();
     });
@@ -201,7 +201,7 @@ const handleChangeConversation = (key: string | null) => {
 
 const sendDisabled = computed(() => {
   return (
-    loadingBar.value ||
+    loadingAsk.value ||
     currentConversationId.value == null ||
     inputValue.value === null ||
     inputValue.value.trim() == ''
@@ -256,13 +256,13 @@ function buildTemporaryMessage(role: string, content: string, parent: string | u
 }
 
 const sendMsg = async () => {
-  if (sendDisabled.value || loadingBar.value || currentConvHistory.value == null) {
+  if (sendDisabled.value || loadingAsk.value || currentConvHistory.value == null) {
     Message.error(t('tips.pleaseSelectConversation'));
     return;
   }
 
   LoadingBar.start();
-  loadingBar.value = true;
+  loadingAsk.value = true;
   canContinue.value = false;
   const text = inputValue.value;
   inputValue.value = '';
@@ -408,7 +408,7 @@ const sendMsg = async () => {
     }
     await userStore.fetchUserInfo();
     LoadingBar.finish();
-    loadingBar.value = false;
+    loadingAsk.value = false;
     isAborted.value = false;
   };
 
