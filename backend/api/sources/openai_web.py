@@ -260,15 +260,15 @@ class OpenaiWebChatManager:
                 }
             ]
 
-        data = {
-            "action": "next",
-            "messages": messages,
-            "conversation_id": str(conversation_id) if conversation_id else None,
-            "parent_message_id": str(parent_id) if parent_id else None,
-            "model": model.code(),
-            "history_and_training_disabled": False,
-            "arkose_token": None
-        }
+            data = {
+                "action": "next",
+                "messages": messages,
+                "conversation_id": str(conversation_id) if conversation_id else None,
+                "parent_message_id": str(parent_id) if parent_id else None,
+                "model": model.code(),
+                "history_and_training_disabled": False,
+                "arkose_token": None
+            }
         if plugin_ids and conversation_id is None:
             data["plugin_ids"] = plugin_ids
 
