@@ -35,7 +35,7 @@
           :content-style="loadingHistory ? { height: '100%' } : {}"
         >
           <!-- 回到底部按钮 -->
-          <div class="right-2 bottom-5 absolute z-20">
+          <div class="right-3 bottom-3 absolute z-20">
             <n-button secondary circle size="small" @click="scrollToBottomSmooth">
               <template #icon>
                 <n-icon :component="ArrowDown" />
@@ -51,6 +51,7 @@
             :show-tips="showFullscreenTips"
             :loading="loadingHistory"
           />
+          <div class="h-14" />
         </n-scrollbar>
         <!-- 未选中对话（空界面） -->
         <div
