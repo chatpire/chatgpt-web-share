@@ -227,7 +227,7 @@ const abortRequest = () => {
 const continueGenerating = () => {
   inputValue.value = ':continue';
   sendMsg();
-}
+};
 
 const scrollToBottom = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
@@ -287,7 +287,7 @@ const sendMsg = async () => {
   // 使用临时的随机 id 保持当前更新的两个消息
   if (text == ':continue') {
     currentSendMessage.value = null;
-    currentRecvMessages.value = []
+    currentRecvMessages.value = [];
   }
   else {
     currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);

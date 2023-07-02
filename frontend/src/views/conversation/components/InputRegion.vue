@@ -29,7 +29,7 @@
         @click="emits('continue-generating')"
       >
         <template #icon>
-          <Send />
+          <DoubleArrowRound />
         </template>
         {{ t('commons.continueGenerating') }}
       </n-button>
@@ -115,7 +115,12 @@
 
 <script setup lang="ts">
 import { LogoMarkdown, Print, Send, Stop } from '@vicons/ionicons5';
-import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound } from '@vicons/material';
+import {
+  DoubleArrowRound,
+  FullscreenRound,
+  KeyboardDoubleArrowDownRound,
+  KeyboardDoubleArrowUpRound,
+} from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
