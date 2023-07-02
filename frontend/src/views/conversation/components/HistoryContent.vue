@@ -91,6 +91,10 @@ const props = defineProps<{
   loading: boolean;
 }>();
 
+const emits = defineEmits<{
+  (e: 'update:can-continue', value: boolean): void;
+}>();
+
 const contentRef = ref();
 const historyContentParent = ref<HTMLElement>();
 const _fullscreen = ref(false);
@@ -113,6 +117,15 @@ const convOpenaiWebPlugins = ref<OpenaiChatPlugin[] | null>(null);
 const rawMessages = computed<BaseChatMessage[]>(() => {
   let result = convHistory.value ? getMessageListFromHistory(convHistory.value) : [];
   result = result.concat(props.extraMessages || []);
+  let canContinue = false;
+  if (result.length > 0){
+    const lastMessage = result[result.length - 1];
+    if (lastMessage.role == 'assistant' && lastMessage.source == 'openai_web' &&  lastMessage.metadata?.source === 'openai_web' &&
+  lastMessage.metadata.finish_details?.type === 'max_tokens') {
+      canContinue = true;
+    }
+  }
+  emits('update:can-continue', canContinue);
   return result;
 });
 
