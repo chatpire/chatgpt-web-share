@@ -103,6 +103,7 @@
     "sumOfGpt4AskDuration": "Total time spent on GPT-4 dialogue",
     "sumOfNormalAskDuration": "The total time spent on ordinary conversations",
     "abortRequest": "Abort Request",
+    "continueGenerating": "Continue Generating",
     "clearAllConversations": "Clear All Conversations",
     "readyToClearAllConversations": "Are you sure you want to clear all conversations?",
     "sendKey": "Send Short Key",

@@ -18,6 +18,23 @@
       </n-button>
     </div>
 
+    <!-- 继续生成按钮 -->
+    <div class="flex w-full justify-center absolute -top-10">
+      <n-button
+        v-show="canContinue"
+        secondary
+        strong
+        type="success"
+        size="small"
+        @click="emits('continue-generating')"
+      >
+        <template #icon>
+          <DoubleArrowRound />
+        </template>
+        {{ t('commons.continueGenerating') }}
+      </n-button>
+    </div>
+
     <!-- 工具栏 -->
     <div class="mx-2 flex flex-row space-x-2 py-2 justify-center relative">
       <!-- 展开/收起按钮 -->
@@ -98,7 +115,12 @@
 
 <script setup lang="ts">
 import { LogoMarkdown, Print, Send, Stop } from '@vicons/ionicons5';
-import { FullscreenRound, KeyboardDoubleArrowDownRound, KeyboardDoubleArrowUpRound } from '@vicons/material';
+import {
+  DoubleArrowRound,
+  FullscreenRound,
+  KeyboardDoubleArrowDownRound,
+  KeyboardDoubleArrowUpRound,
+} from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -111,6 +133,7 @@ const { t } = useI18n();
 
 const props = defineProps<{
   canAbort: boolean;
+  canContinue: boolean;
   sendDisabled: boolean;
   inputValue: string;
   autoScrolling: boolean;
@@ -148,6 +171,7 @@ const inputValue = computed({
 
 const emits = defineEmits<{
   (e: 'abort-request'): void;
+  (e: 'continue-generating'): void;
   (e: 'send-msg'): void;
   (e: 'export-to-markdown-file'): void;
   (e: 'export-to-pdf-file'): void;

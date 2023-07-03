@@ -103,6 +103,7 @@
     "sumOfNormalAskDuration": "普通对话总耗时",
     "sumOfGpt4AskDuration": "GPT-4对话总耗时",
     "abortRequest": "停止请求",
+    "continueGenerating": "继续生成",
     "clearAllConversations": "清空所有对话",
     "readyToClearAllConversations": "警告：你即将要清空所有对话，这将销毁所有对话数据。确定要清空所有对话吗？",
     "sendKey": "发送快捷键",

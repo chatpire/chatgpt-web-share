@@ -6,6 +6,7 @@
   >
     <!-- 左栏 -->
     <n-layout-sider
+      v-model:collapsed="foldLeftBar"
       :native-scrollbar="false"
       :collapsed-width="0"
       collapse-mode="transform"
@@ -17,7 +18,6 @@
       class="h-full"
     >
       <LeftBar
-        v-show="!foldLeftBar"
         v-model:value="currentConversationId"
         :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
         :loading="loadingBar"
@@ -35,7 +35,7 @@
           :content-style="loadingHistory ? { height: '100%' } : {}"
         >
           <!-- 回到底部按钮 -->
-          <div class="right-2 bottom-5 absolute z-20">
+          <div class="right-3 bottom-3 absolute z-20">
             <n-button secondary circle size="small" @click="scrollToBottomSmooth">
               <template #icon>
                 <n-icon :component="ArrowDown" />
@@ -44,12 +44,14 @@
           </div>
           <HistoryContent
             ref="historyContentRef"
+            v-model:can-continue="canContinue"
             :conversation-id="currentConversationId"
             :extra-messages="currentActiveMessages"
             :fullscreen="false"
             :show-tips="showFullscreenTips"
             :loading="loadingHistory"
           />
+          <div class="h-14" />
         </n-scrollbar>
         <!-- 未选中对话（空界面） -->
         <div
@@ -76,8 +78,10 @@
           v-model:auto-scrolling="autoScrolling"
           class="sticky bottom-0 z-10"
           :can-abort="canAbort"
+          :can-continue="canContinue"
           :send-disabled="sendDisabled"
           @abort-request="abortRequest"
+          @continue-generating="continueGenerating"
           @export-to-markdown-file="exportToMarkdownFile"
           @export-to-pdf-file="exportToPdfFile"
           @send-msg="sendMsg"
@@ -130,11 +134,12 @@ const conversationStore = useConversationStore();
 
 const loadingBar = ref(false);
 const loadingHistory = ref<boolean>(false);
-const autoScrolling = ref<boolean>(true);
+const autoScrolling = useStorage('autoScrolling', true);
 
 const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
-const foldLeftBar = ref<RemovableRef<boolean>>(useStorage('foldLeftBar', false));
+const canContinue = ref<boolean>(false);
+const foldLeftBar = useStorage('foldLeftBar', false);
 let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
@@ -220,6 +225,11 @@ const abortRequest = () => {
   aborter = null;
 };
 
+const continueGenerating = () => {
+  inputValue.value = ':continue';
+  sendMsg();
+};
+
 const scrollToBottom = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
 };
@@ -253,6 +263,7 @@ const sendMsg = async () => {
 
   LoadingBar.start();
   loadingBar.value = true;
+  canContinue.value = false;
   const text = inputValue.value;
   inputValue.value = '';
 
@@ -275,8 +286,14 @@ const sendMsg = async () => {
   }
 
   // 使用临时的随机 id 保持当前更新的两个消息
-  currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
-  currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
+  if (text == ':continue') {
+    currentSendMessage.value = null;
+    currentRecvMessages.value = [];
+  }
+  else {
+    currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
+    currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
+  }
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
   let wsErrorMessage: AskResponse | null = null;
@@ -332,7 +349,11 @@ const sendMsg = async () => {
     if (!hasError && (event.code == 1000 || isAborted.value)) {
       // 正常关闭
       if (hasGotReply) {
-        const allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
+        let allNewMessages = [] as BaseChatMessage[];
+        if (currentSendMessage.value) {
+          allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
+          
+        }
         for (const msg of currentRecvMessages.value) {
           allNewMessages.push(msg);
         }
