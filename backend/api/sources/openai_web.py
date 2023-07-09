@@ -236,7 +236,6 @@ class OpenaiWebChatManager:
         if plugin_ids is not None and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
-
         if content == ":continue":
             data = {
                 "action": "continue",

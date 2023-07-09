@@ -68,14 +68,17 @@ import { useI18n } from 'vue-i18n';
 import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
 import { jsonConfigModelSchema, jsonCredentialsModelSchema } from '@/types/json_schema';
 import { ConfigModel, CredentialsModel } from '@/types/schema';
+import { setUniqueItemsForEnumProperties } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { Dialog, Message } from '@/utils/tips';
+
+import ModelCodeMappingField from '../components/inputs/ModelCodeMappingField.vue';
 
 const { t } = useI18n();
 const configModel = ref<ConfigModel | null>(null);
 const credentialsModel = ref<CredentialsModel | null>(null);
 
-// console.log(configJsonSchema, credentialsJsonSchema);
+setUniqueItemsForEnumProperties(jsonConfigModelSchema);
 
 const gtsm = screenWidthGreaterThan('sm');
 
@@ -91,6 +94,24 @@ const configUiSchema = {
   stats: {
     request_stats_filter_keywords: {
       'ui:widget': DynamicTags,
+    },
+  },
+  openai_web: {
+    enabled_models: {
+      'ui:title': t('labels.config.enabled_models'),
+      'ui:description': t('desc.config.enabled_models'),
+    },
+    model_code_mapping: {
+      'ui:field': ModelCodeMappingField,
+    }
+  },
+  openai_api: {
+    enabled_models: {
+      'ui:title': t('labels.config.enabled_models'),
+      'ui:description': t('desc.config.enabled_models'),
+    },
+    model_code_mapping: {
+      'ui:field': ModelCodeMappingField,
     }
   }
 };

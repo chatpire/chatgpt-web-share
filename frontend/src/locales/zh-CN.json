@@ -167,7 +167,8 @@
     "enabled": "已启用",
     "scrolling_down": "向下浏览",
     "detail": "详情",
-    "openaiSettings": "OpenAI 设置"
+    "openaiSettings": "OpenAI 设置",
+    "expand": "展开"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -314,7 +315,11 @@
     "max_conv_count": "最大对话数量",
     "source": "来源",
     "plugins": "插件",
-    "gpt4_count_in_3_hours": "GPT-4 用量 / 3h"
+    "gpt4_count_in_3_hours": "GPT-4 用量 / 3h",
+    "config": {
+      "enabled_models": "启用的模型",
+      "model_code_mapping": "模型代码映射"
+    }
   },
   "models": {
     "gpt_3_5": "GPT-3.5",
@@ -335,6 +340,9 @@
   "desc": {
     "rate_limits": "定义用户在某时间间隔内最多能够发起多少次对话，优先级按照时间间隔从小到大计算。",
     "daily_available_time_slots": "仅允许在每天的这些时间段内使用，如果为空表示不限制。",
-    "openai_web_installed_plugins": "注意：只有在此处启用的插件，在使用GPT-4 Plugin时才能选择！"
+    "openai_web_installed_plugins": "注意：只有在此处启用的插件，在使用GPT-4 Plugin时才能选择！",
+    "config": {
+      "enabled_models": "设置全局启用哪些模型，在此处不启用的模型所有账号都无法使用"
+    }
   }
 }

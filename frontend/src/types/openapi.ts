@@ -450,9 +450,23 @@ export interface components {
       /**
        * Openai Web 
        * @default {
-       *   "is_plus_account": false,
+       *   "is_plus_account": true,
        *   "common_timeout": 10,
-       *   "ask_timeout": 600
+       *   "ask_timeout": 600,
+       *   "enabled_models": [
+       *     "gpt_3_5",
+       *     "gpt_4",
+       *     "gpt_4_browsing",
+       *     "gpt_4_plugins"
+       *   ],
+       *   "model_code_mapping": {
+       *     "gpt_3_5": "text-davinci-002-render-sha",
+       *     "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+       *     "gpt_4": "gpt-4",
+       *     "gpt_4_mobile": "gpt-4-mobile",
+       *     "gpt_4_browsing": "gpt-4-browsing",
+       *     "gpt_4_plugins": "gpt-4-plugins"
+       *   }
        * }
        */
       openai_web?: components["schemas"]["OpenaiWebChatGPTSetting"];
@@ -461,7 +475,15 @@ export interface components {
        * @default {
        *   "openai_base_url": "https://api.openai.com/v1/",
        *   "connect_timeout": 10,
-       *   "read_timeout": 20
+       *   "read_timeout": 20,
+       *   "enabled_models": [
+       *     "gpt_3_5",
+       *     "gpt_4"
+       *   ],
+       *   "model_code_mapping": {
+       *     "gpt_3_5": "gpt-3.5-turbo",
+       *     "gpt_4": "gpt-4"
+       *   }
        * }
        */
       openai_api?: components["schemas"]["OpenaiApiSetting"];
@@ -580,13 +602,6 @@ export interface components {
        * @default false
        */
       run_migration?: boolean;
-    };
-    /** ErrorModel */
-    ErrorModel: {
-      /** Detail */
-      detail: string | ({
-        [key: string]: string | undefined;
-      });
     };
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -833,6 +848,23 @@ export interface components {
        * @default 20
        */
       read_timeout?: number;
+      /**
+       * @default [
+       *   "gpt_3_5",
+       *   "gpt_4"
+       * ]
+       */
+      enabled_models?: (components["schemas"]["OpenaiApiChatModels"])[];
+      /**
+       * Model Code Mapping 
+       * @default {
+       *   "gpt_3_5": "gpt-3.5-turbo",
+       *   "gpt_4": "gpt-4"
+       * }
+       */
+      model_code_mapping?: {
+        [key: string]: string | undefined;
+      };
     };
     /** OpenaiApiSourceSettingSchema */
     OpenaiApiSourceSettingSchema: {
@@ -932,7 +964,7 @@ export interface components {
     OpenaiWebChatGPTSetting: {
       /**
        * Is Plus Account 
-       * @default false
+       * @default true
        */
       is_plus_account?: boolean;
       /** Chatgpt Base Url */
@@ -949,6 +981,29 @@ export interface components {
        * @default 600
        */
       ask_timeout?: number;
+      /**
+       * @default [
+       *   "gpt_3_5",
+       *   "gpt_4",
+       *   "gpt_4_browsing",
+       *   "gpt_4_plugins"
+       * ]
+       */
+      enabled_models?: (components["schemas"]["OpenaiWebChatModels"])[];
+      /**
+       * Model Code Mapping 
+       * @default {
+       *   "gpt_3_5": "text-davinci-002-render-sha",
+       *   "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+       *   "gpt_4": "gpt-4",
+       *   "gpt_4_mobile": "gpt-4-mobile",
+       *   "gpt_4_browsing": "gpt-4-browsing",
+       *   "gpt_4_plugins": "gpt-4-plugins"
+       * }
+       */
+      model_code_mapping?: {
+        [key: string]: string | undefined;
+      };
     };
     /** OpenaiWebChatMessage */
     OpenaiWebChatMessage: {
@@ -1544,14 +1599,6 @@ export interface operations {
           "application/json": string;
         };
       };
-      /** @description No Content */
-      204: never;
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["ErrorModel"];
-        };
-      };
       /** @description Validation Error */
       422: {
         content: {
@@ -1569,10 +1616,6 @@ export interface operations {
           "application/json": string;
         };
       };
-      /** @description No Content */
-      204: never;
-      /** @description Missing token or inactive user. */
-      401: never;
     };
   };
   register_auth_register_post: {

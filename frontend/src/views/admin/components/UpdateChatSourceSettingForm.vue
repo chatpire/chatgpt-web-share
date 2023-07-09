@@ -40,6 +40,7 @@ import {
   UserReadAdmin,
   UserSettingSchema,
 } from '@/types/schema';
+import { setUniqueItemsForEnumProperties } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 
 import CountNumberInput from './inputs/CountNumberInput.vue';
@@ -54,19 +55,6 @@ const { t } = useI18n();
 const settingModel = ref<UserSettingSchema | null>(null);
 const openaiWebChatSourceSettingModel = ref<OpenaiWebSourceSettingSchema | null>(null);
 const openaiApiChatSourceSettingModel = ref<OpenaiApiSourceSettingSchema | null>(null);
-
-// 对于 enum array 需要设置 uniqueItems 才能渲染为复选框
-const setUniqueItemsForEnumProperties = (obj: any) => {
-  if (obj['type'] == 'array' && obj['items'] && obj['items']['enum']) {
-    obj['uniqueItems'] = true;
-  }
-  if (obj['properties'] != undefined) {
-    // 递归遍历
-    for (let key in obj['properties']) {
-      setUniqueItemsForEnumProperties(obj['properties'][key]);
-    }
-  }
-};
 
 setUniqueItemsForEnumProperties(jsonOpenaiWebSourceSettingSchema);
 setUniqueItemsForEnumProperties(jsonOpenaiApiSourceSettingSchema);

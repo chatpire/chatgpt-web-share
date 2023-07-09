@@ -61,7 +61,7 @@ async def sync_conversations():
             await session.commit()
         logger.info("Sync conversations finished.")
     except OpenaiWebException as e:
-        logger.error(f"Fetch conversation error ({e.__class__.__name__}) {e.source} {e.code}: {e.message}")
+        logger.error(f"Fetch conversation error ({e.__class__.__name__}) {e.code}: {e.message}")
         logger.warning("Sync conversations on startup failed!")
     except HTTPError as e:
         logger.error(f"Fetch conversation error ({e.__class__.__name__}) {str(e)}")

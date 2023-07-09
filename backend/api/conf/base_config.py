@@ -2,6 +2,7 @@ import os
 import shutil
 
 from typing import TypeVar, Generic, Type, get_args
+
 from pydantic import BaseModel
 from ruamel.yaml import YAML
 
@@ -53,7 +54,8 @@ class BaseConfig(Generic[T]):
             raise ConfigException(f"Cannot read config ({self._config_path}), error: {str(e)}")
 
     def save(self):
-        config_dict = self._model.dict()
+        from fastapi.encoders import jsonable_encoder
+        config_dict = jsonable_encoder(self._model.dict())
         # 复制 self._config_path 备份一份
         config_dir = os.path.dirname(self._config_path)
         if not os.path.exists(config_dir):

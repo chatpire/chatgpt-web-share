@@ -3,6 +3,7 @@ from typing import Optional, Literal
 from pydantic import BaseModel, validator, Field
 
 from api.conf.base_config import BaseConfig
+from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 from utils.common import singleton_with_lock
 
 _TYPE_CHECKING = False
@@ -51,11 +52,20 @@ class AuthSetting(BaseModel):
 
 
 class OpenaiWebChatGPTSetting(BaseModel):
-    is_plus_account: bool = False
+    is_plus_account: bool = True
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
     common_timeout: int = Field(10, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
+    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_browsing", "gpt_4_plugins"]
+    model_code_mapping: dict[OpenaiWebChatModels, str] = {
+        "gpt_3_5": "text-davinci-002-render-sha",
+        "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+        "gpt_4": "gpt-4",
+        "gpt_4_mobile": "gpt-4-mobile",
+        "gpt_4_browsing": "gpt-4-browsing",
+        "gpt_4_plugins": "gpt-4-plugins",
+    }
 
     @validator("chatgpt_base_url")
     def chatgpt_base_url_end_with_slash(cls, v):
@@ -69,6 +79,11 @@ class OpenaiApiSetting(BaseModel):
     proxy: Optional[str] = None
     connect_timeout: int = Field(10, ge=1)
     read_timeout: int = Field(20, ge=1)
+    enabled_models: list[OpenaiApiChatModels] = ["gpt_3_5", "gpt_4"]
+    model_code_mapping: dict[OpenaiApiChatModels, str] = {
+        "gpt_3_5": "gpt-3.5-turbo",
+        "gpt_4": "gpt-4",
+    }
 
 
 class LogSetting(BaseModel):
@@ -98,10 +113,10 @@ class ConfigModel(BaseModel):
 @singleton_with_lock
 class Config(BaseConfig[ConfigModel]):
     if _TYPE_CHECKING:
+        openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
         openai_api: OpenaiApiSetting = OpenaiApiSetting()
         common: CommonSetting = CommonSetting()
         http: HttpSetting = HttpSetting()
-        openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
         log: LogSetting = LogSetting()
         stats: StatsSetting = StatsSetting()
         data: DataSetting = DataSetting()

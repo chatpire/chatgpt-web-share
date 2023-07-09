@@ -2332,7 +2332,7 @@
               "is_plus_account": {
                 "title": "Is Plus Account",
                 "type": "boolean",
-                "default": false
+                "default": true
               },
               "chatgpt_base_url": {
                 "title": "Chatgpt Base Url",
@@ -2353,14 +2353,65 @@
                 "minimum": 1,
                 "type": "integer",
                 "default": 600
+              },
+              "enabled_models": {
+                "type": "array",
+                "items": {
+                  "title": "OpenaiWebChatModels",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_3_5_mobile",
+                    "gpt_4",
+                    "gpt_4_mobile",
+                    "gpt_4_browsing",
+                    "gpt_4_plugins"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                },
+                "default": [
+                  "gpt_3_5",
+                  "gpt_4",
+                  "gpt_4_browsing",
+                  "gpt_4_plugins"
+                ]
+              },
+              "model_code_mapping": {
+                "title": "Model Code Mapping",
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "default": {
+                  "gpt_3_5": "text-davinci-002-render-sha",
+                  "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+                  "gpt_4": "gpt-4",
+                  "gpt_4_mobile": "gpt-4-mobile",
+                  "gpt_4_browsing": "gpt-4-browsing",
+                  "gpt_4_plugins": "gpt-4-plugins"
+                }
               }
             }
           }
         ],
         "default": {
-          "is_plus_account": false,
+          "is_plus_account": true,
           "common_timeout": 10,
-          "ask_timeout": 600
+          "ask_timeout": 600,
+          "enabled_models": [
+            "gpt_3_5",
+            "gpt_4",
+            "gpt_4_browsing",
+            "gpt_4_plugins"
+          ],
+          "model_code_mapping": {
+            "gpt_3_5": "text-davinci-002-render-sha",
+            "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+            "gpt_4": "gpt-4",
+            "gpt_4_mobile": "gpt-4-mobile",
+            "gpt_4_browsing": "gpt-4-browsing",
+            "gpt_4_plugins": "gpt-4-plugins"
+          }
         }
       },
       "openai_api": {
@@ -2390,6 +2441,33 @@
                 "minimum": 1,
                 "type": "integer",
                 "default": 20
+              },
+              "enabled_models": {
+                "type": "array",
+                "items": {
+                  "title": "OpenaiApiChatModels",
+                  "enum": [
+                    "gpt_3_5",
+                    "gpt_4"
+                  ],
+                  "type": "string",
+                  "description": "An enumeration."
+                },
+                "default": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ]
+              },
+              "model_code_mapping": {
+                "title": "Model Code Mapping",
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "default": {
+                  "gpt_3_5": "gpt-3.5-turbo",
+                  "gpt_4": "gpt-4"
+                }
               }
             }
           }
@@ -2397,7 +2475,15 @@
         "default": {
           "openai_base_url": "https://api.openai.com/v1/",
           "connect_timeout": 10,
-          "read_timeout": 20
+          "read_timeout": 20,
+          "enabled_models": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
+          "model_code_mapping": {
+            "gpt_3_5": "gpt-3.5-turbo",
+            "gpt_4": "gpt-4"
+          }
         }
       },
       "common": {
@@ -2710,29 +2796,6 @@
         "title": "Run Migration",
         "type": "boolean",
         "default": false
-      }
-    }
-  },
-  "ErrorModel": {
-    "title": "ErrorModel",
-    "required": [
-      "detail"
-    ],
-    "type": "object",
-    "properties": {
-      "detail": {
-        "title": "Detail",
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        ]
       }
     }
   },
@@ -3767,6 +3830,33 @@
         "minimum": 1,
         "type": "integer",
         "default": 20
+      },
+      "enabled_models": {
+        "type": "array",
+        "items": {
+          "title": "OpenaiApiChatModels",
+          "enum": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        },
+        "default": [
+          "gpt_3_5",
+          "gpt_4"
+        ]
+      },
+      "model_code_mapping": {
+        "title": "Model Code Mapping",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "default": {
+          "gpt_3_5": "gpt-3.5-turbo",
+          "gpt_4": "gpt-4"
+        }
       }
     }
   },
@@ -4147,7 +4237,7 @@
       "is_plus_account": {
         "title": "Is Plus Account",
         "type": "boolean",
-        "default": false
+        "default": true
       },
       "chatgpt_base_url": {
         "title": "Chatgpt Base Url",
@@ -4168,6 +4258,43 @@
         "minimum": 1,
         "type": "integer",
         "default": 600
+      },
+      "enabled_models": {
+        "type": "array",
+        "items": {
+          "title": "OpenaiWebChatModels",
+          "enum": [
+            "gpt_3_5",
+            "gpt_3_5_mobile",
+            "gpt_4",
+            "gpt_4_mobile",
+            "gpt_4_browsing",
+            "gpt_4_plugins"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        },
+        "default": [
+          "gpt_3_5",
+          "gpt_4",
+          "gpt_4_browsing",
+          "gpt_4_plugins"
+        ]
+      },
+      "model_code_mapping": {
+        "title": "Model Code Mapping",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "default": {
+          "gpt_3_5": "text-davinci-002-render-sha",
+          "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+          "gpt_4": "gpt-4",
+          "gpt_4_mobile": "gpt-4-mobile",
+          "gpt_4_browsing": "gpt-4-browsing",
+          "gpt_4_plugins": "gpt-4-plugins"
+        }
       }
     }
   },
