@@ -816,18 +816,15 @@ export interface components {
        */
       update_time?: string;
     };
-    /** OpenaiApiPerModelAskCount */
+    /**
+     * OpenaiApiPerModelAskCount 
+     * @default {
+     *   "gpt_3_5": 0,
+     *   "gpt_4": 0
+     * }
+     */
     OpenaiApiPerModelAskCount: {
-      /**
-       * Gpt 3 5 
-       * @default 0
-       */
-      gpt_3_5?: number;
-      /**
-       * Gpt 4 
-       * @default 0
-       */
-      gpt_4?: number;
+      [key: string]: number | undefined;
     };
     /** OpenaiApiSetting */
     OpenaiApiSetting: {
@@ -1288,38 +1285,19 @@ export interface components {
        */
       update_time?: string;
     };
-    /** OpenaiWebPerModelAskCount */
+    /**
+     * OpenaiWebPerModelAskCount 
+     * @default {
+     *   "gpt_3_5": 0,
+     *   "gpt_3_5_mobile": 0,
+     *   "gpt_4": 0,
+     *   "gpt_4_mobile": 0,
+     *   "gpt_4_browsing": 0,
+     *   "gpt_4_plugins": 0
+     * }
+     */
     OpenaiWebPerModelAskCount: {
-      /**
-       * Gpt 3 5 
-       * @default 0
-       */
-      gpt_3_5?: number;
-      /**
-       * Gpt 3 5 Mobile 
-       * @default 0
-       */
-      gpt_3_5_mobile?: number;
-      /**
-       * Gpt 4 
-       * @default 0
-       */
-      gpt_4?: number;
-      /**
-       * Gpt 4 Mobile 
-       * @default 0
-       */
-      gpt_4_mobile?: number;
-      /**
-       * Gpt 4 Browsing 
-       * @default 0
-       */
-      gpt_4_browsing?: number;
-      /**
-       * Gpt 4 Plugins 
-       * @default 0
-       */
-      gpt_4_plugins?: number;
+      [key: string]: number | undefined;
     };
     /** OpenaiWebSourceSettingSchema */
     OpenaiWebSourceSettingSchema: {

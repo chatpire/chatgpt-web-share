@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import VueForm from '@lljj/vue3-form-naive';
-import { computed, ref, watch } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import {
@@ -45,6 +45,7 @@ import { screenWidthGreaterThan } from '@/utils/media';
 
 import CountNumberInput from './inputs/CountNumberInput.vue';
 import CountNumberInputWithAdd from './inputs/CountNumberInputWithAdd.vue';
+import ModelDictField from './inputs/ModelDictField.vue';
 import RateLimitsArrayInputVue from './inputs/RateLimitsArrayInput.vue';
 import TimeSlotsArrayInput from './inputs/TimeSlotsArrayInput.vue';
 import ValidDateTimeInput from './inputs/ValidDateTimeInput.vue';
@@ -55,6 +56,19 @@ const { t } = useI18n();
 const settingModel = ref<UserSettingSchema | null>(null);
 const openaiWebChatSourceSettingModel = ref<OpenaiWebSourceSettingSchema | null>(null);
 const openaiApiChatSourceSettingModel = ref<OpenaiApiSourceSettingSchema | null>(null);
+
+const PerModelAskCountField = defineComponent({
+  inheritAttrs: false,
+  setup(props, {attrs, slots}) {
+    return () => {
+      return h(ModelDictField, {
+        inputComponent: CountNumberInputWithAdd,
+        defaultExpanded: true,
+        ...(attrs as any),
+      }, slots);
+    };
+  }
+});
 
 setUniqueItemsForEnumProperties(jsonOpenaiWebSourceSettingSchema);
 setUniqueItemsForEnumProperties(jsonOpenaiApiSourceSettingSchema);
@@ -115,7 +129,7 @@ const uiSchema = computed(() => {
     },
     per_model_ask_count: {
       'ui:title': t('labels.per_model_ask_count'),
-      // 这里需要动态设置widget
+      'ui:field': PerModelAskCountField
     },
     daily_available_time_slots: {
       'ui:title': t('labels.daily_available_time_slots'),

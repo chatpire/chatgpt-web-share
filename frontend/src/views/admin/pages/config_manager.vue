@@ -72,7 +72,7 @@ import { setUniqueItemsForEnumProperties } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { Dialog, Message } from '@/utils/tips';
 
-import ModelCodeMappingField from '../components/inputs/ModelCodeMappingField.vue';
+import ModelDictField from '../components/inputs/ModelDictField.vue';
 
 const { t } = useI18n();
 const configModel = ref<ConfigModel | null>(null);
@@ -102,7 +102,8 @@ const configUiSchema = {
       'ui:description': t('desc.config.enabled_models'),
     },
     model_code_mapping: {
-      'ui:field': ModelCodeMappingField,
+      'ui:title': t('labels.config.model_code_mapping'),
+      'ui:field': ModelDictField,
     }
   },
   openai_api: {
@@ -111,7 +112,8 @@ const configUiSchema = {
       'ui:description': t('desc.config.enabled_models'),
     },
     model_code_mapping: {
-      'ui:field': ModelCodeMappingField,
+      'ui:title': t('labels.config.model_code_mapping'),
+      'ui:field': ModelDictField,
     }
   }
 };

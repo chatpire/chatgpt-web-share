@@ -3793,17 +3793,12 @@
   "OpenaiApiPerModelAskCount": {
     "title": "OpenaiApiPerModelAskCount",
     "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "integer",
-        "default": 0
-      }
+    "additionalProperties": {
+      "type": "integer"
+    },
+    "default": {
+      "gpt_3_5": 0,
+      "gpt_4": 0
     }
   },
   "OpenaiApiSetting": {
@@ -3957,17 +3952,12 @@
       "per_model_ask_count": {
         "title": "OpenaiApiPerModelAskCount",
         "type": "object",
-        "properties": {
-          "gpt_3_5": {
-            "title": "Gpt 3 5",
-            "type": "integer",
-            "default": 0
-          },
-          "gpt_4": {
-            "title": "Gpt 4",
-            "type": "integer",
-            "default": 0
-          }
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "default": {
+          "gpt_3_5": 0,
+          "gpt_4": 0
         }
       },
       "allow_custom_openai_api": {
@@ -5816,37 +5806,16 @@
   "OpenaiWebPerModelAskCount": {
     "title": "OpenaiWebPerModelAskCount",
     "type": "object",
-    "properties": {
-      "gpt_3_5": {
-        "title": "Gpt 3 5",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_3_5_mobile": {
-        "title": "Gpt 3 5 Mobile",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4": {
-        "title": "Gpt 4",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_mobile": {
-        "title": "Gpt 4 Mobile",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_browsing": {
-        "title": "Gpt 4 Browsing",
-        "type": "integer",
-        "default": 0
-      },
-      "gpt_4_plugins": {
-        "title": "Gpt 4 Plugins",
-        "type": "integer",
-        "default": 0
-      }
+    "additionalProperties": {
+      "type": "integer"
+    },
+    "default": {
+      "gpt_3_5": 0,
+      "gpt_3_5_mobile": 0,
+      "gpt_4": 0,
+      "gpt_4_mobile": 0,
+      "gpt_4_browsing": 0,
+      "gpt_4_plugins": 0
     }
   },
   "OpenaiWebSourceSettingSchema": {
@@ -5948,37 +5917,16 @@
       "per_model_ask_count": {
         "title": "OpenaiWebPerModelAskCount",
         "type": "object",
-        "properties": {
-          "gpt_3_5": {
-            "title": "Gpt 3 5",
-            "type": "integer",
-            "default": 0
-          },
-          "gpt_3_5_mobile": {
-            "title": "Gpt 3 5 Mobile",
-            "type": "integer",
-            "default": 0
-          },
-          "gpt_4": {
-            "title": "Gpt 4",
-            "type": "integer",
-            "default": 0
-          },
-          "gpt_4_mobile": {
-            "title": "Gpt 4 Mobile",
-            "type": "integer",
-            "default": 0
-          },
-          "gpt_4_browsing": {
-            "title": "Gpt 4 Browsing",
-            "type": "integer",
-            "default": 0
-          },
-          "gpt_4_plugins": {
-            "title": "Gpt 4 Plugins",
-            "type": "integer",
-            "default": 0
-          }
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "default": {
+          "gpt_3_5": 0,
+          "gpt_3_5_mobile": 0,
+          "gpt_4": 0,
+          "gpt_4_mobile": 0,
+          "gpt_4_browsing": 0,
+          "gpt_4_plugins": 0
         }
       }
     }
@@ -6361,37 +6309,16 @@
               "per_model_ask_count": {
                 "title": "OpenaiWebPerModelAskCount",
                 "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_3_5_mobile": {
-                    "title": "Gpt 3 5 Mobile",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4_mobile": {
-                    "title": "Gpt 4 Mobile",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4_browsing": {
-                    "title": "Gpt 4 Browsing",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4_plugins": {
-                    "title": "Gpt 4 Plugins",
-                    "type": "integer",
-                    "default": 0
-                  }
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "default": {
+                  "gpt_3_5": 0,
+                  "gpt_3_5_mobile": 0,
+                  "gpt_4": 0,
+                  "gpt_4_mobile": 0,
+                  "gpt_4_browsing": 0,
+                  "gpt_4_plugins": 0
                 }
               }
             }
@@ -6493,17 +6420,12 @@
               "per_model_ask_count": {
                 "title": "OpenaiApiPerModelAskCount",
                 "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "integer",
-                    "default": 0
-                  }
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "default": {
+                  "gpt_3_5": 0,
+                  "gpt_4": 0
                 }
               },
               "allow_custom_openai_api": {
@@ -6720,37 +6642,16 @@
               "per_model_ask_count": {
                 "title": "OpenaiWebPerModelAskCount",
                 "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_3_5_mobile": {
-                    "title": "Gpt 3 5 Mobile",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4_mobile": {
-                    "title": "Gpt 4 Mobile",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4_browsing": {
-                    "title": "Gpt 4 Browsing",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4_plugins": {
-                    "title": "Gpt 4 Plugins",
-                    "type": "integer",
-                    "default": 0
-                  }
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "default": {
+                  "gpt_3_5": 0,
+                  "gpt_3_5_mobile": 0,
+                  "gpt_4": 0,
+                  "gpt_4_mobile": 0,
+                  "gpt_4_browsing": 0,
+                  "gpt_4_plugins": 0
                 }
               }
             }
@@ -6852,17 +6753,12 @@
               "per_model_ask_count": {
                 "title": "OpenaiApiPerModelAskCount",
                 "type": "object",
-                "properties": {
-                  "gpt_3_5": {
-                    "title": "Gpt 3 5",
-                    "type": "integer",
-                    "default": 0
-                  },
-                  "gpt_4": {
-                    "title": "Gpt 4",
-                    "type": "integer",
-                    "default": 0
-                  }
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "default": {
+                  "gpt_3_5": 0,
+                  "gpt_4": 0
                 }
               },
               "allow_custom_openai_api": {
@@ -7025,37 +6921,16 @@
           "per_model_ask_count": {
             "title": "OpenaiWebPerModelAskCount",
             "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "integer",
-                "default": 0
-              },
-              "gpt_3_5_mobile": {
-                "title": "Gpt 3 5 Mobile",
-                "type": "integer",
-                "default": 0
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "integer",
-                "default": 0
-              },
-              "gpt_4_mobile": {
-                "title": "Gpt 4 Mobile",
-                "type": "integer",
-                "default": 0
-              },
-              "gpt_4_browsing": {
-                "title": "Gpt 4 Browsing",
-                "type": "integer",
-                "default": 0
-              },
-              "gpt_4_plugins": {
-                "title": "Gpt 4 Plugins",
-                "type": "integer",
-                "default": 0
-              }
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {
+              "gpt_3_5": 0,
+              "gpt_3_5_mobile": 0,
+              "gpt_4": 0,
+              "gpt_4_mobile": 0,
+              "gpt_4_browsing": 0,
+              "gpt_4_plugins": 0
             }
           }
         }
@@ -7157,17 +7032,12 @@
           "per_model_ask_count": {
             "title": "OpenaiApiPerModelAskCount",
             "type": "object",
-            "properties": {
-              "gpt_3_5": {
-                "title": "Gpt 3 5",
-                "type": "integer",
-                "default": 0
-              },
-              "gpt_4": {
-                "title": "Gpt 4",
-                "type": "integer",
-                "default": 0
-              }
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {
+              "gpt_3_5": 0,
+              "gpt_4": 0
             }
           },
           "allow_custom_openai_api": {

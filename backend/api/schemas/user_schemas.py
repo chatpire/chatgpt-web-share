@@ -50,7 +50,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     def default():
         return OpenaiWebSourceSettingSchema(
             available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
-            per_model_ask_count=OpenaiWebPerModelAskCount.default(),
+            per_model_ask_count=OpenaiWebPerModelAskCount(),
             **BaseSourceSettingSchema.default().dict()
         )
 
@@ -76,7 +76,7 @@ class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
     def default():
         return OpenaiApiSourceSettingSchema(
             available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
-            per_model_ask_count=OpenaiApiPerModelAskCount.default(),
+            per_model_ask_count=OpenaiApiPerModelAskCount(),
             **BaseSourceSettingSchema.default().dict(),
             allow_custom_openai_api=False,
             custom_openai_api_settings=CustomOpenaiApiSettings()
