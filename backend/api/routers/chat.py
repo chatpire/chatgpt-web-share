@@ -126,6 +126,11 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     if not source_setting.allow_to_use:
         raise WebsocketInvalidAskException(tip="errors.userNotAllowToUseChatType")
 
+    # 当前对话类型是否全局启用
+    if ask_request.source == ChatSourceTypes.openai_web and not config.openai_web.enabled or \
+            ask_request.source == ChatSourceTypes.openai_api and not config.openai_api.enabled:
+        raise WebsocketInvalidAskException(tip="errors.chatTypeNotEnabled")
+
     # 是否到期
     current_datetime = datetime.now().astimezone(tz=timezone.utc)
     if source_setting.valid_until is not None and current_datetime > source_setting.valid_until:
@@ -144,8 +149,12 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     # 判断是否能使用该模型
     if ask_request.source == ChatSourceTypes.openai_web and ask_request.model not in user.setting.openai_web.available_models or \
             ask_request.source == ChatSourceTypes.openai_api and ask_request.model not in user.setting.openai_api.available_models:
-        # await websocket.close(1007, "errors.userNotAllowToUseModel")
         raise WebsocketInvalidAskException("errors.userNotAllowToUseModel")
+
+    # 模型是否全局启用
+    if ask_request.source == ChatSourceTypes.openai_web and ask_request.model not in config.openai_web.enabled_models or \
+            ask_request.source == ChatSourceTypes.openai_api and ask_request.model not in config.openai_api.enabled_models:
+        raise WebsocketInvalidAskException("errors.modelNotEnabled")
 
     # 对话次数判断
     model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model, -1)

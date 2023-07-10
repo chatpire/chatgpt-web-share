@@ -226,6 +226,8 @@ class OpenaiWebChatManager:
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
                   model: OpenaiWebChatModels = None, plugin_ids: list[str] = None, **_kwargs):
 
+        assert config.openai_web.enabled, "OpenAI Web is not enabled"
+
         model = model or OpenaiWebChatModels.gpt_3_5
 
         if conversation_id or parent_id:

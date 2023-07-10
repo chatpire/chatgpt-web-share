@@ -400,6 +400,16 @@ export interface components {
     /** CommonSetting */
     CommonSetting: {
       /**
+       * Sync Conversations On Startup 
+       * @default true
+       */
+      sync_conversations_on_startup?: boolean;
+      /**
+       * Sync Conversations Regularly 
+       * @default false
+       */
+      sync_conversations_regularly?: boolean;
+      /**
        * Print Sql 
        * @default false
        */
@@ -419,16 +429,6 @@ export interface components {
        * @default password
        */
       initial_admin_user_password?: string;
-      /**
-       * Sync Conversations On Startup 
-       * @default true
-       */
-      sync_conversations_on_startup?: boolean;
-      /**
-       * Sync Conversations Regularly 
-       * @default true
-       */
-      sync_conversations_regularly?: boolean;
     };
     /** CommonStatusSchema */
     CommonStatusSchema: {
@@ -450,6 +450,7 @@ export interface components {
       /**
        * Openai Web 
        * @default {
+       *   "enabled": true,
        *   "is_plus_account": true,
        *   "common_timeout": 10,
        *   "ask_timeout": 600,
@@ -473,6 +474,7 @@ export interface components {
       /**
        * Openai Api 
        * @default {
+       *   "enabled": true,
        *   "openai_base_url": "https://api.openai.com/v1/",
        *   "connect_timeout": 10,
        *   "read_timeout": 20,
@@ -490,12 +492,12 @@ export interface components {
       /**
        * Common 
        * @default {
+       *   "sync_conversations_on_startup": true,
+       *   "sync_conversations_regularly": false,
        *   "print_sql": false,
        *   "create_initial_admin_user": true,
        *   "initial_admin_user_username": "admin",
-       *   "initial_admin_user_password": "password",
-       *   "sync_conversations_on_startup": true,
-       *   "sync_conversations_regularly": true
+       *   "initial_admin_user_password": "password"
        * }
        */
       common?: components["schemas"]["CommonSetting"];
@@ -829,6 +831,11 @@ export interface components {
     /** OpenaiApiSetting */
     OpenaiApiSetting: {
       /**
+       * Enabled 
+       * @default true
+       */
+      enabled?: boolean;
+      /**
        * Openai Base Url 
        * @default https://api.openai.com/v1/
        */
@@ -959,6 +966,11 @@ export interface components {
     };
     /** OpenaiWebChatGPTSetting */
     OpenaiWebChatGPTSetting: {
+      /**
+       * Enabled 
+       * @default true
+       */
+      enabled?: boolean;
       /**
        * Is Plus Account 
        * @default true

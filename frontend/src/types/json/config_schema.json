@@ -5,6 +5,7 @@
     "openai_web": {
       "title": "Openai Web",
       "default": {
+        "enabled": true,
         "is_plus_account": true,
         "chatgpt_base_url": null,
         "proxy": null,
@@ -34,6 +35,7 @@
     "openai_api": {
       "title": "Openai Api",
       "default": {
+        "enabled": true,
         "openai_base_url": "https://api.openai.com/v1/",
         "proxy": null,
         "connect_timeout": 10,
@@ -56,12 +58,12 @@
     "common": {
       "title": "Common",
       "default": {
+        "sync_conversations_on_startup": true,
+        "sync_conversations_regularly": false,
         "print_sql": false,
         "create_initial_admin_user": true,
         "initial_admin_user_username": "admin",
-        "initial_admin_user_password": "password",
-        "sync_conversations_on_startup": true,
-        "sync_conversations_regularly": true
+        "initial_admin_user_password": "password"
       },
       "allOf": [
         {
@@ -159,6 +161,11 @@
       "title": "OpenaiWebChatGPTSetting",
       "type": "object",
       "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "default": true,
+          "type": "boolean"
+        },
         "is_plus_account": {
           "title": "Is Plus Account",
           "default": true,
@@ -226,6 +233,11 @@
       "title": "OpenaiApiSetting",
       "type": "object",
       "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "default": true,
+          "type": "boolean"
+        },
         "openai_base_url": {
           "title": "Openai Base Url",
           "default": "https://api.openai.com/v1/",
@@ -274,6 +286,16 @@
       "title": "CommonSetting",
       "type": "object",
       "properties": {
+        "sync_conversations_on_startup": {
+          "title": "Sync Conversations On Startup",
+          "default": true,
+          "type": "boolean"
+        },
+        "sync_conversations_regularly": {
+          "title": "Sync Conversations Regularly",
+          "default": false,
+          "type": "boolean"
+        },
         "print_sql": {
           "title": "Print Sql",
           "default": false,
@@ -293,16 +315,6 @@
           "title": "Initial Admin User Password",
           "default": "password",
           "type": "string"
-        },
-        "sync_conversations_on_startup": {
-          "title": "Sync Conversations On Startup",
-          "default": true,
-          "type": "boolean"
-        },
-        "sync_conversations_regularly": {
-          "title": "Sync Conversations Regularly",
-          "default": true,
-          "type": "boolean"
         }
       }
     },

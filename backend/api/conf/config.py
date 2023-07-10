@@ -10,12 +10,12 @@ _TYPE_CHECKING = False
 
 
 class CommonSetting(BaseModel):
+    sync_conversations_on_startup: bool = True
+    sync_conversations_regularly: bool = False
     print_sql: bool = False
     create_initial_admin_user: bool = True
     initial_admin_user_username: str = 'admin'
     initial_admin_user_password: str = 'password'
-    sync_conversations_on_startup: bool = True
-    sync_conversations_regularly: bool = True
 
     @validator("initial_admin_user_password")
     def validate_password(cls, v):
@@ -52,6 +52,7 @@ class AuthSetting(BaseModel):
 
 
 class OpenaiWebChatGPTSetting(BaseModel):
+    enabled: bool = True
     is_plus_account: bool = True
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
@@ -75,6 +76,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
 
 
 class OpenaiApiSetting(BaseModel):
+    enabled: bool = True
     openai_base_url: str = 'https://api.openai.com/v1/'
     proxy: Optional[str] = None
     connect_timeout: int = Field(10, ge=1)
