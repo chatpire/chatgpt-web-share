@@ -7,6 +7,7 @@ from fastapi_users.authentication import Strategy
 from sqlalchemy.future import select
 from starlette.requests import Request
 
+from api.conf import Config
 from api.database import get_async_session_context, get_user_db_context
 from api.exceptions import UserNotExistException, AuthenticationFailedException
 from api.models.db import User
@@ -89,7 +90,14 @@ async def get_all_users(_user: User = Depends(current_super_user)):
 
 @router.get("/user/me", response_model=UserRead, tags=["user"])
 async def get_me(user: User = Depends(current_active_user)):
-    return UserRead.from_orm(user)
+    user_read = UserRead.from_orm(user)
+    for source in ["openai_api", "openai_web"]:
+        source_setting = getattr(user_read.setting, source)
+        global_enabled_models = getattr(Config(), source).enabled_models
+        source_setting.available_models = list(
+            set(source_setting.available_models).intersection(set(global_enabled_models)))
+        setattr(user_read.setting, source, source_setting)
+    return user_read
 
 
 @router.patch("/user/me", response_model=UserRead, tags=["user"])
