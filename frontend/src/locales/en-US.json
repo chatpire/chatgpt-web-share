@@ -168,7 +168,9 @@
     "noPluginsAvailable": "Failed to get the plugin list, please check whether the item \"openai_web.is_plus_account\" is set to true",
     "pluginSettings": "OpenAI Web Plugin Settings",
     "uninstall": "uninstall",
-    "expand": "expand"
+    "expand": "expand",
+    "export": "export",
+    "import": "import"
   },
   "errors": {
     "403": "403 error: access denied",

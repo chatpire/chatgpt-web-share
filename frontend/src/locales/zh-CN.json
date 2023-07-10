@@ -168,7 +168,9 @@
     "scrolling_down": "向下浏览",
     "detail": "详情",
     "openaiSettings": "OpenAI 设置",
-    "expand": "展开"
+    "expand": "展开",
+    "export": "导出",
+    "import": "导入"
   },
   "errors": {
     "403": "403 错误：无访问权限",
