@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_users import BaseUserManager
@@ -63,7 +65,7 @@ async def logout(
     return response(200, headers=resp.headers)
 
 
-@router.post("/auth/register", response_model=UserReadAdmin, tags=["auth"])
+@router.post("/auth/adminregister", response_model=UserReadAdmin, tags=["auth"])
 async def register(
         request: Request,
         user_create: UserCreate,

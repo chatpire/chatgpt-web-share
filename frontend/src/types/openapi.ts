@@ -5,6 +5,10 @@
 
 
 export interface paths {
+  "/auth/register": {
+    /** Register:Register */
+    post: operations["register_register_auth_register_post"];
+  };
   "/auth/login": {
     /** Auth:Jwt.Login */
     post: operations["auth_jwt_login_auth_login_post"];
@@ -12,10 +16,6 @@ export interface paths {
   "/auth/logout": {
     /** Auth:Jwt.Logout */
     post: operations["auth_jwt_logout_auth_logout_post"];
-  };
-  "/auth/register": {
-    /** Register:Register */
-    post: operations["register_register_auth_register_post"];
   };
   "/auth/adminregister": {
     /**
@@ -96,12 +96,8 @@ export interface paths {
   "/chat/openai-plugins/all": {
     /** Get All Openai Web Chat Plugins */
     get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_all_get"];
-    /** Get All Openai Web Chat Plugins */
-    get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_all_get"];
   };
   "/chat/openai-plugins/installed": {
-    /** Get Installed Openai Web Chat Plugins */
-    get: operations["get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get"];
     /** Get Installed Openai Web Chat Plugins */
     get: operations["get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get"];
   };
@@ -616,6 +612,13 @@ export interface components {
        * @default false
        */
       run_migration?: boolean;
+    };
+    /** ErrorModel */
+    ErrorModel: {
+      /** Detail */
+      detail: string | ({
+        [key: string]: string | undefined;
+      });
     };
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -1610,6 +1613,34 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /** Register:Register */
+  register_register_auth_register_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": components["schemas"]["ErrorModel"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Auth:Jwt.Login */
   auth_jwt_login_auth_login_post: {
     requestBody: {
@@ -1621,15 +1652,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description No Content */
-      204: never;
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["ErrorModel"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1646,35 +1669,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  /** Register:Register */
-  register_register_auth_register_post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserCreate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      201: {
-        content: {
-          "application/json": components["schemas"]["UserRead"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["ErrorModel"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          "application/json": string;
         };
       };
     };
@@ -1693,7 +1688,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["UserReadAdmin"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1710,7 +1705,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
     };
@@ -1721,7 +1716,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["UserRead"];
+          "application/json": string;
         };
       };
     };
@@ -1737,7 +1732,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["UserRead"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1759,7 +1754,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["UserReadAdmin"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1781,7 +1776,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1808,7 +1803,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1835,7 +1830,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["UserReadAdmin"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1857,7 +1852,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["InviteCodeCreate"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1877,7 +1872,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": (components["schemas"]["BaseConversationSchema"] | components["schemas"]["OpenaiWebConversationSchema"] | components["schemas"]["OpenaiApiConversationSchema"])[];
+          "application/json": string;
         };
       };
     };
@@ -1888,7 +1883,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
     };
@@ -1904,7 +1899,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": (components["schemas"]["BaseConversationSchema"])[];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1926,7 +1921,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["OpenaiApiConversationHistoryDocument"] | components["schemas"]["OpenaiWebConversationHistoryDocument"] | components["schemas"]["BaseConversationHistory"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1951,7 +1946,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1976,7 +1971,29 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["BaseConversationSchema"];
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Conversation History From Cache */
+  get_conversation_history_from_cache_conv__conversation_id__cache_get: {
+    parameters: {
+      path: {
+        conversation_id: unknown;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2001,7 +2018,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2024,7 +2041,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2049,7 +2066,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["OpenaiWebConversationSchema"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2066,7 +2083,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": (components["schemas"]["OpenAIChatPlugin"])[];
+          "application/json": string;
         };
       };
     };
@@ -2077,7 +2094,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": (components["schemas"]["OpenAIChatPlugin"])[];
+          "application/json": string;
         };
       };
     };
@@ -2093,7 +2110,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["OpenAIChatPlugin"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2120,7 +2137,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["OpenAIChatPlugin"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2145,7 +2162,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["AskResponse"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2162,7 +2179,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["SystemInfo"];
+          "application/json": string;
         };
       };
     };
@@ -2178,7 +2195,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": (components["schemas"]["RequestLogAggregation"])[];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2200,7 +2217,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": (components["schemas"]["AskLogAggregation"])[];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2222,7 +2239,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2239,7 +2256,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["ConfigModel"];
+          "application/json": string;
         };
       };
     };
@@ -2255,7 +2272,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["ConfigModel"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2272,7 +2289,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["CredentialsModel"];
+          "application/json": string;
         };
       };
     };
@@ -2288,7 +2305,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["CredentialsModel"];
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2314,7 +2331,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -2329,12 +2346,12 @@ export interface operations {
    * Get Server Status 
    * @description 普通用户获取服务器状态
    */
-  get_server_status_status_get: {
+  get_server_status_status_common_get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["ServerStatusSchema"];
+          "application/json": string;
         };
       };
     };
