@@ -116,6 +116,7 @@
     "sumOfGpt4AskDuration": "Total time spent on GPT-4 dialogue",
     "sumOfNormalAskDuration": "The total time spent on ordinary conversations",
     "abortRequest": "Abort Request",
+    "continueGenerating": "Continue Generating",
     "clearAllConversations": "Clear All Conversations",
     "readyToClearAllConversations": "Are you sure you want to clear all conversations?",
     "sendKey": "Send Short Key",
@@ -154,7 +155,6 @@
     "quoteContent": "Quote Content",
     "click": "Click",
     "error": "Error",
-    "browsingActions": "Browsing History",
     "browsingHistory": "Browsing History",
     "shouldRenderMarkdown": "Whether Render Content As Markdown",
     "showRawMessage": "Show raw messages",
@@ -166,7 +166,24 @@
     "every": "Every",
     "hoursMinutesAgo": "{0}h{1}m ago",
     "minutes": "minute",
-    "times": "Second-rate"
+    "times": "Second-rate",
+    "scrolling_down": "Scrolling down",
+    "detail": "details",
+    "openaiSettings": "OpenAI Settings",
+    "all": "all",
+    "disable": "disabled",
+    "enable": "enable",
+    "enabled": "activated",
+    "install": "Install",
+    "installed": "Installed",
+    "most_popular": "most popular",
+    "newly_added": "Add",
+    "noPluginsAvailable": "Failed to get the plugin list, please check whether the item \"openai_web.is_plus_account\" is set to true",
+    "pluginSettings": "OpenAI Web Plugin Settings",
+    "uninstall": "uninstall",
+    "expand": "expand",
+    "export": "export",
+    "import": "import"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -202,7 +219,15 @@
     "invalidParams": "Invalid Params",
     "noAvailableTotalAskCount": "The total number of conversations that are not available for this type of conversation",
     "userChatTypeExpired": "The validity period of this conversation type has expired, please contact the administrator to increase the duration",
-    "userNotAllowToAskAtThisTime": "Questions are not allowed in the current time period"
+    "userNotAllowToAskAtThisTime": "Questions are not allowed in the current time period",
+    "openai": {
+      "401": "OpenAI authorization failed (401 error), please contact the administrator",
+      "403": "OpenAI authorization failed (403 error), please contact the administrator",
+      "404": "The OpenAI interface does not exist (404 error), please contact the administrator",
+      "429": "The OpenAI interface request is too frequent (429 error), it may be that the model usage limit has been exceeded, please try again later",
+      "unkown": "OpenAI unknown error, please contact the administrator"
+    },
+    "unknown": "unknown mistake"
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
@@ -259,7 +284,16 @@
     "pleaseCheckInput": "Please check the input",
     "registerSuccess": "registration success",
     "seperate_settings": "The following will set options for using revChatGPT and API respectively",
-    "updateSuccess": "update completed"
+    "updateSuccess": "update completed",
+    "disablePluginSuccess": "Disable plugin successfully",
+    "enablePluginSuccess": "Enable plugin successfully",
+    "installSuccess": "Successful installation",
+    "NewConversationForm": {
+      "failedToGetPlugins": "Failed to get list of plugins",
+      "loadingPlugins": "Loading plugins...",
+      "selectPlugins": "select plugin"
+    },
+    "openaiWebPluginsLengthMoreThan3": "The number of plugins cannot exceed 3"
   },
   "labels": {
     "nickname": "Nickname",
@@ -302,7 +336,13 @@
     "type": "type",
     "username": "username",
     "valid_until": "validity period",
-    "source": "source"
+    "source": "source",
+    "gpt4_count_in_3_hours": "GPT-4 dosage / 3h",
+    "plugins": "plug-in",
+    "config": {
+      "enabled_models": "Enabled Models",
+      "model_code_mapping": "Model Code Mapping"
+    }
   },
   "models": {
     "gpt_3_5": "GPT-3.5",
@@ -322,6 +362,10 @@
   },
   "desc": {
     "daily_available_time_slots": "It is only allowed to be used during these time periods of the day, if it is empty, it means unlimited.",
-    "rate_limits": "Define the maximum number of conversations a user can initiate within a certain time interval, and the priority is calculated from small to large time intervals."
+    "rate_limits": "Define the maximum number of conversations a user can initiate within a certain time interval, and the priority is calculated from small to large time intervals.",
+    "openai_web_installed_plugins": "Note: Only the plugins enabled here can be selected when using GPT-4 Plugin!",
+    "config": {
+      "enabled_models": "Set which models are enabled globally. Models that are not enabled here will not be available for all accounts."
+    }
   }
 }

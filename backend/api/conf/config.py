@@ -3,18 +3,19 @@ from typing import Optional, Literal
 from pydantic import BaseModel, validator, Field
 
 from api.conf.base_config import BaseConfig
+from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 from utils.common import singleton_with_lock
 
 _TYPE_CHECKING = False
 
 
 class CommonSetting(BaseModel):
+    sync_conversations_on_startup: bool = True
+    sync_conversations_regularly: bool = False
     print_sql: bool = False
     create_initial_admin_user: bool = True
     initial_admin_user_username: str = 'admin'
     initial_admin_user_password: str = 'password'
-    sync_conversations_on_startup: bool = True
-    sync_conversations_regularly: bool = True
 
     @validator("initial_admin_user_password")
     def validate_password(cls, v):
@@ -51,10 +52,21 @@ class AuthSetting(BaseModel):
 
 
 class OpenaiWebChatGPTSetting(BaseModel):
-    is_plus_account: bool = False
+    enabled: bool = True
+    is_plus_account: bool = True
     chatgpt_base_url: Optional[str] = None
-    common_timeout: int = Field(10, ge=1)   # connect, read, write
+    proxy: Optional[str] = None
+    common_timeout: int = Field(10, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
+    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_browsing", "gpt_4_plugins"]
+    model_code_mapping: dict[OpenaiWebChatModels, str] = {
+        "gpt_3_5": "text-davinci-002-render-sha",
+        "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+        "gpt_4": "gpt-4",
+        "gpt_4_mobile": "gpt-4-mobile",
+        "gpt_4_browsing": "gpt-4-browsing",
+        "gpt_4_plugins": "gpt-4-plugins",
+    }
 
     @validator("chatgpt_base_url")
     def chatgpt_base_url_end_with_slash(cls, v):
@@ -63,10 +75,17 @@ class OpenaiWebChatGPTSetting(BaseModel):
         return v
 
 
-class OpenaiAPISetting(BaseModel):
+class OpenaiApiSetting(BaseModel):
+    enabled: bool = True
     openai_base_url: str = 'https://api.openai.com/v1/'
+    proxy: Optional[str] = None
     connect_timeout: int = Field(10, ge=1)
     read_timeout: int = Field(20, ge=1)
+    enabled_models: list[OpenaiApiChatModels] = ["gpt_3_5", "gpt_4"]
+    model_code_mapping: dict[OpenaiApiChatModels, str] = {
+        "gpt_3_5": "gpt-3.5-turbo",
+        "gpt_4": "gpt-4",
+    }
 
 
 class LogSetting(BaseModel):
@@ -81,7 +100,7 @@ class StatsSetting(BaseModel):
 
 class ConfigModel(BaseModel):
     openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
-    openai_api: OpenaiAPISetting = OpenaiAPISetting()
+    openai_api: OpenaiApiSetting = OpenaiApiSetting()
     common: CommonSetting = CommonSetting()
     http: HttpSetting = HttpSetting()
     data: DataSetting = DataSetting()
@@ -96,14 +115,14 @@ class ConfigModel(BaseModel):
 @singleton_with_lock
 class Config(BaseConfig[ConfigModel]):
     if _TYPE_CHECKING:
-        openai_api: OpenaiAPISetting = OpenaiAPISetting()
+        openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
+        openai_api: OpenaiApiSetting = OpenaiApiSetting()
         common: CommonSetting = CommonSetting()
         http: HttpSetting = HttpSetting()
-        openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
         log: LogSetting = LogSetting()
         stats: StatsSetting = StatsSetting()
         data: DataSetting = DataSetting()
         auth: AuthSetting = AuthSetting()
 
-    def __init__(self):
-        super().__init__(ConfigModel, "config.yaml")
+    def __init__(self, load_config: bool = True):
+        super().__init__(ConfigModel, "config.yaml", load_config=load_config)

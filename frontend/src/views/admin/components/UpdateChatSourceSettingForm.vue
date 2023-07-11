@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import VueForm from '@lljj/vue3-form-naive';
-import { computed, ref, watch } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import {
@@ -40,10 +40,12 @@ import {
   UserReadAdmin,
   UserSettingSchema,
 } from '@/types/schema';
+import { setUniqueItemsForEnumProperties } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 
 import CountNumberInput from './inputs/CountNumberInput.vue';
 import CountNumberInputWithAdd from './inputs/CountNumberInputWithAdd.vue';
+import ModelDictField from './inputs/ModelDictField.vue';
 import RateLimitsArrayInputVue from './inputs/RateLimitsArrayInput.vue';
 import TimeSlotsArrayInput from './inputs/TimeSlotsArrayInput.vue';
 import ValidDateTimeInput from './inputs/ValidDateTimeInput.vue';
@@ -55,18 +57,18 @@ const settingModel = ref<UserSettingSchema | null>(null);
 const openaiWebChatSourceSettingModel = ref<OpenaiWebSourceSettingSchema | null>(null);
 const openaiApiChatSourceSettingModel = ref<OpenaiApiSourceSettingSchema | null>(null);
 
-// 对于 enum array 需要设置 uniqueItems 才能渲染为复选框
-const setUniqueItemsForEnumProperties = (obj: any) => {
-  if (obj['type'] == 'array' && obj['items'] && obj['items']['enum']) {
-    obj['uniqueItems'] = true;
+const PerModelAskCountField = defineComponent({
+  inheritAttrs: false,
+  setup(props, {attrs, slots}) {
+    return () => {
+      return h(ModelDictField, {
+        inputComponent: CountNumberInputWithAdd,
+        defaultExpanded: true,
+        ...(attrs as any),
+      }, slots);
+    };
   }
-  if (obj['properties'] != undefined) {
-    // 递归遍历
-    for (let key in obj['properties']) {
-      setUniqueItemsForEnumProperties(obj['properties'][key]);
-    }
-  }
-};
+});
 
 setUniqueItemsForEnumProperties(jsonOpenaiWebSourceSettingSchema);
 setUniqueItemsForEnumProperties(jsonOpenaiApiSourceSettingSchema);
@@ -127,7 +129,7 @@ const uiSchema = computed(() => {
     },
     per_model_ask_count: {
       'ui:title': t('labels.per_model_ask_count'),
-      // 这里需要动态设置widget
+      'ui:field': PerModelAskCountField
     },
     daily_available_time_slots: {
       'ui:title': t('labels.daily_available_time_slots'),

@@ -4,21 +4,18 @@ from datetime import datetime, timezone
 from typing import Optional, Any
 
 import httpx
-import requests
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from httpx import HTTPError
 from pydantic import ValidationError
-from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, func, and_
 from starlette.websockets import WebSocket, WebSocketState
 from websockets.exceptions import ConnectionClosed
 
-from api import globals as g
 from api.conf import Config
 from api.database import get_async_session_context
 from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
-from api.exceptions import InternalException, InvalidParamsException
+from api.exceptions import InternalException, InvalidParamsException, OpenaiException
 from api.models.db import OpenaiWebConversation, User, BaseConversation
 from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
     OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, \
@@ -26,15 +23,15 @@ from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWeb
 from api.routers.conv import _get_conversation_by_id
 from api.schemas import OpenaiWebConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
-from api.schemas.openai_schemas import OpenAIChatPlugin, OpenAIChatPluginUserSettings
-from api.sources import RevChatGPTManager, convert_revchatgpt_message, OpenAIChatManager, OpenAIChatException
+from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
+from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager, OpenaiApiException
 from api.users import websocket_auth, current_active_user, current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-openai_web_manager = RevChatGPTManager()
-openai_api_manager = OpenAIChatManager()
+openai_web_manager = OpenaiWebChatManager()
+openai_api_manager = OpenaiApiChatManager()
 config = Config()
 
 
@@ -48,8 +45,8 @@ async def change_user_chat_status(user_id: int, status: OpenaiWebChatStatus):
     return user
 
 
-_plugins_result: list[OpenAIChatPlugin] | None = None
-_plugins_result_map: dict[str, OpenAIChatPlugin] | None = None
+_plugins_result: list[OpenaiChatPlugin] | None = None
+_plugins_result_map: dict[str, OpenaiChatPlugin] | None = None
 _plugins_result_last_update_time = None
 
 
@@ -62,19 +59,19 @@ async def _refresh_plugins():
     return _plugins_result
 
 
-@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenAIChatPlugin])
+@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenaiChatPlugin])
 async def get_all_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
     plugins = await _refresh_plugins()
     return plugins
 
 
-@router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=list[OpenAIChatPlugin])
+@router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=list[OpenaiChatPlugin])
 async def get_installed_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
     plugins = await _refresh_plugins()
     return [plugin for plugin in plugins if plugin.user_settings and plugin.user_settings.is_installed]
 
 
-@router.get("/chat/openai-plugin/{plugin_id}", tags=["chat"], response_model=OpenAIChatPlugin)
+@router.get("/chat/openai-plugin/{plugin_id}", tags=["chat"], response_model=OpenaiChatPlugin)
 async def get_openai_web_plugin(plugin_id: str, _user: User = Depends(current_active_user)):
     await _refresh_plugins()
     global _plugins_result_map
@@ -84,13 +81,13 @@ async def get_openai_web_plugin(plugin_id: str, _user: User = Depends(current_ac
         raise InvalidParamsException("errors.pluginNotFound")
 
 
-@router.patch("/chat/openai-plugin/{plugin_id}/user-settings", tags=["chat"], response_model=OpenAIChatPlugin)
-async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenAIChatPluginUserSettings,
+@router.patch("/chat/openai-plugin/{plugin_id}/user-settings", tags=["chat"], response_model=OpenaiChatPlugin)
+async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenaiChatPluginUserSettings,
                                            _user: User = Depends(current_super_user)):
     if settings.is_authenticated is not None:
         raise InvalidParamsException("can not set is_authenticated")
     result = await openai_web_manager.change_plugin_user_settings(plugin_id, settings)
-    assert isinstance(result, OpenAIChatPlugin)
+    assert isinstance(result, OpenaiChatPlugin)
 
     global _plugins_result, _plugins_result_last_update_time
     if _plugins_result is not None:
@@ -129,6 +126,11 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     if not source_setting.allow_to_use:
         raise WebsocketInvalidAskException(tip="errors.userNotAllowToUseChatType")
 
+    # 当前对话类型是否全局启用
+    if ask_request.source == ChatSourceTypes.openai_web and not config.openai_web.enabled or \
+            ask_request.source == ChatSourceTypes.openai_api and not config.openai_api.enabled:
+        raise WebsocketInvalidAskException(tip="errors.chatTypeNotEnabled")
+
     # 是否到期
     current_datetime = datetime.now().astimezone(tz=timezone.utc)
     if source_setting.valid_until is not None and current_datetime > source_setting.valid_until:
@@ -147,8 +149,12 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     # 判断是否能使用该模型
     if ask_request.source == ChatSourceTypes.openai_web and ask_request.model not in user.setting.openai_web.available_models or \
             ask_request.source == ChatSourceTypes.openai_api and ask_request.model not in user.setting.openai_api.available_models:
-        # await websocket.close(1007, "errors.userNotAllowToUseModel")
         raise WebsocketInvalidAskException("errors.userNotAllowToUseModel")
+
+    # 模型是否全局启用
+    if ask_request.source == ChatSourceTypes.openai_web and ask_request.model not in config.openai_web.enabled_models or \
+            ask_request.source == ChatSourceTypes.openai_api and ask_request.model not in config.openai_api.enabled_models:
+        raise WebsocketInvalidAskException("errors.modelNotEnabled")
 
     # 对话次数判断
     model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model, -1)
@@ -268,7 +274,6 @@ async def chat(websocket: WebSocket):
         # rev: 更改状态为 asking
         if ask_request.source == ChatSourceTypes.openai_web:
             await change_user_chat_status(user.id, OpenaiWebChatStatus.asking)
-            openai_web_manager.reset_chat()
 
         await reply(AskResponse(
             type=AskResponseType.waiting,
@@ -327,24 +332,25 @@ async def chat(websocket: WebSocket):
         ))
         websocket_code = 1001
         websocket_reason = "errors.timout"
-    except revChatGPTError as e:
+    except OpenaiException as e:
         logger.error(str(e))
-        content = check_message(f"{e.source} {e.code}: {e.message}")
+        error_detail_map = {
+            401: "errors.openai.401",
+            403: "errors.openai.403",
+            404: "errors.openai.404",
+            429: "errors.openai.429",
+        }
+        if e.code in error_detail_map:
+            tip = error_detail_map[e.code]
+        else:
+            tip = "errors.openai.unknown"
         await reply(AskResponse(
             type=AskResponseType.error,
-            tip="errors.chatgptResponseError",
-            error_detail=content
+            tip=tip,
+            error_detail=check_message(str(e))
         ))
         websocket_code = 1001
-        websocket_reason = "errors.chatgptResponseError"
-    except OpenAIChatException as e:
-        logger.error(str(e))
-        content = check_message(str(e))
-        await reply(AskResponse(
-            type=AskResponseType.error,
-            tip="errors.openaiResponseError",
-            error_detail=str(e)
-        ))
+        websocket_reason = "errors.openaiResponseUnknownError"
     except HTTPError as e:
         logger.error(str(e))
         content = check_message(str(e))
@@ -357,11 +363,10 @@ async def chat(websocket: WebSocket):
         websocket_reason = "errors.httpError"
     except Exception as e:
         logger.error(str(e))
-        content = check_message(str(e))
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.unknownError",
-            error_detail=content
+            error_detail=check_message(str(e))
         ))
         websocket_code = 1011
         websocket_reason = "errors.unknownError"
@@ -370,7 +375,6 @@ async def chat(websocket: WebSocket):
         if ask_request.source == ChatSourceTypes.openai_web:
             openai_web_manager.semaphore.release()
             await change_user_chat_status(user.id, OpenaiWebChatStatus.idling)
-        openai_web_manager.reset_chat()
 
     ask_stop_time = time.time()
     queueing_time = 0
@@ -474,7 +478,7 @@ async def chat(websocket: WebSocket):
                         if ask_request.new_title is not None:
                             await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
                     except Exception as e:
-                        logger.warning(e)
+                        logger.warning(f"set_conversation_title error {e.__class__.__name__}: {str(e)}")
 
                 current_time = datetime.now().astimezone(tz=timezone.utc)
                 new_conv = BaseConversationSchema(

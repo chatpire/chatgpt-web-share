@@ -11,14 +11,15 @@ import { getCountTrans } from '@/utils/chat';
 const t = i18n.global.t as any;
 
 export const renderUserPerModelCounts = (setting: UserSettingSchema, availableOnly = false) => {
+  console.log('renderUserPerModelCounts', setting);
   const openaiWebCounts = {} as Record<string, string>;
   const openaiApiCounts = {} as Record<string, string>;
   openaiWebChatModelNames.forEach((model) => {
-    if (availableOnly && setting.openai_web.per_model_ask_count[model] == undefined) return;
+    if (availableOnly && (setting.openai_web.per_model_ask_count[model] == undefined || !setting.openai_web.available_models.includes(model))) return;
     openaiWebCounts[model] = getCountTrans(setting.openai_web.per_model_ask_count[model]);
   });
   openaiApiChatModelNames.forEach((model) => {
-    if (availableOnly && setting.openai_api.per_model_ask_count[model] == undefined) return;
+    if (availableOnly && setting.openai_api.per_model_ask_count[model] == undefined || !setting.openai_api.available_models.includes(model)) return;
     openaiApiCounts[model] = getCountTrans(setting.openai_api.per_model_ask_count[model]);
   });
   // console.log(revCounts, apiCounts);

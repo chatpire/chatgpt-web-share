@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { OpenAIChatPlugin, OpenAIChatPluginUserSettings } from '@/types/schema';
+import { OpenaiChatPlugin, OpenaiChatPluginUserSettings } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -21,14 +21,14 @@ export function getAskWebsocketApiUrl() {
 }
 
 export function getAllOpenaiChatPluginsApi() {
-  return axios.get<OpenAIChatPlugin[]>(ApiUrl.AllChatPlugins);
+  return axios.get<OpenaiChatPlugin[]>(ApiUrl.AllChatPlugins);
 }
 
 export function getInstalledOpenaiChatPluginsApi() {
-  return axios.get<OpenAIChatPlugin[]>(ApiUrl.InstalledChatPlugins);
+  return axios.get<OpenaiChatPlugin[]>(ApiUrl.InstalledChatPlugins);
 }
 
-export function patchOpenaiChatPluginsUsersSettingsApi(pluginId: string, setting: OpenAIChatPluginUserSettings) {
+export function patchOpenaiChatPluginsUsersSettingsApi(pluginId: string, setting: OpenaiChatPluginUserSettings) {
   return axios.patch(`${ApiUrl.ChatPlugin}/${pluginId}/user-settings`, setting, {
     params: {
       plugin_id: pluginId,
@@ -37,5 +37,5 @@ export function patchOpenaiChatPluginsUsersSettingsApi(pluginId: string, setting
 }
 
 export function getOpenaiChatPluginApi(pluginId: string) {
-  return axios.get<OpenAIChatPlugin>(`${ApiUrl.ChatPlugin}/${pluginId}`);
+  return axios.get<OpenaiChatPlugin>(`${ApiUrl.ChatPlugin}/${pluginId}`);
 }

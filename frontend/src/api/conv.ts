@@ -14,10 +14,12 @@ export function getAdminAllConversationsApi(valid_only = false) {
   });
 }
 
-export function getConversationHistoryApi(conversation_id: string, fallback_cache = true) {
-  return axios.get<BaseConversationHistory>(ApiUrl.Conversation + '/' + conversation_id, {
-    params: { fallback_cache: fallback_cache },
-  });
+export function getConversationHistoryApi(conversation_id: string) {
+  return axios.get<BaseConversationHistory>(ApiUrl.Conversation + '/' + conversation_id);
+}
+
+export function getConversationHistoryFromCacheApi(conversation_id: string) {
+  return axios.get<BaseConversationHistory>(`${ApiUrl.Conversation}/${conversation_id}/cache`);
 }
 
 export function deleteConversationApi(conversation_id: string) {

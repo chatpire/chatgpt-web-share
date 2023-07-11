@@ -6,6 +6,7 @@
   >
     <!-- 左栏 -->
     <n-layout-sider
+      v-model:collapsed="foldLeftBar"
       :native-scrollbar="false"
       :collapsed-width="0"
       collapse-mode="transform"
@@ -17,10 +18,9 @@
       class="h-full"
     >
       <LeftBar
-        v-show="!foldLeftBar"
         v-model:value="currentConversationId"
         :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
-        :loading="loadingBar"
+        :loading="loadingAsk"
         @new-conversation="makeNewConversation"
       />
     </n-layout-sider>
@@ -35,7 +35,7 @@
           :content-style="loadingHistory ? { height: '100%' } : {}"
         >
           <!-- 回到底部按钮 -->
-          <div class="right-2 bottom-5 absolute z-20">
+          <div class="right-3 bottom-3 absolute z-20">
             <n-button secondary circle size="small" @click="scrollToBottomSmooth">
               <template #icon>
                 <n-icon :component="ArrowDown" />
@@ -44,12 +44,14 @@
           </div>
           <HistoryContent
             ref="historyContentRef"
+            v-model:can-continue="canContinue"
             :conversation-id="currentConversationId"
             :extra-messages="currentActiveMessages"
             :fullscreen="false"
             :show-tips="showFullscreenTips"
             :loading="loadingHistory"
           />
+          <div class="h-14" />
         </n-scrollbar>
         <!-- 未选中对话（空界面） -->
         <div
@@ -76,8 +78,10 @@
           v-model:auto-scrolling="autoScrolling"
           class="sticky bottom-0 z-10"
           :can-abort="canAbort"
+          :can-continue="!loadingAsk && canContinue"
           :send-disabled="sendDisabled"
           @abort-request="abortRequest"
+          @continue-generating="continueGenerating"
           @export-to-markdown-file="exportToMarkdownFile"
           @export-to-pdf-file="exportToPdfFile"
           @send-msg="sendMsg"
@@ -128,13 +132,14 @@ const userStore = useUserStore();
 const appStore = useAppStore();
 const conversationStore = useConversationStore();
 
-const loadingBar = ref(false);
+const loadingAsk = ref(false);
 const loadingHistory = ref<boolean>(false);
-const autoScrolling = ref<boolean>(true);
+const autoScrolling = useStorage('autoScrolling', true);
 
 const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
-const foldLeftBar = ref<RemovableRef<boolean>>(useStorage('foldLeftBar', false));
+const canContinue = ref<boolean>(false);
+const foldLeftBar = useStorage('foldLeftBar', false);
 let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
@@ -175,8 +180,8 @@ watch(currentConversationId, (newVal, _oldVal) => {
 
 const handleChangeConversation = (key: string | null) => {
   // TODO: 清除当前已询问、得到回复，但是发生错误的两条消息
-  if (loadingBar.value || !key) return;
-  loadingBar.value = true;
+  if (loadingAsk.value || !key) return;
+  loadingAsk.value = true;
   loadingHistory.value = true;
   LoadingBar.start();
   conversationStore
@@ -188,7 +193,7 @@ const handleChangeConversation = (key: string | null) => {
       console.log(err);
     })
     .finally(() => {
-      loadingBar.value = false;
+      loadingAsk.value = false;
       loadingHistory.value = false;
       LoadingBar.finish();
     });
@@ -196,7 +201,7 @@ const handleChangeConversation = (key: string | null) => {
 
 const sendDisabled = computed(() => {
   return (
-    loadingBar.value ||
+    loadingAsk.value ||
     currentConversationId.value == null ||
     inputValue.value === null ||
     inputValue.value.trim() == ''
@@ -220,6 +225,11 @@ const abortRequest = () => {
   aborter = null;
 };
 
+const continueGenerating = () => {
+  inputValue.value = ':continue';
+  sendMsg();
+};
+
 const scrollToBottom = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
 };
@@ -232,26 +242,28 @@ const scrollToBottomSmooth = () => {
   });
 };
 
-function buildTemporaryMessage(role: string, content: string, parent: string | undefined) {
+function buildTemporaryMessage(role: string, content: string, parent: string | undefined, model: string | undefined) {
   const random_strid = Math.random().toString(36).substring(2, 16);
   return {
     id: `temp_${random_strid}`,
     source: currentConversation.value!.source,
     content,
     role: role,
-    // parent,
+    parent, // 其实没有用到parent
     children: [],
+    model
   };
 }
 
 const sendMsg = async () => {
-  if (sendDisabled.value || loadingBar.value || currentConvHistory.value == null) {
+  if (sendDisabled.value || loadingAsk.value || currentConvHistory.value == null) {
     Message.error(t('tips.pleaseSelectConversation'));
     return;
   }
 
   LoadingBar.start();
-  loadingBar.value = true;
+  loadingAsk.value = true;
+  canContinue.value = false;
   const text = inputValue.value;
   inputValue.value = '';
 
@@ -264,7 +276,7 @@ const sendMsg = async () => {
     new_conversation: currentConversationId.value!.startsWith('new_conversation'),
     model: currentConversation.value!.current_model!,
     content: text,
-    openai_web_plugin_ids: currentConvHistory.value!.meta?.source === 'openai_web' ? currentConvHistory.value!.meta?.plugin_ids : undefined,
+    openai_web_plugin_ids: currentConvHistory.value!.metadata?.source === 'openai_web' ? currentConvHistory.value!.metadata?.plugin_ids : undefined,
   };
   if (conversationStore.newConversation) {
     askRequest.new_title = conversationStore.newConversation.title;
@@ -274,10 +286,17 @@ const sendMsg = async () => {
   }
 
   // 使用临时的随机 id 保持当前更新的两个消息
-  currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node);
-  currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id)];
+  if (text == ':continue') {
+    currentSendMessage.value = null;
+    currentRecvMessages.value = [];
+  }
+  else {
+    currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
+    currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
+  }
   const wsUrl = getAskWebsocketApiUrl();
-  let wsErrorMessage: string | null = null;
+  let hasError = false;
+  let wsErrorMessage: AskResponse | null = null;
   console.log('Connecting to', wsUrl, askRequest);
   const webSocket = new WebSocket(wsUrl);
 
@@ -316,10 +335,9 @@ const sendMsg = async () => {
       respConversationId = response.conversation_id || null;
       canAbort.value = true;
     } else if (response.type === 'error') {
-      console.error(response);
-      if (response.error_detail) {
-        wsErrorMessage = response.error_detail;
-      }
+      hasError = true;
+      console.error('websocket received error message', response);
+      wsErrorMessage = response;
     }
     if (autoScrolling.value) scrollToBottom();
   };
@@ -328,10 +346,14 @@ const sendMsg = async () => {
     aborter = null;
     canAbort.value = false;
     console.log('WebSocket connection is closed', event, isAborted.value);
-    if (isAborted.value || event.code === 1000) {
+    if (!hasError && (event.code == 1000 || isAborted.value)) {
       // 正常关闭
       if (hasGotReply) {
-        const allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
+        let allNewMessages = [] as BaseChatMessage[];
+        if (currentSendMessage.value) {
+          allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
+          
+        }
         for (const msg of currentRecvMessages.value) {
           allNewMessages.push(msg);
         }
@@ -344,7 +366,7 @@ const sendMsg = async () => {
             current_model: currentConvHistory.value!.current_model,
             create_time: currentConvHistory.value!.create_time,
             update_time: currentConvHistory.value!.update_time,
-            meta: currentConvHistory.value!.meta,
+            metadata: currentConvHistory.value!.metadata,
             mapping: {},
             current_node: '',
           } as BaseConversationHistory;
@@ -363,12 +385,19 @@ const sendMsg = async () => {
         console.log('done', allNewMessages, currentConversationId.value);
       }
     } else {
+      let content = '';
+      if (wsErrorMessage != null) {
+        if (wsErrorMessage.tip) {
+          content = t(wsErrorMessage.tip);
+        } else {
+          content = wsErrorMessage.error_detail || t('errors.unknown');
+        }
+      } else {
+        content = `WebSocket ${event.code}: ${t(event.reason || 'errors.unknown')}`;
+      }
       Dialog.error({
         title: t('errors.askError'),
-        content:
-          wsErrorMessage != null
-            ? `[${event.code}] ${t(event.reason)}: ${wsErrorMessage}`
-            : `[${event.code}] ${t(event.reason)}`,
+        content,
         positiveText: t('commons.withdrawMessage'),
         negativeText: t('commons.cancel'),
         onPositiveClick: () => {
@@ -379,7 +408,7 @@ const sendMsg = async () => {
     }
     await userStore.fetchUserInfo();
     LoadingBar.finish();
-    loadingBar.value = false;
+    loadingAsk.value = false;
     isAborted.value = false;
   };
 

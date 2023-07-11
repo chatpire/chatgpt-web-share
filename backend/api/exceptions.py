@@ -5,45 +5,50 @@ class SelfDefinedException(Exception):
     def __init__(self, reason: Any = None, message: str = "", code: int = -1) -> None:
         self.reason = reason  # 异常主要原因
         self.message = message  # 更细节的描述
-        self.code = code    # TODO 细化错误码
+        self.code = code    # 错误码：-1 为默认；0～1000 以内正数为 http 错误码；10000 以上为自定义错误码
 
     def __str__(self):
-        return f"{self.__class__.__name__}: {self.code} {self.message}"
+        return f"{self.__class__.__name__}: [{self.code}] {self.reason} {self.message}"
+
+
+class AuthenticationFailedException(SelfDefinedException):
+    def __init__(self, message: str = ""):
+        super().__init__(reason="errors.authenticationFailed", message=message, code=10401)
 
 
 class AuthorityDenyException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.authorityDeny", message)
+        super().__init__(reason="errors.authorityDeny", message=message, code=10403)
 
 
 class UserNotExistException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.userNotExist", message)
+        super().__init__(reason="errors.userNotExist", message=message)
 
 
 class UserAlreadyExists(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.userAlreadyExists", message)
+        super().__init__(reason="errors.userAlreadyExists", message=message)
 
 
 class InvalidParamsException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.invalidParams", message)
+        super().__init__(reason="errors.invalidParams", message=message)
 
 
 class ResourceNotFoundException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.resourceNotFound", message)
+        super().__init__(reason="errors.resourceNotFound", message=message)
 
 
 class InvalidRequestException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.invalidRequest", message)
+        super().__init__(reason="errors.invalidRequest", message=message)
 
 
 class InternalException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.internal", message)
+        super().__init__(reason="errors.internal", message=message)
 
 
 class ConfigException(SelfDefinedException):
@@ -53,12 +58,8 @@ class ConfigException(SelfDefinedException):
 
 class OpenaiWebException(SelfDefinedException):
     def __init__(self, message: str = "", code: int = -1):
-        super().__init__("errors.openaiWeb", message, code)
+        super().__init__(reason="errors.openaiWeb", message=message, code=code)
 
-
-class InviteCodeNotExistException(SelfDefinedException):
-    def __init__(self, message: str = "", code: int = -1):
-        super().__init__("errors.inviteCodeNotExist", message)
 
 class InviteCodeExpireException(SelfDefinedException):
     def __init__(self, message: str = "", code: int = -1):

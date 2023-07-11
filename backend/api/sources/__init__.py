@@ -1,2 +1,2 @@
-from .revchatgpt import *
-from .openai import *
+from .openai_web import *
+from .openai_api import *

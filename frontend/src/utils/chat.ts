@@ -190,12 +190,30 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
   let result = '';
   // 遍历 props.messages
   // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
+  // 对于 GPT-4-browsing 的引用，转换为 span
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i] as BaseChatMessage;
     if (!message || !message.content) continue;
     else if (typeof message.content == 'string') result += message.content;
     else if (message.content.content_type == 'text') {
-      result += getContentRawText(message);
+      let text = getContentRawText(message);
+      if (message.source == 'openai_web' && message.role==='assistant'&& message.model === 'gpt_4_browsing' ) {
+        const metadata = message.metadata as OpenaiWebChatMessageMetadata;
+        if (metadata.citations && metadata.citations.length > 0) {
+          let processedText = text;
+          metadata.citations.sort((a, b) => {
+            return (a.start_ix as number) - (b.start_ix as number);
+          }).reverse().forEach((citation, _index) => {
+            const start = citation.start_ix!;
+            const end = citation.end_ix!;
+            const originalText = text.slice(start, end);
+            const replacement = `<span class="browsing-citation" data-citation="${encodeURIComponent(JSON.stringify(citation.metadata!))}">${originalText}</span>`;
+            processedText = processedText.slice(0, start) + replacement + processedText.slice(end);
+          });
+          text = processedText;
+        }
+      }
+      result += text;
     }
   }
   // console.log('text display result', result);
