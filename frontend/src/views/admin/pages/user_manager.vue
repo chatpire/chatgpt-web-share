@@ -7,9 +7,16 @@
         </n-icon>
       </template>
     </n-button>
-    <n-button type="primary" @click="drawer.open('create', null)">
+    <div class="w-50 flex justify-between">
+      <n-dropdown trigger="click" @select="handleInviteCodeSelect" :options="expireOptions">
+        <n-button type="info">
+          {{ $t('commons.addInviteCode') }}
+        </n-button>
+      </n-dropdown>
+      <n-button type="primary" @click="drawer.open('create', null)">
       {{ $t('commons.addUser') }}
-    </n-button>
+      </n-button>
+    </div>
   </div>
   <n-data-table
     :scroll-x="1600"
@@ -50,7 +57,7 @@ import { DataTableColumns, NButton, NIcon } from 'naive-ui';
 import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
+import { deleteUserApi, getAllUserApi, adminRegisterApi, updateUserByIdApi, updateUserSettingApi, getInviteCodeApi } from '@/api/user';
 import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
@@ -59,10 +66,12 @@ import { screenWidthGreaterThan } from '@/utils/media';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
 import { renderUserPerModelCounts } from '@/utils/user';
+import useClipboard from 'vue-clipboard3'
 
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';
 import UpdateUserSettingForm from '../components/UpdateUserSettingForm.vue';
+import router from '@/router';
 
 const { t } = useI18n();
 
@@ -131,6 +140,10 @@ const columns: DataTableColumns<UserReadAdmin> = [
     render(row) {
       return row.is_superuser ? t('commons.yes') : t('commons.no');
     },
+  },
+  {
+    title: t('commons.Invitee'),
+    key: 'invite_name',
   },
   {
     title: t('labels.remark'),
@@ -204,7 +217,7 @@ const drawer = useDrawer([
 ]);
 
 const handleCreateUser = (userCreate: UserCreate) => {
-  registerApi(userCreate)
+  adminRegisterApi(userCreate)
     .then(() => {
       Message.success(t('tips.createSuccess'));
       getAllUserApi().then((res) => {
@@ -283,4 +296,38 @@ const handleDeleteUser = (row: UserReadAdmin) => {
     },
   });
 };
+
+const expireOptions=[
+  { 
+    label: t('commons.ExpiationDatePermanent'),
+    key: 0,
+  },
+  { 
+    label: t('commons.ExpiationDateOne'),
+    key: 1,
+  },
+  { 
+    label: t('commons.ExpiationDateSeven'),
+    key: 7,
+  }
+]
+
+const handleInviteCodeSelect=(key: number| string)=>{
+  const expireInfo={expiration_date:key as number};
+  const registerLink=location.protocol+'//'+location.host+router.resolve({name:'register'}).href;
+  const { toClipboard } = useClipboard();
+  getInviteCodeApi(expireInfo).then( async (res) => {
+    let expireTime=undefined;
+    if(!!res.data.expire_time)
+    {
+      const expireDate=new Date(res.data.expire_time);
+      expireTime=t('commons.expireTime')+expireDate.toLocaleString()+',';
+    }
+    await toClipboard(t('commons.GenerateInviteCodeInfo',{weblink:registerLink,invitecode:res.data.code,expiationinfo:expireTime,invitee:res.data.invite_name}));
+    Message.success(t('tips.InviteCodeGenerateSuccess'));
+  })
+  .catch((err) => {
+    Message.error(t('tips.InviteCodeGenerateFail') + ': ' + err);
+  });
+}
 </script>

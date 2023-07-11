@@ -42,6 +42,13 @@ class User(Base):
     setting: Mapped["UserSetting"] = relationship("UserSetting", back_populates="user", lazy="joined",
                                                   cascade="save-update, merge, delete, delete-orphan")
     conversations: Mapped[List["BaseConversation"]] = relationship("BaseConversation", back_populates="user")
+    invite_name: Mapped[Optional[str]] = mapped_column(String(32), comment="邀请人")
+
+class InviteCode(Base):
+    __tablename__ = "invite_code"
+    code: Mapped[str] = mapped_column(String(32), primary_key=True, comment="邀请码")
+    invite_name: Mapped[str] = mapped_column(String(32), comment="创建者")
+    expire_time: Mapped[Optional[datetime]] = mapped_column(UTCDateTime(timezone=True), comment="过期时间")
 
 
 class UserSetting(Base):

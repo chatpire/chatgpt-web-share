@@ -4,9 +4,11 @@ from starlette.requests import Request
 
 from api.database import get_async_session_context, get_user_db_context
 from api.exceptions import UserNotExistException
-from api.models.db import User
-from api.schemas import UserRead, UserUpdate, UserCreate, UserUpdateAdmin, UserReadAdmin, UserSettingSchema
+from api.models.db import User,InviteCode
+from api.schemas import UserRead, UserUpdate, UserCreate, UserUpdateAdmin, UserReadAdmin, UserSettingSchema, InviteCodeCreate, InviteCodeRequest
 from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
+import uuid
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter()
 
@@ -14,14 +16,16 @@ router.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth", tags=["auth"]
 )
 
-
+router.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreate), prefix="/auth", tags=["auth"]
+)
 # router.include_router(
 #     fastapi_users.get_reset_password_router(),
 #     prefix="/auth",
 #     tags=["auth"],
 # )
 
-@router.post("/auth/register", response_model=UserReadAdmin, tags=["auth"])
+@router.post("/auth/adminregister", response_model=UserReadAdmin, tags=["auth"])
 async def register(
         request: Request,
         user_create: UserCreate,
@@ -31,7 +35,7 @@ async def register(
     async with get_async_session_context() as session:
         async with get_user_db_context(session) as user_db:
             async with get_user_manager_context(user_db) as user_manager:
-                user = await user_manager.create(user_create, safe=False, request=request)
+                user = await user_manager.create(user_create, safe=False, request=request,SuperUsername=_user.nickname)
                 return UserReadAdmin.from_orm(user)
 
 
@@ -115,3 +119,22 @@ async def admin_update_user_setting(user_id: int, user_setting: UserSettingSchem
         await session.commit()
         await session.refresh(user)
         return UserReadAdmin.from_orm(user)
+    
+
+@router.post("/user/createcode", response_model=InviteCodeCreate, tags=["user"])
+async def create_user_invite_code(request: InviteCodeRequest, _user: User = Depends(current_super_user)):
+    uuid_str = str(uuid.uuid4())
+    now_utc_date = datetime.now(timezone.utc)
+    async with get_async_session_context() as session:
+        uuid_res = await session.get(InviteCode, uuid_str)
+        while uuid_res is not None:
+            uuid_str = str(uuid.uuid4())
+            uuid_res = await session.get(InviteCode, uuid_str)
+        if request.expiration_date == 0:
+            created_code=InviteCode(code=uuid_str,invite_name=_user.nickname,expire_time=None)
+        else:
+            created_code=InviteCode(code=uuid_str,invite_name=_user.nickname,expire_time=now_utc_date+timedelta(days=request.expiration_date))
+        session.add(created_code)
+        await session.commit()
+        return created_code
+        

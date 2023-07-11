@@ -14,11 +14,15 @@ export interface paths {
     post: operations["auth_jwt_logout_auth_logout_post"];
   };
   "/auth/register": {
+    /** Register:Register */
+    post: operations["register_register_auth_register_post"];
+  };
+  "/auth/adminregister": {
     /**
      * Register 
      * @description 注册时不能指定setting，使用默认setting
      */
-    post: operations["register_auth_register_post"];
+    post: operations["register_auth_adminregister_post"];
   };
   "/user": {
     /** Get All Users */
@@ -41,6 +45,10 @@ export interface paths {
   "/user/{user_id}/setting": {
     /** Admin Update User Setting */
     patch: operations["admin_update_user_setting_user__user_id__setting_patch"];
+  };
+  "/user/createcode": {
+    /** Create User Invite Code */
+    post: operations["create_user_invite_code_user_createcode_post"];
   };
   "/conv": {
     /**
@@ -82,12 +90,12 @@ export interface paths {
     patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
   };
   "/chat/openai-plugins/all": {
-    /** Get All Chat Plugins */
-    get: operations["get_all_chat_plugins_chat_openai_plugins_all_get"];
+    /** Get All Openai Web Chat Plugins */
+    get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_all_get"];
   };
   "/chat/openai-plugins/installed": {
-    /** Get Installed Chat Plugins */
-    get: operations["get_installed_chat_plugins_chat_openai_plugins_installed_get"];
+    /** Get Installed Openai Web Chat Plugins */
+    get: operations["get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get"];
   };
   "/chat/openai-plugin/{plugin_id}": {
     /** Get Openai Web Plugin */
@@ -595,6 +603,23 @@ export interface components {
        */
       cors_allow_origins?: (string)[];
     };
+    /** InviteCodeCreate */
+    InviteCodeCreate: {
+      /** Code */
+      code: string;
+      /** Invite Name */
+      invite_name: string;
+      /**
+       * Expire Time 
+       * Format: date-time
+       */
+      expire_time?: string;
+    };
+    /** InviteCodeRequest */
+    InviteCodeRequest: {
+      /** Expiration Date */
+      expiration_date: number;
+    };
     /** LogFilterOptions */
     LogFilterOptions: {
       /**
@@ -992,7 +1017,7 @@ export interface components {
       /** Recipient */
       recipient?: ("all" | "browser") | string;
       /** Fallback Content */
-      fallback_content?: Record<string, never>;
+      fallback_content?: unknown;
       invoked_plugin?: components["schemas"]["OpenaiWebChatMessageMetadataPlugin"];
       /** Command */
       command?: "search" | string;
@@ -1157,7 +1182,7 @@ export interface components {
        */
       source: "openai_web";
       /** Moderation Results */
-      moderation_results?: (Record<string, never>)[];
+      moderation_results?: (unknown)[];
       /** Plugin Ids */
       plugin_ids?: (string)[];
     };
@@ -1364,6 +1389,8 @@ export interface components {
       avatar?: string;
       /** Remark */
       remark?: string;
+      /** Invite Code */
+      invite_code?: string;
     };
     /**
      * UserRead 
@@ -1399,6 +1426,8 @@ export interface components {
       create_time: string;
       /** Avatar */
       avatar?: string;
+      /** Invite Name */
+      invite_name: string;
       setting: components["schemas"]["UserSettingSchema"];
     };
     /**
@@ -1435,6 +1464,8 @@ export interface components {
       create_time: string;
       /** Avatar */
       avatar?: string;
+      /** Invite Name */
+      invite_name: string;
       setting: components["schemas"]["UserSettingSchema"];
       /** Remark */
       remark?: string;
@@ -1510,8 +1541,8 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /** Auth:Jwt.Login */
   auth_jwt_login_auth_login_post: {
-    /** Auth:Jwt.Login */
     requestBody: {
       content: {
         "application/x-www-form-urlencoded": components["schemas"]["Body_auth_jwt_login_auth_login_post"];
@@ -1521,7 +1552,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description No Content */
@@ -1540,13 +1571,13 @@ export interface operations {
       };
     };
   };
+  /** Auth:Jwt.Logout */
   auth_jwt_logout_auth_logout_post: {
-    /** Auth:Jwt.Logout */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description No Content */
@@ -1555,11 +1586,39 @@ export interface operations {
       401: never;
     };
   };
-  register_auth_register_post: {
-    /**
-     * Register 
-     * @description 注册时不能指定setting，使用默认setting
-     */
+  /** Register:Register */
+  register_register_auth_register_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["UserRead"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": components["schemas"]["ErrorModel"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Register 
+   * @description 注册时不能指定setting，使用默认setting
+   */
+  register_auth_adminregister_post: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["UserCreate"];
@@ -1569,7 +1628,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["UserReadAdmin"];
         };
       };
       /** @description Validation Error */
@@ -1580,30 +1639,30 @@ export interface operations {
       };
     };
   };
+  /** Get All Users */
   get_all_users_user_get: {
-    /** Get All Users */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
     };
   };
+  /** Get Me */
   get_me_user_me_get: {
-    /** Get Me */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["UserRead"];
         };
       };
     };
   };
+  /** Update Me */
   update_me_user_me_patch: {
-    /** Update Me */
     requestBody: {
       content: {
         "application/json": components["schemas"]["UserUpdate"];
@@ -1613,7 +1672,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["UserRead"];
         };
       };
       /** @description Validation Error */
@@ -1624,8 +1683,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Get User */
   admin_get_user_user__user_id__get: {
-    /** Admin Get User */
     parameters: {
       path: {
         user_id: number;
@@ -1635,7 +1694,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["UserReadAdmin"];
         };
       };
       /** @description Validation Error */
@@ -1646,8 +1705,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Delete User */
   admin_delete_user_user__user_id__delete: {
-    /** Admin Delete User */
     parameters: {
       path: {
         user_id: number;
@@ -1657,7 +1716,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -1668,8 +1727,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Update User */
   admin_update_user_user__user_id__patch: {
-    /** Admin Update User */
     parameters: {
       path: {
         user_id: number;
@@ -1684,7 +1743,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -1695,8 +1754,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Update User Setting */
   admin_update_user_setting_user__user_id__setting_patch: {
-    /** Admin Update User Setting */
     parameters: {
       path: {
         user_id: number;
@@ -1711,7 +1770,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["UserReadAdmin"];
         };
       };
       /** @description Validation Error */
@@ -1722,34 +1781,56 @@ export interface operations {
       };
     };
   };
+  /** Create User Invite Code */
+  create_user_invite_code_user_createcode_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InviteCodeRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["InviteCodeCreate"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get My Conversations 
+   * @description 返回自己的有效会话
+   */
   get_my_conversations_conv_get: {
-    /**
-     * Get My Conversations 
-     * @description 返回自己的有效会话
-     */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": (components["schemas"]["BaseConversationSchema"] | components["schemas"]["OpenaiWebConversationSchema"] | components["schemas"]["OpenaiApiConversationSchema"])[];
         };
       };
     };
   };
+  /** Delete All Conversation */
   delete_all_conversation_conv_delete: {
-    /** Delete All Conversation */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
     };
   };
+  /** Get All Conversations */
   get_all_conversations_conv_all_get: {
-    /** Get All Conversations */
-    parameters?: {
+    parameters: {
       query?: {
         valid_only?: boolean;
       };
@@ -1758,7 +1839,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": (components["schemas"]["BaseConversationSchema"])[];
         };
       };
       /** @description Validation Error */
@@ -1769,21 +1850,21 @@ export interface operations {
       };
     };
   };
+  /** Get Conversation History */
   get_conversation_history_conv__conversation_id__get: {
-    /** Get Conversation History */
     parameters: {
       query?: {
         fallback_cache?: boolean;
       };
       path: {
-        conversation_id: string | string;
+        conversation_id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["OpenaiApiConversationHistoryDocument"] | components["schemas"]["OpenaiWebConversationHistoryDocument"] | components["schemas"]["BaseConversationHistory"];
         };
       };
       /** @description Validation Error */
@@ -1794,21 +1875,21 @@ export interface operations {
       };
     };
   };
+  /**
+   * Delete Conversation 
+   * @description 软删除：标记为 invalid 并且从 chatgpt 账号中删除会话，但不会删除 mongodb 中的历史记录
+   */
   delete_conversation_conv__conversation_id__delete: {
-    /**
-     * Delete Conversation 
-     * @description 软删除：标记为 invalid 并且从 chatgpt 账号中删除会话，但不会删除 mongodb 中的历史记录
-     */
     parameters: {
       path: {
-        conversation_id: string | string;
+        conversation_id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -1819,21 +1900,21 @@ export interface operations {
       };
     };
   };
+  /** Update Conversation Title */
   update_conversation_title_conv__conversation_id__patch: {
-    /** Update Conversation Title */
     parameters: {
       query: {
         title: string;
       };
       path: {
-        conversation_id: string | string;
+        conversation_id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["BaseConversationSchema"];
         };
       };
       /** @description Validation Error */
@@ -1844,21 +1925,21 @@ export interface operations {
       };
     };
   };
+  /**
+   * Vanish Conversation 
+   * @description 硬删除：删除数据库和账号中的对话和历史记录
+   */
   vanish_conversation_conv__conversation_id__vanish_delete: {
-    /**
-     * Vanish Conversation 
-     * @description 硬删除：删除数据库和账号中的对话和历史记录
-     */
     parameters: {
       path: {
-        conversation_id: string | string;
+        conversation_id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -1869,19 +1950,19 @@ export interface operations {
       };
     };
   };
+  /** Assign Conversation */
   assign_conversation_conv__conversation_id__assign__username__patch: {
-    /** Assign Conversation */
     parameters: {
       path: {
         username: string;
-        conversation_id: string | string;
+        conversation_id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -1892,21 +1973,21 @@ export interface operations {
       };
     };
   };
+  /** Generate Conversation Title */
   generate_conversation_title_conv__conversation_id__gen_title_patch: {
-    /** Generate Conversation Title */
     parameters: {
       query: {
         message_id: string;
       };
       path: {
-        conversation_id: string | string;
+        conversation_id: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["OpenaiWebConversationSchema"];
         };
       };
       /** @description Validation Error */
@@ -1917,30 +1998,30 @@ export interface operations {
       };
     };
   };
-  get_all_chat_plugins_chat_openai_plugins_all_get: {
-    /** Get All Chat Plugins */
+  /** Get All Openai Web Chat Plugins */
+  get_all_openai_web_chat_plugins_chat_openai_plugins_all_get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": (components["schemas"]["OpenAIChatPlugin"])[];
         };
       };
     };
   };
-  get_installed_chat_plugins_chat_openai_plugins_installed_get: {
-    /** Get Installed Chat Plugins */
+  /** Get Installed Openai Web Chat Plugins */
+  get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": (components["schemas"]["OpenAIChatPlugin"])[];
         };
       };
     };
   };
+  /** Get Openai Web Plugin */
   get_openai_web_plugin_chat_openai_plugin__plugin_id__get: {
-    /** Get Openai Web Plugin */
     parameters: {
       path: {
         plugin_id: string;
@@ -1950,7 +2031,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["OpenAIChatPlugin"];
         };
       };
       /** @description Validation Error */
@@ -1961,8 +2042,8 @@ export interface operations {
       };
     };
   };
+  /** Update Chat Plugin User Settings */
   update_chat_plugin_user_settings_chat_openai_plugin__plugin_id__user_settings_patch: {
-    /** Update Chat Plugin User Settings */
     parameters: {
       path: {
         plugin_id: string;
@@ -1977,7 +2058,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["OpenAIChatPlugin"];
         };
       };
       /** @description Validation Error */
@@ -1988,11 +2069,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Predict Schema Types 
+   * @description 只用来让 openapi 自动生成 schema，并不实际调用
+   */
   _predict_schema_types_chat___schema_types_get: {
-    /**
-     * Predict Schema Types 
-     * @description 只用来让 openapi 自动生成 schema，并不实际调用
-     */
     requestBody: {
       content: {
         "application/json": components["schemas"]["AskRequest"];
@@ -2002,7 +2083,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["AskResponse"];
         };
       };
       /** @description Validation Error */
@@ -2013,20 +2094,20 @@ export interface operations {
       };
     };
   };
+  /** Get System Info */
   get_system_info_system_info_get: {
-    /** Get System Info */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["SystemInfo"];
         };
       };
     };
   };
+  /** Get Request Statistics */
   get_request_statistics_system_stats_request_get: {
-    /** Get Request Statistics */
-    parameters?: {
+    parameters: {
       query?: {
         granularity?: number;
       };
@@ -2035,7 +2116,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": (components["schemas"]["RequestLogAggregation"])[];
         };
       };
       /** @description Validation Error */
@@ -2046,9 +2127,9 @@ export interface operations {
       };
     };
   };
+  /** Get Ask Statistics */
   get_ask_statistics_system_stats_ask_get: {
-    /** Get Ask Statistics */
-    parameters?: {
+    parameters: {
       query?: {
         granularity?: number;
       };
@@ -2057,7 +2138,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": (components["schemas"]["AskLogAggregation"])[];
         };
       };
       /** @description Validation Error */
@@ -2068,8 +2149,8 @@ export interface operations {
       };
     };
   };
+  /** Get Server Logs */
   get_server_logs_system_logs_server_post: {
-    /** Get Server Logs */
     requestBody?: {
       content: {
         "application/json": components["schemas"]["LogFilterOptions"];
@@ -2079,7 +2160,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -2090,19 +2171,19 @@ export interface operations {
       };
     };
   };
+  /** Get Config */
   get_config_system_config_get: {
-    /** Get Config */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["ConfigModel"];
         };
       };
     };
   };
+  /** Update Config */
   update_config_system_config_put: {
-    /** Update Config */
     requestBody: {
       content: {
         "application/json": components["schemas"]["ConfigModel"];
@@ -2112,7 +2193,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["ConfigModel"];
         };
       };
       /** @description Validation Error */
@@ -2123,19 +2204,19 @@ export interface operations {
       };
     };
   };
+  /** Get Credentials */
   get_credentials_system_credentials_get: {
-    /** Get Credentials */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["CredentialsModel"];
         };
       };
     };
   };
+  /** Update Credentials */
   update_credentials_system_credentials_put: {
-    /** Update Credentials */
     requestBody: {
       content: {
         "application/json": components["schemas"]["CredentialsModel"];
@@ -2145,7 +2226,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["CredentialsModel"];
         };
       };
       /** @description Validation Error */
@@ -2156,12 +2237,12 @@ export interface operations {
       };
     };
   };
+  /**
+   * Import Users 
+   * @description 解析csv文件，导入用户
+   * csv字段：
+   */
   import_users_system_import_users_post: {
-    /**
-     * Import Users 
-     * @description 解析csv文件，导入用户
-     * csv字段：
-     */
     requestBody: {
       content: {
         "multipart/form-data": components["schemas"]["Body_import_users_system_import_users_post"];
@@ -2171,7 +2252,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -2182,16 +2263,16 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get Server Status 
+   * @description 普通用户获取服务器状态
+   */
   get_server_status_status_get: {
-    /**
-     * Get Server Status 
-     * @description 普通用户获取服务器状态
-     */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["ServerStatusSchema"];
         };
       };
     };

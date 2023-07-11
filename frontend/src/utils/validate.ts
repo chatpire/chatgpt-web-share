@@ -35,3 +35,21 @@ export function getPasswordRule(required: boolean) {
     },
   } as FormItemRule;
 }
+export function getConfirmPasswordRule(required: boolean,formValue:any) {
+  return {
+    required,
+    trigger: 'input',
+    validator: (rule: any, password: string) => {
+      console.log(formValue.password);
+      if(!!formValue.password==false)
+        return new Error(t('tips.passwordNotSame'));
+      if(formValue.password.startsWith(password)==false)
+        return new Error(t('tips.passwordNotSame'));
+      if(formValue.password.length == password.length && formValue.password!==password)
+        return new Error(t('tips.passwordNotSame'));
+      if(formValue.password.length < password.length)
+        return new Error(t('tips.passwordNotSame'));
+      return true;
+    },
+  } as FormItemRule;
+}

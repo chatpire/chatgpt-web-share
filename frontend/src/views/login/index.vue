@@ -23,10 +23,16 @@
           @keyup.enter="login"
         />
       </n-form-item>
-      <n-form-item wrapper-col="{ span: 16, offset: 8 }">
-        <n-button type="primary" :enabled="loading" @click="login">
-          {{ $t('commons.login') }}
-        </n-button>
+      <n-checkbox v-model:checked="isRememberMe">{{ $t('commons.rememberPassword') }}</n-checkbox>
+      <n-form-item>
+        <div class="flex justify-around w-full">
+          <n-button type="primary" :enabled="loading" @click="login">
+            {{ $t('commons.login') }}
+          </n-button>
+          <n-button type="warning" :enabled="loading" @click="register">
+            {{ $t('commons.register') }}
+          </n-button>
+        </div>
       </n-form-item>
     </n-form>
   </div>
@@ -57,6 +63,7 @@ const loginRules = {
   username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
   password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
 };
+const isRememberMe = ref(false);
 
 const login = async () => {
   if (loading.value) return;
@@ -76,16 +83,32 @@ const login = async () => {
           await router.push(redirect as string);
           return;
         }
+        if(isRememberMe)
+        {
+          localStorage.setItem('username', formValue.username);
+          localStorage.setItem('password', formValue.password);
+          localStorage.setItem('isRememberMe', isRememberMe.value.toString());
+        }
         await router.push({
           name: userStore.user?.is_superuser ? 'admin' : 'conversation',
         });
-        // TODO: 记住密码
       } catch (error) {
         console.log(error);
       } finally {
         loading.value = false;
       }
     });
+};
+
+if(localStorage.getItem('isRememberMe') == 'true')
+{
+  isRememberMe.value = true;
+  formValue.username = localStorage.getItem('username') as string;
+  formValue.password = localStorage.getItem('password') as string;
+}
+
+const register = () => {
+  router.push({ name: 'register' });
 };
 
 if (userStore.user) {

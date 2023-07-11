@@ -130,8 +130,9 @@ class UserCreate(schemas.BaseUserCreate):
     username: str
     nickname: str
     email: EmailStr
-    avatar: str | None
-    remark: str | None
+    avatar: Optional[str]=None
+    remark: Optional[str]=None
+    invite_code: str | None
     # setting: UserSettingSchema = UserSettingSchema.default()
 
 
@@ -146,6 +147,7 @@ class UserRead(schemas.BaseUser[int]):
     is_superuser: bool
     is_active: bool
     is_verified: bool
+    invite_name: str
     setting: UserSettingSchema
 
 
@@ -162,3 +164,14 @@ class UserUpdate(schemas.BaseUserUpdate):
 class UserUpdateAdmin(UserUpdate):
     username: str | None
     remark: str | None
+
+class InviteCodeCreate(BaseModel):
+    code: str
+    invite_name : str
+    expire_time: datetime.datetime | None
+    class Config:
+        orm_mode = True
+    
+
+class InviteCodeRequest(BaseModel):
+    expiration_date: int

@@ -1,12 +1,19 @@
 import axios from 'axios';
 
-import { UserCreate, UserRead, UserReadAdmin, UserSettingSchema, UserUpdate, UserUpdateAdmin } from '@/types/schema';
+import { UserCreate, UserRead, UserReadAdmin, UserSettingSchema, UserUpdate, UserUpdateAdmin, InviteCodeRequest, InviteCodeCreate } from '@/types/schema';
 
 import ApiUrl from './url';
 
 export type LoginData = {
   username: string;
   password: string;
+};
+export type RegisterData = {
+  username: string;
+  password: string;
+  email: string;
+  nickname: string;
+  invitecode: string;
 };
 
 export function loginApi(data: LoginData) {
@@ -24,12 +31,20 @@ export function registerApi(userInfo: UserCreate) {
   return axios.post<UserRead>(ApiUrl.Register, userInfo);
 }
 
+export function adminRegisterApi(userInfo: UserCreate) {
+  return axios.post<UserReadAdmin>(ApiUrl.AdminRegister, userInfo);
+}
+
 export function logoutApi() {
   return axios.post<any>(ApiUrl.Logout);
 }
 
 export function getAllUserApi() {
   return axios.get<UserRead[]>(ApiUrl.UserList);
+}
+
+export function getInviteCodeApi(expirationInfo: InviteCodeRequest) {
+  return axios.post<InviteCodeCreate>(ApiUrl.GetInviteCode, expirationInfo);
 }
 
 export function getUserMeApi() {

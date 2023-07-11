@@ -14,7 +14,7 @@ from starlette.websockets import WebSocket
 import api.exceptions
 from api.conf import Config
 from api.database import get_user_db, get_async_session_context, get_user_db_context
-from api.models.db import User, UserSetting
+from api.models.db import User, UserSetting, InviteCode
 from api.schemas import UserCreate, UserSettingSchema, UserUpdate, UserUpdateAdmin
 from utils.logger import get_logger
 
@@ -77,7 +77,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
             # TODO 暂时没有检查email是否unique
 
     async def create(self, user_create: UserCreate, user_setting: Optional[UserSettingSchema] = None,
-                     safe: bool = False, request: Optional[Request] = None) -> User:
+                     safe: bool = False, request: Optional[Request] = None,SuperUsername:Optional[str]=None) -> User:
 
         await self._check_username_unique(username=user_create.username)
         await self.validate_password(user_create.password, user_create)
@@ -87,9 +87,22 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         if safe:
             user_dict["is_active"] = True
             user_dict["is_superuser"] = False
-            user_dict["is_verified"] = False
+            user_dict["is_verified"] = True
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self.password_helper.hash(password)
+        if  SuperUsername is None:
+            async with get_async_session_context() as session:
+                code_res=await session.get(InviteCode, user_create.invite_code)
+                if code_res is None:
+                    raise api.exceptions.InviteCodeNotExistException()
+                now_utc_date = datetime.utcnow()
+                now_utc_date = now_utc_date = datetime.now(timezone.utc)
+                if code_res.expire_time is not None and now_utc_date > code_res.expire_time:
+                    raise api.exceptions.InviteCodeExpireException()
+                user_dict["invite_name"]=code_res.invite_name
+        else:
+            user_dict["invite_name"] = SuperUsername
+        del user_dict["invite_code"]
 
         user = await self.create_with_user_dict(user_dict, user_setting=user_setting)
         return user

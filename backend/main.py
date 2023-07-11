@@ -102,7 +102,8 @@ async def on_startup():
                             is_active=True,
                             is_verified=True,
                             is_superuser=True,
-                        ), user_setting=UserSettingSchema.unlimited(), safe=False)
+                            invite_code=None
+                        ), user_setting=UserSettingSchema.unlimited(), safe=False,SuperUsername="system")
             print(user)
         except UserAlreadyExists:
             logger.info(f"admin already exists, skip creating admin user")

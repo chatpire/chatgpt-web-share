@@ -5,6 +5,8 @@ export type UserReadAdmin = components['schemas']['UserReadAdmin'];
 export type UserCreate = components['schemas']['UserCreate'];
 export type UserUpdate = components['schemas']['UserUpdate'];
 export type UserUpdateAdmin = components['schemas']['UserUpdateAdmin'];
+export type InviteCodeRequest = components['schemas']['InviteCodeRequest'];
+export type InviteCodeCreate = components['schemas']['InviteCodeCreate'];
 
 export type UserSettingSchema = components['schemas']['UserSettingSchema'];
 export type OpenaiWebSourceSettingSchema = components['schemas']['OpenaiWebSourceSettingSchema'];

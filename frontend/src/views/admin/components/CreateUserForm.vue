@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { registerApi } from '@/api/user';
+
 import { i18n } from '@/i18n';
 import { UserCreate } from '@/types/schema';
 import { Message } from '@/utils/tips';
@@ -46,6 +46,7 @@ const user = ref<UserCreate>({
   is_active: true,
   is_verified: false,
   is_superuser: false,
+  invite_code: ''
 });
 
 const rules = {
@@ -61,10 +62,7 @@ const handleSubmit = () => {
       Message.error(t('tips.pleaseCheckInput'));
       return;
     }
-    registerApi(user.value).then(() => {
-      Message.success(t('tips.registerSuccess'));
-      emits('save');
-    });
+    emits('save',user.value);
   });
 };
 </script>

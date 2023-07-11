@@ -1,8 +1,10 @@
 enum ApiUrl {
   Register = '/auth/register',
+  AdminRegister = '/auth/adminregister',
   Login = '/auth/login',
   Logout = '/auth/logout',
   UserMe = '/user/me',
+  GetInviteCode = '/user/createcode',
 
   Conversation = '/conv',
   AllConversation = '/conv/all',

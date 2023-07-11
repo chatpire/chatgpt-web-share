@@ -54,3 +54,12 @@ class ConfigException(SelfDefinedException):
 class OpenaiWebException(SelfDefinedException):
     def __init__(self, message: str = "", code: int = -1):
         super().__init__("errors.openaiWeb", message, code)
+
+
+class InviteCodeNotExistException(SelfDefinedException):
+    def __init__(self, message: str = "", code: int = -1):
+        super().__init__("errors.inviteCodeNotExist", message)
+
+class InviteCodeExpireException(SelfDefinedException):
+    def __init__(self, message: str = "", code: int = -1):
+        super().__init__("errors.inviteCodeExpire", message)
