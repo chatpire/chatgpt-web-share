@@ -100,6 +100,8 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
                 if code_res.expire_time is not None and now_utc_date > code_res.expire_time:
                     raise api.exceptions.InviteCodeExpireException()
                 user_dict["invite_name"]=code_res.invite_name
+                await session.delete(code_res)
+                await session.commit()
         else:
             user_dict["invite_name"] = SuperUsername
         del user_dict["invite_code"]

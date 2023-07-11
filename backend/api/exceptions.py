@@ -53,13 +53,26 @@ class InternalException(SelfDefinedException):
 
 class ConfigException(SelfDefinedException):
     def __init__(self, message: str = ""):
-        super().__init__("errors.config", message)
+        super().__init__(reason="errors.config", message=message)
 
 
-class OpenaiWebException(SelfDefinedException):
+class OpenaiException(SelfDefinedException):
+    def __init__(self, reason: str, message: str = "", code: int = -1):
+        super().__init__(reason=reason, message=message, code=code)
+
+
+class OpenaiWebException(OpenaiException):
     def __init__(self, message: str = "", code: int = -1):
         super().__init__(reason="errors.openaiWeb", message=message, code=code)
 
+
+class OpenaiApiException(OpenaiException):
+    def __init__(self, message: str = "", code: int = -1):
+        super().__init__(reason="errors.openaiWeb", message=message, code=code)
+
+class InviteCodeNotExistException(SelfDefinedException):
+    def __init__(self, message: str = "", code: int = -1):
+        super().__init__("errors.inviteCodeNotExist", message)
 
 class InviteCodeExpireException(SelfDefinedException):
     def __init__(self, message: str = "", code: int = -1):
