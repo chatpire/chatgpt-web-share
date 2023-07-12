@@ -503,10 +503,15 @@ async def chat(websocket: WebSocket):
                 session.add(conversation)
 
             # 扣除对话次数
+            print("Prima dell'assegnazione di source_setting")
             source_setting = user.setting.openai_web if ask_request.source == ChatSourceTypes.openai_web else user.setting.openai_api
-
+            print("source_setting:", source_setting)
+            
             total_ask_count = source_setting.total_ask_count
             model_ask_count = source_setting.per_model_ask_count.dict().get(ask_request.model)
+            print("total_ask_count:", total_ask_count)
+            print("model_ask_count:", model_ask_count)
+            
             assert model_ask_count, "model_ask_count is None"
             if total_ask_count != -1 or model_ask_count != -1:
 
