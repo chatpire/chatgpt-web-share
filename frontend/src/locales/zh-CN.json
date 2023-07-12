@@ -6,6 +6,7 @@
     "stayInCurrentPage": "留在此页",
     "username": "用户名",
     "password": "密码",
+    "rememberMe": "记住我",
     "login": "登录",
     "logout": "退出登录",
     "logoutSuccess": "登出成功",

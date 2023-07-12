@@ -23,6 +23,9 @@
           @keyup.enter="login"
         />
       </n-form-item>
+      <n-checkbox v-model:checked="rememberMe" @update:checked="handleUpdateRememberMe">
+        {{ $t('commons.rememberMe') }}
+      </n-checkbox>
       <n-form-item wrapper-col="{ span: 16, offset: 8 }">
         <n-button type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
@@ -57,6 +60,7 @@ const loginRules = {
   username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
   password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
 };
+const rememberMe = ref(false);
 
 const login = async () => {
   if (loading.value) return;
@@ -79,7 +83,11 @@ const login = async () => {
         await router.push({
           name: userStore.user?.is_superuser ? 'admin' : 'conversation',
         });
-        // TODO: 记住密码
+        if (rememberMe.value) {
+          localStorage.setItem('username', formValue.username);
+          localStorage.setItem('password', btoa(formValue.password));
+          localStorage.setItem('rememberMe', rememberMe.value.toString());
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -87,7 +95,19 @@ const login = async () => {
       }
     });
 };
-
+//页面自动填充，取消勾选时清除数据
+if (localStorage.getItem('rememberMe') == 'true') {
+  rememberMe.value = true;
+  formValue.username = localStorage.getItem('username') as string;
+  formValue.password = atob(localStorage.getItem('password') as string);
+}
+const handleUpdateRememberMe=(value: boolean) => {
+  if (!value) {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    localStorage.setItem('rememberMe', 'false');
+  }
+};
 if (userStore.user) {
   router.push({ name: 'conversation' });
 }

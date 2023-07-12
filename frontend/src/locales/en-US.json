@@ -6,6 +6,7 @@
     "stayInCurrentPage": "Stay on this page",
     "username": "Username",
     "password": "Password",
+    "rememberMe": "Remember me",
     "login": "Log in",
     "logout": "Log out",
     "logoutSuccess": "Logged out successfully",
