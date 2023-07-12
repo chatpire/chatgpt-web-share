@@ -61,10 +61,7 @@ const handleSubmit = () => {
       Message.error(t('tips.pleaseCheckInput'));
       return;
     }
-    registerApi(user.value).then(() => {
-      Message.success(t('tips.registerSuccess'));
-      emits('save');
-    });
+    emits('save',user.value);
   });
 };
 </script>
