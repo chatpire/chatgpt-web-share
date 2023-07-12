@@ -113,6 +113,15 @@ const languageOptions = [
       },
     },
   },
+  {
+    label: 'Italiano',
+    key: 'it-IT',
+    props: {
+      onClick: () => {
+        appStore.setLanguage('it-IT');
+      },
+    },
+  },
 ];
 
 const getOptions = (): Array<DropdownOption> => {
