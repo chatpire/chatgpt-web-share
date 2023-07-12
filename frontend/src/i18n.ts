@@ -4,6 +4,7 @@ import { createI18n, type I18n, type Locale } from 'vue-i18n';
 
 import EN from './locales/en-US.json';
 import ZH from './locales/zh-CN.json';
+import IT from './locales/it-IT.json';
 
 let i18n: I18n;
 
@@ -17,6 +18,9 @@ const init = () => {
       },
       'zh-CN': {
         ...ZH,
+      },
+      'it-IT': {
+        ...IT,
       },
     },
   });
