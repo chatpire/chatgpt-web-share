@@ -25,14 +25,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { registerApi } from '@/api/user';
 import { i18n } from '@/i18n';
 import { UserCreate } from '@/types/schema';
 import { Message } from '@/utils/tips';
 import { getEmailRule, getPasswordRule } from '@/utils/validate';
 const t = i18n.global.t as any;
 
-const emits = defineEmits(['save']);
+const emits = defineEmits<{
+  (event: 'save', userCreate: UserCreate): void;
+}>();
 
 const formRef = ref();
 
@@ -61,7 +62,7 @@ const handleSubmit = () => {
       Message.error(t('tips.pleaseCheckInput'));
       return;
     }
-    emits('save',user.value);
+    emits('save', user.value);
   });
 };
 </script>
