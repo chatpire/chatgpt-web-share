@@ -12,7 +12,7 @@ export type OpenaiApiSourceSettingSchema = components['schemas']['OpenaiApiSourc
 export type TimeWindowRateLimit = components['schemas']['TimeWindowRateLimit'];
 export type DailyTimeSlot = components['schemas']['DailyTimeSlot'];
 
-export type ServerStatusSchema = components['schemas']['ServerStatusSchema'];
+export type CommonStatusSchema = components['schemas']['CommonStatusSchema'];
 export type OpenaiWebChatStatus = components['schemas']['OpenaiWebChatStatus'];
 
 export type OpenaiWebChatModels = components['schemas']['OpenaiWebChatModels'];
@@ -24,6 +24,7 @@ export type OpenaiWebChatMessageTextContent = components['schemas']['OpenaiWebCh
 export type OpenaiWebChatMessageCodeContent = components['schemas']['OpenaiWebChatMessageCodeContent'];
 export type OpenaiWebChatMessageStderrContent = components['schemas']['OpenaiWebChatMessageStderrContent'];
 export type OpenaiWebChatMessageTetherBrowsingDisplayContent = components['schemas']['OpenaiWebChatMessageTetherBrowsingDisplayContent'];
+export type OpenaiWebChatMessageMetadataCiteData = components['schemas']['OpenaiWebChatMessageMetadataCiteData'];
 export type OpenaiWebChatMessageTetherQuoteContent = components['schemas']['OpenaiWebChatMessageTetherQuoteContent'];
 export type OpenaiWebChatMessageSystemErrorContent = components['schemas']['OpenaiWebChatMessageSystemErrorContent'];
 export type OpenaiApiChatMessageTextContent = components['schemas']['OpenaiApiChatMessageTextContent'];
@@ -39,10 +40,10 @@ export type BaseConversationHistory = components['schemas']['BaseConversationHis
 export type OpenaiApiConversationHistoryDocument = components['schemas']['OpenaiApiConversationHistoryDocument'];
 export type OpenaiWebConversationHistoryDocument = components['schemas']['OpenaiWebConversationHistoryDocument'];
 
-export type OpenAIChatPluginCategory = components['schemas']['OpenAIChatPluginCategory'];
-export type OpenAIChatPluginManifest = components['schemas']['OpenAIChatPluginManifest'];
-export type OpenAIChatPluginUserSettings = components['schemas']['OpenAIChatPluginUserSettings'];
-export type OpenAIChatPlugin = components['schemas']['OpenAIChatPlugin'];
+export type OpenaiChatPluginCategory = components['schemas']['OpenaiChatPluginCategory'];
+export type OpenaiChatPluginManifest = components['schemas']['OpenaiChatPluginManifest'];
+export type OpenaiChatPluginUserSettings = components['schemas']['OpenaiChatPluginUserSettings'];
+export type OpenaiChatPlugin = components['schemas']['OpenaiChatPlugin'];
 
 export type AskRequest = components['schemas']['AskRequest'];
 export type AskResponse = components['schemas']['AskResponse'];

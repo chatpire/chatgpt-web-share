@@ -65,9 +65,9 @@ import { EventBusyFilled, QueueFilled } from '@vicons/material';
 import { ref } from 'vue';
 
 import { getServerStatusApi } from '@/api/status';
-import { ServerStatusSchema } from '@/types/schema';
+import { CommonStatusSchema } from '@/types/schema';
 
-const serverStatus = ref<ServerStatusSchema>({});
+const serverStatus = ref<CommonStatusSchema>({});
 
 const isExpaned = ref(false);
 

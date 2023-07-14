@@ -4,23 +4,23 @@ from typing import List, Union
 import httpx
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
-from revChatGPT.typings import Error as revChatGPTError
 from sqlalchemy import select, and_, delete
 
 from api.database import get_async_session_context
 from api.enums import ChatSourceTypes
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException, OpenaiWebException
 from api.models.db import User, OpenaiWebConversation, BaseConversation
-from api.models.doc import OpenaiApiConversationHistoryDocument, OpenaiWebConversationHistoryDocument, BaseConversationHistory
+from api.models.doc import OpenaiApiConversationHistoryDocument, OpenaiWebConversationHistoryDocument, \
+    BaseConversationHistory
 from api.response import response
 from api.schemas import OpenaiWebConversationSchema, BaseConversationSchema, OpenaiApiConversationSchema
-from api.sources import RevChatGPTManager
+from api.sources import OpenaiWebChatManager
 from api.users import current_active_user, current_super_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
-openai_web_manager = RevChatGPTManager()
+openai_web_manager = OpenaiWebChatManager()
 
 
 async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User = Depends(current_active_user)):
@@ -36,7 +36,8 @@ async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User =
 
 
 @router.get("/conv", tags=["conversation"],
-            response_model=List[Union[BaseConversationSchema, OpenaiWebConversationSchema, OpenaiApiConversationSchema]])
+            response_model=List[
+                Union[BaseConversationSchema, OpenaiWebConversationSchema, OpenaiApiConversationSchema]])
 async def get_my_conversations(user: User = Depends(current_active_user)):
     """
     返回自己的有效会话
@@ -65,8 +66,7 @@ async def get_all_conversations(_user: User = Depends(current_super_user), valid
 
 @router.get("/conv/{conversation_id}", tags=["conversation"],
             response_model=OpenaiApiConversationHistoryDocument | OpenaiWebConversationHistoryDocument | BaseConversationHistory)
-async def get_conversation_history(fallback_cache: bool = False,
-                                   conversation: BaseConversation = Depends(_get_conversation_by_id)):
+async def get_conversation_history(conversation: BaseConversation = Depends(_get_conversation_by_id)):
     if conversation.source == ChatSourceTypes.openai_web:
         try:
             result = await openai_web_manager.get_conversation_history(conversation.conversation_id)
@@ -78,8 +78,9 @@ async def get_conversation_history(fallback_cache: bool = False,
                     await session.commit()
             return result
         except httpx.TimeoutException as e:
-            logger.warning(f"{conversation.conversation_id} get conversation history timeout: {e.__class__.__name__}")
-            raise InternalException("errors.revChatGPTTimeout")
+            logger.warning(
+                f"{conversation.conversation_id} get conversation history timeout: {e.__class__.__name__}")
+            raise InternalException("errors.timeout")
         except OpenaiWebException as e:
             if e.code == 404:
                 if conversation.is_valid:
@@ -87,24 +88,29 @@ async def get_conversation_history(fallback_cache: bool = False,
                         conversation = await session.get(BaseConversation, conversation.id)
                         conversation.is_valid = False
                         await session.commit()
-                # TODO 提示使用缓存
-                doc = None
-                if fallback_cache:
-                    doc = await RevConversationHistoryDocument.get(conversation.conversation_id)
-                    logger.debug(f"{conversation.conversation_id} get conversation history failed, use cached instead")
-                if doc is None:
-                    raise e
-                return doc
-            else:
-                raise e
+            raise e
         except Exception as e:
-            logger.warning(f"{conversation.conversation_id} get conversation history failed: {e.__class__.__name__} {e}")
+            logger.warning(
+                f"{conversation.conversation_id} get conversation history failed: {e.__class__.__name__} {e}")
             raise e
     else:
         doc = await OpenaiApiConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:
             raise InvalidParamsException("errors.conversationNotFound")
         return doc
+
+
+@router.get("/conv/{conversation_id}/cache", tags=["conversation"],
+            response_model=OpenaiApiConversationHistoryDocument | OpenaiWebConversationHistoryDocument | BaseConversationHistory)
+async def get_conversation_history_from_cache(conversation_id, user: User = Depends(current_super_user)):
+    conversation = await _get_conversation_by_id(conversation_id, user=user)
+    if conversation.source == ChatSourceTypes.openai_web:
+        doc = await OpenaiWebConversationHistoryDocument.get(conversation.conversation_id)
+    else:
+        doc = await OpenaiApiConversationHistoryDocument.get(conversation.conversation_id)
+    if doc is None:
+        raise InvalidParamsException("errors.conversationNotFound")
+    return doc
 
 
 @router.delete("/conv/{conversation_id}", tags=["conversation"])
@@ -117,7 +123,7 @@ async def delete_conversation(conversation: BaseConversation = Depends(_get_conv
     if conversation.source == ChatSourceTypes.openai_web:
         try:
             await openai_web_manager.delete_conversation(conversation.conversation_id)
-        except revChatGPTError as e:
+        except OpenaiWebException as e:
             logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
         except httpx.HTTPStatusError as e:
             if e.response.status_code != 404:

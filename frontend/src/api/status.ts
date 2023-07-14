@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-import { ServerStatusSchema } from '@/types/schema';
+import { CommonStatusSchema } from '@/types/schema';
 
 import ApiUrl from './url';
 
 export function getServerStatusApi() {
-  return axios.get<ServerStatusSchema>(ApiUrl.ServerStatus);
+  return axios.get<CommonStatusSchema>(ApiUrl.ServerStatus);
 }

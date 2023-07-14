@@ -9,11 +9,11 @@
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="ml-4 lt-md:mx-0 w-full min-h-16">
-      <div v-if="showRawMessage" class="my-3 json-viewer">
+      <div v-if="showRawMessage" class="mr-2 my-3 json-viewer">
         <JsonViewer :value="props.messages" copyable expanded :expand-depth="2" :theme="appStore.theme" />
       </div>
       <div v-else>
-        <div v-for="(item, i) in displayItems" :key="i">
+        <div v-for="(item, i) in displayItems" :key="i" class="mr-1">
           <div v-if="item.type == 'text'">
             <MessageRowTextDisplay :render-markdown="renderMarkdown" :messages="item.messages" />
           </div>
@@ -25,55 +25,55 @@
           </div>
         </div>
       </div>
-      <div class="hide-in-print flex w-full justify-end pb-1 -mt-2">
-        <div class="flex flex-row space-x-4">
+      <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1 -mt-2">
+        <div class="flex flex-row items-center space-x-4">
           <n-tooltip trigger="hover">
             <template #trigger>
-              <n-text class="text-[0.5rem]" depth="3">
+              <n-text class="text-[10px]" depth="3">
                 {{ relativeTimeString }}
               </n-text>
             </template>
             <span> {{ timeString }}</span>
           </n-tooltip>
-          <n-text v-if="props.messages.length > 1" class="text-[0.5rem]" depth="3">
+          <n-text v-if="props.messages.length > 1" class="text-[10px]" depth="3">
             {{ $t('commons.messagesCount', [props.messages.length]) }}
           </n-text>
-          <div class="space-x-2">
-            <!-- 复制 -->
-            <n-tooltip trigger="hover">
-              <template #trigger>
-                <n-button text ghost type="tertiary" size="tiny" @click="copyMessageContent">
-                  <n-icon>
-                    <CopyOutline />
-                  </n-icon>
-                </n-button>
-              </template>
-              <span>{{ t('commons.copy') }}</span>
-            </n-tooltip>
-            <!-- 是否渲染 markdown -->
-            <n-tooltip trigger="hover">
-              <template #trigger>
-                <n-button text ghost size="tiny" :type="'tertiary'" @click="toggleRenderMarkdown">
-                  <n-icon :component="renderMarkdown ? ArticleFilled : ArticleOutlined" />
-                </n-button>
-              </template>
-              <span>{{ t('commons.shouldRenderMarkdown') }}</span>
-            </n-tooltip>
-            <n-tooltip trigger="hover">
-              <template #trigger>
-                <n-button
-                  text
-                  ghost
-                  size="tiny"
-                  :type="showRawMessage ? 'success' : 'tertiary'"
-                  @click="toggleShowRawMessage"
-                >
-                  <n-icon :component="CodeSlash" />
-                </n-button>
-              </template>
-              <span>{{ t('commons.showRawMessage') }}</span>
-            </n-tooltip>
-          </div>
+        </div>
+        <div class="flex flex-row items-center space-x-2">
+          <!-- 复制 -->
+          <n-tooltip trigger="hover">
+            <template #trigger>
+              <n-button text ghost type="tertiary" size="tiny" @click="copyMessageContent">
+                <n-icon>
+                  <CopyOutline />
+                </n-icon>
+              </n-button>
+            </template>
+            <span>{{ t('commons.copy') }}</span>
+          </n-tooltip>
+          <!-- 是否渲染 markdown -->
+          <n-tooltip trigger="hover">
+            <template #trigger>
+              <n-button text ghost size="tiny" :type="'tertiary'" @click="toggleRenderMarkdown">
+                <n-icon :component="renderMarkdown ? ArticleFilled : ArticleOutlined" />
+              </n-button>
+            </template>
+            <span>{{ t('commons.shouldRenderMarkdown') }}</span>
+          </n-tooltip>
+          <n-tooltip trigger="hover">
+            <template #trigger>
+              <n-button
+                text
+                ghost
+                size="tiny"
+                :type="showRawMessage ? 'success' : 'tertiary'"
+                @click="toggleShowRawMessage"
+              >
+                <n-icon :component="CodeSlash" />
+              </n-button>
+            </template>
+            <span>{{ t('commons.showRawMessage') }}</span>
+          </n-tooltip>
         </div>
       </div>
     </div>
@@ -89,7 +89,7 @@ import { CodeSlash, CopyOutline } from '@vicons/ionicons5';
 import { ArticleFilled, ArticleOutlined, PersonFilled } from '@vicons/material';
 import * as clipboard from 'clipboard-polyfill';
 import { useThemeVars } from 'naive-ui';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { JsonViewer } from 'vue3-json-viewer';
 
@@ -117,6 +117,10 @@ watch(
   }
 );
 
+onMounted(() => {
+  if (lastMessage.value?.role == 'user') renderMarkdown.value = appStore.preference.renderUserMessageInMd;
+});
+
 const props = defineProps<{
   messages: BaseChatMessage[];
 }>();
@@ -126,7 +130,7 @@ const lastMessage = computed<BaseChatMessage | null>(() => {
   else return props.messages[props.messages.length - 1];
 });
 
-const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[\+-]\d\d:?\d\d/.test(create_time)
+const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[+-]\d\d:?\d\d/.test(create_time);
 
 const timeString = computed<string>(() => {
   if (!lastMessage.value || !lastMessage.value.create_time) return '';
@@ -226,10 +230,7 @@ const displayItems = computed<DisplayItem[]>(() => {
       continue;
     }
     for (const message of group) {
-      if (
-        message.source !== 'openai_web' ||
-        typeof message.content == 'string'
-      ) {
+      if (message.source !== 'openai_web' || typeof message.content == 'string') {
         console.error('wrong message mixed in non-text content group', group);
         continue;
       }

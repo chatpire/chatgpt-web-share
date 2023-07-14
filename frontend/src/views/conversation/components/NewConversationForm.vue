@@ -1,40 +1,47 @@
 <template>
-  <n-form :label-placement="'left'" :label-align="'left'" label-width="100px">
-    <n-form-item :label="t('labels.title')">
-      <n-input v-model:value="newConversationInfo.title" />
-    </n-form-item>
-    <n-form-item :label="t('labels.source')">
-      <n-select v-model:value="newConversationInfo.source" :options="availableChatSourceTypes" />
-    </n-form-item>
-    <n-form-item :label="t('labels.model')">
-      <n-select v-model:value="newConversationInfo.model" :options="availableModels" />
-    </n-form-item>
-    <n-form-item
-      v-if="newConversationInfo.source === 'openai_web' && newConversationInfo.model === 'gpt_4_plugins'"
-      :label="t('labels.plugins')"
-    >
-      <n-select
-        v-model:value="newConversationInfo.openaiWebPlugins"
-        :options="pluginOptions"
-        clearable
-        multiple
-        :loading="loadingPlugins"
-        :disabled="loadingPlugins"
-        :max-tag-count="3"
-      />
-    </n-form-item>
-  </n-form>
+  <div class="mt-6">
+    <n-form :label-placement="'left'" :label-align="'left'" label-width="100px">
+      <n-form-item :label="t('labels.title')">
+        <n-input v-model:value="newConversationInfo.title" />
+      </n-form-item>
+      <n-form-item :label="t('labels.source')">
+        <n-select v-model:value="newConversationInfo.source" :options="availableChatSourceTypes" />
+      </n-form-item>
+      <n-form-item :label="t('labels.model')">
+        <n-select v-model:value="newConversationInfo.model" :options="availableModels" />
+      </n-form-item>
+      <n-form-item
+        v-if="newConversationInfo.source === 'openai_web' && newConversationInfo.model === 'gpt_4_plugins'"
+        :label="t('labels.plugins')"
+      >
+        <n-select
+          v-model:value="newConversationInfo.openaiWebPlugins"
+          :options="pluginOptions"
+          clearable
+          multiple
+          :placeholder="selectPluginPlaceholder"
+          :loading="loadingPlugins"
+          :disabled="loadingPlugins"
+          :render-label="renderPluginSelectionLabel"
+          :render-tag="renderPluginSelectionTag"
+        />
+      </n-form-item>
+    </n-form>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { SelectOption } from 'naive-ui';
-import { computed, ref, watch } from 'vue';
+import { NAvatar, NTag, SelectOption, SelectRenderTag } from 'naive-ui';
+import { computed, h, ref, watch } from 'vue';
 
 import { getAllOpenaiChatPluginsApi, getInstalledOpenaiChatPluginsApi } from '@/api/chat';
 import { i18n } from '@/i18n';
 import { useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
-import { OpenAIChatPlugin } from '@/types/schema';
+import { OpenaiChatPlugin } from '@/types/schema';
+import { Message } from '@/utils/tips';
+
+import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
 
 const t = i18n.global.t as any;
 
@@ -86,8 +93,14 @@ const availableModels = computed<SelectOption[]>(() => {
   }
 });
 
-const availablePlugins = ref<OpenAIChatPlugin[] | null>(null);
+const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
 const loadingPlugins = ref<boolean>(false);
+
+const selectPluginPlaceholder = computed<string>(() => {
+  return loadingPlugins.value
+    ? t('tips.NewConversationForm.loadingPlugins')
+    : t('tips.NewConversationForm.selectPlugins');
+});
 
 const pluginOptions = computed<SelectOption[]>(() => {
   if (!availablePlugins.value) {
@@ -99,6 +112,43 @@ const pluginOptions = computed<SelectOption[]>(() => {
   }));
 });
 
+function renderPluginSelectionLabel(option: SelectOption) {
+  const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
+  return h(NewConversationFormSelectionPluginLabel, {
+    plugin,
+  });
+}
+
+const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
+  const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
+  return h(
+    NTag,
+    {
+      closable: true,
+      onMousedown: (e: FocusEvent) => {
+        e.preventDefault();
+      },
+      onClose: (e: MouseEvent) => {
+        e.stopPropagation();
+        handleClose();
+      },
+    },
+    {
+      default: () =>
+        h(
+          'div',
+          { class: 'flex flex-row' },
+          {
+            default: () => [
+              h(NAvatar, { size: 'small', src: plugin?.manifest?.logo_url }),
+              h('div', { class: 'ml-2' }, { default: () => plugin?.manifest?.name_for_human }),
+            ],
+          }
+        ),
+    }
+  );
+};
+
 watch(
   () => {
     return [newConversationInfo.value.source, newConversationInfo.value.model];
@@ -107,8 +157,12 @@ watch(
     if (source === 'openai_web' && model === 'gpt_4_plugins') {
       newConversationInfo.value.openaiWebPlugins = [];
       loadingPlugins.value = true;
-      const res = await getInstalledOpenaiChatPluginsApi();
-      availablePlugins.value = res.data;
+      try {
+        const res = await getInstalledOpenaiChatPluginsApi();
+        availablePlugins.value = res.data;
+      } catch (err) {
+        Message.error(t('tips.NewConversationForm.failedToGetPlugins'));
+      }
       loadingPlugins.value = false;
     }
   },

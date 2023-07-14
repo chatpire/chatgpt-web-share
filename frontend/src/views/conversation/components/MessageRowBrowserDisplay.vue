@@ -46,6 +46,11 @@
             </div>
           </div>
         </div>
+        <div v-else-if="action.type == 'scroll'">
+          <div class="flex items-center gap-2">
+            {{ $t('commons.scrolling_down') }}
+          </div>
+        </div>
         <div v-else-if="action.type == 'click_result'">
           {{ $t('commons.readingContent') }}
         </div>
@@ -55,6 +60,16 @@
         <!-- <div v-else-if="action.type == 'quote'">
         {{ $t('commons.quoteContent') }}
         </div> -->
+        <n-popover trigger="hover" placement="right">
+          <template #trigger>
+            <div class="text-gray-400 hover:text-blue-500 cursor-pointer" @click="showContent(action)">
+              {{ $t('commons.detail') }}
+            </div>
+          </template>
+          <div class="max-w-200 whitespace-pre-line">
+            {{ getContentRawText(action.message) }}
+          </div>
+        </n-popover>
       </div>
     </div>
   </div>
@@ -63,24 +78,28 @@
 <script setup lang="ts">
 import { KeyboardArrowDownRound, KeyboardArrowUpRound } from '@vicons/material';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import BrowsingIcon from '@/components/BrowsingIcon.vue';
 import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getContentRawText } from '@/utils/chat';
+import { Dialog } from '@/utils/tips';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   messages: BaseChatMessage[];
 }>();
 
 type BrowsingAction = {
-  type: 'search' | 'click' | 'go_back' | 'click_result' | 'quote' | 'quote_result' | 'failed';
+  type: 'search' | 'click' | 'scroll' | 'go_back' | 'click_result' | 'quote' | 'quote_result' | 'failed';
   message: BaseChatMessage;
   searchContent?: string;
   clickIndex?: string;
   citeMetadata?: CiteMetadata;
 };
 
-type CiteMetadata = OpenaiWebChatMessageMetadata['cite_metadata'];
+type CiteMetadata = OpenaiWebChatMessageMetadata['_cite_metadata'];
 
 const actions = computed(() => {
   const result = [] as BrowsingAction[];
@@ -98,15 +117,15 @@ const actions = computed(() => {
         .split('\n')
         .filter((line) => !line.startsWith('#'))
         .join('\n');
-      if (code.includes('search')) {
+      if (code.includes('search(')) {
         // search("...")
-        const searchContent = code.match(/search\("(.*)"\)/)?.[1];
+        const searchContent = code.match(/search\("(.*)".*\)/)?.[1];
         result.push({
           type: 'search',
           message,
           searchContent,
         });
-      } else if (code.includes('click')) {
+      } else if (code.includes('click(')) {
         // 例如：click(3)
         const clickIndex = code.match(/click\((.*)\)/)?.[1];
         result.push({
@@ -115,7 +134,16 @@ const actions = computed(() => {
           clickIndex,
           citeMetadata: currentCiteMetadata,
         });
-      } else if (code.includes('quote')) {
+      } else if (code.includes('scroll(')) {
+        // 例如：click(3)
+        const clickIndex = code.match(/click\((.*)\)/)?.[1];
+        result.push({
+          type: 'scroll',
+          message,
+          clickIndex,
+          citeMetadata: currentCiteMetadata,
+        });
+      } else if (code.includes('quote(')) {
         // result.push({
         //   type: 'quote',
         //   message,
@@ -129,7 +157,7 @@ const actions = computed(() => {
           type: 'click_result',
           message,
         });
-        if (metadata.cite_metadata) currentCiteMetadata = metadata.cite_metadata;
+        if (metadata._cite_metadata) currentCiteMetadata = metadata._cite_metadata;
       } else if (message.content?.content_type === 'tether_quote') {
         result.push({
           type: 'quote_result',
@@ -180,5 +208,12 @@ const expandContent = ref(false);
 
 function handleExpand() {
   expandContent.value = !expandContent.value;
+}
+
+function showContent(action: BrowsingAction) {
+  Dialog.info({
+    title: t('commons.detail'),
+    content: getContentRawText(action.message),
+  });
 }
 </script>

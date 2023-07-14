@@ -12,6 +12,7 @@
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { getConversationHistoryFromCacheApi } from '@/api/conv';
 import { useConversationStore } from '@/store';
 
 import HistoryContent from './components/HistoryContent.vue';
@@ -25,7 +26,7 @@ const conversationId = route.params.conversation_id as string;
 const loading = ref(true);
 
 conversationStore
-  .fetchConversationHistory(conversationId, true)
+  .fetchConversationHistoryFromCache(conversationId, true)
   .then(() => {
     // console.log(conversationStore.conversationDetailMap);
   })

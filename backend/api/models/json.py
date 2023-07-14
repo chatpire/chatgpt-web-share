@@ -10,12 +10,7 @@ ModelT = TypeVar('ModelT', bound=OpenaiWebChatModels | OpenaiApiChatModels)
 
 
 class OpenaiWebPerModelAskCount(BaseModel):
-    gpt_3_5: int = 0
-    gpt_3_5_mobile: int = 0
-    gpt_4: int = 0
-    gpt_4_mobile: int = 0
-    gpt_4_browsing: int = 0
-    gpt_4_plugins: int = 0
+    __root__: dict[str, int] = {model: 0 for model in list(OpenaiWebChatModels)}
 
     @root_validator(pre=True)
     def check(cls, values):
@@ -26,19 +21,12 @@ class OpenaiWebPerModelAskCount(BaseModel):
         return values
 
     @staticmethod
-    def default():
-        return OpenaiWebPerModelAskCount(gpt_3_5=0, gpt_3_5_mobile=0, gpt_4=0, gpt_4_mobile=0, gpt_4_browsing=0,
-                                         gpt_4_plugins=0)
-
-    @staticmethod
     def unlimited():
-        return OpenaiWebPerModelAskCount(gpt_3_5=-1, gpt_3_5_mobile=-1, gpt_4=-1, gpt_4_mobile=-1, gpt_4_browsing=-1,
-                                         gpt_4_plugins=-1)
+        return OpenaiWebPerModelAskCount(__root__={model: -1 for model in list(OpenaiWebChatModels)})
 
 
 class OpenaiApiPerModelAskCount(BaseModel):
-    gpt_3_5: int = 0
-    gpt_4: int = 0
+    __root__: dict[str, int] = {model: 0 for model in list(OpenaiApiChatModels)}
 
     @root_validator(pre=True)
     def check(cls, values):
@@ -48,12 +36,8 @@ class OpenaiApiPerModelAskCount(BaseModel):
         return values
 
     @staticmethod
-    def default():
-        return OpenaiApiPerModelAskCount(gpt_3_5=0, gpt_4=0)
-
-    @staticmethod
     def unlimited():
-        return OpenaiApiPerModelAskCount(gpt_3_5=-1, gpt_4=-1)
+        return OpenaiApiPerModelAskCount(__root__={model: -1 for model in list(OpenaiApiChatModels)})
 
 
 class TimeWindowRateLimit(BaseModel):

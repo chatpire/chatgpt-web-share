@@ -2,7 +2,15 @@
   <div>
     <StatusCard />
     <div class="h-full flex flex-col">
-      <n-button secondary strong type="primary" :disabled="props.loading" @click="emits('new-conversation')">
+      <n-button
+        v-if="!hasNewConversation"
+        class="mb-2"
+        secondary
+        strong
+        type="primary"
+        :disabled="props.loading"
+        @click="emits('new-conversation')"
+      >
         <template #icon>
           <n-icon class="">
             <Add />
@@ -13,7 +21,7 @@
       <n-menu
         ref="menuRef"
         v-model:value="convId"
-        class="-mx-2 mt-2"
+        class="-mx-2"
         :content-style="{ backgroundColor: 'red' }"
         :disabled="props.loading"
         :options="menuOptions"
@@ -59,6 +67,10 @@ const convId = computed<string | null>({
   set(value: string | null) {
     emits('update:value', value);
   },
+});
+
+const hasNewConversation = computed<boolean>(() => {
+  return !!conversationStore.newConversation;
 });
 
 const menuOptions = computed<MenuOption[]>(() => {

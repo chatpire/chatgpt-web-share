@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue';
+import { nextTick, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getServerLogsApi } from '@/api/system';
@@ -107,6 +107,11 @@ loadLogs();
 let interval = setInterval(() => {
   loadLogs();
 }, refresh_duration.value * 1000);
+
+onUnmounted(() => {
+  // 添加这个部分，这样组件卸载时会清除定时器
+  clearInterval(interval);
+});
 
 watch(
   () => refresh_duration.value,

@@ -8,39 +8,30 @@ class ChatSourceTypes(StrEnum):
     openai_api = auto()
 
 
-chat_model_definitions = {
-    "openai_web": {
-        "gpt_3_5": "text-davinci-002-render-sha",
-        "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
-        "gpt_4": "gpt-4",
-        "gpt_4_mobile": "gpt-4-mobile",
-        "gpt_4_browsing": "gpt-4-browsing",
-        "gpt_4_plugins": "gpt-4-plugins",
-    },
-    "openai_api": {
-        "gpt_3_5": "gpt-3.5-turbo",
-        "gpt_4": "gpt-4",
+def get_model_code_mapping(source_cls):
+    from api.conf import Config
+
+    cls_to_source = {
+        "OpenaiWebChatModels": ChatSourceTypes.openai_web,
+        "OpenaiApiChatModels": ChatSourceTypes.openai_api,
     }
-}
-
-
-cls_to_source = {
-    "OpenaiWebChatModels": ChatSourceTypes.openai_web,
-    "OpenaiApiChatModels": ChatSourceTypes.openai_api,
-}
+    source = cls_to_source.get(source_cls.__name__, None)
+    source_model_code_mapping = {
+        "openai_web": Config().openai_web.model_code_mapping,
+        "openai_api": Config().openai_api.model_code_mapping,
+    }
+    return source_model_code_mapping[source]
 
 
 class BaseChatModelEnum(StrEnum):
     def code(self):
-        source = cls_to_source.get(self.__class__.__name__, None)
-        result = chat_model_definitions[source].get(self.name, None)
+        result = get_model_code_mapping(self.__class__).get(self.name, None)
         assert result, f"model name not found: {self.name}"
         return result
 
     @classmethod
     def from_code(cls, code: str):
-        source = cls_to_source.get(cls.__name__, None)
-        for name, value in chat_model_definitions[source].items():
+        for name, value in get_model_code_mapping(cls).items():
             if value == code:
                 return cls[name]
         return None

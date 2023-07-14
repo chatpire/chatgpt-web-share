@@ -18,6 +18,7 @@ from api.models.db import User, OpenaiWebConversation
 from api.models.doc import RequestLogDocument, AskLogDocument
 from api.schemas import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, OpenaiWebSourceSettingSchema, \
     OpenaiApiSourceSettingSchema, RequestLogAggregation, AskLogAggregation
+from api.sources import OpenaiWebChatManager, OpenaiApiChatManager
 from api.users import current_super_user, get_user_manager_context
 from utils.logger import get_logger
 
@@ -139,7 +140,7 @@ async def get_request_statistics(
                     }
                 },
                 "route_path": "$meta.route_path",
-                    "method": "$meta.method",
+                "method": "$meta.method",
                 "user_id": 1,
                 "elapsed_ms": 1
             }
@@ -253,6 +254,10 @@ async def get_config(_user: User = Depends(current_super_user)):
 async def update_config(config_model: ConfigModel, _user: User = Depends(current_super_user)):
     config.update(config_model)
     config.save()
+    openai_web_manager = OpenaiWebChatManager()
+    openai_api_manager = OpenaiApiChatManager()
+    openai_web_manager.reset_session()
+    openai_api_manager.reset_session()
     return config.model()
 
 
@@ -266,6 +271,8 @@ async def get_credentials(_user: User = Depends(current_super_user)):
 async def update_credentials(credentials_model: CredentialsModel, _user: User = Depends(current_super_user)):
     credentials.update(credentials_model)
     credentials.save()
+    openai_web_manager = OpenaiWebChatManager()
+    openai_web_manager.reset_session()
     return credentials.model()
 
 

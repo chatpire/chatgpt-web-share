@@ -1,25 +1,63 @@
+from typing import Tuple
+
 from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_users import BaseUserManager
+from fastapi_users.authentication import Strategy
 from sqlalchemy.future import select
 from starlette.requests import Request
 
+from api.conf import Config
 from api.database import get_async_session_context, get_user_db_context
-from api.exceptions import UserNotExistException
+from api.exceptions import UserNotExistException, AuthenticationFailedException
 from api.models.db import User
+from api.response import response
 from api.schemas import UserRead, UserUpdate, UserCreate, UserUpdateAdmin, UserReadAdmin, UserSettingSchema
-from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user
+from api.users import auth_backend, fastapi_users, current_active_user, get_user_manager_context, current_super_user, \
+    get_user_manager, UserManager
 
 router = APIRouter()
 
-router.include_router(
-    fastapi_users.get_auth_router(auth_backend), prefix="/auth", tags=["auth"]
+
+# router.include_router(
+#     fastapi_users.get_auth_router(auth_backend), prefix="/auth", tags=["auth"]
+# )
+
+
+@router.post("/auth/login", name=f"auth:{auth_backend.name}.login")
+async def login(
+        request: Request,
+        credentials: OAuth2PasswordRequestForm = Depends(),
+        user_manager: UserManager = Depends(get_user_manager),
+        strategy: Strategy[User, int] = Depends(auth_backend.get_strategy),
+):
+    user = await user_manager.authenticate(credentials)
+
+    if user is None or not user.is_active:
+        raise AuthenticationFailedException()
+    # if requires_verification and not user.is_verified:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail=ErrorCode.LOGIN_USER_NOT_VERIFIED,
+    #     )
+    resp = await auth_backend.login(strategy, user)
+    return response(200, headers=resp.headers)
+
+
+get_current_user_token = fastapi_users.authenticator.current_user_token(
+    active=True, verified=False
 )
 
 
-# router.include_router(
-#     fastapi_users.get_reset_password_router(),
-#     prefix="/auth",
-#     tags=["auth"],
-# )
+@router.post("/auth/logout", name=f"auth:{auth_backend.name}.logout")
+async def logout(
+        user_token: Tuple[User, str] = Depends(get_current_user_token),
+        strategy: Strategy[User, int] = Depends(auth_backend.get_strategy),
+):
+    user, token = user_token
+    resp = await auth_backend.logout(strategy, user, token)
+    return response(200, headers=resp.headers)
+
 
 @router.post("/auth/register", response_model=UserReadAdmin, tags=["auth"])
 async def register(
@@ -52,7 +90,14 @@ async def get_all_users(_user: User = Depends(current_super_user)):
 
 @router.get("/user/me", response_model=UserRead, tags=["user"])
 async def get_me(user: User = Depends(current_active_user)):
-    return UserRead.from_orm(user)
+    user_read = UserRead.from_orm(user)
+    for source in ["openai_api", "openai_web"]:
+        source_setting = getattr(user_read.setting, source)
+        global_enabled_models = getattr(Config(), source).enabled_models
+        source_setting.available_models = list(
+            set(source_setting.available_models).intersection(set(global_enabled_models)))
+        setattr(user_read.setting, source, source_setting)
+    return user_read
 
 
 @router.patch("/user/me", response_model=UserRead, tags=["user"])

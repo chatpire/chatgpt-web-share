@@ -9,7 +9,7 @@ _TYPE_CHECKING = False
 
 
 class CredentialsModel(BaseModel):
-    chatgpt_access_token: Optional[str] = None
+    openai_web_access_token: Optional[str] = None
     # chatgpt_account_username: Optional[str] = None
     # chatgpt_account_password: Optional[str] = None
     openai_api_key: Optional[str] = None
@@ -18,10 +18,10 @@ class CredentialsModel(BaseModel):
 @singleton_with_lock
 class Credentials(BaseConfig[CredentialsModel]):
     if _TYPE_CHECKING:
-        revchatgpt_access_token: Optional[str]
+        openai_web_access_token: Optional[str]
         # chatgpt_account_username: Optional[str]
         # chatgpt_account_password: Optional[str]
         openai_api_key: Optional[str]
 
-    def __init__(self):
-        super().__init__(CredentialsModel, "credentials.yaml")
+    def __init__(self, load_config: bool = True):
+        super().__init__(CredentialsModel, "credentials.yaml", load_config=load_config)

@@ -73,6 +73,7 @@ const datasetSource = computed(() => {
     // aggregate by start_time
     // TODO: 根据 endpoint 提供筛选选项；这里只是按照时间展示总量
     const aggregated = props.requestStats.reduce((acc, cur) => {
+      if (!cur._id?.start_time) return acc;
       const timestamp = new Date(cur._id.start_time).getTime();
       const count = cur.count;
       const userIds = cur.user_ids;
@@ -132,18 +133,17 @@ const generateSeries = (name: string, lineColor: string, itemBorderColor: string
 
 const showDataZoom = ref(false);
 const dataZoomOption = computed(() => {
-  return showDataZoom.value
-    ? [
-      {
-        type: 'slider',
-        show: showDataZoom.value,
-        xAxisIndex: 0,
-        start: 0,
-        end: 100,
-        filterMode: 'filter',
-      },
-    ]
-    : [];
+  const currentTimestamp = new Date().getTime();
+  return [
+    {
+      type: 'slider',
+      show: showDataZoom.value,
+      xAxisIndex: 0,
+      startValue: currentTimestamp - 1000 * 60 * 60 * 24 * 7,
+      endValue: currentTimestamp,
+      filterMode: 'filter',
+    },
+  ];
 });
 const gridBottom = computed(() => {
   return showDataZoom.value ? '35%' : '5%';
@@ -229,7 +229,7 @@ const option = computed(() => {
         const data = el.data as any;
         return `<div>
                   <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(
-  new Date(data.timestamp).getTime() / 1000 + props.requestStatsGranularity!,
+  new Date(data.timestamp).getTime() + props.requestStatsGranularity! * 1000,
   true
 )}</span>
                   <br />
