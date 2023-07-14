@@ -52,7 +52,7 @@
     "vanishConversation": "彻底删除对话",
     "shaModel": "Default",
     "paidModel": "Legacy",
-    "currentConversationModel": "当前对话使用的模型",
+    "currentConversationModel": "当前使用的模型",
     "availableModels": "允许使用的模型",
     "maxConversationCount": "最大对话数",
     "availableTotalAskCount": "总可用提问次数",
@@ -103,6 +103,7 @@
     "sumOfNormalAskDuration": "普通对话总耗时",
     "sumOfGpt4AskDuration": "GPT-4对话总耗时",
     "abortRequest": "停止请求",
+    "continueGenerating": "继续生成",
     "clearAllConversations": "清空所有对话",
     "readyToClearAllConversations": "警告：你即将要清空所有对话，这将销毁所有对话数据。确定要清空所有对话吗？",
     "sendKey": "发送快捷键",
@@ -163,7 +164,13 @@
     "noPluginsAvailable": "获取插件列表失败，请检查是否设置 “openai_web.is_plus_account” 项为 true",
     "disable": "禁用",
     "enable": "启用",
-    "enabled": "已启用"
+    "enabled": "已启用",
+    "scrolling_down": "向下浏览",
+    "detail": "详情",
+    "openaiSettings": "OpenAI 设置",
+    "expand": "展开",
+    "export": "导出",
+    "import": "导入"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -196,7 +203,15 @@
     "internal": "内部错误",
     "noAvailableTotalAskCount": "该类型对话方式无可用总对话次数",
     "userChatTypeExpired": "该对话类型有效期已到期，请联系管理员增加时长",
-    "userNotAllowToAskAtThisTime": "当前时间段不允许提问"
+    "userNotAllowToAskAtThisTime": "当前时间段不允许提问",
+    "openai": {
+      "401": "OpenAI 授权失败 (401 错误)，请联系管理员处理",
+      "403": "OpenAI 授权失败 (403 错误)，请联系管理员处理",
+      "404": "OpenAI 接口不存在 (404 错误)，请联系管理员处理",
+      "429": "OpenAI 接口请求过于频繁 (429 错误)，可能是超过模型使用限制，请稍后再试",
+      "unkown": "OpenAI 未知错误，请联系管理员处理"
+    },
+    "unknown": "未知错误"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
@@ -251,7 +266,13 @@
     "modelRequired": "请选择模型",
     "installSuccess": "安装成功",
     "disablePluginSuccess": "禁用插件成功",
-    "enablePluginSuccess": "启用插件成功"
+    "enablePluginSuccess": "启用插件成功",
+    "NewConversationForm": {
+      "loadingPlugins": "加载插件中……",
+      "selectPlugins": "选择插件",
+      "failedToGetPlugins": "获取插件列表失败"
+    },
+    "openaiWebPluginsLengthMoreThan3": "插件数量不能超过3"
   },
   "labels": {
     "nickname": "昵称",
@@ -295,7 +316,12 @@
     "rev_chat_status": "Chat 状态",
     "max_conv_count": "最大对话数量",
     "source": "来源",
-    "plugins": "插件"
+    "plugins": "插件",
+    "gpt4_count_in_3_hours": "GPT-4 用量 / 3h",
+    "config": {
+      "enabled_models": "启用的模型",
+      "model_code_mapping": "模型代码映射"
+    }
   },
   "models": {
     "gpt_3_5": "GPT-3.5",
@@ -316,6 +342,9 @@
   "desc": {
     "rate_limits": "定义用户在某时间间隔内最多能够发起多少次对话，优先级按照时间间隔从小到大计算。",
     "daily_available_time_slots": "仅允许在每天的这些时间段内使用，如果为空表示不限制。",
-    "openai_web_installed_plugins": "注意：只有在此处启用的插件，在使用GPT-4 Plugin时才能选择！"
+    "openai_web_installed_plugins": "注意：只有在此处启用的插件，在使用GPT-4 Plugin时才能选择！",
+    "config": {
+      "enabled_models": "设置全局启用哪些模型，在此处不启用的模型所有账号都无法使用"
+    }
   }
 }

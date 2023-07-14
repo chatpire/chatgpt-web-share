@@ -38,46 +38,6 @@ jobs:
       #     cd ChatGPT-Proxy-V4
       #     go build
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 7
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies in frontend
-        run: |
-          cd frontend
-          pnpm install
-
-      - name: build frontend
-        run: |
-          cd frontend
-          pnpm build
-
-      # - name: Move ChatGPT-Proxy-V4 to backend
-      #   run: |
-      #     mv ChatGPT-Proxy-V4/ChatGPT-Proxy-V4 backend/
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4

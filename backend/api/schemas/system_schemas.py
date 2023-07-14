@@ -1,17 +1,9 @@
 from datetime import datetime, timezone
-from typing import Optional, Literal, Union
+from typing import Optional, Union, Annotated
 
 from pydantic import BaseModel, validator, Field
 
 from api.models.doc import OpenaiWebAskLogMeta, OpenaiApiAskLogMeta
-
-
-class ServerStatusSchema(BaseModel):
-    active_user_in_5m: int = None
-    active_user_in_1h: int = None
-    active_user_in_1d: int = None
-    is_chatbot_busy: bool = None
-    chatbot_waiting_count: int = None
 
 
 class SystemInfo(BaseModel):
@@ -36,9 +28,9 @@ datetime.now().astimezone()
 
 
 class RequestLogAggregationID(BaseModel):
-    start_time: datetime
-    route_path: str
-    method: str
+    start_time: Optional[datetime]
+    route_path: Optional[str]
+    method: Optional[str]
 
 
 class RequestLogAggregation(BaseModel):
@@ -55,11 +47,12 @@ class RequestLogAggregation(BaseModel):
 
 class AskLogAggregationID(BaseModel):
     start_time: datetime
-    meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
+    # meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
+    meta: Optional[Annotated[Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta], Field(discriminator='source')]] = None
 
 
 class AskLogAggregation(BaseModel):
-    id: AskLogAggregationID = Field(alias="_id")  # 起始时间
+    id: Optional[AskLogAggregationID] = Field(alias="_id")  # 起始时间
     count: int  # 时间间隔内的请求数量
     user_ids: list[Optional[int]] = None  # 用户ID列表
     total_queueing_time: Optional[float]

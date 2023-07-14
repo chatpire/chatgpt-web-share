@@ -41,10 +41,8 @@ axios.interceptors.request.use(
 const successCode = [200, 201, 204];
 axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse>) => {
-    if ([201, 204].includes(response.status)) {
-      return response;
-    }
     const res = response.data;
+    console.log('response data', response);
     if (!successCode.includes(res.code)) {
       console.warn('Error: ', res);
       let msg = `${res.code}`;
@@ -58,7 +56,7 @@ axios.interceptors.response.use(
         duration: 5 * 1000,
       });
       if (
-        [401].includes(res.code) &&
+        [10401].includes(res.code) &&
         !([ApiUrl.Login, ApiUrl.Logout] as Array<string>).includes(response.config.url || '')
       ) {
         Dialog.error({

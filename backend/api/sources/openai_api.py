@@ -8,9 +8,10 @@ from pydantic import ValidationError
 
 from api.conf import Config, Credentials
 from api.enums import OpenaiApiChatModels, ChatSourceTypes
+from api.exceptions import OpenaiApiException
 from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageMetadata, \
     OpenaiApiChatMessageTextContent
-from api.schemas.openai_schemas import OpenAIChatResponse
+from api.schemas.openai_schemas import OpenaiChatResponse
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -22,42 +23,48 @@ credentials = Credentials()
 MAX_CONTEXT_MESSAGE_COUNT = 1000
 
 
-class OpenAIChatException(Exception):
-    def __init__(self, source: str, message: str, code: int = None):
-        self.source = source
-        self.message = message
-        self.code = code
-
-    def __str__(self):
-        return f"{self.source} {self.code} error: {self.message}"
-
-
 async def _check_response(response: httpx.Response) -> None:
     # 改成自带的错误处理
     try:
         response.raise_for_status()
     except httpx.HTTPStatusError as ex:
         await response.aread()
-        error = OpenAIChatException(
-            source="OpenAI",
+        error = OpenaiApiException(
             message=response.text,
             code=response.status_code,
         )
         raise error from ex
 
 
+def make_session() -> httpx.AsyncClient:
+    if config.openai_api.proxy is not None:
+        proxies = {
+            "http://": config.openai_api.proxy,
+            "https://": config.openai_api.proxy,
+        }
+        session = httpx.AsyncClient(proxies=proxies, timeout=None)
+    else:
+        session = httpx.AsyncClient(timeout=None)
+    return session
+
+
 @singleton_with_lock
-class OpenAIChatManager:
+class OpenaiApiChatManager:
     """
     OpenAI API Manager
     """
 
     def __init__(self):
-        self.client = httpx.AsyncClient(timeout=None)  # TODO: support proxies
+        self.session = make_session()
+
+    def reset_session(self):
+        self.session = make_session()
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None,
                   parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
-                  context_message_count: int = -1, extra_args: Optional[dict] = None):
+                  context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
+
+        assert config.openai_api.enabled, "openai_api is not enabled"
 
         now_time = datetime.now().astimezone(tz=timezone.utc)
         message_id = uuid.uuid4()
@@ -126,7 +133,7 @@ class OpenAIChatManager:
 
         timeout = httpx.Timeout(config.openai_api.read_timeout, connect=config.openai_api.connect_timeout)
 
-        async with self.client.stream(
+        async with self.session.stream(
                 method="POST",
                 url=f"{base_url}chat/completions",
                 json=data,
@@ -144,7 +151,7 @@ class OpenAIChatManager:
 
                 try:
                     line = json.loads(line)
-                    resp = OpenAIChatResponse(**line)
+                    resp = OpenaiChatResponse(**line)
 
                     if resp.choices[0].message is not None:
                         text_content = resp.choices[0].message.get("content")

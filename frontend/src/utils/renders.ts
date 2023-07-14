@@ -117,6 +117,7 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
           input = newConversationInfo;
         },
       }),
+    style: {width: '500px'},
     onPositiveClick() {
       d.loading = true;
       return new Promise((resolve, _reject) => {
@@ -125,6 +126,10 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
         }
         if (input?.model === null) {
           Message.error(t('tips.modelRequired'));
+          resolve(false);
+        }
+        if (input?.openaiWebPlugins && input.openaiWebPlugins.length > 3) {
+          Message.error(t('tips.openaiWebPluginsLengthMoreThan3'));
           resolve(false);
         }
         callback(input!)

@@ -5,10 +5,26 @@
     "openai_web": {
       "title": "Openai Web",
       "default": {
-        "is_plus_account": false,
+        "enabled": true,
+        "is_plus_account": true,
         "chatgpt_base_url": null,
+        "proxy": null,
         "common_timeout": 10,
-        "ask_timeout": 600
+        "ask_timeout": 600,
+        "enabled_models": [
+          "gpt_3_5",
+          "gpt_4",
+          "gpt_4_browsing",
+          "gpt_4_plugins"
+        ],
+        "model_code_mapping": {
+          "gpt_3_5": "text-davinci-002-render-sha",
+          "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+          "gpt_4": "gpt-4",
+          "gpt_4_mobile": "gpt-4-mobile",
+          "gpt_4_browsing": "gpt-4-browsing",
+          "gpt_4_plugins": "gpt-4-plugins"
+        }
       },
       "allOf": [
         {
@@ -19,25 +35,35 @@
     "openai_api": {
       "title": "Openai Api",
       "default": {
+        "enabled": true,
         "openai_base_url": "https://api.openai.com/v1/",
+        "proxy": null,
         "connect_timeout": 10,
-        "read_timeout": 20
+        "read_timeout": 20,
+        "enabled_models": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
+        "model_code_mapping": {
+          "gpt_3_5": "gpt-3.5-turbo",
+          "gpt_4": "gpt-4"
+        }
       },
       "allOf": [
         {
-          "$ref": "#/definitions/OpenaiAPISetting"
+          "$ref": "#/definitions/OpenaiApiSetting"
         }
       ]
     },
     "common": {
       "title": "Common",
       "default": {
+        "sync_conversations_on_startup": true,
+        "sync_conversations_regularly": false,
         "print_sql": false,
         "create_initial_admin_user": true,
         "initial_admin_user_username": "admin",
-        "initial_admin_user_password": "password",
-        "sync_conversations_on_startup": true,
-        "sync_conversations_regularly": true
+        "initial_admin_user_password": "password"
       },
       "allOf": [
         {
@@ -118,17 +144,39 @@
     }
   },
   "definitions": {
+    "OpenaiWebChatModels": {
+      "title": "OpenaiWebChatModels",
+      "description": "An enumeration.",
+      "enum": [
+        "gpt_3_5",
+        "gpt_3_5_mobile",
+        "gpt_4",
+        "gpt_4_mobile",
+        "gpt_4_browsing",
+        "gpt_4_plugins"
+      ],
+      "type": "string"
+    },
     "OpenaiWebChatGPTSetting": {
       "title": "OpenaiWebChatGPTSetting",
       "type": "object",
       "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "default": true,
+          "type": "boolean"
+        },
         "is_plus_account": {
           "title": "Is Plus Account",
-          "default": false,
+          "default": true,
           "type": "boolean"
         },
         "chatgpt_base_url": {
           "title": "Chatgpt Base Url",
+          "type": "string"
+        },
+        "proxy": {
+          "title": "Proxy",
           "type": "string"
         },
         "common_timeout": {
@@ -142,16 +190,61 @@
           "default": 600,
           "minimum": 1,
           "type": "integer"
+        },
+        "enabled_models": {
+          "default": [
+            "gpt_3_5",
+            "gpt_4",
+            "gpt_4_browsing",
+            "gpt_4_plugins"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OpenaiWebChatModels"
+          }
+        },
+        "model_code_mapping": {
+          "title": "Model Code Mapping",
+          "default": {
+            "gpt_3_5": "text-davinci-002-render-sha",
+            "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+            "gpt_4": "gpt-4",
+            "gpt_4_mobile": "gpt-4-mobile",
+            "gpt_4_browsing": "gpt-4-browsing",
+            "gpt_4_plugins": "gpt-4-plugins"
+          },
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
-    "OpenaiAPISetting": {
-      "title": "OpenaiAPISetting",
+    "OpenaiApiChatModels": {
+      "title": "OpenaiApiChatModels",
+      "description": "An enumeration.",
+      "enum": [
+        "gpt_3_5",
+        "gpt_4"
+      ],
+      "type": "string"
+    },
+    "OpenaiApiSetting": {
+      "title": "OpenaiApiSetting",
       "type": "object",
       "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "default": true,
+          "type": "boolean"
+        },
         "openai_base_url": {
           "title": "Openai Base Url",
           "default": "https://api.openai.com/v1/",
+          "type": "string"
+        },
+        "proxy": {
+          "title": "Proxy",
           "type": "string"
         },
         "connect_timeout": {
@@ -165,6 +258,27 @@
           "default": 20,
           "minimum": 1,
           "type": "integer"
+        },
+        "enabled_models": {
+          "default": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OpenaiApiChatModels"
+          }
+        },
+        "model_code_mapping": {
+          "title": "Model Code Mapping",
+          "default": {
+            "gpt_3_5": "gpt-3.5-turbo",
+            "gpt_4": "gpt-4"
+          },
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -172,6 +286,16 @@
       "title": "CommonSetting",
       "type": "object",
       "properties": {
+        "sync_conversations_on_startup": {
+          "title": "Sync Conversations On Startup",
+          "default": true,
+          "type": "boolean"
+        },
+        "sync_conversations_regularly": {
+          "title": "Sync Conversations Regularly",
+          "default": false,
+          "type": "boolean"
+        },
         "print_sql": {
           "title": "Print Sql",
           "default": false,
@@ -191,16 +315,6 @@
           "title": "Initial Admin User Password",
           "default": "password",
           "type": "string"
-        },
-        "sync_conversations_on_startup": {
-          "title": "Sync Conversations On Startup",
-          "default": true,
-          "type": "boolean"
-        },
-        "sync_conversations_regularly": {
-          "title": "Sync Conversations Regularly",
-          "default": true,
-          "type": "boolean"
         }
       }
     },

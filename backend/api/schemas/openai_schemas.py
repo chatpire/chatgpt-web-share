@@ -3,29 +3,29 @@ from typing import Literal, Optional, Any
 from pydantic import BaseModel
 
 
-class OpenAIChatResponseChoice(BaseModel):
+class OpenaiChatResponseChoice(BaseModel):
     index: Optional[int]
     message: Optional[dict[Literal["role", "content"], str]]
     delta: Optional[dict[Literal["role", "content"], str]]
     finish_reason: Optional[str]
 
 
-class OpenAIChatResponseUsage(BaseModel):
+class OpenaiChatResponseUsage(BaseModel):
     prompt_tokens: Optional[int]
     completion_tokens: Optional[int]
 
 
-class OpenAIChatResponse(BaseModel):
-    choices: Optional[list[OpenAIChatResponseChoice]]
-    usage: Optional[OpenAIChatResponseUsage]
+class OpenaiChatResponse(BaseModel):
+    choices: Optional[list[OpenaiChatResponseChoice]]
+    usage: Optional[OpenaiChatResponseUsage]
 
 
-class OpenAIChatPluginCategory(BaseModel):
+class OpenaiChatPluginCategory(BaseModel):
     id: Optional[str]
     title: Optional[str]
 
 
-class OpenAIChatPluginManifest(BaseModel):
+class OpenaiChatPluginManifest(BaseModel):
     api: Optional[dict[str, Any]]  # type openapi, url
     auth: Optional[dict[str, Any]]  # type none
     logo_url: Optional[str]
@@ -38,17 +38,17 @@ class OpenAIChatPluginManifest(BaseModel):
     legal_info_url: Optional[str]
 
 
-class OpenAIChatPluginUserSettings(BaseModel):
+class OpenaiChatPluginUserSettings(BaseModel):
     is_authenticated: Optional[bool]
     is_installed: Optional[bool]
 
 
-class OpenAIChatPlugin(BaseModel):
+class OpenaiChatPlugin(BaseModel):
     id: Optional[str]
     namespace: Optional[str]
-    manifest: Optional[OpenAIChatPluginManifest]
-    categories: Optional[list[OpenAIChatPluginCategory]]
+    manifest: Optional[OpenaiChatPluginManifest]
+    categories: Optional[list[OpenaiChatPluginCategory]]
     domain: Optional[str]
     status: Optional[Literal['approved'] | str]
-    user_settings: Optional[OpenAIChatPluginUserSettings | dict[str, Any]]  # is_authenticated, is_installed
+    user_settings: Optional[OpenaiChatPluginUserSettings | dict[str, Any]]  # is_authenticated, is_installed
     oauth_client_id: Optional[str]

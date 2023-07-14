@@ -78,9 +78,12 @@ class AccessLogAtoms(dict):
 
         protocol = f"HTTP/{scope['http_version']}"
 
-        status = info["response"]["status"]
+        status = info["response"].get("status", None)
         try:
-            status_phrase = http.HTTPStatus(status).phrase
+            if status:
+                status_phrase = http.HTTPStatus(status).phrase
+            else:
+                status_phrase = "-"
         except ValueError:
             status_phrase = "-"
 

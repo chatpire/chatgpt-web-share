@@ -67,11 +67,12 @@ type AskDataset = {
   name: string;
 };
 
-function makeDataset(askRecords: AskLogAggregation[]) {
-  const dataset = [] as AskDataset[];
+function makeDatasets(askRecords: AskLogAggregation[]) {
+  const datasets = [] as AskDataset[];
 
   // 对askRecords按照_id.meta.type和_id.meta.model进行聚合
   const askRecordsGroupByTypeAndModel = askRecords.reduce((acc, cur) => {
+    if (!cur._id?.meta) return acc;
     const key = `${cur._id.meta.source}|${cur._id.meta.model}`;
     if (acc[key]) {
       acc[key].push(cur);
@@ -83,9 +84,11 @@ function makeDataset(askRecords: AskLogAggregation[]) {
 
   Object.entries(askRecordsGroupByTypeAndModel).forEach(([key, value], idx) => {
     const [type, model] = key.split('|');
-    const source = value.map((v) => {
+    const source = value.filter((v) => {
+      return v._id !== null;
+    }).map((v) => {
       return {
-        timestamp: new Date(v._id.start_time).getTime(),
+        timestamp: new Date(v._id!.start_time).getTime(),
         count: v.count,
         // userIds: v.user_ids || [],
         // findUsername 生成 string，超过5人则省略；格式：'user1, user2, user3, ... 等 x 人'
@@ -100,7 +103,7 @@ function makeDataset(askRecords: AskLogAggregation[]) {
         totalQueueingTime: v.total_queueing_time?.toFixed(2) || 0,
       } as AskStatRecord;
     });
-    dataset.push({
+    datasets.push({
       id: idx,
       source,
       // 下面的非echarts配置，用于生成series
@@ -111,13 +114,13 @@ function makeDataset(askRecords: AskLogAggregation[]) {
   });
 
   const allTimestamps = new Set<number>();
-  dataset.forEach((d) => {
+  datasets.forEach((d) => {
     d.source.forEach((s) => {
       allTimestamps.add(s.timestamp);
     });
   });
   // 遍历所有source, 补全其在allTimestamps中不存在的值
-  dataset.forEach((d) => {
+  datasets.forEach((d) => {
     const source = d.source;
     const timestamps = source.map((s) => s.timestamp);
     const missingTimestamps = Array.from(allTimestamps).filter((t) => !timestamps.includes(t));
@@ -133,12 +136,12 @@ function makeDataset(askRecords: AskLogAggregation[]) {
     source.sort((a, b) => a.timestamp - b.timestamp);
   });
 
-  return dataset;
+  return datasets;
 }
 
-const dataset = computed(() => {
+const datasets = computed(() => {
   if (props.askStats) {
-    return makeDataset(props.askStats);
+    return makeDatasets(props.askStats);
   } else {
     return [];
   }
@@ -154,7 +157,7 @@ const isDark = computed(() => appStore.theme === 'dark');
 const generateSeries = (lineColor: string, itemBorderColor: string, datasetIndex: number): BarSeriesOption => {
   return {
     type: 'bar',
-    name: dataset.value[datasetIndex].name,
+    name: datasets.value[datasetIndex].name,
     datasetIndex,
     yAxisIndex: 0,
     encode: {
@@ -201,7 +204,7 @@ const series = computed(() => {
     }
   };
 
-  return dataset.value.map((d, idx) => {
+  return datasets.value.map((d, idx) => {
     const colors = getDatasetColors(d);
     return generateSeries(colors[0], colors[1], idx);
   });
@@ -209,18 +212,17 @@ const series = computed(() => {
 
 const showDataZoom = ref(false);
 const dataZoomOption = computed(() => {
-  return showDataZoom.value
-    ? [
-      {
-        type: 'slider',
-        show: showDataZoom.value,
-        xAxisIndex: 0,
-        start: 0,
-        end: 100,
-        filterMode: 'filter',
-      },
-    ]
-    : [];
+  const currentTimestamp = new Date().getTime();
+  return [
+    {
+      type: 'slider',
+      show: showDataZoom.value,
+      xAxisIndex: 0,
+      startValue: currentTimestamp - 1000 * 60 * 60 * 24 * 3,  // 默认显示 3 天内
+      endValue: currentTimestamp,
+      filterMode: 'filter',
+    },
+  ];
 });
 const gridBottom = computed(() => {
   return showDataZoom.value ? '25%' : '5%';
@@ -245,7 +247,7 @@ const option = computed(() => {
       bottom: gridBottom.value,
       containLabel: true,
     },
-    dataset: dataset.value,
+    dataset: datasets.value,
     xAxis: {
       type: 'time',
       axisLabel: {

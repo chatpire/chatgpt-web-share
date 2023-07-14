@@ -12,14 +12,14 @@ import { useI18n } from 'vue-i18n';
 import { getServerStatusApi } from '@/api/status';
 import { getAskStatisticsApi, getRequestStatisticsApi, getSystemInfoApi } from '@/api/system';
 import { getAllUserApi } from '@/api/user';
-import { AskLogAggregation, RequestLogAggregation, ServerStatusSchema, SystemInfo, UserRead } from '@/types/schema';
+import { AskLogAggregation, CommonStatusSchema, RequestLogAggregation, SystemInfo, UserRead } from '@/types/schema';
 
 import StatisticsCard from '../components/StatisticsCard.vue';
 import SystemInfoCard from '../components/SystemInfoCard.vue';
 const { t } = useI18n();
 
 const systemInfo = ref<SystemInfo | undefined>();
-const serverStatus = ref<ServerStatusSchema | undefined>();
+const serverStatus = ref<CommonStatusSchema | undefined>();
 const requestStats = ref<RequestLogAggregation[] | undefined>();
 const askStats = ref<AskLogAggregation[] | undefined>();
 const users = ref<UserRead[] | undefined>();
