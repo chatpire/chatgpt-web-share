@@ -4,8 +4,8 @@ import { BaseConversationHistory, BaseConversationSchema, UserRead } from '@/typ
 
 interface UserState {
   user: UserRead | null;
-  savedUsername: string | null;
-  savedPassword: string | null;
+  savedUsername: RemovableRef<string>;
+  savedPassword: RemovableRef<string>;
 }
 
 export type Preference = {

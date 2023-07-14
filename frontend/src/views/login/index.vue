@@ -45,6 +45,7 @@ import { useRouter } from 'vue-router';
 import { LoginData } from '@/api/user';
 import { useUserStore } from '@/store';
 import { Message } from '@/utils/tips';
+import { useStorage } from '@vueuse/core';
 
 const router = useRouter();
 const { t } = useI18n();
@@ -60,7 +61,7 @@ const loginRules = {
   username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
   password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
 };
-const rememberMe = ref(false);
+const rememberMe = useStorage('rememberMe', false);
 
 const login = async () => {
   if (loading.value) return;
@@ -84,9 +85,7 @@ const login = async () => {
           name: userStore.user?.is_superuser ? 'admin' : 'conversation',
         });
         if (rememberMe.value) {
-          localStorage.setItem('username', formValue.username);
-          localStorage.setItem('password', btoa(formValue.password));
-          localStorage.setItem('rememberMe', rememberMe.value.toString());
+          userStore.setSavedLoginInfo(formValue.username, btoa(formValue.password));
         }
       } catch (error) {
         console.log(error);
@@ -96,16 +95,15 @@ const login = async () => {
     });
 };
 //页面自动填充，取消勾选时清除数据
-if (localStorage.getItem('rememberMe') == 'true') {
-  rememberMe.value = true;
-  formValue.username = localStorage.getItem('username') as string;
-  formValue.password = atob(localStorage.getItem('password') as string);
+if (rememberMe.value) {
+  formValue.username = userStore.savedUsername;
+  formValue.password = atob(userStore.savedPassword);
 }
-const handleUpdateRememberMe=(value: boolean) => {
+const handleUpdateRememberMe = (value: boolean) => {
   if (!value) {
-    localStorage.removeItem('username');
-    localStorage.removeItem('password');
-    localStorage.setItem('rememberMe', 'false');
+    userStore.savedUsername = null;
+    userStore.savedPassword = null;
+    rememberMe.value = false;
   }
 };
 if (userStore.user) {

@@ -5,12 +5,13 @@ import { UserRead } from '@/types/schema';
 import { clearCookie } from '@/utils/auth';
 
 import { UserState } from '../types';
+import { useStorage, RemovableRef } from '@vueuse/core';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
-    savedUsername: null,
-    savedPassword: null,
+    savedUsername: useStorage('username', null),
+    savedPassword: useStorage('password', null),
   }),
   getters: {
     userInfo(state: UserState): UserRead | null {
@@ -24,7 +25,7 @@ const useUserStore = defineStore('user', {
       this.$patch({ user });
     },
 
-    setSavedLoginInfo(username: string, password: string) {
+    setSavedLoginInfo(username: RemovableRef<string>, password: RemovableRef<string>) {
       this.$patch({ savedUsername: username, savedPassword: password });
     },
 
