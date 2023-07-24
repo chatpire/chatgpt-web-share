@@ -515,7 +515,7 @@ async def chat(websocket: WebSocket):
                     source_setting.total_ask_count -= 1
                 if model_ask_count != -1:
                     assert model_ask_count > 0
-                    setattr(source_setting.per_model_ask_count.__root__, ask_request.model, model_ask_count - 1)
+                    source_setting.per_model_ask_count.__root__[ask_request.model] = model_ask_count - 1
 
                 user_db = await session.get(User, user.id)
                 setattr(user_db.setting, ask_request.source, source_setting)
