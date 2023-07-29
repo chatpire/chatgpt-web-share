@@ -45,7 +45,7 @@ pymongo==4.3.3
 PySocks==1.7.1
 python-dateutil==2.8.2
 python-multipart==0.0.6
-PyYAML==6.0
+PyYAML==6.0.1
 regex==2023.6.3
 requests==2.31.0
 revChatGPT==5.0.0
