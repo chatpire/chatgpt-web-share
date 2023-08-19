@@ -27,7 +27,6 @@
         <n-button type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
         </n-button>
-      </n-form-item>
               <div id="paypal-button-container-P-9UD22127MX947172JMTQKGPY"></div>
 <script src="https://www.paypal.com/sdk/js?client-id=Aay5e3fy7RtcNae3t9KAShZTZxld0yTC6V6Kag-XVJ2muXVAO3aYWgygjoSodV4zZ4ElGzAp5gP-WS1L&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
 <script>
@@ -49,7 +48,7 @@
       }
   }).render('#paypal-button-container-P-9UD22127MX947172JMTQKGPY'); // Renders the PayPal button
 </script>
-
+      </n-form-item>
     </n-form>
   </div>
 </template>
@@ -79,7 +78,6 @@ const loginRules = {
   username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
   password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
 };
-
 const login = async () => {
   if (loading.value) return;
   formRef.value
