@@ -9,9 +9,9 @@
           <div class="hidden sm:block">
             <a class="h-full inline-block flex" href="https://SuperShopper.com.au" target="_blank">
             <img
-              src="https://supershopper.com.au/logo.jpg" <!-- URL of the image -->
-              alt="SuperShopper Logo" <!-- Alt text for accessibility -->
-              :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }" <!-- Apply color based on theme -->
+              src="https://supershopper.com.au/logo.jpg"
+              alt="SuperShopper Logo"
+              :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }"
             />
             </a>        
           </div>
