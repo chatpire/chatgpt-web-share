@@ -8,11 +8,11 @@
           </div>
           <div class="hidden sm:block">
             <a class="h-full inline-block flex" href="https://SuperShopper.com.au" target="_blank">
-            <img
+              <img
               src="https://supershopper.com.au/logo.jpg"
-              alt="SuperShopper Logo"
-              :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }"
-            />
+                alt="SuperShopper Logo"
+                :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }"
+                />
             </a>        
           </div>
           <n-tag :bordered="false" type="success" size="small" class="hidden sm:inline-flex">
