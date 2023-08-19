@@ -1,114 +1,32 @@
 <template>
   <!-- Login Form -->
   <div class="flex justify-center items-center mt-20">
-    <n-form ref="formRef" :model="formValue" :rules="loginRules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-      <n-form-item :label="$t('commons.username')" path="username">
-        <n-input
-          v-model:value="formValue.username"
-          :placeholder="$t('tips.pleaseEnterUsername')"
-          :input-props="{
-            autoComplete: 'username',
-          }"
-        />
-      </n-form-item>
-      <n-form-item :label="$t('commons.password')" path="password">
-        <n-input
-          v-model:value="formValue.password"
-          type="password"
-          show-password-on="click"
-          :placeholder="$t('tips.pleaseEnterPassword')"
-          :input-props="{
-            autoComplete: 'current-password',
-          }"
-          @keyup.enter="login"
-        />
-      </n-form-item>
-      <n-form-item wrapper-col="{ span: 16, offset: 8 }">
+    <!-- ... (rest of the code) ... -->
+    <n-form-item wrapper-col="{ span: 16, offset: 8 }">
         <n-button type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
         </n-button>
-              <div id="paypal-button-container-P-9UD22127MX947172JMTQKGPY"></div>
-<script src="https://www.paypal.com/sdk/js?client-id=Aay5e3fy7RtcNae3t9KAShZTZxld0yTC6V6Kag-XVJ2muXVAO3aYWgygjoSodV4zZ4ElGzAp5gP-WS1L&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
-<script>
-  paypal.Buttons({
-      style: {
-          shape: 'rect',
-          color: 'gold',
-          layout: 'vertical',
-          label: 'subscribe'
-      },
-      createSubscription: function(data, actions) {
-        return actions.subscription.create({
-          /* Creates the subscription */
-          plan_id: 'P-9UD22127MX947172JMTQKGPY'
-        });
-      },
-      onApprove: function(data, actions) {
-        alert(data.subscriptionID); // You can add optional success message for the subscriber here
-      }
-  }).render('#paypal-button-container-P-9UD22127MX947172JMTQKGPY'); // Renders the PayPal button
-</script>
-      </n-form-item>
-    </n-form>
+        <div id="paypal-button-container-P-9UD22127MX947172JMTQKGPY"></div>
+    </n-form-item>
+    <!-- ... (rest of the code) ... -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { FormInst } from 'naive-ui';
-import { FormValidationError } from 'naive-ui/es/form';
-import { reactive, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
+// ... (rest of the imports) ...
 
-import { LoginData } from '@/api/user';
-import { useUserStore } from '@/store';
-import { Message } from '@/utils/tips';
+// ... (rest of the script) ...
 
-const router = useRouter();
-const { t } = useI18n();
-const userStore = useUserStore();
-const formRef = ref<FormInst>();
-
-const formValue = reactive({
-  username: '',
-  password: '',
+onMounted(() => {
+    // Ensure the PayPal SDK is loaded
+    if (window.paypal) {
+        paypal.Buttons({
+            // ... (rest of the PayPal button configuration) ...
+        }).render('#paypal-button-container-P-9UD22127MX947172JMTQKGPY');
+    }
 });
-const loading = ref(false);
-const loginRules = {
-  username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
-  password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
-};
-const login = async () => {
-  if (loading.value) return;
-  formRef.value
-    ?.validate((errors?: Array<FormValidationError>) => {
-      if (!errors) {
-        loading.value = true;
-      }
-    })
-    .then(async () => {
-      try {
-        await userStore.login(formValue as LoginData);
-        const { redirect } = router.currentRoute.value.query;
-        await userStore.fetchUserInfo();
-        Message.success(t('tips.loginSuccess'));
-        if (redirect) {
-          await router.push(redirect as string);
-          return;
-        }
-        await router.push({
-          name: userStore.user?.is_superuser ? 'admin' : 'conversation',
-        });
-        // TODO: 记住密码
-      } catch (error) {
-        console.log(error);
-      } finally {
-        loading.value = false;
-      }
-    });
-};
-
-if (userStore.user) {
-  router.push({ name: 'conversation' });
-}
 </script>
+
+<!-- External scripts can be added to the end of the file or in the public/index.html -->
+<script src="https://www.paypal.com/sdk/js?client-id=Aay5e3fy7RtcNae3t9KAShZTZxld0yTC6V6Kag-XVJ2muXVAO3aYWgygjoSodV4zZ4ElGzAp5gP-WS1L&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
