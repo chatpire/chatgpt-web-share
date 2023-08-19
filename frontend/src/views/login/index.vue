@@ -24,77 +24,14 @@
         />
       </n-form-item>
       <n-form-item wrapper-col="{ span: 16, offset: 8 }">
-        <n-button type="primary" :enabled="loading" @click="login"> <!-- Corrected here -->
+        <!-- Login button -->
+        <n-button type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
         </n-button>
+      </n-form-item>
+      <n-form-item wrapper-col="{ span: 16, offset: 8 }">
+        <!-- PayPal button container -->
         <div id="paypal-button-container-P-9UD22127MX947172JMTQKGPY"></div>
       </n-form-item>
     </n-form>
   </div>
-</template>
-
-<script setup lang="ts">
-import { onMounted, ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { FormInst } from 'naive-ui';
-import { LoginData } from '@/api/user';
-import { useUserStore } from '@/store';
-import { Message } from '@/utils/tips';
-
-const router = useRouter();
-const { t } = useI18n();
-const userStore = useUserStore();
-
-const formRef = ref<FormInst>();
-
-const formValue = reactive({
-  username: '',
-  password: '',
-});
-
-const loading = ref(false);
-
-const loginRules = {
-  username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
-  password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
-};
-
-const login = async () => {
-  if (loading.value) return;
-  formRef.value
-    ?.validate()
-    .then(async () => {
-      try {
-        await userStore.login(formValue as LoginData);
-        const { redirect } = router.currentRoute.value.query;
-        await userStore.fetchUserInfo();
-        Message.success(t('tips.loginSuccess'));
-        if (redirect) {
-          await router.push(redirect as string);
-          return;
-        }
-        await router.push({
-          name: userStore.user?.is_superuser ? 'admin' : 'conversation',
-        });
-      } catch (error) {
-        console.log(error);
-      } finally {
-        loading.value = false;
-      }
-    });
-};
-
-if (userStore.user) {
-  router.push({ name: 'conversation' });
-}
-
-onMounted(() => {
-    // Ensure the PayPal SDK is loaded
-    if ((window as any).paypal) {
-        (window as any).paypal.Buttons({
-            // ... (rest of the PayPal button configuration) ...
-        }).render('#paypal-button-container-P-9UD22127MX947172JMTQKGPY');
-    }
-});
-</script>
