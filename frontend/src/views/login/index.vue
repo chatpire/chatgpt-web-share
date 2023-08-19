@@ -24,7 +24,7 @@
         />
       </n-form-item>
       <n-form-item wrapper-col="{ span: 16, offset: 8 }">
-        <n-button type="primary" :enabled="loading.value" @click="login">
+        <n-button type="primary" :enabled="loading" @click="login"> <!-- Corrected here -->
           {{ $t('commons.login') }}
         </n-button>
         <div id="paypal-button-container-P-9UD22127MX947172JMTQKGPY"></div>
