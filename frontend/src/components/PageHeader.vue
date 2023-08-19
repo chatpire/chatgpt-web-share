@@ -8,8 +8,12 @@
           </div>
           <div class="hidden sm:block">
             <a class="h-full inline-block flex" href="https://SuperShopper.com.au" target="_blank">
-              <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
-            </a>
+            <img
+              src="https://supershopper.com.au/logo.svc" <!-- URL of the image -->
+              alt="SuperShopper Logo" <!-- Alt text for accessibility -->
+              :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }" <!-- Apply color based on theme -->
+            />
+            </a>        
           </div>
           <n-tag :bordered="false" type="success" size="small" class="hidden sm:inline-flex">
             {{ version }}
