@@ -72,7 +72,7 @@ const statistics = computed(() => {
       label: t('labels.gpt4_count_in_3_hours'),
       value: props.serverStatus?.gpt4_count_in_3_hours,
       prefixIcon: null,
-      suffix: '/ 25',
+      suffix: '/ 50',
     },
     {
       label: t('commons.chatbotStatus'),
