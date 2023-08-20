@@ -6,9 +6,7 @@
         <n-input
           v-model:value="formValue.username"
           :placeholder="$t('tips.pleaseEnterUsername')"
-          :input-props="{
-            autoComplete: 'username',
-          }"
+          :input-props="{ autoComplete: 'username' }"
         />
       </n-form-item>
       <n-form-item :label="$t('commons.password')" path="password">
@@ -17,15 +15,17 @@
           type="password"
           show-password-on="click"
           :placeholder="$t('tips.pleaseEnterPassword')"
-          :input-props="{
-            autoComplete: 'current-password',
-          }"
+          :input-props="{ autoComplete: 'current-password' }"
           @keyup.enter="login"
         />
       </n-form-item>
-      <n-form-item wrapper-col="{ span: 16, offset: 8 }">
-        <n-button type="primary" :enabled="loading" @click="login">
+      <n-form-item wrapper-col="{ span: 16, offset: 8 }" class="flex items-center">
+        <n-button style="width: 120px;" type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
+        </n-button>
+        <!-- Added Button -->
+        <n-button style="width: 120px; padding: 0;" class="ml-4" @click="openPayPalSubscription">
+            <img style="height: 36px; width: 100%; display: block;" src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
         </n-button>
       </n-form-item>
     </n-form>
@@ -38,25 +38,28 @@ import { FormValidationError } from 'naive-ui/es/form';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-
 import { LoginData } from '@/api/user';
 import { useUserStore } from '@/store';
 import { Message } from '@/utils/tips';
 
-const router = useRouter();
+// Initialize i18n first
 const { t } = useI18n();
-const userStore = useUserStore();
-const formRef = ref<FormInst>();
 
+// Define reactive properties
 const formValue = reactive({
   username: '',
-  password: '',
+  password: ''
 });
+
 const loading = ref(false);
 const loginRules = {
   username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
   password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
 };
+
+const router = useRouter();
+const formRef = ref<FormInst>();
+const userStore = useUserStore();
 
 const login = async () => {
   if (loading.value) return;
@@ -91,4 +94,8 @@ const login = async () => {
 if (userStore.user) {
   router.push({ name: 'conversation' });
 }
+
+const openPayPalSubscription = () => {
+  window.open('https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-9UD22127MX947172JMTQKGPY', '_blank');
+};
 </script>
