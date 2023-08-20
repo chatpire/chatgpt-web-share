@@ -20,7 +20,8 @@
       "@/*": [
         "src/*"
       ]
-    }
+    },
+    "allowJs": true
   },
   "include": [
     "src/**/*.ts",
@@ -28,6 +29,9 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "src/views/conversation/utils/markdown.js"
+  ],
+  "exclude": [
+    "src/views/admin/index.vue.js"
   ],
   "references": [
     {
