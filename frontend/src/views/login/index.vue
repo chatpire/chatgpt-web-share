@@ -60,8 +60,38 @@ const router = useRouter();
 const formRef = ref<FormInst>();
 
 const login = async () => {
-  // Your login logic...
+  if (loading.value) return;
+  formRef.value
+    ?.validate((errors?: Array<FormValidationError>) => {
+      if (!errors) {
+        loading.value = true;
+      }
+    })
+    .then(async () => {
+      try {
+        await userStore.login(formValue as LoginData);
+        const { redirect } = router.currentRoute.value.query;
+        await userStore.fetchUserInfo();
+        Message.success(t('tips.loginSuccess'));
+        if (redirect) {
+          await router.push(redirect as string);
+          return;
+        }
+        await router.push({
+          name: userStore.user?.is_superuser ? 'admin' : 'conversation',
+        });
+        // TODO: 记住密码
+      } catch (error) {
+        console.log(error);
+      } finally {
+        loading.value = false;
+      }
+    });
 };
+
+if (userStore.user) {
+  router.push({ name: 'conversation' });
+}
 
 const openPayPalSubscription = () => {
   window.open('https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-9UD22127MX947172JMTQKGPY', '_blank');
