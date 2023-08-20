@@ -24,10 +24,8 @@
           {{ $t('commons.login') }}
         </n-button>
         <!-- Added Button -->
-        <n-button class="ml-4" @click="openPayPalSubscription">
-          <template #icon>
-            <img style="width: 100%; height: 100%;" src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
-          </template>
+        <n-button class="ml-4 p-0" @click="openPayPalSubscription">
+            <img style="width: 100%; height: 100%; display: block;" src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
         </n-button>
       </n-form-item>
     </n-form>
