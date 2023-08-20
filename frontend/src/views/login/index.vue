@@ -36,10 +36,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
 import { FormInst } from 'naive-ui';
+import { FormValidationError } from 'naive-ui/es/form';
+import { reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { LoginData } from '@/api/user';
+import { useUserStore } from '@/store';
+import { Message } from '@/utils/tips';
 
 // Initialize i18n first
 const { t } = useI18n();
@@ -58,6 +62,7 @@ const loginRules = {
 
 const router = useRouter();
 const formRef = ref<FormInst>();
+const userStore = useUserStore();
 
 const login = async () => {
   if (loading.value) return;
