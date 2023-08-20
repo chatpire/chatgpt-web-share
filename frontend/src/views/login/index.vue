@@ -66,12 +66,4 @@ const login = async () => {
 const openPayPalSubscription = () => {
   window.open('https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-9UD22127MX947172JMTQKGPY', '_blank');
 };
-
-// Expose the properties and methods to the template
-export {
-  formValue,
-  loading,
-  login,
-  loginRules
-};
 </script>
