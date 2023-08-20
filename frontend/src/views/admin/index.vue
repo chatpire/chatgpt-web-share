@@ -38,10 +38,15 @@
 </template>
 
 <script>
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   data() {
     return {
-      // ... your existing data properties
+      formValue: {}, // Provide an initial value or type
+      loginRules: {}, // Provide an initial value or type
+      loading: false, // Assuming it's a boolean
+      // ... other data properties
     };
   },
   mounted() {
@@ -52,7 +57,10 @@ export default {
     document.body.appendChild(script);
   },
   methods: {
-    // ... your existing methods
+    login() {
+      // Your login method logic
+    },
+    // ... other methods
 
     initPaypalButton() {
       if (window.paypal) {
@@ -77,7 +85,7 @@ export default {
       }
     }
   }
-}
+});
 </script>
 
 <style scoped>
