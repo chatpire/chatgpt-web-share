@@ -1,87 +1,85 @@
 <template>
-  <!-- Login Form -->
-  <div class="flex justify-center items-center mt-20">
-    <n-form ref="formRef" :model="formValue" :rules="loginRules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-      <n-form-item :label="$t('commons.username')" path="username">
-        <n-input
-          v-model:value="formValue.username"
-          :placeholder="$t('tips.pleaseEnterUsername')"
-          :input-props="{
-            autoComplete: 'username',
-          }"
-        />
-      </n-form-item>
-      <n-form-item :label="$t('commons.password')" path="password">
-        <n-input
-          v-model:value="formValue.password"
-          type="password"
-          show-password-on="click"
-          :placeholder="$t('tips.pleaseEnterPassword')"
-          :input-props="{
-            autoComplete: 'current-password',
-          }"
-          @keyup.enter="login"
-        />
-      </n-form-item>
-      <n-form-item wrapper-col="{ span: 16, offset: 8 }">
-        <!-- Login button -->
-        <n-button type="primary" :enabled="loading" @click="login">
-          {{ $t('commons.login') }}
-        </n-button>
-      </n-form-item>
-      <n-form-item wrapper-col="{ span: 16, offset: 8 }">
-        <!-- PayPal button container -->
-        <div id="paypal-button-container-P-9UD22127MX947172JMTQKGPY"></div>
-      </n-form-item>
-    </n-form>
-  </div>
+  <n-layout has-sider class="h-90vh h-full">
+    <n-layout-sider
+      bordered
+      :collapsed="collapsed"
+      collapse-mode="width"
+      :collapsed-width="64"
+      :width="200"
+      show-trigger
+      @collapse="collapsed = true"
+      @expand="collapsed = false"
+    >
+      <n-menu v-model:value="activeKey" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
+    </n-layout-sider>
+    <n-layout class="m-2 sm:m-4">
+      <n-scrollbar>
+        <router-view v-slot="{ Component, route }">
+          <component :is="Component" :key="route.fullPath" />
+        </router-view>
+      </n-scrollbar>
+    </n-layout>
+  </n-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+<script setup lang="ts">
+import { ChatbubbleEllipses, FileTrayFull, InformationCircle } from '@vicons/ionicons5';
+import { SettingsRound, SupervisedUserCircleRound } from '@vicons/material';
+import { NIcon , useThemeVars } from 'naive-ui';
+import { h, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
-export default defineComponent({
-  setup() {
-    // Data properties with type annotations
-    const formValue = ref<{ username?: string; password?: string }>({});
-    const loginRules = ref<any>({}); // Replace 'any' with the appropriate type for loginRules
-    const loading = ref<boolean>(false);
+import ChatGPTIcon from '@/components/ChatGPTIcon.vue';
 
-    // Methods
-    const login = () => {
-      // Your login method logic
-    };
+const { t } = useI18n();
+const router = useRouter();
+const themeVars = useThemeVars();
 
-    const initPaypalButton = () => {
-      if (window.paypal) {
-        window.paypal.Buttons({
-          // ... PayPal button logic
-        }).render('#paypal-button-container-P-9UD22127MX947172JMTQKGPY');
-      } else {
-        console.error("PayPal SDK not loaded properly.");
-      }
-    };
+const collapsed = ref(true);
+const activeKey = ref<string>(router.currentRoute.value.name as string);
 
-    // Load the PayPal SDK on component mount
-    onMounted(() => {
-      let script = document.createElement('script');
-      script.src = "https://www.paypal.com/sdk/js?client-id=Aay5e3fy7RtcNae3t9KAShZTZxld0yTC6V6Kag-XVJ2muXVAO3aYWgygjoSodV4zZ4ElGzAp5gP-WS1L&vault=true&intent=subscription";
-      script.onload = initPaypalButton;
-      document.body.appendChild(script);
-    });
+function renderIcon(icon: any) {
+  return () => h(NIcon, null, { default: () => h(icon) });
+}
 
-    // Return data properties and methods to the template
-    return {
-      formValue,
-      loginRules,
-      loading,
-      login,
-      initPaypalButton
-    };
+const menuOptions = [
+  {
+    label: t('commons.systemManagement'),
+    key: 'systemManagement',
+    icon: renderIcon(InformationCircle),
+  },
+  {
+    label: t('commons.userManagement'),
+    key: 'userManagement',
+    icon: renderIcon(SupervisedUserCircleRound),
+  },
+  {
+    label: t('commons.conversationManagement'),
+    key: 'conversationManagement',
+    icon: renderIcon(ChatbubbleEllipses),
+  },
+  {
+    label: t('commons.logViewer'),
+    key: 'logViewer',
+    icon: renderIcon(FileTrayFull),
+  },
+  {
+    label: t('commons.configManager'),
+    key: 'configManagement',
+    icon: renderIcon(SettingsRound),
+  },
+  {
+    label: t('commons.openaiSettings'),
+    key: 'openaiSettings',
+    icon: () => h(ChatGPTIcon, { size: 26, innerColor: themeVars.value.textColorBase }),
+  },
+];
+
+watch(
+  async () => activeKey.value,
+  (_newName: any) => {
+    router.push({ name: activeKey.value });
   }
-});
+);
 </script>
-
-<style scoped>
-/* ... your existing styles */
-</style>
