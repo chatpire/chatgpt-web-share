@@ -55,22 +55,26 @@ export default {
     // ... your existing methods
 
     initPaypalButton() {
-      paypal.Buttons({
-        style: {
-            shape: 'rect',
-            color: 'gold',
-            layout: 'vertical',
-            label: 'subscribe'
-        },
-        createSubscription: function(data, actions) {
-          return actions.subscription.create({
-            plan_id: 'P-9UD22127MX947172JMTQKGPY'
-          });
-        },
-        onApprove: function(data, actions) {
-          alert(data.subscriptionID);
-        }
-      }).render('#paypal-button-container-P-9UD22127MX947172JMTQKGPY');
+      if (window.paypal) {
+        window.paypal.Buttons({
+          style: {
+              shape: 'rect',
+              color: 'gold',
+              layout: 'vertical',
+              label: 'subscribe'
+          },
+          createSubscription: function(data, actions) {
+            return actions.subscription.create({
+              plan_id: 'P-9UD22127MX947172JMTQKGPY'
+            });
+          },
+          onApprove: function(data, actions) {
+            alert(data.subscriptionID);
+          }
+        }).render('#paypal-button-container-P-9UD22127MX947172JMTQKGPY');
+      } else {
+        console.error("PayPal SDK not loaded properly.");
+      }
     }
   }
 }
