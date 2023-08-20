@@ -26,7 +26,7 @@
         <!-- Added Button -->
         <n-button class="ml-4" @click="openPayPalSubscription">
           <template #icon>
-            <img style="width: 24px; height: auto;" src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
+            <img style="width: 100%; height: 100%;" src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
           </template>
         </n-button>
       </n-form-item>
