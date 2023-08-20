@@ -19,13 +19,13 @@
           @keyup.enter="login"
         />
       </n-form-item>
-      <n-form-item wrapper-col="{ span: 16, offset: 8 }" class="flex items-center"> <!-- Added items-center for vertical alignment -->
-        <n-button type="primary" :enabled="loading" @click="login">
+      <n-form-item wrapper-col="{ span: 16, offset: 8 }" class="flex items-center">
+        <n-button style="width: 120px;" type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
         </n-button>
         <!-- Added Button -->
-        <n-button class="ml-4 p-0" @click="openPayPalSubscription">
-            <img style="height: 36px; display: block;" src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
+        <n-button style="width: 120px; padding: 0;" class="ml-4" @click="openPayPalSubscription">
+            <img style="height: 36px; width: 100%; display: block;" src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
         </n-button>
       </n-form-item>
     </n-form>
