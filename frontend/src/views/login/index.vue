@@ -6,9 +6,7 @@
         <n-input
           v-model:value="formValue.username"
           :placeholder="$t('tips.pleaseEnterUsername')"
-          :input-props="{
-            autoComplete: 'username',
-          }"
+          :input-props="{ autoComplete: 'username' }"
         />
       </n-form-item>
       <n-form-item :label="$t('commons.password')" path="password">
@@ -17,9 +15,7 @@
           type="password"
           show-password-on="click"
           :placeholder="$t('tips.pleaseEnterPassword')"
-          :input-props="{
-            autoComplete: 'current-password',
-          }"
+          :input-props="{ autoComplete: 'current-password' }"
           @keyup.enter="login"
         />
       </n-form-item>
@@ -27,9 +23,12 @@
         <n-button type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
         </n-button>
-        <!-- New Subscribe button -->
-        <n-button @click="openPayPalSubscription" style="margin-left: 10px;">
-          <img src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe" style="height: 20px; vertical-align: middle;" />
+        <!-- Added Button -->
+        <n-button @click="openPayPalSubscription">
+          <template #icon>
+            <img src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe Icon" />
+          </template>
+          Subscribe
         </n-button>
       </n-form-item>
     </n-form>
@@ -42,9 +41,10 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { FormInst } from 'naive-ui';
 
-// ... rest of your imports ...
+// Initialize i18n first
+const { t } = useI18n();
 
-// Define reactive properties and methods
+// Define reactive properties
 const formValue = reactive({
   username: '',
   password: ''
@@ -57,7 +57,6 @@ const loginRules = {
 };
 
 const router = useRouter();
-const { t } = useI18n();
 const formRef = ref<FormInst>();
 
 const login = async () => {
