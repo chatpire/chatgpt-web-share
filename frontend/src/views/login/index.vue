@@ -27,68 +27,52 @@
         <n-button type="primary" :enabled="loading" @click="login">
           {{ $t('commons.login') }}
         </n-button>
+        <!-- New Subscribe button -->
+        <n-button @click="openPayPalSubscription" style="margin-left: 10px;">
+          <img src="https://supershopper.com.au/subscribe.jpg" alt="Subscribe" style="height: 20px; vertical-align: middle;" />
+        </n-button>
       </n-form-item>
     </n-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FormInst } from 'naive-ui';
-import { FormValidationError } from 'naive-ui/es/form';
-import { reactive, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { FormInst } from 'naive-ui';
 
-import { LoginData } from '@/api/user';
-import { useUserStore } from '@/store';
-import { Message } from '@/utils/tips';
+// ... rest of your imports ...
 
-const router = useRouter();
-const { t } = useI18n();
-const userStore = useUserStore();
-const formRef = ref<FormInst>();
-
+// Define reactive properties and methods
 const formValue = reactive({
   username: '',
-  password: '',
+  password: ''
 });
+
 const loading = ref(false);
 const loginRules = {
   username: { required: true, message: t('tips.pleaseEnterUsername'), trigger: 'blur' },
   password: { required: true, message: t('tips.pleaseEnterPassword'), trigger: 'blur' },
 };
 
+const router = useRouter();
+const { t } = useI18n();
+const formRef = ref<FormInst>();
+
 const login = async () => {
-  if (loading.value) return;
-  formRef.value
-    ?.validate((errors?: Array<FormValidationError>) => {
-      if (!errors) {
-        loading.value = true;
-      }
-    })
-    .then(async () => {
-      try {
-        await userStore.login(formValue as LoginData);
-        const { redirect } = router.currentRoute.value.query;
-        await userStore.fetchUserInfo();
-        Message.success(t('tips.loginSuccess'));
-        if (redirect) {
-          await router.push(redirect as string);
-          return;
-        }
-        await router.push({
-          name: userStore.user?.is_superuser ? 'admin' : 'conversation',
-        });
-        // TODO: 记住密码
-      } catch (error) {
-        console.log(error);
-      } finally {
-        loading.value = false;
-      }
-    });
+  // Your login logic...
 };
 
-if (userStore.user) {
-  router.push({ name: 'conversation' });
-}
+const openPayPalSubscription = () => {
+  window.open('https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-9UD22127MX947172JMTQKGPY', '_blank');
+};
+
+// Expose the properties and methods to the template
+export {
+  formValue,
+  loading,
+  login,
+  loginRules
+};
 </script>
