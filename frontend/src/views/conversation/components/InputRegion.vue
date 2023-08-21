@@ -77,7 +77,7 @@
       </n-button>
     </div>
     <!-- 输入框 -->
-    <div class="mx-4 mb-4 flex flex-row space-x-2">
+    <div class="mx-8 mb-8 flex flex-row space-x-2">
       <n-input
         ref="inputRef"
         v-model:value="inputValue"
