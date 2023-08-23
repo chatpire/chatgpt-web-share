@@ -70,7 +70,7 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
 });
 
 const defaultSource = availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as string) : 'openai_web';
-const defaultModel = (defaultSource === 'openai_web') ? 'GPT-3.5' : null;
+const defaultModel = (defaultSource === 'openai_web') ? 'GPT_3_5' : null;
 
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,
