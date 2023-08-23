@@ -64,7 +64,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
         "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
         "gpt_4": "gpt-4",
         "gpt_4_mobile": "gpt-4-mobile",
-        "gpt_4_browsing": "gpt-4-browsing",
+        "gpt_4_browsing": "gpt-4-code-interpreter",
         "gpt_4_plugins": "gpt-4-plugins",
     }
 
