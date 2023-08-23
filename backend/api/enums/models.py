@@ -44,12 +44,13 @@ class OpenaiWebChatModels(BaseChatModelEnum):
     gpt_4_mobile = auto()
     gpt_4_browsing = auto()
     gpt_4_plugins = auto()
-
+    gpt_4_code_interpreter = auto ()
 
 class OpenaiApiChatModels(BaseChatModelEnum):
     gpt_3_5 = auto()
     gpt_4 = auto()
-
+    gpt_4_code_interpreter = auto ()
+    gpt_4_plugins = auto()
 
 if __name__ == "__main__":
     print(list(OpenaiWebChatModels))
