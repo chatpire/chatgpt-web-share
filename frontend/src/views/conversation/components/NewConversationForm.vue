@@ -51,13 +51,6 @@ const emits = defineEmits<{
   (e: 'input', newConversationInfo: NewConversationInfo): void;
 }>();
 
-const newConversationInfo = ref<NewConversationInfo>({
-  title: null,
-  source: 'openai_web', // set your default source here
-  model: 'gpt_3.5',       // set your default model here
-  openaiWebPlugins: null,
-});
-  
 const availableChatSourceTypes = computed<SelectOption[]>(() => {
   if (!userStore.user) {
     return [];
@@ -76,10 +69,13 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
   ];
 });
 
+const defaultSource = availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as string) : 'openai_web';
+const defaultModel = (defaultSource === 'openai_web') ? 'gpt_3.5' : null;
+
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,
-  source: availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as string) : null,
-  model: null,
+  source: defaultSource,
+  model: defaultModel,
   openaiWebPlugins: null,
 });
 
