@@ -24,9 +24,6 @@ class LogFilterOptions(BaseModel):
         return v
 
 
-datetime.now().astimezone()
-
-
 class RequestLogAggregationID(BaseModel):
     start_time: Optional[datetime]
     route_path: Optional[str]
@@ -41,7 +38,7 @@ class RequestLogAggregation(BaseModel):
 
     class Config:
         json_encoders = {
-            datetime: lambda d: d.astimezone(tz=timezone.utc)
+            datetime: lambda d: d.replace(tzinfo=timezone.utc)
         }
 
 
@@ -60,5 +57,5 @@ class AskLogAggregation(BaseModel):
 
     class Config:
         json_encoders = {
-            datetime: lambda d: d.astimezone(tz=timezone.utc)
+            datetime: lambda d: d.replace(tzinfo=timezone.utc)
         }
