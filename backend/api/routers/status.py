@@ -29,7 +29,10 @@ async def get_server_status(_user: User = Depends(current_active_user)):
                 ],
                 'found': [
                     {'$match': {'time': {'$gte': datetime.utcnow() - timedelta(hours=3)}}},
-                    {'$match': {'meta.model': {'$in': [OpenaiWebChatModels.gpt_4, OpenaiWebChatModels.gpt_4_mobile, OpenaiWebChatModels.gpt_4_browsing, OpenaiWebChatModels.gpt_4_plugins,]}}},
+                    {'$match': {
+                        'meta.model': {'$in': [OpenaiWebChatModels.gpt_4, OpenaiWebChatModels.gpt_4_mobile, OpenaiWebChatModels.gpt_4_browsing, OpenaiWebChatModels.gpt_4_plugins,]},
+                        'meta.source': 'openai_web'}
+                    },
                     {'$count': 'total'}
                 ]
             }
