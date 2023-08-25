@@ -8,9 +8,9 @@
               <div>
                 <n-icon class="mr-1">
                   <md-people />
-                </n-icon>{{ $t('commons.activeUserIn5m') }}
+                </n-icon>{{ $t('Active Users') }}
               </div>
-              <div>{{ serverStatus.active_user_in_5m }}</div>
+              <div>{{ commons.activeUserIn5m }}</div>
             </div>
           </n-list-item>
           <n-list-item>
@@ -38,7 +38,7 @@
               <div>
                 <n-icon class="mr-1">
                   <QueueFilled />
-                </n-icon>{{ $t('commons.chatbotWaitingCount') }}
+                </n-icon>{{ $t('Users waiting') }}
               </div>
               <div>{{ serverStatus.chatbot_waiting_count }}</div>
             </div>
