@@ -18,19 +18,9 @@
               <div>
                 <n-icon class="mr-1">
                   <md-people />
-                </n-icon>{{ $t('commons.activeUserIn1h') }}
+                </n-icon>{{ $t('commons.gpt4_count_in_3_hours') }}
               </div>
-              <div>{{ serverStatus.active_user_in_1h }}</div>
-            </div>
-          </n-list-item>
-          <n-list-item>
-            <div class="flex flex-row justify-between content-center">
-              <div>
-                <n-icon class="mr-1">
-                  <md-people />
-                </n-icon>{{ $t('commons.activeUserIn1d') }}
-              </div>
-              <div>{{ serverStatus.active_user_in_1d }}</div>
+              <div>{{ serverStatus.gpt4_count_in_3_hours }}</div>
             </div>
           </n-list-item>
           <n-list-item>
