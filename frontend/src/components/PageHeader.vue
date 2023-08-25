@@ -15,9 +15,6 @@
                 />
             </a>        
           </div>
-          <n-tag :bordered="false" type="success" size="small" class="hidden sm:inline-flex">
-            {{ version }}
-          </n-tag>
         </n-space>
       </template>
       <template #avatar>
