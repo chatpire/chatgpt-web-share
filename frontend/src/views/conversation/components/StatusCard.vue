@@ -18,9 +18,9 @@
               <div>
                 <n-icon class="mr-1">
                   <md-people />
-                </n-icon>{{ $t('GPT4 Web usage count /50') }}
+                </n-icon>{{ $t('GPT4 web usage 3h') }}
               </div>
-              <div>{{ serverStatus.gpt4_count_in_3_hours }}</div>
+              <div>{{ serverStatus.gpt4_count_in_3_hours }} /50</div>
             </div>
           </n-list-item>
           <n-list-item>
