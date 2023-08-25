@@ -10,7 +10,7 @@
                   <md-people />
                 </n-icon>{{ $t('Active Users') }}
               </div>
-              <div>{{ commons.activeUserIn5m }}</div>
+              <div>{{ serverStatus.active_user_in_5m }}</div>
             </div>
           </n-list-item>
           <n-list-item>
