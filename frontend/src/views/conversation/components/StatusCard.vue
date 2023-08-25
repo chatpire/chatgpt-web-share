@@ -18,7 +18,7 @@
               <div>
                 <n-icon class="mr-1">
                   <md-people />
-                </n-icon>{{ $t('commons.gpt4_count_in_3_hours') }}
+                </n-icon>{{ $t('GPT4 Web usage count /50') }}
               </div>
               <div>{{ serverStatus.gpt4_count_in_3_hours }}</div>
             </div>
