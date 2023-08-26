@@ -59,12 +59,12 @@ const availableModels = computed<SelectOption[]>(() => {
   }));
 });
 
-const defaultModel = 'GPT-3.5';
+const defaultModel = 'gpt_3_5';
 
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,
   source: 'openai_web',
-  model: null,
+  model: 'gpt_3_5',
   openaiWebPlugins: null,
 });
  
