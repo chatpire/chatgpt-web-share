@@ -4,12 +4,12 @@
       <n-form-item :label="t('labels.title')">
         <n-input v-model:value="newConversationInfo.title" />
       </n-form-item>
-      <!-- Remove the source selection -->
+      <!-- Source selection removed -->
       <n-form-item :label="t('labels.model')">
         <n-select v-model:value="newConversationInfo.model" :options="availableModels" />
       </n-form-item>
       <n-form-item
-        v-if="shouldRenderPluginsSection"
+        v-if="newConversationInfo.source === 'openai_web' && newConversationInfo.model === 'gpt_4_plugins'"
         :label="t('labels.plugins')"
       >
         <n-select
@@ -29,49 +29,114 @@
 </template>
 
 <script setup lang="ts">
-// ... (import statements and setup code)
+import { NAvatar, NTag, SelectOption, SelectRenderTag } from 'naive-ui';
+import { computed, h, ref, watch } from 'vue';
 
-// Update availableModels computed property
+import { getAllOpenaiChatPluginsApi, getInstalledOpenaiChatPluginsApi } from '@/api/chat';
+import { i18n } from '@/i18n';
+import { useUserStore } from '@/store';
+import { NewConversationInfo } from '@/types/custom';
+import { OpenaiChatPlugin } from '@/types/schema';
+import { Message } from '@/utils/tips';
+
+import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
+
+const t = i18n.global.t as any;
+
+const userStore = useUserStore();
+
+const emits = defineEmits<{
+  (e: 'input', newConversationInfo: NewConversationInfo): void;
+}>();
+
 const availableModels = computed<SelectOption[]>(() => {
   if (!userStore.user) {
     return [];
   }
-  return userStore.user.setting.openai_web.available_models.map((model) => ({
+  return userStore.user.setting.openai_api.available_models.map((model) => ({
     label: t(`models.${model}`),
     value: model,
   }));
 });
 
-// Modify the watch for newConversationInfo changes
+const defaultModel = 'GPT-3.5';
+
+const newConversationInfo = ref<NewConversationInfo>({
+  title: null,
+  source: defaultModel === 'GPT-3.5' || defaultModel === 'GPT-4' ? 'openai_api' : 'openai_web',
+  model: defaultModel,
+  openaiWebPlugins: null,
+});
+
+// Add a watcher to automatically set the source when the model changes
 watch(
-  () => {
-    return [newConversationInfo.value.model];
-  },
-  async ([model]) => {
-    if (model === 'gpt_4_plugins') {
-      newConversationInfo.value.openaiWebPlugins = [];
-      loadingPlugins.value = true;
-      try {
-        const res = await getInstalledOpenaiChatPluginsApi();
-        availablePlugins.value = res.data;
-      } catch (err) {
-        Message.error(t('tips.NewConversationForm.failedToGetPlugins'));
-      }
-      loadingPlugins.value = false;
-    }
-    
-    // Update the source based on the selected model
-    if (model === 'gpt_3_5' || model === 'gpt_4') {
+  () => newConversationInfo.value.model,
+  (newModel) => {
+    if (newModel === 'GPT-3.5' || newModel === 'GPT-4') {
       newConversationInfo.value.source = 'openai_api';
-    } else if (model === 'gpt_4_plugins') {
+    } else if (newModel === 'GPT-4 Browsing' || newModel === 'GPT-4 Plugins') {
       newConversationInfo.value.source = 'openai_web';
     }
-  },
-  { immediate: true }
+  }
 );
 
-// Add a computed property to determine whether to render the plugins section
-const shouldRenderPluginsSection = computed(() => {
-  return newConversationInfo.value.model === 'gpt_4_plugins';
+// ... rest of the code remains the same, no changes below this line
+
+const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
+const loadingPlugins = ref<boolean>(false);
+
+const selectPluginPlaceholder = computed<string>(() => {
+  return loadingPlugins.value
+    ? t('tips.NewConversationForm.loadingPlugins')
+    : t('tips.NewConversationForm.selectPlugins');
 });
+
+const pluginOptions = computed<SelectOption[]>(() => {
+  if (!availablePlugins.value) {
+    return [];
+  }
+  return availablePlugins.value.map((plugin) => ({
+    label: plugin.manifest?.name_for_human,
+    value: plugin.id,
+  }));
+});
+
+function renderPluginSelectionLabel(option: SelectOption) {
+  const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
+  return h(NewConversationFormSelectionPluginLabel, {
+    plugin,
+  });
+}
+
+const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
+  const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
+  return h(
+    NTag,
+    {
+      closable: true,
+      onMousedown: (e: FocusEvent) => {
+        e.preventDefault();
+      },
+      onClose: (e: MouseEvent) => {
+        e.stopPropagation();
+        handleClose();
+      },
+    },
+    {
+      default: () =>
+        h(
+          'div',
+          { class: 'flex flex-row' },
+          {
+            default: () => [
+              h(NAvatar, { size: 'small', src: plugin?.manifest?.logo_url }),
+              h('div', { class: 'ml-2' }, { default: () => plugin?.manifest?.name_for_human }),
+            ],
+          }
+        ),
+    }
+  );
+};
+
+// ... other watchers and code
 </script>
