@@ -73,7 +73,7 @@ watch(
   () => newConversationInfo.value.model,
   (newModel) => {
     if (newModel === 'GPT-3.5' || newModel === 'GPT-4') {
-      newConversationInfo.value.source = 'openai_api';
+      newConversationInfo.value.source = 'openai_web';
     } else if (newModel === 'GPT-4 Browsing' || newModel === 'GPT-4 Plugins') {
       newConversationInfo.value.source = 'openai_web';
     }
