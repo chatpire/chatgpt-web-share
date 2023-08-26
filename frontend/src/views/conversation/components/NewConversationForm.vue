@@ -91,9 +91,9 @@ const pluginOptions = computed<SelectOption[]>(() => {
 watch(
   () => newConversationInfo.value.model,
   (newModel) => {
-    if (newModel === 'GPT-3.5' || newModel === 'GPT-4') {
+    if (newModel === 'gpt_3_5' || newModel === 'gpt_4') {
       newConversationInfo.value.source = 'openai_api';
-    } else if (newModel === 'GPT-4 Browsing' || newModel === 'GPT-4 Plugins') {
+    } else if (newModel === 'gpt_4_browsing' || newModel === 'gpt_4_plugins') {
       newConversationInfo.value.source = 'openai_web';
     }
   }
