@@ -53,7 +53,7 @@ const availableModels = computed<SelectOption[]>(() => {
   if (!userStore.user) {
     return [];
   }
-  return userStore.user.setting.openai_api.available_models.map((model) => ({
+  return userStore.user.setting.openai_web.available_models.map((model) => ({
     label: t(`models.${model}`),
     value: model,
   }));
