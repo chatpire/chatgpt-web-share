@@ -67,19 +67,7 @@ const newConversationInfo = ref<NewConversationInfo>({
   model: null,
   openaiWebPlugins: null,
 });
-
-// Add a watcher to automatically set the source when the model changes
-watch(
-  () => newConversationInfo.value.model,
-  (newModel) => {
-    if (newModel === 'GPT-3.5' || newModel === 'GPT-4') {
-      newConversationInfo.value.source = 'openai_api';
-    } else if (newModel === 'GPT-4 Browsing' || newModel === 'GPT-4 Plugins') {
-      newConversationInfo.value.source = 'openai_web';
-    }
-  }
-);
-  
+ 
 const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
 const loadingPlugins = ref<boolean>(false);
 
@@ -99,7 +87,19 @@ const pluginOptions = computed<SelectOption[]>(() => {
   }));
 });
 
-function renderPluginSelectionLabel(option: SelectOption) {
+// Add a watcher to automatically set the source when the model changes
+watch(
+  () => newConversationInfo.value.model,
+  (newModel) => {
+    if (newModel === 'GPT-3.5' || newModel === 'GPT-4') {
+      newConversationInfo.value.source = 'openai_api';
+    } else if (newModel === 'GPT-4 Browsing' || newModel === 'GPT-4 Plugins') {
+      newConversationInfo.value.source = 'openai_web';
+    }
+  }
+);
+
+  function renderPluginSelectionLabel(option: SelectOption) {
   const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
   return h(NewConversationFormSelectionPluginLabel, {
     plugin,
