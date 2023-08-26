@@ -8,6 +8,7 @@ from api.routers.conv import openai_web_manager
 from api.routers.system import check_users
 from api.schemas.status_schemas import CommonStatusSchema
 from api.users import current_active_user
+from api.enums import OpenaiWebChatModels
 from utils.logger import get_logger
 
 router = APIRouter()
@@ -28,6 +29,10 @@ async def get_server_status(_user: User = Depends(current_active_user)):
                 ],
                 'found': [
                     {'$match': {'time': {'$gte': datetime.utcnow() - timedelta(hours=3)}}},
+                    {'$match': {
+                        'meta.model': {'$in': [OpenaiWebChatModels.gpt_4, OpenaiWebChatModels.gpt_4_mobile, OpenaiWebChatModels.gpt_4_browsing, OpenaiWebChatModels.gpt_4_plugins,]},
+                        'meta.source': 'openai_web'}
+                    },
                     {'$count': 'total'}
                 ]
             }
