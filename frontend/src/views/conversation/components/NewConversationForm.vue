@@ -64,7 +64,7 @@ const defaultModel = 'GPT-3.5';
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,
   source: 'openai_web',
-  model: 'GPT-3.5'
+  model: 'GPT-3.5',
   openaiWebPlugins: null,
 });
 
