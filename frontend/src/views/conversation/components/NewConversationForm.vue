@@ -87,18 +87,6 @@ const pluginOptions = computed<SelectOption[]>(() => {
   }));
 });
 
-// Add a watcher to automatically set the source when the model changes
-watch(
-  () => newConversationInfo.value.model,
-  (model) => {
-    if (model === 'gpt_3_5' || model === 'gpt_4') {
-      source = 'openai_api';
-    } else if (model === 'gpt_4_browsing' || model === 'gpt_4_plugins') {
-      source = 'openai_web';
-    }
-  }
-);
-
   function renderPluginSelectionLabel(option: SelectOption) {
   const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
   return h(NewConversationFormSelectionPluginLabel, {
@@ -158,10 +146,13 @@ watch(
 
 watch(
   () => {
+    const model = newConversationInfo.value.model;
+    const source = (model === 'gpt_3_5' || model === 'gpt_4') ? 'openapi_api' : 'openapi_web';
+    
     return {
       title: newConversationInfo.value.title,
-      source: newConversationInfo.value.source,
-      model: newConversationInfo.value.model,
+      source: source,
+      model: model,
       openaiWebPlugins: newConversationInfo.value.openaiWebPlugins,
     } as NewConversationInfo;
   },
