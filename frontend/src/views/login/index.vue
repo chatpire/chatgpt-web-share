@@ -96,6 +96,6 @@ if (userStore.user) {
 }
 
 const openPayPalSubscription = () => {
-  window.open('https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-9UD22127MX947172JMTQKGPY', '_blank');
+  window.open('https://www.ultimateai.org/subscribe.html', '_blank');
 };
 </script>
