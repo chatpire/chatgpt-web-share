@@ -90,11 +90,11 @@ const pluginOptions = computed<SelectOption[]>(() => {
 // Add a watcher to automatically set the source when the model changes
 watch(
   () => newConversationInfo.value.model,
-  (newModel) => {
-    if (newModel === 'gpt_3_5' || newModel === 'gpt_4') {
-      newConversationInfo.value.source = 'openai_api';
-    } else if (newModel === 'gpt_4_browsing' || newModel === 'gpt_4_plugins') {
-      newConversationInfo.value.source = 'openai_web';
+  (model) => {
+    if (model === 'gpt_3_5' || model === 'gpt_4') {
+      source = 'openai_api';
+    } else if (model === 'gpt_4_browsing' || model === 'gpt_4_plugins') {
+      source = 'openai_web';
     }
   }
 );
