@@ -7,9 +7,9 @@
             <a href="/" style="text-decoration: none; color: inherit">{{ $t('commons.siteTitle') }}</a>
           </div>
           <div class="hidden sm:block">
-            <a class="h-full inline-block flex" href="https://UltimateAI.org/UltimateAI.jpg" target="_blank">
+            <a class="h-full inline-block flex" href="https://UltimateAI.org" target="_blank">
               <img
-              src="https://supershopper.com.au/logo.jpg"
+              src="https://UltimateAI.org/UltimateAI.jpg"
                 alt="SuperShopper Logo"
                 :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }"
                 />
