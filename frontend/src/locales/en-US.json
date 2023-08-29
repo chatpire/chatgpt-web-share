@@ -1,7 +1,7 @@
 {
   "commons": {
     "notLogin": "Not logged in",
-    "siteTitle": "ChatGPT",
+    "siteTitle": "Claude (Anthropic)",
     "confirm": "Confirm",
     "stayInCurrentPage": "Stay on this page",
     "username": "Username",
@@ -324,7 +324,7 @@
     }
   },
   "models": {
-    "gpt_3_5": "GPT-3.5",
+    "gpt_3_5": "Claude",
     "gpt_3_5_mobile": "GPT-3.5 Mobile",
     "gpt_4": "GPT-4",
     "gpt_4_mobile": "GPT-4 Mobile",
