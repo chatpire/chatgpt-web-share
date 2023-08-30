@@ -42,6 +42,7 @@ import { Message } from '@/utils/tips';
 import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
 
 //start of server status
+import { onMounted } from 'vue';
 import { getServerStatusApi } from '@/api/status';
 import { CommonStatusSchema } from '@/types/schema';
 
