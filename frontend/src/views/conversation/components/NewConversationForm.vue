@@ -147,7 +147,8 @@ watch(
 watch(
   () => {
     const model = newConversationInfo.value.model;
-    const source = (model === 'gpt_3_5' || model === 'gpt_4') ? 'openai_api' : 'openai_web';
+    const source = (model === 'gpt_4') ? 'openai_api' : 'openai_web';
+    //    const source = (model === 'gpt_3_5' || model === 'gpt_4') ? 'openai_api' : 'openai_web';
     
     return {
       title: newConversationInfo.value.title,
