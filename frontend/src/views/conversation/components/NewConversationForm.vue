@@ -42,6 +42,36 @@ import { Message } from '@/utils/tips';
 import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
 
 //////
+<script setup lang="ts">
+import { MdPeople } from '@vicons/ionicons4';
+import { EventBusyFilled, QueueFilled } from '@vicons/material';
+import { ref } from 'vue';
+
+import { getServerStatusApi } from '@/api/status';
+import { CommonStatusSchema } from '@/types/schema';
+
+const serverStatus = ref<CommonStatusSchema>({});
+
+const isExpaned = ref(false);
+
+const handleExpand = (names: string[]) => {
+  if (names.length > 0) {
+    isExpaned.value = true;
+    updateData();
+  } else {
+    isExpaned.value = false;
+  }
+};
+
+const updateData = () => {
+  getServerStatusApi().then((res) => {
+    // console.log(res.data);
+    serverStatus.value = res.data;
+  });
+};
+updateData();
+
+///////
 
 onMounted(updateData);
   
