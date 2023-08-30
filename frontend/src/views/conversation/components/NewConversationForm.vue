@@ -180,7 +180,7 @@ watch(
 watch(
   () => {
     const model = newConversationInfo.value.model;
-    const gpt4Count = serverStatus.gpt4_count_in_3_hours ; // Assuming you have access to this value
+    const gpt4Count = this.serverStatus.gpt4_count_in_3_hours ; // Assuming you have access to this value
     const source = (model === 'gpt_4' && gpt4Count > 2) ? 'openai_api' : (model === 'gpt_4') ? 'openai_web' : 'openai_web';
     
     return {
