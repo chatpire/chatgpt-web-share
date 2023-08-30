@@ -10,7 +10,7 @@
             <a class="h-full inline-block flex" href="https://UltimateAI.org" target="_blank">
               <img
               src="https://UltimateAI.org/UltimateAI.jpg"
-                alt="SuperShopper Logo"
+                alt="AltimateAI"
                 :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }"
                 />
             </a>        
