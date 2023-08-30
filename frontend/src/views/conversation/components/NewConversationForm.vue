@@ -166,7 +166,7 @@ watch(
   () => {
     const model = newConversationInfo.value.model;
     const gpt4Count = serverStatus.value?.gpt4_count_in_3_hours ?? 0;
-    const source = (model === 'gpt_4' && gpt4Count > 2) ? 'openai_api' : (model === 'gpt_4') ? 'openai_web' : 'openai_web';
+    const source = (model === 'gpt_4' && gpt4Count > 40) ? 'openai_api' : (model === 'gpt_4') ? 'openai_web' : 'openai_web'; // If GPT Usage is high, then use APIs
     
     return {
       title: newConversationInfo.value.title,
