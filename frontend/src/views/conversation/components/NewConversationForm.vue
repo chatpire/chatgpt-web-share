@@ -41,34 +41,7 @@ import { Message } from '@/utils/tips';
 
 import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
 
-//start of server status
-import { onMounted } from 'vue';
-import { getServerStatusApi } from '@/api/status';
-import { CommonStatusSchema } from '@/types/schema';
-
-interface ServerStatus {
-  gpt4_count_in_3_hours?: number;
-}
-  
-// Component
-onMounted(() => updateData());
-
-const serverStatus = ref<ServerStatus>({}) 
-
-async function updateData() {
-
-  try {
-    const res = await getServerStatusApi()
-
-    if (res.data.gpt4_count_in_3_hours) {
-      serverStatus.value.gpt4_count_in_3_hours = res.data.gpt4_count_in_3_hours 
-    }
-
-  } catch (error) {
-    // handle error  
-  }
-
-}
+//////
 
 onMounted(updateData);
   
