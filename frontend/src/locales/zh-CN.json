@@ -329,7 +329,7 @@
     "gpt_4": "GPT-4",
     "gpt_4_plugins": "GPT-4 Code Interpreter"
     "gpt_4_plugins": "GPT-4 Plugins",
-    "gpt_4_mobile": "GPT-4 Mobile"
+    "gpt_4_mobile": "GPT-4 Mobile",
   },
   "sources": {
     "openai_web": "OpenAI Web",
