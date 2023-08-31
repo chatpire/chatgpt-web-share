@@ -327,7 +327,7 @@
     "gpt_3_5": "GPT-3.5",
     "gpt_3_5_mobile": "GPT-3.5 Mobile",
     "gpt_4": "GPT-4",
-    "gpt_4_browsing": "GPT-4 Browsing",
+    "gpt_4_plugins": "GPT-4 Code Interpreter"
     "gpt_4_plugins": "GPT-4 Plugins",
     "gpt_4_mobile": "GPT-4 Mobile"
   },
