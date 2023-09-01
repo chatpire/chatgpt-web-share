@@ -45,8 +45,8 @@ class DataSetting(BaseModel):
 
 class AuthSetting(BaseModel):
     jwt_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
-    jwt_lifetime_seconds: int = Field(86400, ge=1)
-    cookie_max_age: int = Field(86400, ge=1)
+    jwt_lifetime_seconds: int = Field(604800, ge=1)
+    cookie_max_age: int = Field(604800, ge=1)
     cookie_name: str = 'user_auth'
     user_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
 
