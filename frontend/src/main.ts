@@ -33,10 +33,12 @@ const app = createApp(App);
 // }
 
 //enable history mode
-const vueRouter = router({ mode: 'history' });
+const vueRouter = createRouter({
+  history: createWebHistory(),
+  routes: routerConfig, // Use your router configuration here
+});
+
 app.use(vueRouter);
-//app.use(router);
-//end of history mode
 
 app.use(pinia);
 app.use(i18n);
@@ -53,15 +55,6 @@ const naiveFormComponents = [NForm, NFormItem, NInput, NInputNumber, NSwitch, NB
 naiveFormComponents.forEach((component) => {
   app.component(`N${component.name}`, component);
 });
-
-const vueRouter = createRouter({
-  history: createWebHistory(),
-  routes: routerConfig, // Use your router configuration here
-});
-
-app.use(vueRouter);
-app.use(pinia);
-app.use(i18n);
 
 app.mount('#app');
 
