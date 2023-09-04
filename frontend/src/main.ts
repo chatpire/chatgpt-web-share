@@ -1,4 +1,5 @@
 import './style.css';
+// eslint-disable-next-line import/no-unresolved
 import 'uno.css';
 import '@/api/interceptor';
 import 'katex/dist/katex.css';
@@ -8,19 +9,30 @@ import { createApp } from 'vue';
 
 import App from './App.vue';
 import { i18n } from './i18n';
-import { createRouter, createWebHistory } from 'vue-router'; // Import Vue Router functions
+import router from './router';
 import pinia from './store';
-import routerConfig from './router'; // Import your router configuration
+
+// import * as Sentry from "@sentry/vue";
+// import { BrowserTracing } from "@sentry/tracing";
 
 const app = createApp(App);
 
-const vueRouter = createRouter({
-  history: createWebHistory(),
-  routes: routerConfig, // Use your router configuration here
-});
+// if (import.meta.env.VITE_ENABLE_SENTRY === "yes") {
+//   Sentry.init({
+//     app,
+//     dsn: import.meta.env.VITE_SENTRY_DSN || "",
+//     integrations: [
+//       new BrowserTracing({
+//         routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+//         // tracePropagationTargets: ["localhost", "my-site-url.com", /^\//],
+//       }),
+//     ],
+//     tracesSampleRate: 1.0,
+//     ignoreErrors: ["AxiosError", "errors."]
+//   });
+// }
 
-app.use(vueRouter);
-
+app.use(router);
 app.use(pinia);
 app.use(i18n);
 // app.use(hljs.vuePlugin);
@@ -36,6 +48,7 @@ const naiveFormComponents = [NForm, NFormItem, NInput, NInputNumber, NSwitch, NB
 naiveFormComponents.forEach((component) => {
   app.component(`N${component.name}`, component);
 });
+
 
 app.mount('#app');
 
