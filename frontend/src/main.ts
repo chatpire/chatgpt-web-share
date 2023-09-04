@@ -9,9 +9,9 @@ import { createApp } from 'vue';
 
 import App from './App.vue';
 import { i18n } from './i18n';
-import router from './router';
+import { createRouter, createWebHistory } from 'vue-router'; // Import Vue Router functions
 import pinia from './store';
-
+import routerConfig from './router'; // Import your router configuration
 // import * as Sentry from "@sentry/vue";
 // import { BrowserTracing } from "@sentry/tracing";
 
@@ -54,6 +54,14 @@ naiveFormComponents.forEach((component) => {
   app.component(`N${component.name}`, component);
 });
 
+const vueRouter = createRouter({
+  history: createWebHistory(),
+  routes: routerConfig, // Use your router configuration here
+});
+
+app.use(vueRouter);
+app.use(pinia);
+app.use(i18n);
 
 app.mount('#app');
 
