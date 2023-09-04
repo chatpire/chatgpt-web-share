@@ -32,7 +32,12 @@ const app = createApp(App);
 //   });
 // }
 
-app.use(router);
+//enable history mode
+const vueRouter = router({ mode: 'history' });
+app.use(vueRouter);
+#app.use(router);
+//end of history mode
+
 app.use(pinia);
 app.use(i18n);
 // app.use(hljs.vuePlugin);
