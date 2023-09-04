@@ -1,5 +1,4 @@
 import './style.css';
-// eslint-disable-next-line import/no-unresolved
 import 'uno.css';
 import '@/api/interceptor';
 import 'katex/dist/katex.css';
@@ -12,27 +11,9 @@ import { i18n } from './i18n';
 import { createRouter, createWebHistory } from 'vue-router'; // Import Vue Router functions
 import pinia from './store';
 import routerConfig from './router'; // Import your router configuration
-// import * as Sentry from "@sentry/vue";
-// import { BrowserTracing } from "@sentry/tracing";
 
 const app = createApp(App);
 
-// if (import.meta.env.VITE_ENABLE_SENTRY === "yes") {
-//   Sentry.init({
-//     app,
-//     dsn: import.meta.env.VITE_SENTRY_DSN || "",
-//     integrations: [
-//       new BrowserTracing({
-//         routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-//         // tracePropagationTargets: ["localhost", "my-site-url.com", /^\//],
-//       }),
-//     ],
-//     tracesSampleRate: 1.0,
-//     ignoreErrors: ["AxiosError", "errors."]
-//   });
-// }
-
-//enable history mode
 const vueRouter = createRouter({
   history: createWebHistory(),
   routes: routerConfig, // Use your router configuration here
