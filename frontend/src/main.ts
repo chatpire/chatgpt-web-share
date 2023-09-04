@@ -35,7 +35,7 @@ const app = createApp(App);
 //enable history mode
 const vueRouter = router({ mode: 'history' });
 app.use(vueRouter);
-#app.use(router);
+//app.use(router);
 //end of history mode
 
 app.use(pinia);
