@@ -8,12 +8,8 @@
           </div>
           <div class="hidden sm:block">
             <a class="h-full inline-block flex" href="https://UltimateAI.org" target="_blank">
-              <img
-              src="https://UltimateAI.org/UltimateAI.jpg"
-                alt="AltimateAI"
-                :style="{ color: appStore.theme == 'dark' ? 'white' : 'black' }"
-                />
-            </a>        
+              <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
+            </a>
           </div>
         </n-space>
       </template>
