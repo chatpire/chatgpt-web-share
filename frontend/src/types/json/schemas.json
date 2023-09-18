@@ -44,7 +44,8 @@
                       "gpt_4",
                       "gpt_4_mobile",
                       "gpt_4_browsing",
-                      "gpt_4_plugins"
+                      "gpt_4_plugins",
+                      "gpt_4_code_interpreter"
                     ],
                     "type": "string",
                     "description": "An enumeration."
@@ -140,7 +141,8 @@
                   "gpt_4",
                   "gpt_4_mobile",
                   "gpt_4_browsing",
-                  "gpt_4_plugins"
+                  "gpt_4_plugins",
+                  "gpt_4_code_interpreter"
                 ],
                 "type": "string",
                 "description": "An enumeration."
@@ -311,7 +313,8 @@
                 "anyOf": [
                   {
                     "enum": [
-                      "browser"
+                      "browser",
+                      "python"
                     ],
                     "type": "string"
                   },
@@ -384,6 +387,26 @@
                       },
                       "language": {
                         "title": "Language",
+                        "type": "string"
+                      },
+                      "text": {
+                        "title": "Text",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "OpenaiWebChatMessageExecutionOutputContent",
+                    "required": [
+                      "content_type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                      "content_type": {
+                        "title": "Content Type",
+                        "enum": [
+                          "execution_output"
+                        ],
                         "type": "string"
                       },
                       "text": {
@@ -539,7 +562,8 @@
                           {
                             "enum": [
                               "all",
-                              "browser"
+                              "browser",
+                              "python"
                             ],
                             "type": "string"
                           },
@@ -760,7 +784,8 @@
                 "anyOf": [
                   {
                     "enum": [
-                      "browser"
+                      "browser",
+                      "python"
                     ],
                     "type": "string"
                   },
@@ -851,7 +876,8 @@
                           {
                             "enum": [
                               "all",
-                              "browser"
+                              "browser",
+                              "python"
                             ],
                             "type": "string"
                           },
@@ -1125,7 +1151,8 @@
         "anyOf": [
           {
             "enum": [
-              "browser"
+              "browser",
+              "python"
             ],
             "type": "string"
           },
@@ -1200,6 +1227,26 @@
                   },
                   "language": {
                     "title": "Language",
+                    "type": "string"
+                  },
+                  "text": {
+                    "title": "Text",
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "title": "OpenaiWebChatMessageExecutionOutputContent",
+                "required": [
+                  "content_type"
+                ],
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "title": "Content Type",
+                    "enum": [
+                      "execution_output"
+                    ],
                     "type": "string"
                   },
                   "text": {
@@ -1381,7 +1428,8 @@
                   {
                     "enum": [
                       "all",
-                      "browser"
+                      "browser",
+                      "python"
                     ],
                     "type": "string"
                   },
@@ -1644,7 +1692,8 @@
               "anyOf": [
                 {
                   "enum": [
-                    "browser"
+                    "browser",
+                    "python"
                   ],
                   "type": "string"
                 },
@@ -1719,6 +1768,26 @@
                         },
                         "language": {
                           "title": "Language",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "title": "OpenaiWebChatMessageExecutionOutputContent",
+                      "required": [
+                        "content_type"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "content_type": {
+                          "title": "Content Type",
+                          "enum": [
+                            "execution_output"
+                          ],
                           "type": "string"
                         },
                         "text": {
@@ -1900,7 +1969,8 @@
                         {
                           "enum": [
                             "all",
-                            "browser"
+                            "browser",
+                            "python"
                           ],
                           "type": "string"
                         },
@@ -2369,7 +2439,8 @@
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
-                    "gpt_4_plugins"
+                    "gpt_4_plugins",
+                    "gpt_4_code_interpreter"
                   ],
                   "type": "string",
                   "description": "An enumeration."
@@ -2377,7 +2448,7 @@
                 "default": [
                   "gpt_3_5",
                   "gpt_4",
-                  "gpt_4_browsing",
+                  "gpt_4_code_interpreter",
                   "gpt_4_plugins"
                 ]
               },
@@ -2393,7 +2464,8 @@
                   "gpt_4": "gpt-4",
                   "gpt_4_mobile": "gpt-4-mobile",
                   "gpt_4_browsing": "gpt-4-browsing",
-                  "gpt_4_plugins": "gpt-4-plugins"
+                  "gpt_4_plugins": "gpt-4-plugins",
+                  "gpt_4_code_interpreter": "gpt-4-code-interpreter"
                 }
               }
             }
@@ -2407,7 +2479,7 @@
           "enabled_models": [
             "gpt_3_5",
             "gpt_4",
-            "gpt_4_browsing",
+            "gpt_4_code_interpreter",
             "gpt_4_plugins"
           ],
           "model_code_mapping": {
@@ -2416,7 +2488,8 @@
             "gpt_4": "gpt-4",
             "gpt_4_mobile": "gpt-4-mobile",
             "gpt_4_browsing": "gpt-4-browsing",
-            "gpt_4_plugins": "gpt-4-plugins"
+            "gpt_4_plugins": "gpt-4-plugins",
+            "gpt_4_code_interpreter": "gpt-4-code-interpreter"
           }
         }
       },
@@ -2987,7 +3060,8 @@
         "anyOf": [
           {
             "enum": [
-              "browser"
+              "browser",
+              "python"
             ],
             "type": "string"
           },
@@ -3078,7 +3152,8 @@
                   {
                     "enum": [
                       "all",
-                      "browser"
+                      "browser",
+                      "python"
                     ],
                     "type": "string"
                   },
@@ -3403,7 +3478,8 @@
               "anyOf": [
                 {
                   "enum": [
-                    "browser"
+                    "browser",
+                    "python"
                   ],
                   "type": "string"
                 },
@@ -3494,7 +3570,8 @@
                         {
                           "enum": [
                             "all",
-                            "browser"
+                            "browser",
+                            "python"
                           ],
                           "type": "string"
                         },
@@ -4230,7 +4307,8 @@
           "gpt_4",
           "gpt_4_mobile",
           "gpt_4_browsing",
-          "gpt_4_plugins"
+          "gpt_4_plugins",
+          "gpt_4_code_interpreter"
         ],
         "type": "string",
         "description": "An enumeration."
@@ -4281,7 +4359,8 @@
             "gpt_4",
             "gpt_4_mobile",
             "gpt_4_browsing",
-            "gpt_4_plugins"
+            "gpt_4_plugins",
+            "gpt_4_code_interpreter"
           ],
           "type": "string",
           "description": "An enumeration."
@@ -4289,7 +4368,7 @@
         "default": [
           "gpt_3_5",
           "gpt_4",
-          "gpt_4_browsing",
+          "gpt_4_code_interpreter",
           "gpt_4_plugins"
         ]
       },
@@ -4305,7 +4384,8 @@
           "gpt_4": "gpt-4",
           "gpt_4_mobile": "gpt-4-mobile",
           "gpt_4_browsing": "gpt-4-browsing",
-          "gpt_4_plugins": "gpt-4-plugins"
+          "gpt_4_plugins": "gpt-4-plugins",
+          "gpt_4_code_interpreter": "gpt-4-code-interpreter"
         }
       }
     }
@@ -4354,7 +4434,8 @@
         "anyOf": [
           {
             "enum": [
-              "browser"
+              "browser",
+              "python"
             ],
             "type": "string"
           },
@@ -4427,6 +4508,26 @@
               },
               "language": {
                 "title": "Language",
+                "type": "string"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "OpenaiWebChatMessageExecutionOutputContent",
+            "required": [
+              "content_type"
+            ],
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "title": "Content Type",
+                "enum": [
+                  "execution_output"
+                ],
                 "type": "string"
               },
               "text": {
@@ -4582,7 +4683,8 @@
                   {
                     "enum": [
                       "all",
-                      "browser"
+                      "browser",
+                      "python"
                     ],
                     "type": "string"
                   },
@@ -4783,6 +4885,26 @@
       }
     }
   },
+  "OpenaiWebChatMessageExecutionOutputContent": {
+    "title": "OpenaiWebChatMessageExecutionOutputContent",
+    "required": [
+      "content_type"
+    ],
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "title": "Content Type",
+        "enum": [
+          "execution_output"
+        ],
+        "type": "string"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      }
+    }
+  },
   "OpenaiWebChatMessageMetadata": {
     "title": "OpenaiWebChatMessageMetadata",
     "required": [
@@ -4819,7 +4941,8 @@
           {
             "enum": [
               "all",
-              "browser"
+              "browser",
+              "python"
             ],
             "type": "string"
           },
@@ -5199,7 +5322,8 @@
       "gpt_4",
       "gpt_4_mobile",
       "gpt_4_browsing",
-      "gpt_4_plugins"
+      "gpt_4_plugins",
+      "gpt_4_code_interpreter"
     ],
     "type": "string",
     "description": "An enumeration."
@@ -5298,7 +5422,8 @@
               "anyOf": [
                 {
                   "enum": [
-                    "browser"
+                    "browser",
+                    "python"
                   ],
                   "type": "string"
                 },
@@ -5371,6 +5496,26 @@
                     },
                     "language": {
                       "title": "Language",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "title": "OpenaiWebChatMessageExecutionOutputContent",
+                  "required": [
+                    "content_type"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "content_type": {
+                      "title": "Content Type",
+                      "enum": [
+                        "execution_output"
+                      ],
                       "type": "string"
                     },
                     "text": {
@@ -5526,7 +5671,8 @@
                         {
                           "enum": [
                             "all",
-                            "browser"
+                            "browser",
+                            "python"
                           ],
                           "type": "string"
                         },
@@ -5837,7 +5983,8 @@
       "gpt_4": 0,
       "gpt_4_mobile": 0,
       "gpt_4_browsing": 0,
-      "gpt_4_plugins": 0
+      "gpt_4_plugins": 0,
+      "gpt_4_code_interpreter": 0
     }
   },
   "OpenaiWebSourceSettingSchema": {
@@ -5930,7 +6077,8 @@
             "gpt_4",
             "gpt_4_mobile",
             "gpt_4_browsing",
-            "gpt_4_plugins"
+            "gpt_4_plugins",
+            "gpt_4_code_interpreter"
           ],
           "type": "string",
           "description": "An enumeration."
@@ -5948,7 +6096,8 @@
           "gpt_4": 0,
           "gpt_4_mobile": 0,
           "gpt_4_browsing": 0,
-          "gpt_4_plugins": 0
+          "gpt_4_plugins": 0,
+          "gpt_4_code_interpreter": 0
         }
       }
     }
@@ -6322,7 +6471,8 @@
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
-                    "gpt_4_plugins"
+                    "gpt_4_plugins",
+                    "gpt_4_code_interpreter"
                   ],
                   "type": "string",
                   "description": "An enumeration."
@@ -6340,7 +6490,8 @@
                   "gpt_4": 0,
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
-                  "gpt_4_plugins": 0
+                  "gpt_4_plugins": 0,
+                  "gpt_4_code_interpreter": 0
                 }
               }
             }
@@ -6655,7 +6806,8 @@
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
-                    "gpt_4_plugins"
+                    "gpt_4_plugins",
+                    "gpt_4_code_interpreter"
                   ],
                   "type": "string",
                   "description": "An enumeration."
@@ -6673,7 +6825,8 @@
                   "gpt_4": 0,
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
-                  "gpt_4_plugins": 0
+                  "gpt_4_plugins": 0,
+                  "gpt_4_code_interpreter": 0
                 }
               }
             }
@@ -6934,7 +7087,8 @@
                 "gpt_4",
                 "gpt_4_mobile",
                 "gpt_4_browsing",
-                "gpt_4_plugins"
+                "gpt_4_plugins",
+                "gpt_4_code_interpreter"
               ],
               "type": "string",
               "description": "An enumeration."
@@ -6952,7 +7106,8 @@
               "gpt_4": 0,
               "gpt_4_mobile": 0,
               "gpt_4_browsing": 0,
-              "gpt_4_plugins": 0
+              "gpt_4_plugins": 0,
+              "gpt_4_code_interpreter": 0
             }
           }
         }

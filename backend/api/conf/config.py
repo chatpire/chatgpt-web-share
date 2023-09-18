@@ -58,7 +58,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     proxy: Optional[str] = None
     common_timeout: int = Field(10, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
-    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_browsing", "gpt_4_plugins"]
+    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = {
         "gpt_3_5": "text-davinci-002-render-sha",
         "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
@@ -66,6 +66,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
         "gpt_4_mobile": "gpt-4-mobile",
         "gpt_4_browsing": "gpt-4-browsing",
         "gpt_4_plugins": "gpt-4-plugins",
+        "gpt_4_code_interpreter": "gpt-4-code-interpreter",
     }
 
     @validator("chatgpt_base_url")

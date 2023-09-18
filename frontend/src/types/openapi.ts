@@ -272,7 +272,7 @@ export interface components {
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: "browser" | string;
+      author_name?: ("browser" | "python") | string;
       /** Model */
       model?: string;
       /**
@@ -288,7 +288,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
@@ -457,7 +457,7 @@ export interface components {
        *   "enabled_models": [
        *     "gpt_3_5",
        *     "gpt_4",
-       *     "gpt_4_browsing",
+       *     "gpt_4_code_interpreter",
        *     "gpt_4_plugins"
        *   ],
        *   "model_code_mapping": {
@@ -466,7 +466,8 @@ export interface components {
        *     "gpt_4": "gpt-4",
        *     "gpt_4_mobile": "gpt-4-mobile",
        *     "gpt_4_browsing": "gpt-4-browsing",
-       *     "gpt_4_plugins": "gpt-4-plugins"
+       *     "gpt_4_plugins": "gpt-4-plugins",
+       *     "gpt_4_code_interpreter": "gpt-4-code-interpreter"
        *   }
        * }
        */
@@ -674,7 +675,7 @@ export interface components {
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: "browser" | string;
+      author_name?: ("browser" | "python") | string;
       /** Model */
       model?: string;
       /**
@@ -994,7 +995,7 @@ export interface components {
        * @default [
        *   "gpt_3_5",
        *   "gpt_4",
-       *   "gpt_4_browsing",
+       *   "gpt_4_code_interpreter",
        *   "gpt_4_plugins"
        * ]
        */
@@ -1007,7 +1008,8 @@ export interface components {
        *   "gpt_4": "gpt-4",
        *   "gpt_4_mobile": "gpt-4-mobile",
        *   "gpt_4_browsing": "gpt-4-browsing",
-       *   "gpt_4_plugins": "gpt-4-plugins"
+       *   "gpt_4_plugins": "gpt-4-plugins",
+       *   "gpt_4_code_interpreter": "gpt-4-code-interpreter"
        * }
        */
       model_code_mapping?: {
@@ -1029,7 +1031,7 @@ export interface components {
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: "browser" | string;
+      author_name?: ("browser" | "python") | string;
       /** Model */
       model?: string;
       /**
@@ -1045,7 +1047,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
+      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
@@ -1058,6 +1060,16 @@ export interface components {
       content_type: "code";
       /** Language */
       language?: string;
+      /** Text */
+      text?: string;
+    };
+    /** OpenaiWebChatMessageExecutionOutputContent */
+    OpenaiWebChatMessageExecutionOutputContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "execution_output";
       /** Text */
       text?: string;
     };
@@ -1077,7 +1089,7 @@ export interface components {
       /** Message Status */
       message_status?: string;
       /** Recipient */
-      recipient?: ("all" | "browser") | string;
+      recipient?: ("all" | "browser" | "python") | string;
       /** Fallback Content */
       fallback_content?: Record<string, never>;
       invoked_plugin?: components["schemas"]["OpenaiWebChatMessageMetadataPlugin"];
@@ -1189,7 +1201,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins";
+    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins" | "gpt_4_code_interpreter";
     /**
      * OpenaiWebChatStatus 
      * @description An enumeration. 
@@ -1305,7 +1317,8 @@ export interface components {
      *   "gpt_4": 0,
      *   "gpt_4_mobile": 0,
      *   "gpt_4_browsing": 0,
-     *   "gpt_4_plugins": 0
+     *   "gpt_4_plugins": 0,
+     *   "gpt_4_code_interpreter": 0
      * }
      */
     OpenaiWebPerModelAskCount: {
