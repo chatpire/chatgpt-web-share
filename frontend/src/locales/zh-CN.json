@@ -170,7 +170,8 @@
     "openaiSettings": "OpenAI 设置",
     "expand": "展开",
     "export": "导出",
-    "import": "导入"
+    "import": "导入",
+    "useCodeInterpreter": "使用代码解释器"
   },
   "errors": {
     "403": "403 错误：无访问权限",

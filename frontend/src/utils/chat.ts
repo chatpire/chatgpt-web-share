@@ -139,6 +139,7 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
   const result = [] as BaseChatMessage[][];
   let currentMessageList = [] as BaseChatMessage[];
   let currentMessageListType: 'text' | 'other' | null = null;
+  
   for (const message of messages) {
     if (message.source == 'openai_web') {
       const metadata = message.metadata as OpenaiWebChatMessageMetadata;
@@ -162,8 +163,8 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
           currentMessageList = [];
         }
         currentMessageList.push(message);
-        // 由于同一个对话中 plugins 调用和 browser 调用不能同时出现，因此连续的其它情况放到一组
       } else {
+        // 由于同一个对话中 plugins 调用和 browser 调用不能同时出现，因此连续的其它情况放到一组
         if (currentMessageListType !== 'other') {
           if (currentMessageList.length > 0) result.push(currentMessageList);
           currentMessageListType = 'other';

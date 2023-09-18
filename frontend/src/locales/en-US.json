@@ -170,7 +170,8 @@
     "uninstall": "uninstall",
     "expand": "expand",
     "export": "export",
-    "import": "import"
+    "import": "import",
+    "useCodeInterpreter": "Using Code Interpreter"
   },
   "errors": {
     "403": "403 error: access denied",

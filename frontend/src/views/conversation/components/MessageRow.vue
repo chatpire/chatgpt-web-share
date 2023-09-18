@@ -23,6 +23,9 @@
           <div v-else-if="item.type == 'plugin'">
             <MessageRowPluginDisplay :messages="item.messages" />
           </div>
+          <div v-else-if="item.type == 'code'">
+            <MessageRowCodeDisplay :messages="item.messages" />
+          </div>
         </div>
       </div>
       <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1 -mt-2">
@@ -100,6 +103,7 @@ import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
+import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
 import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
 const { t } = useI18n();
@@ -173,7 +177,7 @@ const relativeTimeString = computed<string>(() => {
   }
 });
 
-type DisplayItemType = 'text' | 'browser' | 'plugin' | null;
+type DisplayItemType = 'text' | 'browser' | 'plugin' | 'code' | 'execution_output' | null;
 
 type DisplayItem = {
   type: DisplayItemType;
@@ -188,6 +192,7 @@ const displayItems = computed<DisplayItem[]>(() => {
   const result = [] as DisplayItem[];
   for (const group of messageGroups.value) {
     let displayType: DisplayItemType | null = null;
+    // 当前 api 仅有 text 类型
     if (group[0].source == 'openai_api') {
       result.push({
         type: 'text',
@@ -195,6 +200,7 @@ const displayItems = computed<DisplayItem[]>(() => {
       });
       continue;
     }
+    // user 发出的消息仅有 text 类型
     if (group[0].role == 'user') {
       if (typeof group[0].content == 'string' || group[0].content?.content_type == 'text')
         result.push({
@@ -203,6 +209,7 @@ const displayItems = computed<DisplayItem[]>(() => {
         });
       continue;
     }
+    // 适配新的临时对话
     if (typeof group[0].content == 'string') {
       if (group[0].id.startsWith('temp_')) {
         result.push({
@@ -243,6 +250,14 @@ const displayItems = computed<DisplayItem[]>(() => {
       }
       if (message.role == 'assistant' && message.model == 'gpt_4_browsing') {
         displayType = 'browser';
+        break;
+      }
+      if (typeof message.content != 'string' && message.content?.content_type == 'code') {
+        displayType = 'code';
+        break;
+      }
+      if (typeof message.content != 'string' && message.content?.content_type == 'execution_output') {
+        displayType = 'execution_output';
         break;
       }
     }

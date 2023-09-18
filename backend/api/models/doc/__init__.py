@@ -6,6 +6,7 @@ from beanie import Document, TimeSeriesConfig, Granularity
 from pydantic import BaseModel, Field
 
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
+from api.models.doc.openai_web_code import OpenaiWebChatMessageMetadataAggregateResult
 from api.models.types import SourceTypeLiteral
 from api.schemas.openai_schemas import OpenaiChatResponseUsage
 from api.conf import Config
@@ -45,19 +46,6 @@ class OpenaiWebChatMessageMetadataAggregateResultJupyterMessage(BaseModel):
     content: Optional[dict[str, Any]]
 
 
-class OpenaiWebChatMessageMetadataAggregateResult(BaseModel):
-    status: Optional[Literal['failed_with_in_kernel_exception', 'success'] | str]
-    run_id: Optional[str]
-    start_time: Optional[float]
-    update_time: Optional[float]
-    end_time: Optional[float]
-    final_expression_output: Optional[Any]
-    code: Optional[str]
-    in_kernel_exception: Optional[dict[str, Any]]  # name, traceback [], args [], notes []
-    messages: Optional[list[str]]
-    jupyter_messages: Optional[list[str]]
-
-
 class OpenaiWebChatMessageMetadata(BaseModel):
     source: Literal["openai_web"]
     # 以下只有assistant有
@@ -77,6 +65,8 @@ class OpenaiWebChatMessageMetadata(BaseModel):
     cite_metadata: Optional[OpenaiWebChatMessageMetadataCite] = Field(alias="_cite_metadata")  # _cite_metadata
     citations: Optional[list[OpenaiWebChatMessageMetadataCitation]]
     # code execution output 相关
+    is_complete: Optional[bool]
+    aggregate_result: Optional[OpenaiWebChatMessageMetadataAggregateResult]
 
 
 class OpenaiApiChatMessageMetadata(BaseModel):
