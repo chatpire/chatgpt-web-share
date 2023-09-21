@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col items-start my-2" @click="handleExpand">
-    <div class="flex items-center text-xs rounded p-3 text-gray-900 bg-gray-100">
+  <div class="flex flex-col items-start my-2">
+    <div class="flex items-center text-xs rounded p-3 text-gray-900 bg-gray-100" @click="handleExpand">
       <div>
         <div class="flex items-center gap-3">
           <div>

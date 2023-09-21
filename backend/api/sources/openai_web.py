@@ -15,7 +15,8 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageCodeContent, \
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
     OpenaiWebChatMessageContent, \
-    OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent
+    OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
+    OpenaiWebChatMessageExecutionOutputContent
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -38,6 +39,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         content_map = {
             "text": OpenaiWebChatMessageTextContent,
             "code": OpenaiWebChatMessageCodeContent,
+            "execution_output": OpenaiWebChatMessageExecutionOutputContent,
             "stderr": OpenaiWebChatMessageStderrContent,
             "tether_browsing_display": OpenaiWebChatMessageTetherBrowsingDisplayContent,
             "tether_quote": OpenaiWebChatMessageTetherQuoteContent,
