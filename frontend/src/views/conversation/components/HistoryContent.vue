@@ -48,7 +48,7 @@
         </div>
       </div>
       <!-- 消息记录 -->
-      <MessageRow v-for="messages in filteredMessagesList" :key="messages[0].id" :messages="messages" />
+      <MessageRow v-for="messages in filteredMessagesList" :key="messages[0].id" :messages="messages" :conversation-id="conversationId" />
     </div>
     <n-empty
       v-else

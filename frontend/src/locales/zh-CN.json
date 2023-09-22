@@ -171,7 +171,8 @@
     "expand": "展开",
     "export": "导出",
     "import": "导入",
-    "useCodeInterpreter": "使用代码解释器"
+    "useCodeInterpreter": "使用代码解释器",
+    "viewAttachments": "展开 {0} 个附件"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -273,7 +274,9 @@
       "selectPlugins": "选择插件",
       "failedToGetPlugins": "获取插件列表失败"
     },
-    "openaiWebPluginsLengthMoreThan3": "插件数量不能超过3"
+    "openaiWebPluginsLengthMoreThan3": "插件数量不能超过3",
+    "sandboxFileNotFound": "未找到文件 {0}，这可能是因为路径错误，或者是因为解释器已经过期。",
+    "sandboxFileDownloadError": "文件下载错误"
   },
   "labels": {
     "nickname": "昵称",

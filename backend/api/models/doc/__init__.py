@@ -6,7 +6,8 @@ from beanie import Document, TimeSeriesConfig, Granularity
 from pydantic import BaseModel, Field
 
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
-from api.models.doc.openai_web_code import OpenaiWebChatMessageMetadataAggregateResult
+from api.models.doc.openai_web_code_interpreter import OpenaiWebChatMessageMetadataAggregateResult, \
+    OpenaiWebChatMessageMetadataAttachment
 from api.models.types import SourceTypeLiteral
 from api.schemas.openai_schemas import OpenaiChatResponseUsage
 from api.conf import Config
@@ -64,7 +65,8 @@ class OpenaiWebChatMessageMetadata(BaseModel):
     status: Optional[Literal['finished'] | str]
     cite_metadata: Optional[OpenaiWebChatMessageMetadataCite] = Field(alias="_cite_metadata")  # _cite_metadata
     citations: Optional[list[OpenaiWebChatMessageMetadataCitation]]
-    # code execution output 相关
+    # code execution 相关
+    attachments: Optional[list[OpenaiWebChatMessageMetadataAttachment]]
     is_complete: Optional[bool]
     aggregate_result: Optional[OpenaiWebChatMessageMetadataAggregateResult]
 

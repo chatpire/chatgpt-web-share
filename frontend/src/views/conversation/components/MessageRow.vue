@@ -9,13 +9,15 @@
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="ml-4 lt-md:mx-0 w-full min-h-16">
+      <!-- Json View -->
       <div v-if="showRawMessage" class="mr-2 my-3 json-viewer">
         <JsonViewer :value="props.messages" copyable expanded :expand-depth="2" :theme="appStore.theme" />
       </div>
+      <!-- Rendered -->
       <div v-else>
         <div v-for="(item, i) in displayItems" :key="i" class="mr-1">
           <div v-if="item.type == 'text'">
-            <MessageRowTextDisplay :render-markdown="renderMarkdown" :messages="item.messages" />
+            <MessageRowTextDisplay :conversation-id="props.conversationId" :render-markdown="renderMarkdown" :messages="item.messages" />
           </div>
           <div v-else-if="item.type == 'browser'">
             <MessageRowBrowserDisplay :messages="item.messages" />
@@ -27,8 +29,11 @@
             <MessageRowCodeDisplay :messages="item.messages" />
           </div>
         </div>
+        <div v-if="attachments.length != 0">
+          <MessageRowAttachmentDisplay :attachments="attachments" />
+        </div>
       </div>
-      <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1 -mt-2">
+      <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1">
         <div class="flex flex-row items-center space-x-4">
           <n-tooltip trigger="hover">
             <template #trigger>
@@ -102,6 +107,7 @@ import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
+import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
 import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
 import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
@@ -126,6 +132,7 @@ onMounted(() => {
 });
 
 const props = defineProps<{
+  conversationId: string;
   messages: BaseChatMessage[];
 }>();
 
@@ -269,6 +276,12 @@ const displayItems = computed<DisplayItem[]>(() => {
     });
   }
   return result;
+});
+
+const attachments = computed(() => {
+  const metadata = lastMessage.value?.metadata as OpenaiWebChatMessageMetadata;
+  if (metadata?.attachments) return metadata.attachments;
+  else return [];
 });
 
 const allTextContent = computed(() => {

@@ -3,6 +3,12 @@ from typing import Optional, Literal, Any
 from pydantic import BaseModel
 
 
+class OpenaiWebChatMessageMetadataAttachment(BaseModel):
+    name: Optional[str]
+    id: Optional[str]
+    size: Optional[int]
+
+
 class OpenaiWebChatMessageMetadataAggregateResultMessage(BaseModel):
     message_type: Optional[Literal['image', 'stream'] | str]
     time: Optional[float]

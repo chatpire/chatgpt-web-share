@@ -8,7 +8,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi_users.router import ErrorCode
 from pydantic import ValidationError
 from pydantic.generics import GenericModel
-from revChatGPT.typings import Error as revChatGPTError
 from starlette.background import BackgroundTask
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
