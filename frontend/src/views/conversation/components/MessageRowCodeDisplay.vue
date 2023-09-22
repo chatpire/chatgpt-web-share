@@ -37,6 +37,7 @@ import {
   OpenaiWebChatMessage,
   OpenaiWebChatMessageCodeContent,
   OpenaiWebChatMessageExecutionOutputContent,
+  OpenaiWebChatMessageMetadata,
 } from '@/types/schema';
 import md from '@/utils/markdown';
 
@@ -64,6 +65,8 @@ const result = computed(() => {
     console.error('MessageRowCodeDisplay: message content type is not execution_output', message);
   }
   const content = message.content as OpenaiWebChatMessageExecutionOutputContent;
+  const metadata = message.metadata as OpenaiWebChatMessageMetadata;
+  // if (metadata.aggregate_result == null)
   return content.text;
 });
 

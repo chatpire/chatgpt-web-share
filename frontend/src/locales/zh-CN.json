@@ -171,7 +171,8 @@
     "expand": "展开",
     "export": "导出",
     "import": "导入",
-    "useCodeInterpreter": "使用代码解释器"
+    "useCodeInterpreter": "使用代码解释器",
+    "viewAttachments": "展开 {0} 个附件"
   },
   "errors": {
     "403": "403 错误：无访问权限",

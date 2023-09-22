@@ -1102,6 +1102,58 @@ export interface components {
       _cite_metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCite"];
       /** Citations */
       citations?: (components["schemas"]["OpenaiWebChatMessageMetadataCitation"])[];
+      /** Attachments */
+      attachments?: (components["schemas"]["OpenaiWebChatMessageMetadataAttachment"])[];
+      /** Is Complete */
+      is_complete?: boolean;
+      aggregate_result?: components["schemas"]["OpenaiWebChatMessageMetadataAggregateResult"];
+    };
+    /** OpenaiWebChatMessageMetadataAggregateResult */
+    OpenaiWebChatMessageMetadataAggregateResult: {
+      /** Status */
+      status?: ("failed_with_in_kernel_exception" | "success") | string;
+      /** Run Id */
+      run_id?: string;
+      /** Start Time */
+      start_time?: number;
+      /** Update Time */
+      update_time?: number;
+      /** End Time */
+      end_time?: number;
+      /** Final Expression Output */
+      final_expression_output?: Record<string, never>;
+      /** Code */
+      code?: string;
+      /** In Kernel Exception */
+      in_kernel_exception?: Record<string, never>;
+      /** Messages */
+      messages?: (components["schemas"]["OpenaiWebChatMessageMetadataAggregateResultMessage"])[];
+      /** Jupyter Messages */
+      jupyter_messages?: (Record<string, never>)[];
+    };
+    /** OpenaiWebChatMessageMetadataAggregateResultMessage */
+    OpenaiWebChatMessageMetadataAggregateResultMessage: {
+      /** Message Type */
+      message_type?: ("image" | "stream") | string;
+      /** Time */
+      time?: number;
+      /** Sender */
+      sender?: "server" | string;
+      /** Image Url */
+      image_url?: string;
+      /** Stream Name */
+      stream_name?: string;
+      /** Text */
+      text?: string;
+    };
+    /** OpenaiWebChatMessageMetadataAttachment */
+    OpenaiWebChatMessageMetadataAttachment: {
+      /** Name */
+      name?: string;
+      /** Id */
+      id?: string;
+      /** Size */
+      size?: number;
     };
     /** OpenaiWebChatMessageMetadataCitation */
     OpenaiWebChatMessageMetadataCitation: {

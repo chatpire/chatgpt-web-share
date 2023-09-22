@@ -20,6 +20,7 @@ export type OpenaiApiChatModels = components['schemas']['OpenaiApiChatModels'];
 
 export type OpenaiWebChatMessageMetadata = components['schemas']['OpenaiWebChatMessageMetadata'];
 export type OpenaiApiChatMessageMetadata = components['schemas']['OpenaiApiChatMessageMetadata'];
+export type OpenaiWebChatMessageMetadataAttachment = components['schemas']['OpenaiWebChatMessageMetadataAttachment'];
 export type OpenaiWebChatMessageTextContent = components['schemas']['OpenaiWebChatMessageTextContent'];
 export type OpenaiWebChatMessageCodeContent = components['schemas']['OpenaiWebChatMessageCodeContent'];
 export type OpenaiWebChatMessageExecutionOutputContent = components['schemas']['OpenaiWebChatMessageExecutionOutputContent'];
