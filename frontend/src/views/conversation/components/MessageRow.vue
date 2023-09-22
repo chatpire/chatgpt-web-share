@@ -17,7 +17,7 @@
       <div v-else>
         <div v-for="(item, i) in displayItems" :key="i" class="mr-1">
           <div v-if="item.type == 'text'">
-            <MessageRowTextDisplay :render-markdown="renderMarkdown" :messages="item.messages" />
+            <MessageRowTextDisplay :conversation-id="props.conversationId" :render-markdown="renderMarkdown" :messages="item.messages" />
           </div>
           <div v-else-if="item.type == 'browser'">
             <MessageRowBrowserDisplay :messages="item.messages" />
@@ -132,6 +132,7 @@ onMounted(() => {
 });
 
 const props = defineProps<{
+  conversationId: string;
   messages: BaseChatMessage[];
 }>();
 

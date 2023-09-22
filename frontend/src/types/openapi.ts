@@ -85,6 +85,18 @@ export interface paths {
     /** Generate Conversation Title */
     patch: operations["generate_conversation_title_conv__conversation_id__gen_title_patch"];
   };
+  "/conv/{conversation_id}/interpreter": {
+    /** Get Conversation Interpreter Info */
+    get: operations["get_conversation_interpreter_info_conv__conversation_id__interpreter_get"];
+  };
+  "/conv/files/{file_id}/download-url": {
+    /** Get File Download Url */
+    get: operations["get_file_download_url_conv_files__file_id__download_url_get"];
+  };
+  "/conv/{conversation_id}/interpreter/download-url": {
+    /** Get Conversation Interpreter Download Url */
+    get: operations["get_conversation_interpreter_download_url_conv__conversation_id__interpreter_download_url_get"];
+  };
   "/chat/openai-plugins/all": {
     /** Get All Openai Web Chat Plugins */
     get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_all_get"];
@@ -893,6 +905,13 @@ export interface components {
       /** Allow Custom Openai Api */
       allow_custom_openai_api: boolean;
       custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
+    };
+    /** OpenaiChatInterpreterInfo */
+    OpenaiChatInterpreterInfo: {
+      /** Kernel Started */
+      kernel_started?: boolean;
+      /** Time Remaining Ms */
+      time_remaining_ms?: number;
     };
     /** OpenaiChatPlugin */
     OpenaiChatPlugin: {
@@ -2037,6 +2056,76 @@ export interface operations {
       };
       path: {
         conversation_id: string | string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_conversation_interpreter_info_conv__conversation_id__interpreter_get: {
+    /** Get Conversation Interpreter Info */
+    parameters: {
+      path: {
+        conversation_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_file_download_url_conv_files__file_id__download_url_get: {
+    /** Get File Download Url */
+    parameters: {
+      path: {
+        file_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_conversation_interpreter_download_url_conv__conversation_id__interpreter_download_url_get: {
+    /** Get Conversation Interpreter Download Url */
+    parameters: {
+      query: {
+        message_id: string;
+        sandbox_path: string;
+      };
+      path: {
+        conversation_id: string;
       };
     };
     responses: {

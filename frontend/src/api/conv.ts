@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { BaseConversationHistory, BaseConversationSchema } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema, OpenaiChatInterpreterInfo } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -48,4 +48,17 @@ export function generateConversationTitleApi(conversation_id: string, message_id
 
 export function assignConversationToUserApi(conversation_id: string, username: string) {
   return axios.patch(`${ApiUrl.Conversation}/${conversation_id}/assign/${username}`);
+}
+
+export function getFileDownloadUrlApi(file_id: string) {
+  return axios.get<string>(`${ApiUrl.Conversation}/files/${file_id}/download-url`);
+}
+
+export function getInterpreterInfoApi(conversation_id: string) {
+  return axios.get<OpenaiChatInterpreterInfo>(`${ApiUrl.Conversation}/${conversation_id}/interpreter`);
+}
+
+export function getInterpreterSandboxFileDownloadUrlApi(conversation_id: string, message_id: string, sandbox_path: string) {
+  return axios.get<string>(`${ApiUrl.Conversation}/${conversation_id}/interpreter/download-url`,
+    { params: { message_id, sandbox_path } });
 }

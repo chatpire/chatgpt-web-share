@@ -4878,6 +4878,20 @@
       }
     }
   },
+  "OpenaiChatInterpreterInfo": {
+    "title": "OpenaiChatInterpreterInfo",
+    "type": "object",
+    "properties": {
+      "kernel_started": {
+        "title": "Kernel Started",
+        "type": "boolean"
+      },
+      "time_remaining_ms": {
+        "title": "Time Remaining Ms",
+        "type": "integer"
+      }
+    }
+  },
   "OpenaiChatPlugin": {
     "title": "OpenaiChatPlugin",
     "type": "object",

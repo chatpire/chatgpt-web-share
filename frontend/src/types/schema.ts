@@ -33,6 +33,7 @@ export type OpenaiApiChatMessageTextContent = components['schemas']['OpenaiApiCh
 export type BaseChatMessage = components['schemas']['BaseChatMessage'];
 export type OpenaiApiChatMessage = components['schemas']['OpenaiApiChatMessage'];
 export type OpenaiWebChatMessage = components['schemas']['OpenaiWebChatMessage'];
+export type OpenaiChatInterpreterInfo = components['schemas']['OpenaiChatInterpreterInfo'];
 
 export type BaseConversationSchema = components['schemas']['BaseConversationSchema'];
 // export source OpenaiWebConversationSchema = components['schemas']['OpenaiWebConversationSchema'];
