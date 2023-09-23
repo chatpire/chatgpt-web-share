@@ -14,6 +14,7 @@ from api.models.doc import OpenaiApiConversationHistoryDocument, OpenaiWebConver
     BaseConversationHistory
 from api.response import response
 from api.schemas import OpenaiWebConversationSchema, BaseConversationSchema, OpenaiApiConversationSchema
+from api.schemas.openai_schemas import OpenaiChatInterpreterInfo
 from api.sources import OpenaiWebChatManager
 from api.users import current_active_user, current_super_user
 from utils.logger import get_logger
@@ -215,3 +216,23 @@ async def generate_conversation_title(message_id: str,
             raise InvalidParamsException(f"{result['message']}")
     result = jsonable_encoder(conversation)
     return result
+
+
+@router.get("/conv/{conversation_id}/interpreter", tags=["conversation"], response_model=OpenaiChatInterpreterInfo)
+async def get_conversation_interpreter_info(conversation_id: str):
+    url = await openai_web_manager.get_interpreter_info(conversation_id)
+    return response(200, result=url)
+
+
+@router.get("/conv/files/{file_id}/download-url", tags=["conversation"])
+async def get_file_download_url(file_id: str):
+    url = await openai_web_manager.get_file_download_url(file_id)
+    return response(200, result=url)
+
+
+@router.get("/conv/{conversation_id}/interpreter/download-url", tags=["conversation"])
+async def get_conversation_interpreter_download_url(conversation_id: str, message_id: str, sandbox_path: str):
+    if message_id is None or sandbox_path is None:
+        raise InvalidParamsException("message_id and sandbox_path are required")
+    url = await openai_web_manager.get_interpreter_file_download_url(conversation_id, message_id, sandbox_path)
+    return response(200, result=url)

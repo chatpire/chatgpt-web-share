@@ -675,6 +675,140 @@
                             }
                           }
                         }
+                      },
+                      "attachments": {
+                        "title": "Attachments",
+                        "type": "array",
+                        "items": {
+                          "title": "OpenaiWebChatMessageMetadataAttachment",
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "title": "Name",
+                              "type": "string"
+                            },
+                            "id": {
+                              "title": "Id",
+                              "type": "string"
+                            },
+                            "size": {
+                              "title": "Size",
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      },
+                      "is_complete": {
+                        "title": "Is Complete",
+                        "type": "boolean"
+                      },
+                      "aggregate_result": {
+                        "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "title": "Status",
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "failed_with_in_kernel_exception",
+                                  "success"
+                                ],
+                                "type": "string"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "run_id": {
+                            "title": "Run Id",
+                            "type": "string"
+                          },
+                          "start_time": {
+                            "title": "Start Time",
+                            "type": "number"
+                          },
+                          "update_time": {
+                            "title": "Update Time",
+                            "type": "number"
+                          },
+                          "end_time": {
+                            "title": "End Time",
+                            "type": "number"
+                          },
+                          "final_expression_output": {
+                            "title": "Final Expression Output"
+                          },
+                          "code": {
+                            "title": "Code",
+                            "type": "string"
+                          },
+                          "in_kernel_exception": {
+                            "title": "In Kernel Exception",
+                            "type": "object"
+                          },
+                          "messages": {
+                            "title": "Messages",
+                            "type": "array",
+                            "items": {
+                              "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                              "type": "object",
+                              "properties": {
+                                "message_type": {
+                                  "title": "Message Type",
+                                  "anyOf": [
+                                    {
+                                      "enum": [
+                                        "image",
+                                        "stream"
+                                      ],
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "time": {
+                                  "title": "Time",
+                                  "type": "number"
+                                },
+                                "sender": {
+                                  "title": "Sender",
+                                  "anyOf": [
+                                    {
+                                      "enum": [
+                                        "server"
+                                      ],
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "image_url": {
+                                  "title": "Image Url",
+                                  "type": "string"
+                                },
+                                "stream_name": {
+                                  "title": "Stream Name",
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "title": "Text",
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "jupyter_messages": {
+                            "title": "Jupyter Messages",
+                            "type": "array",
+                            "items": {}
+                          }
+                        }
                       }
                     }
                   },
@@ -985,6 +1119,140 @@
                                 }
                               }
                             }
+                          }
+                        }
+                      },
+                      "attachments": {
+                        "title": "Attachments",
+                        "type": "array",
+                        "items": {
+                          "title": "OpenaiWebChatMessageMetadataAttachment",
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "title": "Name",
+                              "type": "string"
+                            },
+                            "id": {
+                              "title": "Id",
+                              "type": "string"
+                            },
+                            "size": {
+                              "title": "Size",
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      },
+                      "is_complete": {
+                        "title": "Is Complete",
+                        "type": "boolean"
+                      },
+                      "aggregate_result": {
+                        "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "title": "Status",
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "failed_with_in_kernel_exception",
+                                  "success"
+                                ],
+                                "type": "string"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "run_id": {
+                            "title": "Run Id",
+                            "type": "string"
+                          },
+                          "start_time": {
+                            "title": "Start Time",
+                            "type": "number"
+                          },
+                          "update_time": {
+                            "title": "Update Time",
+                            "type": "number"
+                          },
+                          "end_time": {
+                            "title": "End Time",
+                            "type": "number"
+                          },
+                          "final_expression_output": {
+                            "title": "Final Expression Output"
+                          },
+                          "code": {
+                            "title": "Code",
+                            "type": "string"
+                          },
+                          "in_kernel_exception": {
+                            "title": "In Kernel Exception",
+                            "type": "object"
+                          },
+                          "messages": {
+                            "title": "Messages",
+                            "type": "array",
+                            "items": {
+                              "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                              "type": "object",
+                              "properties": {
+                                "message_type": {
+                                  "title": "Message Type",
+                                  "anyOf": [
+                                    {
+                                      "enum": [
+                                        "image",
+                                        "stream"
+                                      ],
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "time": {
+                                  "title": "Time",
+                                  "type": "number"
+                                },
+                                "sender": {
+                                  "title": "Sender",
+                                  "anyOf": [
+                                    {
+                                      "enum": [
+                                        "server"
+                                      ],
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "image_url": {
+                                  "title": "Image Url",
+                                  "type": "string"
+                                },
+                                "stream_name": {
+                                  "title": "Stream Name",
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "title": "Text",
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "jupyter_messages": {
+                            "title": "Jupyter Messages",
+                            "type": "array",
+                            "items": {}
                           }
                         }
                       }
@@ -1517,6 +1785,140 @@
                     }
                   }
                 }
+              },
+              "attachments": {
+                "title": "Attachments",
+                "type": "array",
+                "items": {
+                  "title": "OpenaiWebChatMessageMetadataAttachment",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "title": "Name",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "type": "string"
+                    },
+                    "size": {
+                      "title": "Size",
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "is_complete": {
+                "title": "Is Complete",
+                "type": "boolean"
+              },
+              "aggregate_result": {
+                "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "title": "Status",
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "failed_with_in_kernel_exception",
+                          "success"
+                        ],
+                        "type": "string"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "run_id": {
+                    "title": "Run Id",
+                    "type": "string"
+                  },
+                  "start_time": {
+                    "title": "Start Time",
+                    "type": "number"
+                  },
+                  "update_time": {
+                    "title": "Update Time",
+                    "type": "number"
+                  },
+                  "end_time": {
+                    "title": "End Time",
+                    "type": "number"
+                  },
+                  "final_expression_output": {
+                    "title": "Final Expression Output"
+                  },
+                  "code": {
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "in_kernel_exception": {
+                    "title": "In Kernel Exception",
+                    "type": "object"
+                  },
+                  "messages": {
+                    "title": "Messages",
+                    "type": "array",
+                    "items": {
+                      "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                      "type": "object",
+                      "properties": {
+                        "message_type": {
+                          "title": "Message Type",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "image",
+                                "stream"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "time": {
+                          "title": "Time",
+                          "type": "number"
+                        },
+                        "sender": {
+                          "title": "Sender",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "server"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "image_url": {
+                          "title": "Image Url",
+                          "type": "string"
+                        },
+                        "stream_name": {
+                          "title": "Stream Name",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "jupyter_messages": {
+                    "title": "Jupyter Messages",
+                    "type": "array",
+                    "items": {}
+                  }
+                }
               }
             }
           },
@@ -2036,6 +2438,140 @@
                           }
                         }
                       }
+                    },
+                    "attachments": {
+                      "title": "Attachments",
+                      "type": "array",
+                      "items": {
+                        "title": "OpenaiWebChatMessageMetadataAttachment",
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "title": "Name",
+                            "type": "string"
+                          },
+                          "id": {
+                            "title": "Id",
+                            "type": "string"
+                          },
+                          "size": {
+                            "title": "Size",
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "is_complete": {
+                      "title": "Is Complete",
+                      "type": "boolean"
+                    },
+                    "aggregate_result": {
+                      "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "title": "Status",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "failed_with_in_kernel_exception",
+                                "success"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "run_id": {
+                          "title": "Run Id",
+                          "type": "string"
+                        },
+                        "start_time": {
+                          "title": "Start Time",
+                          "type": "number"
+                        },
+                        "update_time": {
+                          "title": "Update Time",
+                          "type": "number"
+                        },
+                        "end_time": {
+                          "title": "End Time",
+                          "type": "number"
+                        },
+                        "final_expression_output": {
+                          "title": "Final Expression Output"
+                        },
+                        "code": {
+                          "title": "Code",
+                          "type": "string"
+                        },
+                        "in_kernel_exception": {
+                          "title": "In Kernel Exception",
+                          "type": "object"
+                        },
+                        "messages": {
+                          "title": "Messages",
+                          "type": "array",
+                          "items": {
+                            "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                            "type": "object",
+                            "properties": {
+                              "message_type": {
+                                "title": "Message Type",
+                                "anyOf": [
+                                  {
+                                    "enum": [
+                                      "image",
+                                      "stream"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "time": {
+                                "title": "Time",
+                                "type": "number"
+                              },
+                              "sender": {
+                                "title": "Sender",
+                                "anyOf": [
+                                  {
+                                    "enum": [
+                                      "server"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "image_url": {
+                                "title": "Image Url",
+                                "type": "string"
+                              },
+                              "stream_name": {
+                                "title": "Stream Name",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "jupyter_messages": {
+                          "title": "Jupyter Messages",
+                          "type": "array",
+                          "items": {}
+                        }
+                      }
                     }
                   }
                 },
@@ -2392,7 +2928,7 @@
                   "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
                   "gpt_4": "gpt-4",
                   "gpt_4_mobile": "gpt-4-mobile",
-                  "gpt_4_browsing": "gpt-4-browsing",
+                  "gpt_4_browsing": "gpt-4-code-interpreter",
                   "gpt_4_plugins": "gpt-4-plugins"
                 }
               }
@@ -3214,6 +3750,140 @@
                     }
                   }
                 }
+              },
+              "attachments": {
+                "title": "Attachments",
+                "type": "array",
+                "items": {
+                  "title": "OpenaiWebChatMessageMetadataAttachment",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "title": "Name",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "type": "string"
+                    },
+                    "size": {
+                      "title": "Size",
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "is_complete": {
+                "title": "Is Complete",
+                "type": "boolean"
+              },
+              "aggregate_result": {
+                "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "title": "Status",
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "failed_with_in_kernel_exception",
+                          "success"
+                        ],
+                        "type": "string"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "run_id": {
+                    "title": "Run Id",
+                    "type": "string"
+                  },
+                  "start_time": {
+                    "title": "Start Time",
+                    "type": "number"
+                  },
+                  "update_time": {
+                    "title": "Update Time",
+                    "type": "number"
+                  },
+                  "end_time": {
+                    "title": "End Time",
+                    "type": "number"
+                  },
+                  "final_expression_output": {
+                    "title": "Final Expression Output"
+                  },
+                  "code": {
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "in_kernel_exception": {
+                    "title": "In Kernel Exception",
+                    "type": "object"
+                  },
+                  "messages": {
+                    "title": "Messages",
+                    "type": "array",
+                    "items": {
+                      "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                      "type": "object",
+                      "properties": {
+                        "message_type": {
+                          "title": "Message Type",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "image",
+                                "stream"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "time": {
+                          "title": "Time",
+                          "type": "number"
+                        },
+                        "sender": {
+                          "title": "Sender",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "server"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "image_url": {
+                          "title": "Image Url",
+                          "type": "string"
+                        },
+                        "stream_name": {
+                          "title": "Stream Name",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "jupyter_messages": {
+                    "title": "Jupyter Messages",
+                    "type": "array",
+                    "items": {}
+                  }
+                }
               }
             }
           },
@@ -3630,6 +4300,140 @@
                           }
                         }
                       }
+                    },
+                    "attachments": {
+                      "title": "Attachments",
+                      "type": "array",
+                      "items": {
+                        "title": "OpenaiWebChatMessageMetadataAttachment",
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "title": "Name",
+                            "type": "string"
+                          },
+                          "id": {
+                            "title": "Id",
+                            "type": "string"
+                          },
+                          "size": {
+                            "title": "Size",
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "is_complete": {
+                      "title": "Is Complete",
+                      "type": "boolean"
+                    },
+                    "aggregate_result": {
+                      "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "title": "Status",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "failed_with_in_kernel_exception",
+                                "success"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "run_id": {
+                          "title": "Run Id",
+                          "type": "string"
+                        },
+                        "start_time": {
+                          "title": "Start Time",
+                          "type": "number"
+                        },
+                        "update_time": {
+                          "title": "Update Time",
+                          "type": "number"
+                        },
+                        "end_time": {
+                          "title": "End Time",
+                          "type": "number"
+                        },
+                        "final_expression_output": {
+                          "title": "Final Expression Output"
+                        },
+                        "code": {
+                          "title": "Code",
+                          "type": "string"
+                        },
+                        "in_kernel_exception": {
+                          "title": "In Kernel Exception",
+                          "type": "object"
+                        },
+                        "messages": {
+                          "title": "Messages",
+                          "type": "array",
+                          "items": {
+                            "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                            "type": "object",
+                            "properties": {
+                              "message_type": {
+                                "title": "Message Type",
+                                "anyOf": [
+                                  {
+                                    "enum": [
+                                      "image",
+                                      "stream"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "time": {
+                                "title": "Time",
+                                "type": "number"
+                              },
+                              "sender": {
+                                "title": "Sender",
+                                "anyOf": [
+                                  {
+                                    "enum": [
+                                      "server"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "image_url": {
+                                "title": "Image Url",
+                                "type": "string"
+                              },
+                              "stream_name": {
+                                "title": "Stream Name",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "jupyter_messages": {
+                          "title": "Jupyter Messages",
+                          "type": "array",
+                          "items": {}
+                        }
+                      }
                     }
                   }
                 },
@@ -3994,6 +4798,20 @@
             "type": "string"
           }
         }
+      }
+    }
+  },
+  "OpenaiChatInterpreterInfo": {
+    "title": "OpenaiChatInterpreterInfo",
+    "type": "object",
+    "properties": {
+      "kernel_started": {
+        "title": "Kernel Started",
+        "type": "boolean"
+      },
+      "time_remaining_ms": {
+        "title": "Time Remaining Ms",
+        "type": "integer"
       }
     }
   },
@@ -4718,6 +5536,140 @@
                     }
                   }
                 }
+              },
+              "attachments": {
+                "title": "Attachments",
+                "type": "array",
+                "items": {
+                  "title": "OpenaiWebChatMessageMetadataAttachment",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "title": "Name",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "type": "string"
+                    },
+                    "size": {
+                      "title": "Size",
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "is_complete": {
+                "title": "Is Complete",
+                "type": "boolean"
+              },
+              "aggregate_result": {
+                "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "title": "Status",
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "failed_with_in_kernel_exception",
+                          "success"
+                        ],
+                        "type": "string"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "run_id": {
+                    "title": "Run Id",
+                    "type": "string"
+                  },
+                  "start_time": {
+                    "title": "Start Time",
+                    "type": "number"
+                  },
+                  "update_time": {
+                    "title": "Update Time",
+                    "type": "number"
+                  },
+                  "end_time": {
+                    "title": "End Time",
+                    "type": "number"
+                  },
+                  "final_expression_output": {
+                    "title": "Final Expression Output"
+                  },
+                  "code": {
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "in_kernel_exception": {
+                    "title": "In Kernel Exception",
+                    "type": "object"
+                  },
+                  "messages": {
+                    "title": "Messages",
+                    "type": "array",
+                    "items": {
+                      "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                      "type": "object",
+                      "properties": {
+                        "message_type": {
+                          "title": "Message Type",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "image",
+                                "stream"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "time": {
+                          "title": "Time",
+                          "type": "number"
+                        },
+                        "sender": {
+                          "title": "Sender",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "server"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "image_url": {
+                          "title": "Image Url",
+                          "type": "string"
+                        },
+                        "stream_name": {
+                          "title": "Stream Name",
+                          "type": "string"
+                        },
+                        "text": {
+                          "title": "Text",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "jupyter_messages": {
+                    "title": "Jupyter Messages",
+                    "type": "array",
+                    "items": {}
+                  }
+                }
               }
             }
           },
@@ -4955,6 +5907,317 @@
             }
           }
         }
+      },
+      "attachments": {
+        "title": "Attachments",
+        "type": "array",
+        "items": {
+          "title": "OpenaiWebChatMessageMetadataAttachment",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "size": {
+              "title": "Size",
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "is_complete": {
+        "title": "Is Complete",
+        "type": "boolean"
+      },
+      "aggregate_result": {
+        "title": "OpenaiWebChatMessageMetadataAggregateResult",
+        "type": "object",
+        "properties": {
+          "status": {
+            "title": "Status",
+            "anyOf": [
+              {
+                "enum": [
+                  "failed_with_in_kernel_exception",
+                  "success"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "start_time": {
+            "title": "Start Time",
+            "type": "number"
+          },
+          "update_time": {
+            "title": "Update Time",
+            "type": "number"
+          },
+          "end_time": {
+            "title": "End Time",
+            "type": "number"
+          },
+          "final_expression_output": {
+            "title": "Final Expression Output"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "in_kernel_exception": {
+            "title": "In Kernel Exception",
+            "type": "object"
+          },
+          "messages": {
+            "title": "Messages",
+            "type": "array",
+            "items": {
+              "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+              "type": "object",
+              "properties": {
+                "message_type": {
+                  "title": "Message Type",
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "image",
+                        "stream"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "time": {
+                  "title": "Time",
+                  "type": "number"
+                },
+                "sender": {
+                  "title": "Sender",
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "server"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "image_url": {
+                  "title": "Image Url",
+                  "type": "string"
+                },
+                "stream_name": {
+                  "title": "Stream Name",
+                  "type": "string"
+                },
+                "text": {
+                  "title": "Text",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "jupyter_messages": {
+            "title": "Jupyter Messages",
+            "type": "array",
+            "items": {}
+          }
+        }
+      }
+    }
+  },
+  "OpenaiWebChatMessageMetadataAggregateResult": {
+    "title": "OpenaiWebChatMessageMetadataAggregateResult",
+    "type": "object",
+    "properties": {
+      "status": {
+        "title": "Status",
+        "anyOf": [
+          {
+            "enum": [
+              "failed_with_in_kernel_exception",
+              "success"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "run_id": {
+        "title": "Run Id",
+        "type": "string"
+      },
+      "start_time": {
+        "title": "Start Time",
+        "type": "number"
+      },
+      "update_time": {
+        "title": "Update Time",
+        "type": "number"
+      },
+      "end_time": {
+        "title": "End Time",
+        "type": "number"
+      },
+      "final_expression_output": {
+        "title": "Final Expression Output"
+      },
+      "code": {
+        "title": "Code",
+        "type": "string"
+      },
+      "in_kernel_exception": {
+        "title": "In Kernel Exception",
+        "type": "object"
+      },
+      "messages": {
+        "title": "Messages",
+        "type": "array",
+        "items": {
+          "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+          "type": "object",
+          "properties": {
+            "message_type": {
+              "title": "Message Type",
+              "anyOf": [
+                {
+                  "enum": [
+                    "image",
+                    "stream"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "time": {
+              "title": "Time",
+              "type": "number"
+            },
+            "sender": {
+              "title": "Sender",
+              "anyOf": [
+                {
+                  "enum": [
+                    "server"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "image_url": {
+              "title": "Image Url",
+              "type": "string"
+            },
+            "stream_name": {
+              "title": "Stream Name",
+              "type": "string"
+            },
+            "text": {
+              "title": "Text",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "jupyter_messages": {
+        "title": "Jupyter Messages",
+        "type": "array",
+        "items": {}
+      }
+    }
+  },
+  "OpenaiWebChatMessageMetadataAggregateResultMessage": {
+    "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+    "type": "object",
+    "properties": {
+      "message_type": {
+        "title": "Message Type",
+        "anyOf": [
+          {
+            "enum": [
+              "image",
+              "stream"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "time": {
+        "title": "Time",
+        "type": "number"
+      },
+      "sender": {
+        "title": "Sender",
+        "anyOf": [
+          {
+            "enum": [
+              "server"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "image_url": {
+        "title": "Image Url",
+        "type": "string"
+      },
+      "stream_name": {
+        "title": "Stream Name",
+        "type": "string"
+      },
+      "text": {
+        "title": "Text",
+        "type": "string"
+      }
+    }
+  },
+  "OpenaiWebChatMessageMetadataAttachment": {
+    "title": "OpenaiWebChatMessageMetadataAttachment",
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "size": {
+        "title": "Size",
+        "type": "integer"
       }
     }
   },
@@ -5660,6 +6923,140 @@
                               }
                             }
                           }
+                        }
+                      }
+                    },
+                    "attachments": {
+                      "title": "Attachments",
+                      "type": "array",
+                      "items": {
+                        "title": "OpenaiWebChatMessageMetadataAttachment",
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "title": "Name",
+                            "type": "string"
+                          },
+                          "id": {
+                            "title": "Id",
+                            "type": "string"
+                          },
+                          "size": {
+                            "title": "Size",
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "is_complete": {
+                      "title": "Is Complete",
+                      "type": "boolean"
+                    },
+                    "aggregate_result": {
+                      "title": "OpenaiWebChatMessageMetadataAggregateResult",
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "title": "Status",
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "failed_with_in_kernel_exception",
+                                "success"
+                              ],
+                              "type": "string"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "run_id": {
+                          "title": "Run Id",
+                          "type": "string"
+                        },
+                        "start_time": {
+                          "title": "Start Time",
+                          "type": "number"
+                        },
+                        "update_time": {
+                          "title": "Update Time",
+                          "type": "number"
+                        },
+                        "end_time": {
+                          "title": "End Time",
+                          "type": "number"
+                        },
+                        "final_expression_output": {
+                          "title": "Final Expression Output"
+                        },
+                        "code": {
+                          "title": "Code",
+                          "type": "string"
+                        },
+                        "in_kernel_exception": {
+                          "title": "In Kernel Exception",
+                          "type": "object"
+                        },
+                        "messages": {
+                          "title": "Messages",
+                          "type": "array",
+                          "items": {
+                            "title": "OpenaiWebChatMessageMetadataAggregateResultMessage",
+                            "type": "object",
+                            "properties": {
+                              "message_type": {
+                                "title": "Message Type",
+                                "anyOf": [
+                                  {
+                                    "enum": [
+                                      "image",
+                                      "stream"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "time": {
+                                "title": "Time",
+                                "type": "number"
+                              },
+                              "sender": {
+                                "title": "Sender",
+                                "anyOf": [
+                                  {
+                                    "enum": [
+                                      "server"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "image_url": {
+                                "title": "Image Url",
+                                "type": "string"
+                              },
+                              "stream_name": {
+                                "title": "Stream Name",
+                                "type": "string"
+                              },
+                              "text": {
+                                "title": "Text",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "jupyter_messages": {
+                          "title": "Jupyter Messages",
+                          "type": "array",
+                          "items": {}
                         }
                       }
                     }

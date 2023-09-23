@@ -8,6 +8,16 @@ from utils.common import singleton_with_lock
 
 _TYPE_CHECKING = False
 
+default_openai_web_model_code_mapping = {
+    "gpt_3_5": "text-davinci-002-render-sha",
+    "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+    "gpt_4": "gpt-4",
+    "gpt_4_mobile": "gpt-4-mobile",
+    "gpt_4_browsing": "gpt-4-code-interpreter",
+    "gpt_4_plugins": "gpt-4-plugins",
+    "gpt_4_code_interpreter": "gpt-4-code-interpreter",
+}
+
 
 class CommonSetting(BaseModel):
     sync_conversations_on_startup: bool = True
@@ -58,20 +68,23 @@ class OpenaiWebChatGPTSetting(BaseModel):
     proxy: Optional[str] = None
     common_timeout: int = Field(10, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
-    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_browsing", "gpt_4_plugins"]
-    model_code_mapping: dict[OpenaiWebChatModels, str] = {
-        "gpt_3_5": "text-davinci-002-render-sha",
-        "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
-        "gpt_4": "gpt-4",
-        "gpt_4_mobile": "gpt-4-mobile",
-        "gpt_4_browsing": "gpt-4-code-interpreter",
-        "gpt_4_plugins": "gpt-4-plugins",
-    }
+    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins"]
+    model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
 
     @validator("chatgpt_base_url")
     def chatgpt_base_url_end_with_slash(cls, v):
         if v is not None and not v.endswith('/'):
             v += '/'
+        return v
+
+    @validator("model_code_mapping")
+    def check_all_model_key_appears(cls, v):
+        if not set(OpenaiWebChatModels) == set(v.keys()):
+            # add missing keys
+            for model in OpenaiWebChatModels:
+                if model not in v:
+                    assert model in default_openai_web_model_code_mapping
+                    v[model] = default_openai_web_model_code_mapping[model]
         return v
 
 

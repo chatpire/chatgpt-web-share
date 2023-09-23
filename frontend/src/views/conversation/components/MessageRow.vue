@@ -9,13 +9,15 @@
       <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
     </div>
     <div class="ml-4 lt-md:mx-0 w-full min-h-16">
+      <!-- Json View -->
       <div v-if="showRawMessage" class="mr-2 my-3 json-viewer">
         <JsonViewer :value="props.messages" copyable expanded :expand-depth="2" :theme="appStore.theme" />
       </div>
+      <!-- Rendered -->
       <div v-else>
         <div v-for="(item, i) in displayItems" :key="i" class="mr-1">
           <div v-if="item.type == 'text'">
-            <MessageRowTextDisplay :render-markdown="renderMarkdown" :messages="item.messages" />
+            <MessageRowTextDisplay :conversation-id="props.conversationId" :render-markdown="renderMarkdown" :messages="item.messages" />
           </div>
           <div v-else-if="item.type == 'browser'">
             <MessageRowBrowserDisplay :messages="item.messages" />
@@ -23,9 +25,15 @@
           <div v-else-if="item.type == 'plugin'">
             <MessageRowPluginDisplay :messages="item.messages" />
           </div>
+          <div v-else-if="item.type == 'code'">
+            <MessageRowCodeDisplay :messages="item.messages" />
+          </div>
+        </div>
+        <div v-if="attachments.length != 0">
+          <MessageRowAttachmentDisplay :attachments="attachments" />
         </div>
       </div>
-      <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1 -mt-2">
+      <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1">
         <div class="flex flex-row items-center space-x-4">
           <n-tooltip trigger="hover">
             <template #trigger>
@@ -99,7 +107,9 @@ import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
+import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
+import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
 import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
 const { t } = useI18n();
@@ -122,6 +132,7 @@ onMounted(() => {
 });
 
 const props = defineProps<{
+  conversationId: string;
   messages: BaseChatMessage[];
 }>();
 
@@ -173,7 +184,7 @@ const relativeTimeString = computed<string>(() => {
   }
 });
 
-type DisplayItemType = 'text' | 'browser' | 'plugin' | null;
+type DisplayItemType = 'text' | 'browser' | 'plugin' | 'code' | 'execution_output' | null;
 
 type DisplayItem = {
   type: DisplayItemType;
@@ -188,6 +199,7 @@ const displayItems = computed<DisplayItem[]>(() => {
   const result = [] as DisplayItem[];
   for (const group of messageGroups.value) {
     let displayType: DisplayItemType | null = null;
+    // 当前 api 仅有 text 类型
     if (group[0].source == 'openai_api') {
       result.push({
         type: 'text',
@@ -195,6 +207,7 @@ const displayItems = computed<DisplayItem[]>(() => {
       });
       continue;
     }
+    // user 发出的消息仅有 text 类型
     if (group[0].role == 'user') {
       if (typeof group[0].content == 'string' || group[0].content?.content_type == 'text')
         result.push({
@@ -203,6 +216,7 @@ const displayItems = computed<DisplayItem[]>(() => {
         });
       continue;
     }
+    // 适配新的临时对话
     if (typeof group[0].content == 'string') {
       if (group[0].id.startsWith('temp_')) {
         result.push({
@@ -245,6 +259,14 @@ const displayItems = computed<DisplayItem[]>(() => {
         displayType = 'browser';
         break;
       }
+      if (typeof message.content != 'string' && message.content?.content_type == 'code') {
+        displayType = 'code';
+        break;
+      }
+      if (typeof message.content != 'string' && message.content?.content_type == 'execution_output') {
+        displayType = 'execution_output';
+        break;
+      }
     }
 
     if (!displayType) console.error('cannot find display type for group', group);
@@ -254,6 +276,12 @@ const displayItems = computed<DisplayItem[]>(() => {
     });
   }
   return result;
+});
+
+const attachments = computed(() => {
+  const metadata = lastMessage.value?.metadata as OpenaiWebChatMessageMetadata;
+  if (metadata?.attachments) return metadata.attachments;
+  else return [];
 });
 
 const allTextContent = computed(() => {

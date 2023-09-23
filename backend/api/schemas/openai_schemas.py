@@ -52,3 +52,8 @@ class OpenaiChatPlugin(BaseModel):
     status: Optional[Literal['approved'] | str]
     user_settings: Optional[OpenaiChatPluginUserSettings | dict[str, Any]]  # is_authenticated, is_installed
     oauth_client_id: Optional[str]
+
+
+class OpenaiChatInterpreterInfo(BaseModel):
+    kernel_started: Optional[bool]
+    time_remaining_ms: Optional[int]

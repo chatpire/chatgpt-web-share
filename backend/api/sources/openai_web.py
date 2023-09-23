@@ -9,13 +9,14 @@ from pydantic import parse_obj_as, ValidationError
 
 from api.conf import Config, Credentials
 from api.enums import OpenaiWebChatModels, ChatSourceTypes
-from api.exceptions import InvalidParamsException, OpenaiWebException
+from api.exceptions import InvalidParamsException, OpenaiWebException, ResourceNotFoundException
 from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHistoryDocument, \
     OpenaiWebConversationHistoryMeta, OpenaiWebChatMessage, OpenaiWebChatMessageTextContent, \
     OpenaiWebChatMessageCodeContent, \
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
     OpenaiWebChatMessageContent, \
-    OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent
+    OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
+    OpenaiWebChatMessageExecutionOutputContent
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -38,6 +39,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         content_map = {
             "text": OpenaiWebChatMessageTextContent,
             "code": OpenaiWebChatMessageCodeContent,
+            "execution_output": OpenaiWebChatMessageExecutionOutputContent,
             "stderr": OpenaiWebChatMessageStderrContent,
             "tether_browsing_display": OpenaiWebChatMessageTetherBrowsingDisplayContent,
             "tether_quote": OpenaiWebChatMessageTetherQuoteContent,
@@ -354,3 +356,35 @@ class OpenaiWebChatManager:
         except ValidationError as e:
             logger.warning(f"Failed to parse plugin: {e}")
             raise e
+
+    async def get_interpreter_info(self, conversation_id: str):
+        response = await self.session.get(
+            url=f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}/interpreter",
+        )
+        await _check_response(response)
+        return response.json()
+
+    async def get_file_download_url(self, file_id: str):
+        response = await self.session.get(
+            url=f"{config.openai_web.chatgpt_base_url}files/{file_id}/download",
+        )
+        await _check_response(response)
+        result = response.json()
+        if result.get("status") == "success":
+            return result.get("download_url")
+        else:
+            raise ResourceNotFoundException(
+                f"{file_id} Failed to get download url: {result.get('error_code')}({result.get('error_message')})")
+
+    async def get_interpreter_file_download_url(self, conversation_id: str, message_id: str, sandbox_path: str):
+        response = await self.session.get(
+            url=f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}/interpreter/download",
+            params={"message_id": message_id, "sandbox_path": sandbox_path}
+        )
+        await _check_response(response)
+        result = response.json()
+        if result.get("status") == "success":
+            return result.get("download_url")
+        else:
+            raise ResourceNotFoundException(
+                f"{conversation_id} Failed to get download url: {result.get('error_code')}({result.get('error_message')})")

@@ -6,6 +6,8 @@ from beanie import Document, TimeSeriesConfig, Granularity
 from pydantic import BaseModel, Field
 
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
+from api.models.doc.openai_web_code_interpreter import OpenaiWebChatMessageMetadataAggregateResult, \
+    OpenaiWebChatMessageMetadataAttachment
 from api.models.types import SourceTypeLiteral
 from api.schemas.openai_schemas import OpenaiChatResponseUsage
 from api.conf import Config
@@ -39,6 +41,12 @@ class OpenaiWebChatMessageMetadataCitation(BaseModel):
     metadata: Optional[OpenaiWebChatMessageMetadataCiteData]
 
 
+class OpenaiWebChatMessageMetadataAggregateResultJupyterMessage(BaseModel):
+    msg_type: Optional[Literal['status', 'execute_input', 'execute_result', 'error'] | str]
+    parent_header: Optional[dict[str, Any]]
+    content: Optional[dict[str, Any]]
+
+
 class OpenaiWebChatMessageMetadata(BaseModel):
     source: Literal["openai_web"]
     # 以下只有assistant有
@@ -47,7 +55,7 @@ class OpenaiWebChatMessageMetadata(BaseModel):
     weight: Optional[float]
     end_turn: Optional[bool]
     message_status: Optional[str]
-    recipient: Optional[Literal['all', 'browser'] | str]
+    recipient: Optional[Literal['all', 'browser', 'python'] | str]
     fallback_content: Optional[Any]  # 当解析content_type失败时，此字段存储原始的content
     # plugins 相关
     invoked_plugin: Optional[OpenaiWebChatMessageMetadataPlugin]
@@ -57,6 +65,10 @@ class OpenaiWebChatMessageMetadata(BaseModel):
     status: Optional[Literal['finished'] | str]
     cite_metadata: Optional[OpenaiWebChatMessageMetadataCite] = Field(alias="_cite_metadata")  # _cite_metadata
     citations: Optional[list[OpenaiWebChatMessageMetadataCitation]]
+    # code execution 相关
+    attachments: Optional[list[OpenaiWebChatMessageMetadataAttachment]]
+    is_complete: Optional[bool]
+    aggregate_result: Optional[OpenaiWebChatMessageMetadataAggregateResult]
 
 
 class OpenaiApiChatMessageMetadata(BaseModel):
@@ -76,6 +88,11 @@ class OpenaiWebChatMessageTextContent(BaseModel):
 class OpenaiWebChatMessageCodeContent(BaseModel):
     content_type: Literal['code']
     language: Optional[str]
+    text: Optional[str]
+
+
+class OpenaiWebChatMessageExecutionOutputContent(BaseModel):
+    content_type: Literal['execution_output']
     text: Optional[str]
 
 
@@ -107,6 +124,7 @@ OpenaiWebChatMessageContent = Annotated[
     Union[
         OpenaiWebChatMessageTextContent,
         OpenaiWebChatMessageCodeContent,
+        OpenaiWebChatMessageExecutionOutputContent,
         OpenaiWebChatMessageStderrContent,
         OpenaiWebChatMessageTetherBrowsingDisplayContent,
         OpenaiWebChatMessageTetherQuoteContent,
@@ -125,7 +143,7 @@ class BaseChatMessage(BaseModel):
     id: uuid.UUID
     source: SourceTypeLiteral
     role: Literal['system', 'user', 'assistant', 'tool'] | str
-    author_name: Optional[Literal['browser'] | str]  # rev: mapping[id].message.author.name
+    author_name: Optional[Literal['browser', 'python'] | str]  # rev: mapping[id].message.author.name
     model: Optional[str]  # rev: mapping[id].message.metadata.model_slug -> ChatModel
     create_time: Optional[datetime.datetime]
     parent: Optional[uuid.UUID]
