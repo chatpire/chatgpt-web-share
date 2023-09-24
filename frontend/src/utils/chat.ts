@@ -218,5 +218,18 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
     }
   }
   // console.log('text display result', result);
+  result = replaceMathDelimiters(result);
   return result;
+}
+
+function replaceMathDelimiters(input: string) {
+  let output = input.replace(/\\\[([\s\S]*?)\\\]/g, (match, content) => {
+    return `$$\n${content.trim()}\n$$`;
+  });
+  
+  output = output.replace(/\\\((.*?)\\\)/g, (match, content) => {
+    return `$${content.trim()}$`;
+  });
+
+  return output;
 }
