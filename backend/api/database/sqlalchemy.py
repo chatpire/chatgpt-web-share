@@ -61,11 +61,11 @@ async def initialize_db():
     # https://alembic.sqlalchemy.org/en/latest/autogenerate.html
     async with engine.connect() as conn:
         # 判断数据库是否存在
-        def use_inspector(conn):
+        def user_inspector(conn):
             inspector = sqlalchemy.inspect(conn)
             return inspector.has_table("user")
 
-        result = await conn.run_sync(use_inspector)
+        result = await conn.run_sync(user_inspector)
 
         if not result:
             logger.info("database not exists, creating database...")
@@ -74,8 +74,6 @@ async def initialize_db():
             await conn.run_sync(run_stamp, alembic_cfg, "head")
             logger.info(f"stamped database to head")
             return
-        else:
-            await conn.run_sync(run_ensure_version, alembic_cfg)
 
         is_alembic_empty = await check_alembic_version_empty(conn)
         if is_alembic_empty:
