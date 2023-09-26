@@ -7,6 +7,7 @@ Create Date: 2023-09-26 19:21:46.195955
 """
 from alembic import op
 import sqlalchemy as sa
+from api.database.custom_types import UTCDateTime
 
 # revision identifiers, used by Alembic.
 revision = '0d790c2c26dc'
@@ -24,7 +25,7 @@ def upgrade() -> None:
                     sa.Column('content_type', sa.String(length=256), nullable=True, comment='文件类型'),
                     sa.Column('storage_path', sa.String(length=1024), nullable=False,
                               comment='文件在服务器的存储路径，相对于配置中的存储路径'),
-                    sa.Column('upload_date', api.database.custom_types.utc_datetime.UTCDateTime(timezone=True),
+                    sa.Column('upload_date', UTCDateTime(timezone=True),
                               nullable=False, comment='上传日期'),
                     sa.Column('uploader_id', sa.Integer(), nullable=False, comment='上传的用户id'),
                     sa.ForeignKeyConstraint(['uploader_id'], ['user.id'], ),

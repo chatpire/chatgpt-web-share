@@ -13,7 +13,7 @@ from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import api.globals as g
-from api.database.sqlalchemy import create_db_and_tables, get_async_session_context, get_user_db_context
+from api.database.sqlalchemy import initialize_db, get_async_session_context, get_user_db_context
 from api.database.mongodb import init_mongodb
 from api.enums import OpenaiWebChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
@@ -75,7 +75,7 @@ async def validation_exception_handler(request, exc):
 
 @app.on_event("startup")
 async def on_startup():
-    await create_db_and_tables()
+    await initialize_db()
     await init_mongodb()
 
     g.startup_time = time.time()

@@ -3,7 +3,8 @@ from typing import AsyncGenerator
 
 from fastapi import Depends
 import sqlalchemy
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncConnection
 from sqlalchemy.orm import sessionmaker
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 
@@ -40,19 +41,22 @@ alembic_cfg.set_main_option("sqlalchemy.url", database_url)
 def run_upgrade(conn, cfg):
     cfg.attributes["connection"] = conn
     command.upgrade(cfg, "head")
+    conn.commit()
 
 
 def run_stamp(conn, cfg, revision):
     cfg.attributes["connection"] = conn
     command.stamp(cfg, revision)
+    conn.commit()
 
 
 def run_ensure_version(conn, cfg):
     cfg.attributes["connection"] = conn
     command.ensure_version(cfg)
+    conn.commit()
 
 
-async def create_db_and_tables():
+async def initialize_db():
     # 如果数据库不存在则创建数据库（数据表）；若有更新，则执行迁移
     # https://alembic.sqlalchemy.org/en/latest/autogenerate.html
     async with engine.connect() as conn:
@@ -73,6 +77,16 @@ async def create_db_and_tables():
         else:
             await conn.run_sync(run_ensure_version, alembic_cfg)
 
+        is_alembic_empty = await check_alembic_version_empty(conn)
+        if is_alembic_empty:
+            await conn.run_sync(run_stamp, alembic_cfg, "aa3d85891014")
+            logger.warning(
+                f"Alembic version table is empty, stamped database to baseline(aa3d85891014)!\n"
+                "        Note: This is necessary to update from old version. If you see this message, ensure that you have "
+                "already set run_migration to true in config file,\n"
+                "              or run `alembic upgrade head` manually."
+            )
+
         if config.data.run_migration:
             try:
                 logger.info("try to migrate database...")
@@ -81,7 +95,16 @@ async def create_db_and_tables():
                 logger.warning("Database migration might fail, please check the database manually!")
                 logger.warning(f"detail: {str(e)}")
 
-        logger.info("database initialized")
+        logger.info("Database initialized.")
+
+
+async def check_alembic_version_empty(conn: AsyncConnection):
+    try:
+        result = (await conn.execute(text("SELECT version_num FROM alembic_version"))).fetchall()
+        return len(result) == 0
+    except Exception as e:
+        logger.warning(f"check alembic version failed: {str(e)}")
+        raise e
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
