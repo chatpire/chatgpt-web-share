@@ -3,10 +3,10 @@ from datetime import datetime
 from typing import List, Optional
 
 from fastapi_users_db_sqlalchemy import Integer
-from sqlalchemy import String, Enum, Boolean, ForeignKey, func, Float
+from sqlalchemy import String, Enum, Boolean, ForeignKey, func, Float, Uuid
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
-from api.database.custom_types import GUID, Pydantic, UTCDateTime
+from api.database.custom_types import Pydantic, UTCDateTime
 from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels, ChatSourceTypes
 from api.models.json import CustomOpenaiApiSettings
 from api.schemas import UserSettingSchema, OpenaiWebSourceSettingSchema, OpenaiApiSourceSettingSchema
@@ -14,9 +14,7 @@ from api.schemas import UserSettingSchema, OpenaiWebSourceSettingSchema, OpenaiA
 
 # declarative base class
 class Base(DeclarativeBase):
-    type_annotation_map = {
-        uuid.UUID: GUID,
-    }
+    pass
 
 
 class User(Base):
@@ -42,6 +40,7 @@ class User(Base):
     setting: Mapped["UserSetting"] = relationship("UserSetting", back_populates="user", lazy="joined",
                                                   cascade="save-update, merge, delete, delete-orphan")
     conversations: Mapped[List["BaseConversation"]] = relationship("BaseConversation", back_populates="user")
+    uploaded_files: Mapped[List["UploadedFile"]] = relationship("UploadedFile", back_populates="uploader")
 
 
 class UserSetting(Base):
@@ -72,7 +71,7 @@ class BaseConversation(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     source: Mapped[ChatSourceTypes] = mapped_column(Enum(ChatSourceTypes), comment="对话类型")
-    conversation_id: Mapped[uuid.UUID] = mapped_column(GUID, index=True, unique=True, comment="uuid")
+    conversation_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, unique=True, comment="uuid")
     current_model: Mapped[Optional[str]] = mapped_column(default=None, use_existing_column=True)
     title: Mapped[Optional[str]] = mapped_column(comment="对话标题")
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), comment="发起用户id")
@@ -102,3 +101,17 @@ class OpenaiApiConversation(BaseConversation):
         Enum(OpenaiApiChatModels),
         default=None,
         use_existing_column=True)
+
+
+class UploadedFile(Base):
+    __tablename__ = "uploaded_files"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, comment="uuid")
+    original_filename: Mapped[str] = mapped_column(String(256), comment="原始文件名")
+    size: Mapped[int] = mapped_column(Integer, comment="文件大小(bytes)")
+    content_type: Mapped[Optional[str]] = mapped_column(String(256), comment="文件类型", nullable=True)
+    storage_path: Mapped[str] = mapped_column(String(1024), comment="文件在服务器的存储路径，相对于配置中的存储路径")
+    upload_date: Mapped[datetime] = mapped_column(UTCDateTime(timezone=True), default=datetime.utcnow,
+                                                  comment="上传日期")
+    uploader_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="上传的用户id")
+    uploader: Mapped["User"] = relationship(back_populates="uploaded_files")

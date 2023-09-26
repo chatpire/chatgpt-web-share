@@ -28,6 +28,7 @@ beanie = "^1.22.6"
 httpx = "^0.25.0"
 strenum = "^0.4.15"
 pydantic = "^1.10.9"
+aiofiles = "^23.2.1"
 
 
 [build-system]

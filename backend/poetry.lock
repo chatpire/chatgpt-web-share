@@ -19,6 +19,17 @@ tzlocal = "*"
 test = ["coverage"]
 
 [[package]]
+name = "aiofiles"
+version = "23.2.1"
+description = "File support for asyncio."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "aiofiles-23.2.1-py3-none-any.whl", hash = "sha256:19297512c647d4b27a2cf7c34caa7e405c0d60b5560618a29a9fe027b18b0107"},
+    {file = "aiofiles-23.2.1.tar.gz", hash = "sha256:84ec2218d8419404abcb9f0c02df3f34c6e0a68ed41072acfb1cef5cbc29051a"},
+]
+
+[[package]]
 name = "aiosqlite"
 version = "0.19.0"
 description = "asyncio bridge to the standard sqlite3 module"
@@ -1375,4 +1386,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "eb3fe85a4e457d9ba44bac66c13dadbc29cfcb5237b62ec9a75cf8fa154cb926"
+content-hash = "fb25617ecf0d302f2275360974e24b9d65c5a56bdc010b5f31839fbc90e1a980"

@@ -17,7 +17,8 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
     OpenaiWebChatMessageExecutionOutputContent
-from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
+from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
+    OpenaiChatFileUploadUrlResponse
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -388,3 +389,31 @@ class OpenaiWebChatManager:
         else:
             raise ResourceNotFoundException(
                 f"{conversation_id} Failed to get download url: {result.get('error_code')}({result.get('error_message')})")
+
+    async def get_file_upload_url(self, file_info: OpenaiChatFileUploadInfo) -> OpenaiChatFileUploadUrlResponse:
+        response = await self.session.post(
+            url=f"{config.openai_web.chatgpt_base_url}files",
+            json=file_info.dict()
+        )
+        await _check_response(response)
+        result = OpenaiChatFileUploadUrlResponse.parse_obj(response.json())
+        if result.status != "success":
+            raise OpenaiWebException(
+                f"{file_info.file_name} Failed to get upload url: {result.error_code}({result.error_message})")
+        return result
+
+    async def check_file_uploaded(self, file_id: str):
+        """
+        检查文件是否上传成功，顺便获得文件下载地址
+        """
+        response = await self.session.post(
+            url=f"{config.openai_web.chatgpt_base_url}files/{file_id}/uploaded",
+            json={}
+        )
+        await _check_response(response)
+        result = response.json()
+        if result.get("status") == "success":
+            return result.get("download_url")
+        else:
+            raise OpenaiWebException(
+                f"Failed to check {file_id} uploaded: {result.get('error_code')}({result.get('error_message')})")

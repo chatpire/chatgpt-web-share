@@ -57,3 +57,17 @@ class OpenaiChatPlugin(BaseModel):
 class OpenaiChatInterpreterInfo(BaseModel):
     kernel_started: Optional[bool]
     time_remaining_ms: Optional[int]
+
+
+class OpenaiChatFileUploadInfo(BaseModel):
+    file_name: str
+    file_size: int
+    use_case: str | Literal['ace_upload']
+
+
+class OpenaiChatFileUploadUrlResponse(BaseModel):
+    status: Literal["success", "error"] | str
+    upload_url: Optional[str]
+    file_id: Optional[str]
+    error_code: Optional[str]
+    error_message: Optional[str]
