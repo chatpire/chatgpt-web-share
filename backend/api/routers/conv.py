@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, and_, delete
 
-from api.database import get_async_session_context
+from api.database.sqlalchemy import get_async_session_context
 from api.enums import ChatSourceTypes
 from api.exceptions import InvalidParamsException, AuthorityDenyException, InternalException, OpenaiWebException
 from api.models.db import User, OpenaiWebConversation, BaseConversation

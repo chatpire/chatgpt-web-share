@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 from starlette.requests import Request
 
 from api.conf import Config
-from api.database import get_async_session_context, get_user_db_context
+from api.database.sqlalchemy import get_async_session_context, get_user_db_context
 from api.exceptions import UserNotExistException, AuthenticationFailedException
 from api.models.db import User
 from api.response import response

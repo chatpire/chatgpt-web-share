@@ -13,7 +13,8 @@ from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import api.globals as g
-from api.database import create_db_and_tables, get_async_session_context, get_user_db_context, init_mongodb
+from api.database.sqlalchemy import create_db_and_tables, get_async_session_context, get_user_db_context
+from api.database.mongodb import init_mongodb
 from api.enums import OpenaiWebChatStatus
 from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware

@@ -11,7 +11,7 @@ import api.globals as g
 from api.conf import Config, Credentials
 from api.conf.config import ConfigModel
 from api.conf.credentials import CredentialsModel
-from api.database import get_async_session_context, get_user_db_context
+from api.database.sqlalchemy import get_async_session_context, get_user_db_context
 from api.enums import OpenaiWebChatStatus
 from api.exceptions import InvalidParamsException
 from api.models.db import User, OpenaiWebConversation

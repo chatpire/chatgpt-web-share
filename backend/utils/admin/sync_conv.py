@@ -3,7 +3,7 @@ from dateutil.tz import tzutc
 from httpx import HTTPError
 from sqlalchemy import select
 
-from api.database import get_async_session_context
+from api.database.sqlalchemy import get_async_session_context
 from api.exceptions import OpenaiWebException
 from api.models.db import OpenaiWebConversation
 from api.sources import OpenaiWebChatManager

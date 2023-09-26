@@ -13,7 +13,7 @@ from starlette.websockets import WebSocket, WebSocketState
 from websockets.exceptions import ConnectionClosed
 
 from api.conf import Config
-from api.database import get_async_session_context
+from api.database.sqlalchemy import get_async_session_context
 from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
 from api.exceptions import InternalException, InvalidParamsException, OpenaiException
 from api.models.db import OpenaiWebConversation, User, BaseConversation
