@@ -25,9 +25,10 @@ def upgrade() -> None:
                     sa.Column('content_type', sa.String(length=256), nullable=True, comment='文件类型'),
                     sa.Column('storage_path', sa.String(length=1024), nullable=False,
                               comment='文件在服务器的存储路径，相对于配置中的存储路径'),
-                    sa.Column('upload_date', UTCDateTime(timezone=True),
+                    sa.Column('upload_time', UTCDateTime(timezone=True),
                               nullable=False, comment='上传日期'),
                     sa.Column('uploader_id', sa.Integer(), nullable=False, comment='上传的用户id'),
+                    sa.Column('openai_file_id', sa.String(length=256), nullable=True),
                     sa.ForeignKeyConstraint(['uploader_id'], ['user.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )

@@ -5,10 +5,15 @@ from pydantic import BaseModel
 import uuid
 
 
-class UploadedFileSchema(BaseModel):
-    uuid: uuid.UUID
+class UploadedFileInfoSchema(BaseModel):
+    id: uuid.UUID
     original_filename: str
     size: int
+    # storage_path: str
     content_type: Optional[str]
-    upload_date: datetime
+    upload_time: datetime
     uploader_id: int
+    openai_file_id: Optional[str]
+
+    class Config:
+        orm_mode = True

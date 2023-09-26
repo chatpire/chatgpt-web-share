@@ -1,6 +1,8 @@
 import os
 import shutil
 import uuid
+from datetime import datetime, timezone
+from mimetypes import guess_type
 from pathlib import Path
 
 import aiofiles
@@ -9,7 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.conf import Config
-from api.models.db import UploadedFile
+from api.models.db import UploadedFileInfo
 
 config = Config()
 
@@ -23,7 +25,11 @@ class FileProvider:
 
     async def save_file(self, file: UploadFile, user_id: int, session: AsyncSession):
         file_name = f"{uuid.uuid4()}.dat"
-        file_path = self.storage_dir / file_name
+        file_dir_path = self.storage_dir / f"{user_id}"
+        file_path = file_dir_path / file_name
+
+        if not file_dir_path.exists():
+            file_dir_path.mkdir()
 
         async with aiofiles.open(file_path, "wb") as buffer:
             while True:
@@ -32,11 +38,13 @@ class FileProvider:
                     break
                 await buffer.write(chunk)
 
-        file_info = UploadedFile(
+        file_info = UploadedFileInfo(
             original_filename=file.filename,
             size=file.size,
+            content_type=guess_type(file.filename)[0],
             storage_path=str(file_path.relative_to(self.storage_dir)),
-            uploader_id=user_id
+            uploader_id=user_id,
+            upload_time=datetime.now().astimezone(tz=timezone.utc),
         )
         session.add(file_info)
         await session.commit()
@@ -44,12 +52,9 @@ class FileProvider:
         return file_info
 
     async def get_file_info(self, file_id: uuid.UUID, session: AsyncSession):
-        result = await session.execute(select(UploadedFile).where(UploadedFile.id == file_id))
+        result = await session.execute(select(UploadedFileInfo).where(UploadedFileInfo.id == file_id))
         file_info = result.scalars().first()
         return file_info
 
-    async def get_file_path(self, file_uuid: uuid.UUID, session: AsyncSession):
-        file_info = await self.get_file_info(file_uuid, session)
-        if file_info:
-            return self.storage_dir / file_info.storage_path
-        raise FileNotFoundError(f"file {file_uuid} not found")
+    def get_absolute_path(self, path: str) -> Path:
+        return self.storage_dir / path
