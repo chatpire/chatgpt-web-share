@@ -18,7 +18,7 @@ config = Config()
 
 class FileProvider:
     def __init__(self, storage_dir: Path = None, max_size: int = None):
-        self.max_size = max_size or config.data.max_upload_size
+        self.max_size = max_size or config.data.max_file_upload_size
         self.storage_dir = storage_dir or (Path(config.data.data_dir) / "uploads")
         if not self.storage_dir.exists():
             self.storage_dir.mkdir()

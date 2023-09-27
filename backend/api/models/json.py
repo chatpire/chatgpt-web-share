@@ -55,6 +55,7 @@ class CustomOpenaiApiSettings(BaseModel):
     key: Optional[str]
 
 
-class OpenaiWebChatFileInfo(BaseModel):
+class UploadedFileOpenaiWebInfo(BaseModel):
     file_id: Optional[str]
+    upload_url: Optional[str] = Field(description="上传文件的url, 上传后应清空该字段")
     download_url: Optional[str]

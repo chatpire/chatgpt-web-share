@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import Pydantic, UTCDateTime, GUID
 from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels, ChatSourceTypes
-from api.models.json import OpenaiWebChatFileInfo
+from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas import UserSettingSchema, OpenaiWebSourceSettingSchema, OpenaiApiSourceSettingSchema
 
 
@@ -110,10 +110,11 @@ class UploadedFileInfo(Base):
     original_filename: Mapped[str] = mapped_column(String(256), comment="原始文件名")
     size: Mapped[int] = mapped_column(Integer, comment="文件大小(bytes)")
     content_type: Mapped[Optional[str]] = mapped_column(String(256), comment="文件类型", nullable=True)
-    storage_path: Mapped[str] = mapped_column(String(1024), comment="文件在服务器的存储路径，相对于配置中的存储路径")
+    storage_path: Mapped[Optional[str]] = mapped_column(String(1024),
+                                                        comment="文件在服务器的存储路径，相对于配置中的存储路径；为空表示未在服务器上存储，即未上传或者已清理")
     upload_time: Mapped[datetime] = mapped_column(UTCDateTime(timezone=True), default=datetime.utcnow,
                                                   comment="上传日期")
     uploader_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="上传的用户id")
-    openai_web_info: Mapped[Optional[OpenaiWebChatFileInfo]] = mapped_column(Pydantic(OpenaiWebChatFileInfo),
-                                                                             nullable=True)
+    openai_web_info: Mapped[Optional[UploadedFileOpenaiWebInfo]] = mapped_column(Pydantic(UploadedFileOpenaiWebInfo),
+                                                                                 nullable=True)
     uploader: Mapped["User"] = relationship(back_populates="uploaded_files")

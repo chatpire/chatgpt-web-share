@@ -163,6 +163,36 @@ export interface paths {
      */
     get: operations["get_server_status_status_common_get"];
   };
+  "/files/local/upload/": {
+    /**
+     * Upload File To Local 
+     * @description 上传文件到服务器。文件将被保存在服务器上，返回文件信息。
+     * 仅当需要在服务器留存上传的文件时才使用.
+     */
+    post: operations["upload_file_to_local_files_local_upload__post"];
+  };
+  "/files/local/download/{file_id}": {
+    /** Download File From Local */
+    get: operations["download_file_from_local_files_local_download__file_id__get"];
+  };
+  "/files/openai-web/upload/": {
+    /**
+     * Start Upload To Openai 
+     * @description 要上传文件到 OpenAI Web，前端需要先调用此接口
+     * 1. 若最终上传方法是前端直接上传，则获取上传地址并记录文件信息；
+     * 2. 否则前端应当先调用 /files/local/upload/ 接口上传文件到服务器，
+     *    再调用 /files/local/upload-to-openai/{file_id} 接口上传文件到 OpenAI Web
+     */
+    post: operations["start_upload_to_openai_files_openai_web_upload__post"];
+  };
+  "/files/openai-web/upload-complete/": {
+    /** Complete Upload To Openai */
+    post: operations["complete_upload_to_openai_files_openai_web_upload_complete__post"];
+  };
+  "/files/local/upload-to-openai/{file_id}": {
+    /** Upload File To Openai Web */
+    post: operations["upload_file_to_openai_web_files_local_upload_to_openai__file_id__post"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -245,7 +275,7 @@ export interface components {
     AuthSetting: {
       /**
        * Jwt Secret 
-       * @default MODIFY_THIS_TO_RANDOM_SECRET
+       * @default MODIFY_THIS_TO_RANDOM_SECURE_STRING
        */
       jwt_secret?: string;
       /**
@@ -260,12 +290,12 @@ export interface components {
       cookie_max_age?: number;
       /**
        * Cookie Name 
-       * @default user_auth
+       * @default cws_user_auth
        */
       cookie_name?: string;
       /**
        * User Secret 
-       * @default MODIFY_THIS_TO_RANDOM_SECRET
+       * @default MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING
        */
       user_secret?: string;
     };
@@ -403,6 +433,14 @@ export interface components {
        */
       file: string;
     };
+    /** Body_upload_file_to_local_files_local_upload__post */
+    Body_upload_file_to_local_files_local_upload__post: {
+      /**
+       * File 
+       * Format: binary
+       */
+      file: string;
+    };
     /**
      * ChatSourceTypes 
      * @description An enumeration. 
@@ -480,7 +518,8 @@ export interface components {
        *     "gpt_4_browsing": "gpt-4-browsing",
        *     "gpt_4_plugins": "gpt-4-plugins",
        *     "gpt_4_code_interpreter": "gpt-4-code-interpreter"
-       *   }
+       *   },
+       *   "file_upload_strategy": "browser_upload_only"
        * }
        */
       openai_web?: components["schemas"]["OpenaiWebChatGPTSetting"];
@@ -532,18 +571,19 @@ export interface components {
        *   "data_dir": "./data",
        *   "database_url": "sqlite+aiosqlite:///data/database.db",
        *   "mongodb_url": "mongodb://cws:password@mongo:27017",
-       *   "run_migration": false
+       *   "run_migration": false,
+       *   "max_file_upload_size": 104857600
        * }
        */
       data?: components["schemas"]["DataSetting"];
       /**
        * Auth 
        * @default {
-       *   "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECRET",
+       *   "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECURE_STRING",
        *   "jwt_lifetime_seconds": 86400,
        *   "cookie_max_age": 86400,
-       *   "cookie_name": "user_auth",
-       *   "user_secret": "MODIFY_THIS_TO_RANDOM_SECRET"
+       *   "cookie_name": "cws_user_auth",
+       *   "user_secret": "MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING"
        * }
        */
       auth?: components["schemas"]["AuthSetting"];
@@ -617,6 +657,11 @@ export interface components {
        * @default false
        */
       run_migration?: boolean;
+      /**
+       * Max File Upload Size 
+       * @default 104857600
+       */
+      max_file_upload_size?: number;
     };
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -741,11 +786,6 @@ export interface components {
      * 
      * - `id` - MongoDB document ObjectID "_id" field.
      * Mapped to the PydanticObjectId class
-     * 
-     * Inherited from:
-     * 
-     * - Pydantic BaseModel
-     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
      */
     OpenaiApiConversationHistoryDocument: {
       /**
@@ -906,6 +946,15 @@ export interface components {
       allow_custom_openai_api: boolean;
       custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
     };
+    /** OpenaiChatFileUploadInfo */
+    OpenaiChatFileUploadInfo: {
+      /** File Name */
+      file_name: string;
+      /** File Size */
+      file_size: number;
+      /** Use Case */
+      use_case: string | "ace_upload";
+    };
     /** OpenaiChatInterpreterInfo */
     OpenaiChatInterpreterInfo: {
       /** Kernel Started */
@@ -1034,6 +1083,8 @@ export interface components {
       model_code_mapping?: {
         [key: string]: string | undefined;
       };
+      /** @default browser_upload_only */
+      file_upload_strategy?: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
     };
     /** OpenaiWebChatMessage */
     OpenaiWebChatMessage: {
@@ -1287,11 +1338,6 @@ export interface components {
      * 
      * - `id` - MongoDB document ObjectID "_id" field.
      * Mapped to the PydanticObjectId class
-     * 
-     * Inherited from:
-     * 
-     * - Pydantic BaseModel
-     * - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
      */
     OpenaiWebConversationHistoryDocument: {
       /**
@@ -1381,6 +1427,12 @@ export interface components {
       update_time?: string;
     };
     /**
+     * OpenaiWebFileUploadStrategyOption 
+     * @description An enumeration. 
+     * @enum {string}
+     */
+    OpenaiWebFileUploadStrategyOption: "disable_upload" | "server_upload_only" | "browser_upload_only" | "browser_upload_when_file_size_exceed";
+    /**
      * OpenaiWebPerModelAskCount 
      * @default {
      *   "gpt_3_5": 0,
@@ -1437,6 +1489,13 @@ export interface components {
       /** Method */
       method?: string;
     };
+    /** StartUploadResponseSchema */
+    StartUploadResponseSchema: {
+      strategy: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
+      /** File Max Size */
+      file_max_size: number;
+      upload_file_info?: components["schemas"]["UploadedFileInfoSchema"];
+    };
     /** StatsSetting */
     StatsSetting: {
       /**
@@ -1480,6 +1539,42 @@ export interface components {
        * @description 在给定时间窗口内最多的请求次数
        */
       max_requests: number;
+    };
+    /** UploadedFileInfoSchema */
+    UploadedFileInfoSchema: {
+      /**
+       * Id 
+       * Format: uuid
+       */
+      id: string;
+      /** Original Filename */
+      original_filename: string;
+      /** Size */
+      size: number;
+      /** Storage Path */
+      storage_path?: string;
+      /** Content Type */
+      content_type?: string;
+      /**
+       * Upload Time 
+       * Format: date-time
+       */
+      upload_time: string;
+      /** Uploader Id */
+      uploader_id: number;
+      openai_web_info?: components["schemas"]["UploadedFileOpenaiWebInfo"];
+    };
+    /** UploadedFileOpenaiWebInfo */
+    UploadedFileOpenaiWebInfo: {
+      /** File Id */
+      file_id?: string;
+      /**
+       * Upload Url 
+       * @description 上传文件的url, 上传后应清空该字段
+       */
+      upload_url: string;
+      /** Download Url */
+      download_url?: string;
     };
     /** UserCreate */
     UserCreate: {
@@ -2418,6 +2513,126 @@ export interface operations {
       200: {
         content: {
           "application/json": string;
+        };
+      };
+    };
+  };
+  upload_file_to_local_files_local_upload__post: {
+    /**
+     * Upload File To Local 
+     * @description 上传文件到服务器。文件将被保存在服务器上，返回文件信息。
+     * 仅当需要在服务器留存上传的文件时才使用.
+     */
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_file_to_local_files_local_upload__post"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  download_file_from_local_files_local_download__file_id__get: {
+    /** Download File From Local */
+    parameters: {
+      path: {
+        file_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  start_upload_to_openai_files_openai_web_upload__post: {
+    /**
+     * Start Upload To Openai 
+     * @description 要上传文件到 OpenAI Web，前端需要先调用此接口
+     * 1. 若最终上传方法是前端直接上传，则获取上传地址并记录文件信息；
+     * 2. 否则前端应当先调用 /files/local/upload/ 接口上传文件到服务器，
+     *    再调用 /files/local/upload-to-openai/{file_id} 接口上传文件到 OpenAI Web
+     */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OpenaiChatFileUploadInfo"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  complete_upload_to_openai_files_openai_web_upload_complete__post: {
+    /** Complete Upload To Openai */
+    parameters: {
+      query: {
+        file_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  upload_file_to_openai_web_files_local_upload_to_openai__file_id__post: {
+    /** Upload File To Openai Web */
+    parameters: {
+      path: {
+        file_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

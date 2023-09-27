@@ -1,10 +1,13 @@
 import asyncio
 import json
 import uuid
+from mimetypes import guess_type
 from typing import AsyncGenerator
 
+import aiofiles
 import httpx
 from fastapi.encoders import jsonable_encoder
+import aiohttp
 from pydantic import parse_obj_as, ValidationError
 
 from api.conf import Config, Credentials
@@ -18,7 +21,7 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
     OpenaiWebChatMessageExecutionOutputContent
-from api.models.json import OpenaiWebChatFileInfo
+from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
     OpenaiChatFileUploadUrlResponse
@@ -393,7 +396,10 @@ class OpenaiWebChatManager:
             raise ResourceNotFoundException(
                 f"{conversation_id} Failed to get download url: {result.get('error_code')}({result.get('error_message')})")
 
-    async def _get_file_upload_url(self, upload_info: OpenaiChatFileUploadInfo) -> OpenaiChatFileUploadUrlResponse:
+    async def get_file_upload_url(self, upload_info: OpenaiChatFileUploadInfo) -> OpenaiChatFileUploadUrlResponse:
+        """
+        获取文件在 azure blob 的上传地址
+        """
         response = await self.session.post(
             url=f"{config.openai_web.chatgpt_base_url}files",
             json=upload_info.dict()
@@ -405,10 +411,15 @@ class OpenaiWebChatManager:
                 f"{upload_info.file_name} Failed to get upload url: {result.error_code}({result.error_message})")
         return result
 
-    async def _check_file_uploaded(self, file_id: str):
+    async def check_file_uploaded(self, file_id: str) -> str:
         """
         检查文件是否上传成功，顺便获得文件下载地址
+        注意：这只能调用一次，文件未上传，或者已经调用过该接口，Openai都会返回错误
+        :return: 文件下载地址
         """
+        if file_id is None:
+            raise InvalidParamsException()
+
         response = await self.session.post(
             url=f"{config.openai_web.chatgpt_base_url}files/{file_id}/uploaded",
             json={}
@@ -419,9 +430,9 @@ class OpenaiWebChatManager:
             return result.get("download_url")
         else:
             raise OpenaiWebException(
-                f"Failed to check {file_id} uploaded: {result.get('error_code')}({result.get('error_message')})")
+                f"Failed to check {file_id} uploaded: {result.get('error_code')}({result.get('error_message')}). File may be not uploaded yet.")
 
-    async def upload_file_in_server(self, file_info: UploadedFileInfoSchema) -> OpenaiWebChatFileInfo:
+    async def upload_file_in_server(self, file_info: UploadedFileInfoSchema) -> UploadedFileOpenaiWebInfo:
         """
         将已上传到服务器上的文件上传到OpenAI Web
         """
@@ -439,17 +450,30 @@ class OpenaiWebChatManager:
             file_size=file_info.size,
             use_case="ace_upload"
         )
-        upload_response = await self._get_file_upload_url(upload_info)
-        upload_url = upload_response.upload_url
+        upload_response = await self.get_file_upload_url(upload_info)
+        upload_url = upload_response.upload_url  # 预签名的 azure 地址
 
         # 上传文件
-        content_type = file_info.content_type or "application/octet-stream"
-        # TODO
+        content_type = file_info.content_type or guess_type(file_info.original_filename) or "application/octet-stream"
+        headers = {
+            'x-ms-blob-type': 'BlockBlob',
+            'Content-Type': content_type,
+            'x-ms-version': '2020-04-08',
+            'Origin': 'https://chat.openai.com',
+        }
+        async with aiofiles.open(file_path, mode='rb') as file:
+            content = await file.read()
+        async with aiohttp.ClientSession() as session:
+            response = await session.put(upload_url, data=content, headers=headers)
+            if response.status != 201:
+                logger.error(
+                    f"Failed to upload {file_info.id}: {response.status}({response.reason}): {await response.text()}")
+                raise OpenaiWebException(
+                    f"Failed to upload {file_info.id}: {response.status}({response.reason})")
 
         # 检查文件是否上传成功
-        download_url = await self._check_file_uploaded(upload_response.file_id)
-
-        openai_web_info = OpenaiWebChatFileInfo(
+        download_url = await self.check_file_uploaded(upload_response.file_id)
+        openai_web_info = UploadedFileOpenaiWebInfo(
             file_id=upload_response.file_id,
             download_url=download_url,
         )

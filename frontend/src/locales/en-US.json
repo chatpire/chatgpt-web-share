@@ -321,7 +321,8 @@
     "plugins": "plug-in",
     "config": {
       "enabled_models": "Enabled Models",
-      "model_code_mapping": "Model Code Mapping"
+      "model_code_mapping": "Model Code Mapping",
+      "file_upload_strategy": "File Upload Strategy"
     }
   },
   "models": {
@@ -346,7 +347,8 @@
     "rate_limits": "Define the maximum number of conversations a user can initiate within a certain time interval, and the priority is calculated from small to large time intervals.",
     "openai_web_installed_plugins": "Note: Only the plugins enabled here can be selected when using GPT-4 Plugin!",
     "config": {
-      "enabled_models": "Set which models are enabled globally. Models that are not enabled here will not be available for all accounts."
+      "enabled_models": "Set which models are enabled globally. Models that are not enabled here will not be available for all accounts.",
+      "file_upload_strategy": "Determined how to upload files when using the code interpreter model. See the documentation for details"
     }
   }
 }

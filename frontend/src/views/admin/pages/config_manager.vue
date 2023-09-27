@@ -87,6 +87,10 @@ const configUiSchema = {
     model_code_mapping: {
       'ui:title': t('labels.config.model_code_mapping'),
       'ui:field': ModelDictField,
+    },
+    file_upload_strategy: {
+      'ui:title': t('labels.config.file_upload_strategy'),
+      'ui:description': t('desc.config.file_upload_strategy'),
     }
   },
   openai_api: {

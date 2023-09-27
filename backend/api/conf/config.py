@@ -4,6 +4,7 @@ from pydantic import BaseModel, validator, Field
 
 from api.conf.base_config import BaseConfig
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
+from api.enums.options import OpenaiWebFileUploadStrategyOption
 from utils.common import singleton_with_lock
 
 _TYPE_CHECKING = False
@@ -45,7 +46,7 @@ class DataSetting(BaseModel):
     database_url: str = 'sqlite+aiosqlite:///data/database.db'
     mongodb_url: str = 'mongodb://cws:password@mongo:27017'  # 'mongodb://cws:password@localhost:27017'
     run_migration: bool = False
-    max_upload_size: int = Field(1000 * 1024 * 1024, ge=0)
+    max_file_upload_size: int = Field(100 * 1024 * 1024, ge=0)
 
     @validator("database_url")
     def validate_database_url(cls, v):
@@ -55,11 +56,11 @@ class DataSetting(BaseModel):
 
 
 class AuthSetting(BaseModel):
-    jwt_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
+    jwt_secret: str = 'MODIFY_THIS_TO_RANDOM_SECURE_STRING'
     jwt_lifetime_seconds: int = Field(86400, ge=1)
     cookie_max_age: int = Field(86400, ge=1)
-    cookie_name: str = 'user_auth'
-    user_secret: str = 'MODIFY_THIS_TO_RANDOM_SECRET'
+    cookie_name: str = 'cws_user_auth'
+    user_secret: str = 'MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING'
 
 
 class OpenaiWebChatGPTSetting(BaseModel):
@@ -71,6 +72,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     ask_timeout: int = Field(600, ge=1)
     enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
+    file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
 
     @validator("chatgpt_base_url")
     def chatgpt_base_url_end_with_slash(cls, v):
