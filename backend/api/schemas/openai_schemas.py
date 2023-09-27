@@ -1,6 +1,6 @@
 from typing import Literal, Optional, Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class OpenaiChatResponseChoice(BaseModel):
@@ -68,6 +68,6 @@ class OpenaiChatFileUploadInfo(BaseModel):
 class OpenaiChatFileUploadUrlResponse(BaseModel):
     status: Literal["success", "error"] | str
     upload_url: Optional[str]
-    file_id: Optional[str]
+    file_id: Optional[str] = Field(None, description="OpenAI Web file id")
     error_code: Optional[str]
     error_message: Optional[str]

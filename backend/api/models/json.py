@@ -53,3 +53,8 @@ class DailyTimeSlot(BaseModel):
 class CustomOpenaiApiSettings(BaseModel):
     url: Optional[str]
     key: Optional[str]
+
+
+class OpenaiWebChatFileInfo(BaseModel):
+    file_id: Optional[str]
+    download_url: Optional[str]

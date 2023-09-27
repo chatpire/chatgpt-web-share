@@ -7,7 +7,8 @@ Create Date: 2023-09-26 19:21:46.195955
 """
 from alembic import op
 import sqlalchemy as sa
-from api.database.custom_types import UTCDateTime
+from api.database.custom_types import UTCDateTime, Pydantic
+from api.models.json import OpenaiWebChatFileInfo
 
 # revision identifiers, used by Alembic.
 revision = '0d790c2c26dc'
@@ -28,7 +29,7 @@ def upgrade() -> None:
                     sa.Column('upload_time', UTCDateTime(timezone=True),
                               nullable=False, comment='上传日期'),
                     sa.Column('uploader_id', sa.Integer(), nullable=False, comment='上传的用户id'),
-                    sa.Column('openai_file_id', sa.String(length=256), nullable=True),
+                    sa.Column('openai_web_info', Pydantic(OpenaiWebChatFileInfo), nullable=True),
                     sa.ForeignKeyConstraint(['uploader_id'], ['user.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )

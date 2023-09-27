@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
 from api.database.custom_types import Pydantic, UTCDateTime, GUID
 from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels, ChatSourceTypes
+from api.models.json import OpenaiWebChatFileInfo
 from api.schemas import UserSettingSchema, OpenaiWebSourceSettingSchema, OpenaiApiSourceSettingSchema
 
 
@@ -113,5 +114,6 @@ class UploadedFileInfo(Base):
     upload_time: Mapped[datetime] = mapped_column(UTCDateTime(timezone=True), default=datetime.utcnow,
                                                   comment="上传日期")
     uploader_id: Mapped[int] = mapped_column(ForeignKey("user.id"), comment="上传的用户id")
-    openai_file_id: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)
+    openai_web_info: Mapped[Optional[OpenaiWebChatFileInfo]] = mapped_column(Pydantic(OpenaiWebChatFileInfo),
+                                                                             nullable=True)
     uploader: Mapped["User"] = relationship(back_populates="uploaded_files")
