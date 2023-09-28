@@ -15,11 +15,13 @@ export const renderUserPerModelCounts = (setting: UserSettingSchema, availableOn
   const openaiWebCounts = {} as Record<string, string>;
   const openaiApiCounts = {} as Record<string, string>;
   openaiWebChatModelNames.forEach((model) => {
-    if (availableOnly && (setting.openai_web.per_model_ask_count[model] == undefined || !setting.openai_web.available_models.includes(model))) return;
+    if (availableOnly && !setting.openai_web.available_models.includes(model)) return;
+    if (setting.openai_web.per_model_ask_count[model] == undefined) setting.openai_web.per_model_ask_count[model] = 0;
     openaiWebCounts[model] = getCountTrans(setting.openai_web.per_model_ask_count[model]);
   });
   openaiApiChatModelNames.forEach((model) => {
-    if (availableOnly && setting.openai_api.per_model_ask_count[model] == undefined || !setting.openai_api.available_models.includes(model)) return;
+    if (availableOnly && !setting.openai_api.available_models.includes(model)) return;
+    if (setting.openai_api.per_model_ask_count[model] == undefined) setting.openai_api.per_model_ask_count[model] = 0;
     openaiApiCounts[model] = getCountTrans(setting.openai_api.per_model_ask_count[model]);
   });
   // console.log(revCounts, apiCounts);
