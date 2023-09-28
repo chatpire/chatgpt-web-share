@@ -100,11 +100,11 @@ async def on_startup():
                         ), user_setting=UserSettingSchema.unlimited(), safe=False)
             print(user)
         except UserAlreadyExists:
-            logger.info(f"admin already exists, skip creating admin user")
+            logger.debug(f"admin already exists, skip creating admin user")
         except Exception as e:
             raise e
 
-    # 重置所有用户chat_status
+    # 重置所有用户 chat_status
     async with get_async_session_context() as session:
         r = await session.execute(select(User))
         results = r.scalars().all()
@@ -114,26 +114,25 @@ async def on_startup():
         await session.commit()
 
     if config.openai_web.chatgpt_base_url is None:
-        logger.warning("chatgpt_base_url is not set; use default base url from revChatGPT!")
+        logger.error("chatgpt_base_url is not set in config!")
+        exit(1)
     else:
         logger.info(
             f"Using {config.openai_web.chatgpt_base_url} as ChatGPT base url")
 
-    if not config.common.sync_conversations_on_startup:
-        return
-
     # 获取 ChatGPT 对话，并同步数据库
-    if not config.common.sync_conversations_on_startup:
-        logger.info("Sync conversations on startup disabled. Jumping...")
-        return  # 跳过同步对话
+    if not config.openai_web.sync_conversations_on_startup:
+        logger.info("Sync conversations on startup disabled.")
+        return
     else:
         await sync_conversations()
 
-    if config.common.sync_conversations_regularly:
+    if config.openai_web.sync_conversations_schedule:
         logger.info("Sync conversations regularly enabled, will sync conversations every 12 hours.")
 
-        # 默认每隔 12 小时同步一次
-        @aiocron.crontab('0 */12 * * *', loop=asyncio.get_event_loop())
+        interval = config.openai_web.sync_conversations_schedule_interval_hours
+
+        @aiocron.crontab(f'0 */{interval} * * *', loop=asyncio.get_event_loop())
         async def sync_conversations_regularly():
             await sync_conversations()
 

@@ -21,8 +21,6 @@ default_openai_web_model_code_mapping = {
 
 
 class CommonSetting(BaseModel):
-    sync_conversations_on_startup: bool = True
-    sync_conversations_regularly: bool = False
     print_sql: bool = False
     create_initial_admin_user: bool = True
     initial_admin_user_username: str = 'admin'
@@ -57,8 +55,8 @@ class DataSetting(BaseModel):
 
 class AuthSetting(BaseModel):
     jwt_secret: str = 'MODIFY_THIS_TO_RANDOM_SECURE_STRING'
-    jwt_lifetime_seconds: int = Field(86400, ge=1)
-    cookie_max_age: int = Field(86400, ge=1)
+    jwt_lifetime_seconds: int = Field(3 * 24 * 3600, ge=1)
+    cookie_max_age: int = Field(3 * 24 * 3600, ge=1)
     cookie_name: str = 'cws_user_auth'
     user_secret: str = 'MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING'
 
@@ -70,6 +68,9 @@ class OpenaiWebChatGPTSetting(BaseModel):
     proxy: Optional[str] = None
     common_timeout: int = Field(10, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
+    sync_conversations_on_startup: bool = True
+    sync_conversations_schedule: bool = False
+    sync_conversations_schedule_interval_hours: int = Field(12, ge=1)
     enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only

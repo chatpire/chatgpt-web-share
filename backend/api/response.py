@@ -2,6 +2,7 @@ import json
 import typing
 from typing import Optional, Any, Generic, TypeVar, Dict
 
+import httpx
 from fastapi import Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError

@@ -3,6 +3,7 @@ import random
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import httpx
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy import select
 
@@ -13,13 +14,14 @@ from api.conf.config import ConfigModel
 from api.conf.credentials import CredentialsModel
 from api.database.sqlalchemy import get_async_session_context, get_user_db_context
 from api.enums import OpenaiWebChatStatus
-from api.exceptions import InvalidParamsException
+from api.exceptions import InvalidParamsException, OpenaiWebException
 from api.models.db import User, OpenaiWebConversation
 from api.models.doc import RequestLogDocument, AskLogDocument
 from api.schemas import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, OpenaiWebSourceSettingSchema, \
     OpenaiApiSourceSettingSchema, RequestLogAggregation, AskLogAggregation
 from api.sources import OpenaiWebChatManager, OpenaiApiChatManager
 from api.users import current_super_user, get_user_manager_context
+from utils.admin import sync_conversations
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -276,12 +278,25 @@ async def update_credentials(credentials_model: CredentialsModel, _user: User = 
     return credentials.model()
 
 
-@router.post("/system/import-users", tags=["system"])
+@router.post("/system/action/sync-openai-web-conv", tags=["system"])
+async def sync_openai_web_conversations(_user: User = Depends(current_super_user)):
+    exception = await sync_conversations()
+    if exception:
+        if isinstance(exception, httpx.ConnectError):
+            raise OpenaiWebException("Failed to connect to ChatGPT server. Did you set the correct chatgpt_base_url?")
+        else:
+            raise exception
+    return None
+
+
+# @router.post("/system/import-users", tags=["system"])
 async def import_users(file: UploadFile = File(...), _user: User = Depends(current_super_user)):
     """
     解析csv文件，导入用户
     csv字段：
     """
+    raise NotImplementedError()
+
     headers = ["id", "username", "nickname", "email", "active_time", "chat_status", "can_use_paid", "max_conv_count",
                "available_ask_count", "is_superuser", "is_active", "is_verified", "hashed_password", "can_use_gpt4",
                "available_gpt4_ask_count"]

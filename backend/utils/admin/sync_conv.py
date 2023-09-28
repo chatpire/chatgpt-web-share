@@ -14,9 +14,9 @@ logger = get_logger(__name__)
 manager = OpenaiWebChatManager()
 
 
-async def sync_conversations():
+async def sync_conversations() -> Exception | None:
     try:
-        logger.info("Syncing conversations...")
+        logger.info("Start syncing conversations...")
         result = await manager.get_conversations()
         logger.info(f"Fetched {len(result)} conversations from ChatGPT account.")
         openai_conversations_map = {conv['id']: conv for conv in result}
@@ -42,8 +42,8 @@ async def sync_conversations():
                 else:
                     if conv_db.is_valid:  # 数据库中存在，但 ChatGPT 中（可能）不存在
                         conv_db.is_valid = False
-                        logger.warning(
-                            f"Cannot fetch conversation [{conv_db.title}]({conv_db.conversation_id})")
+                        logger.info(
+                            f"Conversation [{conv_db.title}]({conv_db.conversation_id}) may be deleted, marked as invalid.")
                         session.add(conv_db)
 
             # 新增对话
@@ -56,16 +56,20 @@ async def sync_conversations():
                 )
                 session.add(new_conv)
                 logger.info(
-                    f"Conversation [{new_conv.title}]({new_conv.conversation_id}) not recorded, added to database")
+                    f"Found new conversation [{new_conv.title}]({new_conv.conversation_id})")
 
             await session.commit()
         logger.info("Sync conversations finished.")
+        return None
     except OpenaiWebException as e:
         logger.error(f"Fetch conversation error ({e.__class__.__name__}) {e.code}: {e.message}")
         logger.warning("Sync conversations on startup failed!")
-    except HTTPError as e:
-        logger.error(f"Fetch conversation error ({e.__class__.__name__}) {str(e)}")
-        logger.warning("Sync conversations on startup failed!")
+        return e
+    # except HTTPError as e:
+    #     logger.error(f"Fetch conversation error ({e.__class__.__name__}) {str(e)}")
+    #     logger.warning("Sync conversations on startup failed!")
+    #     return e
     except Exception as e:
         logger.error(f"Fetch conversation error ({e.__class__.__name__}) {str(e)}")
         logger.warning("Sync conversations on startup failed!")
+        return e

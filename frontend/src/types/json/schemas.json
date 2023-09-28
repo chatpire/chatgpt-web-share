@@ -1352,13 +1352,13 @@
         "type": "integer",
         "minimum": 1,
         "title": "Jwt Lifetime Seconds",
-        "default": 86400
+        "default": 259200
       },
       "cookie_max_age": {
         "type": "integer",
         "minimum": 1,
         "title": "Cookie Max Age",
-        "default": 86400
+        "default": 259200
       },
       "cookie_name": {
         "type": "string",
@@ -2835,20 +2835,6 @@
     ],
     "title": "Body_auth_jwt_login_auth_login_post"
   },
-  "Body_import_users_system_import_users_post": {
-    "properties": {
-      "file": {
-        "type": "string",
-        "format": "binary",
-        "title": "File"
-      }
-    },
-    "type": "object",
-    "required": [
-      "file"
-    ],
-    "title": "Body_import_users_system_import_users_post"
-  },
   "Body_upload_file_to_local_files_local_upload__post": {
     "properties": {
       "file": {
@@ -2874,16 +2860,6 @@
   },
   "CommonSetting": {
     "properties": {
-      "sync_conversations_on_startup": {
-        "type": "boolean",
-        "title": "Sync Conversations On Startup",
-        "default": true
-      },
-      "sync_conversations_regularly": {
-        "type": "boolean",
-        "title": "Sync Conversations Regularly",
-        "default": false
-      },
       "print_sql": {
         "type": "boolean",
         "title": "Print Sql",
@@ -2974,6 +2950,22 @@
                 "title": "Ask Timeout",
                 "default": 600
               },
+              "sync_conversations_on_startup": {
+                "type": "boolean",
+                "title": "Sync Conversations On Startup",
+                "default": true
+              },
+              "sync_conversations_schedule": {
+                "type": "boolean",
+                "title": "Sync Conversations Schedule",
+                "default": false
+              },
+              "sync_conversations_schedule_interval_hours": {
+                "type": "integer",
+                "minimum": 1,
+                "title": "Sync Conversations Schedule Interval Hours",
+                "default": 12
+              },
               "enabled_models": {
                 "items": {
                   "type": "string",
@@ -3040,6 +3032,9 @@
           "is_plus_account": true,
           "common_timeout": 10,
           "ask_timeout": 600,
+          "sync_conversations_on_startup": true,
+          "sync_conversations_schedule": false,
+          "sync_conversations_schedule_interval_hours": 12,
           "enabled_models": [
             "gpt_3_5",
             "gpt_4",
@@ -3140,16 +3135,6 @@
         "allOf": [
           {
             "properties": {
-              "sync_conversations_on_startup": {
-                "type": "boolean",
-                "title": "Sync Conversations On Startup",
-                "default": true
-              },
-              "sync_conversations_regularly": {
-                "type": "boolean",
-                "title": "Sync Conversations Regularly",
-                "default": false
-              },
               "print_sql": {
                 "type": "boolean",
                 "title": "Print Sql",
@@ -3177,8 +3162,6 @@
         ],
         "title": "Common",
         "default": {
-          "sync_conversations_on_startup": true,
-          "sync_conversations_regularly": false,
           "print_sql": false,
           "create_initial_admin_user": true,
           "initial_admin_user_username": "admin",
@@ -3284,13 +3267,13 @@
                 "type": "integer",
                 "minimum": 1,
                 "title": "Jwt Lifetime Seconds",
-                "default": 86400
+                "default": 259200
               },
               "cookie_max_age": {
                 "type": "integer",
                 "minimum": 1,
                 "title": "Cookie Max Age",
-                "default": 86400
+                "default": 259200
               },
               "cookie_name": {
                 "type": "string",
@@ -3310,8 +3293,8 @@
         "title": "Auth",
         "default": {
           "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECURE_STRING",
-          "jwt_lifetime_seconds": 86400,
-          "cookie_max_age": 86400,
+          "jwt_lifetime_seconds": 259200,
+          "cookie_max_age": 259200,
           "cookie_name": "cws_user_auth",
           "user_secret": "MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING"
         }
@@ -5241,6 +5224,22 @@
         "minimum": 1,
         "title": "Ask Timeout",
         "default": 600
+      },
+      "sync_conversations_on_startup": {
+        "type": "boolean",
+        "title": "Sync Conversations On Startup",
+        "default": true
+      },
+      "sync_conversations_schedule": {
+        "type": "boolean",
+        "title": "Sync Conversations Schedule",
+        "default": false
+      },
+      "sync_conversations_schedule_interval_hours": {
+        "type": "integer",
+        "minimum": 1,
+        "title": "Sync Conversations Schedule Interval Hours",
+        "default": 12
       },
       "enabled_models": {
         "items": {
@@ -7732,9 +7731,6 @@
               }
             },
             "type": "object",
-            "required": [
-              "upload_url"
-            ],
             "title": "UploadedFileOpenaiWebInfo"
           }
         },
@@ -7879,9 +7875,6 @@
           }
         },
         "type": "object",
-        "required": [
-          "upload_url"
-        ],
         "title": "UploadedFileOpenaiWebInfo"
       }
     },
@@ -7912,9 +7905,6 @@
       }
     },
     "type": "object",
-    "required": [
-      "upload_url"
-    ],
     "title": "UploadedFileOpenaiWebInfo"
   },
   "UserCreate": {

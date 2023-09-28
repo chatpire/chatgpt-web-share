@@ -11,6 +11,9 @@
         "proxy": null,
         "common_timeout": 10,
         "ask_timeout": 600,
+        "sync_conversations_on_startup": true,
+        "sync_conversations_schedule": false,
+        "sync_conversations_schedule_interval_hours": 12,
         "enabled_models": [
           "gpt_3_5",
           "gpt_4",
@@ -60,8 +63,6 @@
     "common": {
       "title": "Common",
       "default": {
-        "sync_conversations_on_startup": true,
-        "sync_conversations_regularly": false,
         "print_sql": false,
         "create_initial_admin_user": true,
         "initial_admin_user_username": "admin",
@@ -108,8 +109,8 @@
       "title": "Auth",
       "default": {
         "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECURE_STRING",
-        "jwt_lifetime_seconds": 86400,
-        "cookie_max_age": 86400,
+        "jwt_lifetime_seconds": 259200,
+        "cookie_max_age": 259200,
         "cookie_name": "cws_user_auth",
         "user_secret": "MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING"
       },
@@ -203,6 +204,22 @@
         "ask_timeout": {
           "title": "Ask Timeout",
           "default": 600,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sync_conversations_on_startup": {
+          "title": "Sync Conversations On Startup",
+          "default": true,
+          "type": "boolean"
+        },
+        "sync_conversations_schedule": {
+          "title": "Sync Conversations Schedule",
+          "default": false,
+          "type": "boolean"
+        },
+        "sync_conversations_schedule_interval_hours": {
+          "title": "Sync Conversations Schedule Interval Hours",
+          "default": 12,
           "minimum": 1,
           "type": "integer"
         },
@@ -310,16 +327,6 @@
       "title": "CommonSetting",
       "type": "object",
       "properties": {
-        "sync_conversations_on_startup": {
-          "title": "Sync Conversations On Startup",
-          "default": true,
-          "type": "boolean"
-        },
-        "sync_conversations_regularly": {
-          "title": "Sync Conversations Regularly",
-          "default": false,
-          "type": "boolean"
-        },
         "print_sql": {
           "title": "Print Sql",
           "default": false,
@@ -414,13 +421,13 @@
         },
         "jwt_lifetime_seconds": {
           "title": "Jwt Lifetime Seconds",
-          "default": 86400,
+          "default": 259200,
           "minimum": 1,
           "type": "integer"
         },
         "cookie_max_age": {
           "title": "Cookie Max Age",
-          "default": 86400,
+          "default": 259200,
           "minimum": 1,
           "type": "integer"
         },

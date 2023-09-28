@@ -353,5 +353,13 @@
       "enabled_models": "设置全局启用哪些模型，在此处不启用的模型所有账号都无法使用",
       "file_upload_strategy": "配置使用 code interpreter 模型时文件如何上传，详见文档"
     }
+  },
+  "dialog": {
+    "title": {
+      "syncConversations": "同步对话"
+    },
+    "content": {
+      "syncConversations": "确定要手动同步所有对话吗？这将从 OpenAI 账号上获取对话列表，并标记已删除的对话为 invalid。"
+    }
   }
 }

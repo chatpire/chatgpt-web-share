@@ -39,3 +39,7 @@ export function getSystemCredentials() {
 export function updateSystemCredentials(credentials: CredentialsModel) {
   return axios.put<CredentialsModel>(ApiUrl.SystemCredentials, credentials);
 }
+
+export function runActionSyncOpenaiWebConversations() {
+  return axios.post(ApiUrl.SystemActionSyncOpenaiWebConversations);
+}

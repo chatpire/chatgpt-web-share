@@ -148,13 +148,9 @@ export interface paths {
     /** Update Credentials */
     put: operations["update_credentials_system_credentials_put"];
   };
-  "/system/import-users": {
-    /**
-     * Import Users 
-     * @description 解析csv文件，导入用户
-     * csv字段：
-     */
-    post: operations["import_users_system_import_users_post"];
+  "/system/actions/sync-openai-web-conv": {
+    /** Sync Openai Web Conversations */
+    post: operations["sync_openai_web_conversations_system_actions_sync_openai_web_conv_post"];
   };
   "/status/common": {
     /**
@@ -280,12 +276,12 @@ export interface components {
       jwt_secret?: string;
       /**
        * Jwt Lifetime Seconds 
-       * @default 86400
+       * @default 259200
        */
       jwt_lifetime_seconds?: number;
       /**
        * Cookie Max Age 
-       * @default 86400
+       * @default 259200
        */
       cookie_max_age?: number;
       /**
@@ -425,14 +421,6 @@ export interface components {
       /** Client Secret */
       client_secret?: string;
     };
-    /** Body_import_users_system_import_users_post */
-    Body_import_users_system_import_users_post: {
-      /**
-       * File 
-       * Format: binary
-       */
-      file: string;
-    };
     /** Body_upload_file_to_local_files_local_upload__post */
     Body_upload_file_to_local_files_local_upload__post: {
       /**
@@ -449,16 +437,6 @@ export interface components {
     ChatSourceTypes: "openai_web" | "openai_api";
     /** CommonSetting */
     CommonSetting: {
-      /**
-       * Sync Conversations On Startup 
-       * @default true
-       */
-      sync_conversations_on_startup?: boolean;
-      /**
-       * Sync Conversations Regularly 
-       * @default false
-       */
-      sync_conversations_regularly?: boolean;
       /**
        * Print Sql 
        * @default false
@@ -504,6 +482,9 @@ export interface components {
        *   "is_plus_account": true,
        *   "common_timeout": 10,
        *   "ask_timeout": 600,
+       *   "sync_conversations_on_startup": true,
+       *   "sync_conversations_schedule": false,
+       *   "sync_conversations_schedule_interval_hours": 12,
        *   "enabled_models": [
        *     "gpt_3_5",
        *     "gpt_4",
@@ -544,8 +525,6 @@ export interface components {
       /**
        * Common 
        * @default {
-       *   "sync_conversations_on_startup": true,
-       *   "sync_conversations_regularly": false,
        *   "print_sql": false,
        *   "create_initial_admin_user": true,
        *   "initial_admin_user_username": "admin",
@@ -580,8 +559,8 @@ export interface components {
        * Auth 
        * @default {
        *   "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECURE_STRING",
-       *   "jwt_lifetime_seconds": 86400,
-       *   "cookie_max_age": 86400,
+       *   "jwt_lifetime_seconds": 259200,
+       *   "cookie_max_age": 259200,
        *   "cookie_name": "cws_user_auth",
        *   "user_secret": "MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING"
        * }
@@ -1059,6 +1038,21 @@ export interface components {
        * @default 600
        */
       ask_timeout?: number;
+      /**
+       * Sync Conversations On Startup 
+       * @default true
+       */
+      sync_conversations_on_startup?: boolean;
+      /**
+       * Sync Conversations Schedule 
+       * @default false
+       */
+      sync_conversations_schedule?: boolean;
+      /**
+       * Sync Conversations Schedule Interval Hours 
+       * @default 12
+       */
+      sync_conversations_schedule_interval_hours?: number;
       /**
        * @default [
        *   "gpt_3_5",
@@ -1572,7 +1566,7 @@ export interface components {
        * Upload Url 
        * @description 上传文件的url, 上传后应清空该字段
        */
-      upload_url: string;
+      upload_url?: string;
       /** Download Url */
       download_url?: string;
     };
@@ -2477,28 +2471,13 @@ export interface operations {
       };
     };
   };
-  import_users_system_import_users_post: {
-    /**
-     * Import Users 
-     * @description 解析csv文件，导入用户
-     * csv字段：
-     */
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["Body_import_users_system_import_users_post"];
-      };
-    };
+  sync_openai_web_conversations_system_actions_sync_openai_web_conv_post: {
+    /** Sync Openai Web Conversations */
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

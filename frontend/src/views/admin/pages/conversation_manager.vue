@@ -9,6 +9,13 @@
             </n-icon>
           </template>
         </n-button>
+        <n-button circle @click="syncConversations">
+          <template #icon>
+            <n-icon>
+              <CloudDownloadFilled />
+            </n-icon>
+          </template>
+        </n-button>
         <div v-show="checkedRowKeys.length !== 0" class="space-x-2">
           <n-button type="warning" secondary @click="handleInvalidateConversations">
             <template #icon>
@@ -61,7 +68,7 @@
 
 <script setup lang="ts">
 import { TrashOutline } from '@vicons/ionicons5';
-import { EmojiFlagsFilled, PersonAddAlt1Filled, RefreshFilled } from '@vicons/material';
+import { CloudDownloadFilled, EmojiFlagsFilled, PersonAddAlt1Filled, RefreshFilled } from '@vicons/material';
 import type { DataTableColumns } from 'naive-ui';
 import { NButton, NIcon, NTooltip } from 'naive-ui';
 import { computed, h, ref } from 'vue';
@@ -75,6 +82,7 @@ import {
   getAdminAllConversationsApi,
   vanishConversationApi,
 } from '@/api/conv';
+import { runActionSyncOpenaiWebConversations } from '@/api/system';
 import { BaseConversationSchema } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getDateStringSorter } from '@/utils/table';
@@ -94,6 +102,33 @@ const refreshData = () => {
 };
 
 refreshData();
+
+const syncConversations = () => {
+  const d = Dialog.info({
+    title: t('dialog.title.syncConversations'),
+    content: t('dialog.content.syncConversations'),
+    positiveText: t('commons.confirm'),
+    negativeText: t('commons.cancel'),
+    onPositiveClick: () => {
+      d.loading = true;
+      return new Promise((resolve, reject) => {
+        runActionSyncOpenaiWebConversations()
+          .then(() => {
+            Message.success(t('tips.success'));
+            refreshData();
+            resolve(true);
+          })
+          .catch((err) => {
+            Message.error(t('tips.failed') + ': ' + err);
+            reject(err);
+          })
+          .finally(() => {
+            d.loading = false;
+          });
+      });
+    },
+  });
+};
 
 const columns: DataTableColumns<BaseConversationSchema> = [
   {
