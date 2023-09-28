@@ -1,7 +1,7 @@
 import { hasCookie, removeCookie } from '@/utils/cookies';
 // import { useUserStore } from '@/store';
 
-const COOKIE_KEY = 'user_auth';
+const COOKIE_KEY = 'cws_user_auth';
 
 const hasLoginCookie = () => {
   // const userStore = useUserStore();

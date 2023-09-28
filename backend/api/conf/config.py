@@ -57,7 +57,6 @@ class AuthSetting(BaseModel):
     jwt_secret: str = 'MODIFY_THIS_TO_RANDOM_SECURE_STRING'
     jwt_lifetime_seconds: int = Field(3 * 24 * 3600, ge=1)
     cookie_max_age: int = Field(3 * 24 * 3600, ge=1)
-    cookie_name: str = 'cws_user_auth'
     user_secret: str = 'MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING'
 
 

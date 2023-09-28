@@ -26,7 +26,7 @@ config = Config()
 
 cookie_transport = CookieTransport(
     cookie_max_age=config.auth.cookie_max_age,
-    cookie_name=config.auth.cookie_name,
+    cookie_name="cws_user_auth",
     cookie_httponly=False,
     cookie_secure=False,
 )
