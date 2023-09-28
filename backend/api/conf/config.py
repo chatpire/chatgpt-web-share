@@ -71,7 +71,8 @@ class OpenaiWebChatGPTSetting(BaseModel):
     sync_conversations_on_startup: bool = True
     sync_conversations_schedule: bool = False
     sync_conversations_schedule_interval_hours: int = Field(12, ge=1)
-    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins"]
+    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins",
+                                                 "gpt_4_browsing"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
 
