@@ -52,7 +52,7 @@
     "vanishConversation": "彻底删除对话",
     "shaModel": "Default",
     "paidModel": "Legacy",
-    "currentConversationModel": "当前使用的模型",
+    "currentConversationModel": "当前模型",
     "availableModels": "允许使用的模型",
     "maxConversationCount": "最大对话数",
     "availableTotalAskCount": "总可用提问次数",
@@ -172,7 +172,9 @@
     "export": "导出",
     "import": "导入",
     "useCodeInterpreter": "使用代码解释器",
-    "viewAttachments": "展开 {0} 个附件"
+    "viewAttachments": "展开 {0} 个附件",
+    "selectFile": "选择文件",
+    "emptyFileList": "文件列表为空"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -276,7 +278,11 @@
     },
     "openaiWebPluginsLengthMoreThan3": "插件数量不能超过3",
     "sandboxFileNotFound": "未找到文件 {0}，这可能是因为路径错误，或者是因为解释器已经过期。",
-    "sandboxFileDownloadError": "文件下载错误"
+    "sandboxFileDownloadError": "文件下载错误",
+    "dragFileHere": "点击或拖拽文件到此处以上传文件",
+    "fileUploadRequirements": "请不要上传含有敏感信息的文件；文件大小不应过大",
+    "fileUploadSuccess": "文件 {0} 上传成功",
+    "fileUploadFailed": "文件 {0} 上传失败"
   },
   "labels": {
     "nickname": "昵称",

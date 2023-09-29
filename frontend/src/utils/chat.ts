@@ -24,6 +24,7 @@ export const chatModelColorMap: Record<string, string> = {
   gpt_4_mobile: 'darkpurple',
   gpt_4_browsing: 'purple',
   gpt_4_plugins: 'purple',
+  gpt_4_code_interpreter: 'darkblue'
 };
 
 export const getChatModelColor = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {

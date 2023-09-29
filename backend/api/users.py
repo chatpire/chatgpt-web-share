@@ -24,9 +24,11 @@ config = Config()
 # 使用 cookie + JWT
 # 参考 https://fastapi-users.github.io/fastapi-users/10.2/configuration/full-example/
 
+COOKIE_NAME = "cws_user_auth"
+
 cookie_transport = CookieTransport(
     cookie_max_age=config.auth.cookie_max_age,
-    cookie_name="cws_user_auth",
+    cookie_name=COOKIE_NAME,
     cookie_httponly=False,
     cookie_secure=False,
 )
@@ -172,7 +174,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
 async def websocket_auth(websocket: WebSocket) -> User | None:
     user_db = None
     try:
-        cookie = websocket._cookies[config.auth.cookie_name]
+        cookie = websocket._cookies[COOKIE_NAME]
         async with get_async_session_context() as session:
             async with get_user_db_context(session) as user_db:
                 async with get_user_manager_context(user_db) as user_manager:

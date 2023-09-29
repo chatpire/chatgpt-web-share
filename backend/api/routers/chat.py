@@ -17,6 +17,7 @@ from websockets.exceptions import ConnectionClosed
 from api.conf import Config
 from api.database.sqlalchemy import get_async_session_context
 from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
+from api.enums.options import OpenaiWebFileUploadStrategyOption
 from api.exceptions import InternalException, InvalidParamsException, OpenaiException
 from api.models.db import OpenaiWebConversation, User, BaseConversation
 from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
@@ -205,6 +206,14 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
         # await websocket.close(1008, "errors.maxConversationCountReached")
         raise WebsocketInvalidAskException("errors.maxConversationCountReached")
 
+    # 判断是否允许使用附件
+    if ask_request.openai_web_attachments and len(ask_request.openai_web_attachments) > 0:
+        if ask_request.source != ChatSourceTypes.openai_web or \
+                config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.disable_upload or \
+                ask_request.model != OpenaiWebChatModels.gpt_4_code_interpreter or \
+                ask_request.new_conversation is False:
+            raise WebsocketInvalidAskException("errors.attachmentsNotAllowed")
+
 
 def check_message(msg: str):
     # 检查消息中的敏感信息
@@ -321,7 +330,8 @@ async def chat(websocket: WebSocket):
                                       conversation_id=ask_request.conversation_id,
                                       parent_id=ask_request.parent,
                                       model=model,
-                                      plugin_ids=ask_request.openai_web_plugin_ids):
+                                      plugin_ids=ask_request.openai_web_plugin_ids,
+                                      attachments=ask_request.openai_web_attachments):
             has_got_reply = True
 
             try:

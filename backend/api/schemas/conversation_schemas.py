@@ -8,6 +8,7 @@ from strenum import StrEnum
 
 from api.enums import ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
 from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage
+from api.schemas.openai_schemas import OpenaiWebAskAttachment
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -34,6 +35,7 @@ class AskRequest(BaseModel):
     api_context_message_count: int = Field(-1, ge=-1)
     content: str
     openai_web_plugin_ids: Optional[list[str]] = None
+    openai_web_attachments: Optional[list[OpenaiWebAskAttachment]] = None
 
     @root_validator
     def check(cls, values):

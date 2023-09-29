@@ -24,7 +24,7 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
 from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
-    OpenaiChatFileUploadUrlResponse
+    OpenaiChatFileUploadUrlResponse, OpenaiWebAskAttachment
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -233,7 +233,8 @@ class OpenaiWebChatManager:
         await _check_response(response)
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  model: OpenaiWebChatModels = None, plugin_ids: list[str] = None, **_kwargs):
+                  model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
+                  attachments: list[OpenaiWebAskAttachment] = None, **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
 
@@ -267,8 +268,12 @@ class OpenaiWebChatManager:
                     "role": "user",
                     "author": {"role": "user"},
                     "content": content.dict(),
+                    "metadata": {}
                 }
             ]
+
+            if attachments and len(attachments) > 0:
+                messages[0]["metadata"]["attachments"] = [attachment.dict() for attachment in attachments]
 
             data = {
                 "action": "next",
@@ -408,7 +413,7 @@ class OpenaiWebChatManager:
         result = OpenaiChatFileUploadUrlResponse.parse_obj(response.json())
         if result.status != "success":
             raise OpenaiWebException(
-                f"{upload_info.file_name} Failed to get upload url: {result.error_code}({result.error_message})")
+                f"{upload_info.file_name} Failed to get upload url from OpenAI: {result.error_code}({result.error_message})")
         return result
 
     async def check_file_uploaded(self, file_id: str) -> str:
@@ -454,7 +459,7 @@ class OpenaiWebChatManager:
         upload_url = upload_response.upload_url  # 预签名的 azure 地址
 
         # 上传文件
-        content_type = file_info.content_type or guess_type(file_info.original_filename) or "application/octet-stream"
+        content_type = file_info.content_type or guess_type(file_info.original_filename)[0] or "application/octet-stream"
         headers = {
             'x-ms-blob-type': 'BlockBlob',
             'Content-Type': content_type,

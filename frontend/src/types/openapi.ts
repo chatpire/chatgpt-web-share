@@ -148,9 +148,9 @@ export interface paths {
     /** Update Credentials */
     put: operations["update_credentials_system_credentials_put"];
   };
-  "/system/actions/sync-openai-web-conv": {
+  "/system/action/sync-openai-web-conv": {
     /** Sync Openai Web Conversations */
-    post: operations["sync_openai_web_conversations_system_actions_sync_openai_web_conv_post"];
+    post: operations["sync_openai_web_conversations_system_action_sync_openai_web_conv_post"];
   };
   "/status/common": {
     /**
@@ -159,35 +159,39 @@ export interface paths {
      */
     get: operations["get_server_status_status_common_get"];
   };
-  "/files/local/upload/": {
+  "/files/local/upload": {
     /**
      * Upload File To Local 
      * @description 上传文件到服务器。文件将被保存在服务器上，返回文件信息。
      * 仅当需要在服务器留存上传的文件时才使用.
      */
-    post: operations["upload_file_to_local_files_local_upload__post"];
+    post: operations["upload_file_to_local_files_local_upload_post"];
   };
   "/files/local/download/{file_id}": {
     /** Download File From Local */
     get: operations["download_file_from_local_files_local_download__file_id__get"];
   };
-  "/files/openai-web/upload/": {
+  "/files/openai-web/upload-start": {
     /**
      * Start Upload To Openai 
-     * @description 要上传文件到 OpenAI Web，前端需要先调用此接口
-     * 1. 若最终上传方法是前端直接上传，则获取上传地址并记录文件信息；
-     * 2. 否则前端应当先调用 /files/local/upload/ 接口上传文件到服务器，
-     *    再调用 /files/local/upload-to-openai/{file_id} 接口上传文件到 OpenAI Web
+     * @description 要上传文件到 OpenAI Web，前端需要先调用此接口.
+     * 1. 若最终上传方法是前端直接上传 (Browser -> Azure Blob)，则获取上传地址并记录文件信息，响应中 upload_file_info 不为空
+     * 2. 否则的话就是服务端中转上传（Browser -> Local -> Azure Blob，此时响应中 upload_file_info 为空，前端应当:
+     *     a. 先调用 upload_file_to_local 接口上传文件到服务器，拿到文件的 uuid
+     *     b. 再调用 upload_local_file_to_openai_web 接口，通知服务器上传文件到 OpenAI Web
      */
-    post: operations["start_upload_to_openai_files_openai_web_upload__post"];
+    post: operations["start_upload_to_openai_files_openai_web_upload_start_post"];
   };
-  "/files/openai-web/upload-complete/": {
+  "/files/openai-web/upload-complete/{file_id}": {
     /** Complete Upload To Openai */
-    post: operations["complete_upload_to_openai_files_openai_web_upload_complete__post"];
+    post: operations["complete_upload_to_openai_files_openai_web_upload_complete__file_id__post"];
   };
-  "/files/local/upload-to-openai/{file_id}": {
-    /** Upload File To Openai Web */
-    post: operations["upload_file_to_openai_web_files_local_upload_to_openai__file_id__post"];
+  "/files/local/upload-to-openai-web/{file_id}": {
+    /**
+     * Upload Local File To Openai Web 
+     * @description 将服务器上已有的文件上传到 OpenAI Web（Azure blob）
+     */
+    post: operations["upload_local_file_to_openai_web_files_local_upload_to_openai_web__file_id__post"];
   };
 }
 
@@ -245,6 +249,8 @@ export interface components {
       content: string;
       /** Openai Web Plugin Ids */
       openai_web_plugin_ids?: (string)[];
+      /** Openai Web Attachments */
+      openai_web_attachments?: (components["schemas"]["OpenaiWebAskAttachment"])[];
     };
     /** AskResponse */
     AskResponse: {
@@ -284,11 +290,6 @@ export interface components {
        * @default 259200
        */
       cookie_max_age?: number;
-      /**
-       * Cookie Name 
-       * @default cws_user_auth
-       */
-      cookie_name?: string;
       /**
        * User Secret 
        * @default MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING
@@ -421,8 +422,8 @@ export interface components {
       /** Client Secret */
       client_secret?: string;
     };
-    /** Body_upload_file_to_local_files_local_upload__post */
-    Body_upload_file_to_local_files_local_upload__post: {
+    /** Body_upload_file_to_local_files_local_upload_post */
+    Body_upload_file_to_local_files_local_upload_post: {
       /**
        * File 
        * Format: binary
@@ -489,7 +490,8 @@ export interface components {
        *     "gpt_3_5",
        *     "gpt_4",
        *     "gpt_4_code_interpreter",
-       *     "gpt_4_plugins"
+       *     "gpt_4_plugins",
+       *     "gpt_4_browsing"
        *   ],
        *   "model_code_mapping": {
        *     "gpt_3_5": "text-davinci-002-render-sha",
@@ -538,8 +540,10 @@ export interface components {
        *   "host": "127.0.0.1",
        *   "port": 8000,
        *   "cors_allow_origins": [
-       *     "http://localhost",
-       *     "http://127.0.0.1"
+       *     "http://localhost:8000",
+       *     "http://localhost:5173",
+       *     "http://127.0.0.1:8000",
+       *     "http://127.0.0.1:5173"
        *   ]
        * }
        */
@@ -561,7 +565,6 @@ export interface components {
        *   "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECURE_STRING",
        *   "jwt_lifetime_seconds": 259200,
        *   "cookie_max_age": 259200,
-       *   "cookie_name": "cws_user_auth",
        *   "user_secret": "MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING"
        * }
        */
@@ -662,8 +665,10 @@ export interface components {
       /**
        * Cors Allow Origins 
        * @default [
-       *   "http://localhost",
-       *   "http://127.0.0.1"
+       *   "http://localhost:8000",
+       *   "http://localhost:5173",
+       *   "http://127.0.0.1:8000",
+       *   "http://127.0.0.1:5173"
        * ]
        */
       cors_allow_origins?: (string)[];
@@ -1003,6 +1008,15 @@ export interface components {
       /** Completion Tokens */
       completion_tokens?: number;
     };
+    /** OpenaiWebAskAttachment */
+    OpenaiWebAskAttachment: {
+      /** Name */
+      name: string;
+      /** Id */
+      id: string;
+      /** Size */
+      size: number;
+    };
     /** OpenaiWebAskLogMeta */
     OpenaiWebAskLogMeta: {
       /**
@@ -1058,7 +1072,8 @@ export interface components {
        *   "gpt_3_5",
        *   "gpt_4",
        *   "gpt_4_code_interpreter",
-       *   "gpt_4_plugins"
+       *   "gpt_4_plugins",
+       *   "gpt_4_browsing"
        * ]
        */
       enabled_models?: (components["schemas"]["OpenaiWebChatModels"])[];
@@ -2471,7 +2486,7 @@ export interface operations {
       };
     };
   };
-  sync_openai_web_conversations_system_actions_sync_openai_web_conv_post: {
+  sync_openai_web_conversations_system_action_sync_openai_web_conv_post: {
     /** Sync Openai Web Conversations */
     responses: {
       /** @description Successful Response */
@@ -2496,7 +2511,7 @@ export interface operations {
       };
     };
   };
-  upload_file_to_local_files_local_upload__post: {
+  upload_file_to_local_files_local_upload_post: {
     /**
      * Upload File To Local 
      * @description 上传文件到服务器。文件将被保存在服务器上，返回文件信息。
@@ -2504,7 +2519,7 @@ export interface operations {
      */
     requestBody: {
       content: {
-        "multipart/form-data": components["schemas"]["Body_upload_file_to_local_files_local_upload__post"];
+        "multipart/form-data": components["schemas"]["Body_upload_file_to_local_files_local_upload_post"];
       };
     };
     responses: {
@@ -2544,13 +2559,14 @@ export interface operations {
       };
     };
   };
-  start_upload_to_openai_files_openai_web_upload__post: {
+  start_upload_to_openai_files_openai_web_upload_start_post: {
     /**
      * Start Upload To Openai 
-     * @description 要上传文件到 OpenAI Web，前端需要先调用此接口
-     * 1. 若最终上传方法是前端直接上传，则获取上传地址并记录文件信息；
-     * 2. 否则前端应当先调用 /files/local/upload/ 接口上传文件到服务器，
-     *    再调用 /files/local/upload-to-openai/{file_id} 接口上传文件到 OpenAI Web
+     * @description 要上传文件到 OpenAI Web，前端需要先调用此接口.
+     * 1. 若最终上传方法是前端直接上传 (Browser -> Azure Blob)，则获取上传地址并记录文件信息，响应中 upload_file_info 不为空
+     * 2. 否则的话就是服务端中转上传（Browser -> Local -> Azure Blob，此时响应中 upload_file_info 为空，前端应当:
+     *     a. 先调用 upload_file_to_local 接口上传文件到服务器，拿到文件的 uuid
+     *     b. 再调用 upload_local_file_to_openai_web 接口，通知服务器上传文件到 OpenAI Web
      */
     requestBody: {
       content: {
@@ -2572,10 +2588,10 @@ export interface operations {
       };
     };
   };
-  complete_upload_to_openai_files_openai_web_upload_complete__post: {
+  complete_upload_to_openai_files_openai_web_upload_complete__file_id__post: {
     /** Complete Upload To Openai */
     parameters: {
-      query: {
+      path: {
         file_id: string;
       };
     };
@@ -2594,8 +2610,11 @@ export interface operations {
       };
     };
   };
-  upload_file_to_openai_web_files_local_upload_to_openai__file_id__post: {
-    /** Upload File To Openai Web */
+  upload_local_file_to_openai_web_files_local_upload_to_openai_web__file_id__post: {
+    /**
+     * Upload Local File To Openai Web 
+     * @description 将服务器上已有的文件上传到 OpenAI Web（Azure blob）
+     */
     parameters: {
       path: {
         file_id: string;

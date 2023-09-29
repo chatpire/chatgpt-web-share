@@ -76,10 +76,12 @@
         <InputRegion
           v-model:input-value="inputValue"
           v-model:auto-scrolling="autoScrolling"
+          v-model:uploaded-file-infos="uploadedFileInfos"
           class="sticky bottom-0 z-10"
           :can-abort="canAbort"
           :can-continue="!loadingAsk && canContinue"
           :send-disabled="sendDisabled"
+          :enable-file-upload="isFileUploadAvailable"
           @abort-request="abortRequest"
           @continue-generating="continueGenerating"
           @export-to-markdown-file="exportToMarkdownFile"
@@ -109,6 +111,8 @@ import {
   BaseChatMessage,
   BaseConversationHistory,
   BaseConversationSchema,
+  OpenaiWebAskAttachment,
+  UploadedFileInfoSchema,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
@@ -144,8 +148,12 @@ let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
 const currentConversationId = ref<string | null>(null);
+const isCurrentNewConversation = computed<boolean>(() => {
+  // return currentConversationId.value === conversationStore.newConversation?.conversation_id;
+  return currentConversationId.value?.startsWith('new_conversation') || false;
+});
 const currentConversation = computed<BaseConversationSchema | null>(() => {
-  if (currentConversationId.value === conversationStore.newConversation?.conversation_id)
+  if (isCurrentNewConversation.value)
     return conversationStore.newConversation;
   const conv = conversationStore.conversations?.find((conversation: BaseConversationSchema) => {
     return conversation.conversation_id == currentConversationId.value;
@@ -160,6 +168,11 @@ const currentConvHistory = computed<BaseConversationHistory | null>(() => {
 const inputValue = ref('');
 const currentSendMessage = ref<BaseChatMessage | null>(null);
 const currentRecvMessages = ref<BaseChatMessage[]>([]);
+
+const uploadedFileInfos = ref<UploadedFileInfoSchema[]>([]);
+const isFileUploadAvailable = computed(() => {
+  return isCurrentNewConversation.value && currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4_code_interpreter';
+});
 
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
@@ -216,6 +229,7 @@ const makeNewConversation = () => {
     newConversationInfo.title = newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
+    hasNewConversation.value = true;
   });
 };
 
@@ -271,12 +285,24 @@ const sendMsg = async () => {
   isAborted.value = false;
   let hasGotReply = false;
 
+  let attachments = [] as OpenaiWebAskAttachment[];
+  if (isFileUploadAvailable.value && uploadedFileInfos.value.length > 0) {
+    attachments = uploadedFileInfos.value.filter((info) => info.openai_web_info && info.openai_web_info.file_id).map((info) => {
+      return {
+        id: info.openai_web_info!.file_id!,
+        name: info.original_filename,
+        size: info.size,
+      };
+    });
+  }
+
   const askRequest: AskRequest = {
     source: currentConversation.value!.source,
-    new_conversation: currentConversationId.value!.startsWith('new_conversation'),
+    new_conversation: isCurrentNewConversation.value,
     model: currentConversation.value!.current_model!,
     content: text,
     openai_web_plugin_ids: currentConvHistory.value!.metadata?.source === 'openai_web' ? currentConvHistory.value!.metadata?.plugin_ids : undefined,
+    openai_web_attachments: attachments || null,
   };
   if (conversationStore.newConversation) {
     askRequest.new_title = conversationStore.newConversation.title;

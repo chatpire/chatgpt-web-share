@@ -48,6 +48,8 @@ export type OpenaiChatPluginManifest = components['schemas']['OpenaiChatPluginMa
 export type OpenaiChatPluginUserSettings = components['schemas']['OpenaiChatPluginUserSettings'];
 export type OpenaiChatPlugin = components['schemas']['OpenaiChatPlugin'];
 
+export type OpenaiChatFileUploadInfo = components['schemas']['OpenaiChatFileUploadInfo'];
+
 export type AskRequest = components['schemas']['AskRequest'];
 export type AskResponse = components['schemas']['AskResponse'];
 
@@ -59,6 +61,10 @@ export type LogFilterOptions = components['schemas']['LogFilterOptions'];
 
 export type ConfigModel = components['schemas']['ConfigModel'];
 export type CredentialsModel = components['schemas']['CredentialsModel'];
+
+export type UploadedFileInfoSchema = components['schemas']['UploadedFileInfoSchema'];
+export type StartUploadResponseSchema = components['schemas']['StartUploadResponseSchema'];
+export type OpenaiWebAskAttachment = components['schemas']['OpenaiWebAskAttachment'];
 
 export const chatStatusMap = {
   asking: 'commons.askingChatStatus',

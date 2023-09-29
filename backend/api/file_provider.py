@@ -29,7 +29,7 @@ class FileProvider:
         file_path = file_dir_path / file_name
 
         if not file_dir_path.exists():
-            file_dir_path.mkdir()
+            file_dir_path.mkdir(parents=True)
 
         async with aiofiles.open(file_path, "wb") as buffer:
             while True:

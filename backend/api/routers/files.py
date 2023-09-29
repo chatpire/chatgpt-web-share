@@ -23,7 +23,7 @@ file_provider = FileProvider()
 openai_web_manager = OpenaiWebChatManager()
 
 
-@router.post("/files/local/upload/", tags=["files"], response_model=UploadedFileInfoSchema)
+@router.post("/files/local/upload", tags=["files"], response_model=UploadedFileInfoSchema)
 async def upload_file_to_local(file: UploadFile = File(...), user: User = Depends(current_active_user)):
     """
     上传文件到服务器。文件将被保存在服务器上，返回文件信息。
@@ -58,13 +58,14 @@ async def download_file_from_local(file_id: uuid.UUID, user: User = Depends(curr
     return FileResponse(file_path, filename=file_info.original_filename)
 
 
-@router.post("/files/openai-web/upload/", tags=["files"], response_model=StartUploadResponseSchema)
+@router.post("/files/openai-web/upload-start", tags=["files"], response_model=StartUploadResponseSchema)
 async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: User = Depends(current_active_user)):
     """
-    要上传文件到 OpenAI Web，前端需要先调用此接口
-    1. 若最终上传方法是前端直接上传，则获取上传地址并记录文件信息；
-    2. 否则前端应当先调用 /files/local/upload/ 接口上传文件到服务器，
-       再调用 /files/local/upload-to-openai/{file_id} 接口上传文件到 OpenAI Web
+    要上传文件到 OpenAI Web，前端需要先调用此接口.
+    1. 若最终上传方法是前端直接上传 (Browser -> Azure Blob)，则获取上传地址并记录文件信息，响应中 upload_file_info 不为空
+    2. 否则的话就是服务端中转上传（Browser -> Local -> Azure Blob，此时响应中 upload_file_info 为空，前端应当:
+        a. 先调用 upload_file_to_local 接口上传文件到服务器，拿到文件的 uuid
+        b. 再调用 upload_local_file_to_openai_web 接口，通知服务器上传文件到 OpenAI Web
     """
     file_size_exceed = upload_info.file_size > config.data.max_file_upload_size
     if upload_info.use_case != "ace_upload":
@@ -76,9 +77,9 @@ async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: Us
 
     file_info = None
 
+    # 浏览器直接上传
     if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.browser_upload_only or \
-            config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.browser_upload_when_file_size_exceed and (
-            not file_size_exceed):
+            config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.browser_upload_when_file_size_exceed and file_size_exceed:
         response = await openai_web_manager.get_file_upload_url(upload_info)
         file_info = UploadedFileInfoSchema(
             id=uuid.uuid4(),
@@ -105,7 +106,7 @@ async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: Us
     )
 
 
-@router.post("/files/openai-web/upload-complete/", tags=["files"], response_model=UploadedFileInfoSchema)
+@router.post("/files/openai-web/upload-complete/{file_id}", tags=["files"], response_model=UploadedFileInfoSchema)
 async def complete_upload_to_openai(file_id: uuid.UUID, user: User = Depends(current_active_user)):
     async with get_async_session_context() as session:
         file_info = await file_provider.get_file_info(file_id, session)
@@ -133,8 +134,11 @@ async def complete_upload_to_openai(file_id: uuid.UUID, user: User = Depends(cur
         return UploadedFileInfoSchema.from_orm(file_info)
 
 
-@router.post("/files/local/upload-to-openai/{file_id}", tags=["files"], response_model=UploadedFileInfoSchema)
-async def upload_file_to_openai_web(file_id: uuid.UUID, user: User = Depends(current_active_user)):
+@router.post("/files/local/upload-to-openai-web/{file_id}", tags=["files"], response_model=UploadedFileInfoSchema)
+async def upload_local_file_to_openai_web(file_id: uuid.UUID, user: User = Depends(current_active_user)):
+    """
+    将服务器上已有的文件上传到 OpenAI Web（Azure blob）
+    """
     async with get_async_session_context() as session:
         file_info = await file_provider.get_file_info(file_id, session)
         if not file_info:

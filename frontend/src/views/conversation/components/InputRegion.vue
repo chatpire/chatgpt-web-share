@@ -76,8 +76,17 @@
         </template>
       </n-button>
     </div>
+
     <!-- 输入框 -->
-    <div class="mx-4 mb-4 flex flex-row space-x-2">
+    <div class="mx-4 mb-4 flex flex-row space-x-2 items-center">
+      <!-- 文件上传按钮 -->
+      <n-badge :value="uploadedFileInfos.length" :offset="[-6, 3]">
+        <n-button v-if="$props.enableFileUpload" strong secondary circle @click="showFileUpload = !showFileUpload">
+          <template #icon>
+            <n-icon><AttachFileFilled /></n-icon>
+          </template>
+        </n-button>
+      </n-badge>
       <n-input
         ref="inputRef"
         v-model:value="inputValue"
@@ -110,12 +119,18 @@
           {{ currentAvaliableAskCountsTip }}
         </n-text>
       </div> -->
+
+    <!-- 文件上传区域 -->
+    <div v-show="showFileUpload" class="mx-4 mb-4">
+      <FileUploadRegion ref="fileUploadRegionRef" v-model:uploaded-file-infos="uploadedFileInfos" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { LogoMarkdown, Print, Send, Stop } from '@vicons/ionicons5';
 import {
+  AttachFileFilled,
   DoubleArrowRound,
   FullscreenRound,
   KeyboardDoubleArrowDownRound,
@@ -126,10 +141,18 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAppStore } from '@/store';
+import { UploadedFileInfoSchema } from '@/types/schema';
+import { Message } from '@/utils/tips';
+
+import FileUploadRegion from './FileUploadRegion.vue';
 
 const themeVars = useThemeVars();
 const appStore = useAppStore();
 const { t } = useI18n();
+
+const fileUploadRegionRef = ref<InstanceType<typeof FileUploadRegion>>();
+
+const showFileUpload = ref<boolean>(false);
 
 const props = defineProps<{
   canAbort: boolean;
@@ -137,7 +160,13 @@ const props = defineProps<{
   sendDisabled: boolean;
   inputValue: string;
   autoScrolling: boolean;
+  enableFileUpload: boolean;
+  uploadedFileInfos: UploadedFileInfoSchema[];
 }>();
+
+const sendDisabled = computed(() => {
+  return props.sendDisabled || fileUploadRegionRef?.value?.isUploading;
+});
 
 const autoScrolling = computed({
   get() {
@@ -169,6 +198,15 @@ const inputValue = computed({
   },
 });
 
+const uploadedFileInfos = computed({
+  get() {
+    return props.uploadedFileInfos;
+  },
+  set(value) {
+    emits('update:uploaded-file-infos', value);
+  },
+});
+
 const emits = defineEmits<{
   (e: 'abort-request'): void;
   (e: 'continue-generating'): void;
@@ -178,6 +216,7 @@ const emits = defineEmits<{
   (e: 'show-fullscreen-history'): void;
   (e: 'update:auto-scrolling', value: boolean): void;
   (e: 'update:input-value', value: string): void;
+  (e: 'update:uploaded-file-infos', value: UploadedFileInfoSchema[]): void;
 }>();
 
 const toggleInputExpanded = () => {
@@ -185,6 +224,7 @@ const toggleInputExpanded = () => {
 };
 
 const shortcutSendMsg = (e: KeyboardEvent) => {
+  if (sendDisabled.value) return;
   const sendKey = appStore.preference.sendKey; // "Shift+Enter" or "Ctrl+Enter" or "Enter"
   if (sendKey === 'Enter' && e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.isComposing) {
     e.preventDefault();
