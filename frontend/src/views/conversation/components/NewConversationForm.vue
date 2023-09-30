@@ -4,7 +4,9 @@
       <n-form-item :label="t('labels.title')">
         <n-input v-model:value="newConversationInfo.title" />
       </n-form-item>
-      <!-- Source selection removed -->
+      <n-form-item :label="t('labels.source')">
+        <n-select v-model:value="newConversationInfo.source" :options="availableChatSourceTypes" />
+      </n-form-item>
       <n-form-item :label="t('labels.model')">
         <n-select v-model:value="newConversationInfo.model" :options="availableModels" />
       </n-form-item>
@@ -41,24 +43,6 @@ import { Message } from '@/utils/tips';
 
 import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
 
-//////
-import { MdPeople } from '@vicons/ionicons4';
-import { EventBusyFilled, QueueFilled } from '@vicons/material';
-import { getServerStatusApi } from '@/api/status';
-import { CommonStatusSchema } from '@/types/schema';
-
-const serverStatus = ref<CommonStatusSchema>({});
-
-const updateData = () => {
-  getServerStatusApi().then((res) => {
-    // console.log(res.data);
-    serverStatus.value = res.data;
-  });
-};
-updateData();
-
-///////
-  
 const t = i18n.global.t as any;
 
 const userStore = useUserStore();
@@ -67,25 +51,48 @@ const emits = defineEmits<{
   (e: 'input', newConversationInfo: NewConversationInfo): void;
 }>();
 
+const availableChatSourceTypes = computed<SelectOption[]>(() => {
+  if (!userStore.user) {
+    return [];
+  }
+  return [
+    {
+      label: t('sources_short.openai_web'),
+      value: 'openai_web',
+      disabled: !userStore.user.setting.openai_web.allow_to_use,
+    },
+    {
+      label: t('sources_short.openai_api'),
+      value: 'openai_api',
+      disabled: !userStore.user.setting.openai_api.allow_to_use,
+    },
+  ];
+});
+
+const newConversationInfo = ref<NewConversationInfo>({
+  title: null,
+  source: availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as string) : null,
+  model: null,
+  openaiWebPlugins: null,
+});
+
 const availableModels = computed<SelectOption[]>(() => {
   if (!userStore.user) {
     return [];
   }
-  return userStore.user.setting.openai_web.available_models.map((model) => ({
-    label: t(`models.${model}`),
-    value: model,
-  }));
+  if (newConversationInfo.value.source === 'openai_web') {
+    return userStore.user.setting.openai_web.available_models.map((model) => ({
+      label: t(`models.${model}`),
+      value: model,
+    }));
+  } else {
+    return userStore.user.setting.openai_api.available_models.map((model) => ({
+      label: t(`models.${model}`),
+      value: model,
+    }));
+  }
 });
 
-const defaultModel = 'gpt_3_5';
-
-const newConversationInfo = ref<NewConversationInfo>({
-  title: null,
-  source: 'openai_web',
-  model: 'gpt_3_5',
-  openaiWebPlugins: null,
-});
- 
 const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
 const loadingPlugins = ref<boolean>(false);
 
@@ -105,7 +112,7 @@ const pluginOptions = computed<SelectOption[]>(() => {
   }));
 });
 
-  function renderPluginSelectionLabel(option: SelectOption) {
+function renderPluginSelectionLabel(option: SelectOption) {
   const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
   return h(NewConversationFormSelectionPluginLabel, {
     plugin,
@@ -164,14 +171,10 @@ watch(
 
 watch(
   () => {
-    const model = newConversationInfo.value.model;
-    const gpt4Count = serverStatus.value?.gpt4_count_in_3_hours ?? 0;
-    const source = (model === 'gpt_4' && gpt4Count > 40) ? 'openai_api' : (model === 'gpt_4') ? 'openai_web' : 'openai_web'; // If GPT Usage is high, then use APIs
-    
     return {
       title: newConversationInfo.value.title,
-      source: source,
-      model: model,
+      source: newConversationInfo.value.source,
+      model: newConversationInfo.value.model,
       openaiWebPlugins: newConversationInfo.value.openaiWebPlugins,
     } as NewConversationInfo;
   },
@@ -188,5 +191,4 @@ watch(
     newConversationInfo.value.model = null;
   }
 );
-
 </script>
