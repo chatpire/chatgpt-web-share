@@ -78,7 +78,7 @@
     </div>
 
     <!-- 输入框 -->
-    <div class="mx-4 mb-4 flex flex-row space-x-2 items-center">
+    <div class="mx-12 mb-12 flex flex-row space-x-2 items-center">
       <!-- 文件上传按钮 -->
       <n-badge :value="uploadedFileInfos.length" :offset="[-6, 3]">
         <n-button v-if="$props.enableFileUpload" strong secondary circle @click="showFileUpload = !showFileUpload">
