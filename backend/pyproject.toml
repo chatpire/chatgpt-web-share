@@ -30,6 +30,7 @@ strenum = "^0.4.15"
 pydantic = "^1.10.9"
 aiofiles = "^23.2.1"
 aiohttp = "^3.8.5"
+fastapi-cache2 = "^0.2.1"
 
 
 [build-system]

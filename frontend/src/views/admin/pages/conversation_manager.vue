@@ -98,10 +98,9 @@ const checkedRowKeys = ref<Array<string>>([]);
 const refreshData = () => {
   getAdminAllConversationsApi(false).then((res) => {
     data.value = res.data;
+    Message.success(t('tips.refreshed'));
   });
 };
-
-refreshData();
 
 const syncConversations = () => {
   const d = Dialog.info({
@@ -407,4 +406,8 @@ const handleClearAllConversations = () => {
     },
   });
 };
+
+getAdminAllConversationsApi(false).then((res) => {
+  data.value = res.data;
+});
 </script>
