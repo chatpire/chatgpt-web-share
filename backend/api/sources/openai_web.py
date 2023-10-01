@@ -20,7 +20,7 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
-    OpenaiWebChatMessageExecutionOutputContent
+    OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent
 from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
@@ -45,6 +45,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         content_type = item["message"]["content"].get("content_type")
         content_map = {
             "text": OpenaiWebChatMessageTextContent,
+            "multimodal_text": OpenaiWebChatMessageMultimodalTextContent,
             "code": OpenaiWebChatMessageCodeContent,
             "execution_output": OpenaiWebChatMessageExecutionOutputContent,
             "stderr": OpenaiWebChatMessageStderrContent,
