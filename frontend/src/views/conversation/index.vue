@@ -171,7 +171,7 @@ const currentRecvMessages = ref<BaseChatMessage[]>([]);
 
 const uploadedFileInfos = ref<UploadedFileInfoSchema[]>([]);
 const isFileUploadAvailable = computed(() => {
-  return isCurrentNewConversation.value && currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4_code_interpreter';
+  return currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4_code_interpreter';
 });
 
 // 实际的 currentMessageList，加上当前正在发送的消息
@@ -408,6 +408,7 @@ const sendMsg = async () => {
         currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
         await conversationStore.fetchAllConversations();
         conversationStore.removeNewConversation();
+        hasNewConversation.value = false;
         console.log('done', allNewMessages, currentConversationId.value);
       }
     } else {

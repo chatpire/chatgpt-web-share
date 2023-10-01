@@ -136,7 +136,7 @@ async def _check_response(response: httpx.Response) -> None:
 
 
 def make_session() -> httpx.AsyncClient:
-    if config.openai_web.proxy is not None:
+    if config.openai_web.proxy is not None and config.openai_web.proxy != "":
         proxies = {
             "http://": config.openai_web.proxy,
             "https://": config.openai_web.proxy,
@@ -265,7 +265,6 @@ class OpenaiWebChatManager:
             messages = [
                 {
                     "id": str(uuid.uuid4()),
-                    "role": "user",
                     "author": {"role": "user"},
                     "content": content.dict(),
                     "metadata": {}
