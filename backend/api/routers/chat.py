@@ -372,7 +372,9 @@ async def chat(websocket: WebSocket):
             401: "errors.openai.401",
             403: "errors.openai.403",
             404: "errors.openai.404",
+            418: "errors.openai.418",
             429: "errors.openai.429",
+            500: "errors.openai.500",
         }
         if e.code in error_detail_map:
             tip = error_detail_map[e.code]
@@ -571,6 +573,6 @@ async def chat(websocket: WebSocket):
                 ask_time=ask_time,
             ).create()
 
-        websocket.scope["ask_websocket_close_code"] = websocket_code
-        websocket.scope["ask_websocket_close_reason"] = websocket_reason
-        await websocket.close(websocket_code, websocket_reason)
+    websocket.scope["ask_websocket_close_code"] = websocket_code
+    websocket.scope["ask_websocket_close_reason"] = websocket_reason
+    await websocket.close(websocket_code, websocket_reason)
