@@ -20,7 +20,7 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
-    OpenaiWebChatMessageExecutionOutputContent
+    OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent
 from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
@@ -45,6 +45,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         content_type = item["message"]["content"].get("content_type")
         content_map = {
             "text": OpenaiWebChatMessageTextContent,
+            "multimodal_text": OpenaiWebChatMessageMultimodalTextContent,
             "code": OpenaiWebChatMessageCodeContent,
             "execution_output": OpenaiWebChatMessageExecutionOutputContent,
             "stderr": OpenaiWebChatMessageStderrContent,
@@ -136,7 +137,7 @@ async def _check_response(response: httpx.Response) -> None:
 
 
 def make_session() -> httpx.AsyncClient:
-    if config.openai_web.proxy is not None:
+    if config.openai_web.proxy is not None and config.openai_web.proxy != "":
         proxies = {
             "http://": config.openai_web.proxy,
             "https://": config.openai_web.proxy,
@@ -265,7 +266,6 @@ class OpenaiWebChatManager:
             messages = [
                 {
                     "id": str(uuid.uuid4()),
-                    "role": "user",
                     "author": {"role": "user"},
                     "content": content.dict(),
                     "metadata": {}
