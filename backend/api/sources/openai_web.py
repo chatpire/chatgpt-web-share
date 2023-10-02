@@ -230,7 +230,7 @@ class OpenaiWebChatManager:
     async def clear_conversations(self):
         # await self.chatbot.clear_conversations()
         url = f"{config.openai_web.chatgpt_base_url}conversations"
-        response = await self.session.patch(url, data={"is_visible": False})
+        response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
@@ -320,19 +320,19 @@ class OpenaiWebChatManager:
     async def delete_conversation(self, conversation_id: str):
         # await self.chatbot.delete_conversation(conversation_id)
         url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
-        response = await self.session.patch(url, data='{"is_visible": false}')
+        response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
     async def set_conversation_title(self, conversation_id: str, title: str):
         url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
-        response = await self.session.patch(url, data=f'{{"title": "{title}"}}')
+        response = await self.session.patch(url, json={"title": title})
         await _check_response(response)
 
     async def generate_conversation_title(self, conversation_id: str, message_id: str):
         url = f"{config.openai_web.chatgpt_base_url}conversation/gen_title/{conversation_id}"
         response = await self.session.post(
             url,
-            data=json.dumps({"message_id": message_id, "model": "text-davinci-002-render"}),
+            json={"message_id": message_id, "model": "text-davinci-002-render"},
         )
         await _check_response(response)
 

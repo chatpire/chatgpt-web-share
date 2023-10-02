@@ -98,7 +98,6 @@ const checkedRowKeys = ref<Array<string>>([]);
 const refreshData = () => {
   getAdminAllConversationsApi(false).then((res) => {
     data.value = res.data;
-    Message.success(t('tips.refreshed'));
   });
 };
 
