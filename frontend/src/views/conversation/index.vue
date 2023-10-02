@@ -111,6 +111,7 @@ import {
   BaseConversationHistory,
   BaseConversationSchema,
   OpenaiWebAskAttachment,
+  OpenaiWebChatMessageMetadata,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
@@ -257,17 +258,24 @@ const scrollToBottomSmooth = () => {
   });
 };
 
-function buildTemporaryMessage(role: string, content: string, parent: string | undefined, model: string | undefined) {
+function buildTemporaryMessage(role: string, content: string, parent: string | undefined, model: string | undefined, openaiWebAttachments: OpenaiWebAskAttachment[] | null = null) {
   const random_strid = Math.random().toString(36).substring(2, 16);
-  return {
+  const result = {
     id: `temp_${random_strid}`,
     source: currentConversation.value!.source,
     content,
     role: role,
     parent, // 其实没有用到parent
     children: [],
-    model,
-  };
+    model
+  } as BaseChatMessage;
+  if (openaiWebAttachments) {
+    const metadata = {
+      attachments: openaiWebAttachments
+    } as OpenaiWebChatMessageMetadata;
+    result.metadata = metadata;
+  }
+  return result;
 }
 
 const sendMsg = async () => {
@@ -327,7 +335,8 @@ const sendMsg = async () => {
       'user',
       text,
       currentConvHistory.value?.current_node,
-      currentConversation.value!.current_model!
+      currentConversation.value!.current_model!,
+      attachments
     );
     currentRecvMessages.value = [
       buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!),
@@ -362,7 +371,10 @@ const sendMsg = async () => {
         hasGotReply = true;
       }
       const message = response.message as BaseChatMessage;
-      if (message.role !== 'user') {
+      if (message.role == 'user') {
+        console.log('got message', message);
+        currentSendMessage.value = message;
+      } else {
         const index = currentRecvMessages.value.findIndex((msg) => msg.id === message.id);
         if (index === -1) {
           currentRecvMessages.value.push(message);
