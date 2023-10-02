@@ -8,6 +8,8 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 from pydantic import EmailStr
 from sqlalchemy import select
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -78,6 +80,8 @@ async def validation_exception_handler(request, exc):
 async def on_startup():
     await initialize_db()
     await init_mongodb()
+
+    FastAPICache.init(InMemoryBackend())
 
     g.startup_time = time.time()
 

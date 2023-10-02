@@ -3,9 +3,9 @@
     <template #header>
       <div class="flex flex-row space-x-2">
         <n-text>{{ t('commons.serverOverview') }}</n-text>
-        <n-button text @click="emits('refresh')">
+        <n-button text @click="refresh">
           <template #icon>
-            <n-icon>
+            <n-icon :class="{ spin: isSpinning }">
               <RefreshFilled />
             </n-icon>
           </template>
@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { RefreshFilled } from '@vicons/material';
-import { computed } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { CommonStatusSchema, SystemInfo } from '@/types/schema';
@@ -43,6 +43,22 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: 'refresh'): void;
 }>();
+
+const isSpinning = ref(false);
+
+const refresh = async () => {
+  isSpinning.value = true;
+
+  // Trigger the animation and wait for the next DOM update
+  await nextTick();
+
+  // After the animation plays, reset the spinning state
+  setTimeout(() => {
+    isSpinning.value = false;
+  }, 1000);  // Adjust the timeout to match the animation duration
+
+  emits('refresh');
+};
 
 function hoursSince(timestamp?: number) {
   if (!timestamp) {
@@ -72,7 +88,7 @@ const statistics = computed(() => {
       label: t('labels.gpt4_count_in_3_hours'),
       value: props.serverStatus?.gpt4_count_in_3_hours,
       prefixIcon: null,
-      suffix: '/ 25',
+      suffix: '',
     },
     {
       label: t('commons.chatbotStatus'),
@@ -93,3 +109,14 @@ const statistics = computed(() => {
   ];
 });
 </script>
+
+<style scoped>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s ease-in-out;
+}
+</style>

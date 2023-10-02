@@ -85,6 +85,18 @@ class OpenaiWebChatMessageTextContent(BaseModel):
     parts: Optional[list[str]]
 
 
+class OpenaiWebChatMessageMultimodalTextContentImagePart(BaseModel):
+    asset_pointer: Optional[str]
+    size_bytes: Optional[int]
+    width: Optional[int]
+    height: Optional[int]
+
+
+class OpenaiWebChatMessageMultimodalTextContent(BaseModel):
+    content_type: Literal['multimodal_text']
+    parts: Optional[list[str | OpenaiWebChatMessageMultimodalTextContentImagePart | Any]]
+
+
 class OpenaiWebChatMessageCodeContent(BaseModel):
     content_type: Literal['code']
     language: Optional[str]
@@ -123,6 +135,7 @@ class OpenaiWebChatMessageSystemErrorContent(BaseModel):
 OpenaiWebChatMessageContent = Annotated[
     Union[
         OpenaiWebChatMessageTextContent,
+        OpenaiWebChatMessageMultimodalTextContent,
         OpenaiWebChatMessageCodeContent,
         OpenaiWebChatMessageExecutionOutputContent,
         OpenaiWebChatMessageStderrContent,

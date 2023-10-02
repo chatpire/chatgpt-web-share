@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 
 from fastapi import Depends, APIRouter
+from fastapi_cache.decorator import cache
 
 from api.models.db import User
 from api.models.doc import AskLogDocument
 from api.routers.conv import openai_web_manager
-from api.routers.system import check_users
+from api.routers.system import count_active_users_cached, count_active_users
 from api.schemas.status_schemas import CommonStatusSchema
 from api.users import current_active_user
 from api.enums import OpenaiWebChatModels
@@ -16,10 +17,14 @@ logger = get_logger(__name__)
 
 
 @router.get("/status/common", tags=["status"], response_model=CommonStatusSchema)
+@cache(expire=60)
 async def get_server_status(_user: User = Depends(current_active_user)):
     """普通用户获取服务器状态"""
-    refresh_cache = _user.is_superuser
-    active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, _ = await check_users(refresh_cache)
+    if _user.is_superuser:
+        result = await count_active_users()
+    else:
+        result = await count_active_users_cached()
+    active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, _ = result
     pipeline = [
         {
             '$facet': {
