@@ -272,7 +272,8 @@
     "NewConversationForm": {
       "failedToGetPlugins": "Failed to get list of plugins",
       "loadingPlugins": "Loading plugins...",
-      "selectPlugins": "select plugin"
+      "selectPlugins": "select plugin",
+      "leaveBlankToGenerateTitle": "Leave blank to automatically generate"
     },
     "openaiWebPluginsLengthMoreThan3": "The number of plugins cannot exceed 3"
   },

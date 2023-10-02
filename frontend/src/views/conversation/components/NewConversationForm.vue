@@ -2,7 +2,7 @@
   <div class="mt-6">
     <n-form :label-placement="'left'" :label-align="'left'" label-width="100px">
       <n-form-item :label="t('labels.title')">
-        <n-input v-model:value="newConversationInfo.title" />
+        <n-input v-model:value="newConversationInfo.title" :placeholder="t('tips.NewConversationForm.leaveBlankToGenerateTitle')" />
       </n-form-item>
       <n-form-item :label="t('labels.source')">
         <n-select v-model:value="newConversationInfo.source" :options="availableChatSourceTypes" />

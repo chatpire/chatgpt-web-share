@@ -101,6 +101,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getAskWebsocketApiUrl } from '@/api/chat';
+import { generateConversationTitleApi } from '@/api/conv';
 import { useAppStore, useConversationStore, useFileStore, useUserStore } from '@/store';
 import { newConversationId } from '@/store/modules/conversation';
 import { NewConversationInfo } from '@/types/custom';
@@ -227,8 +228,8 @@ const makeNewConversation = () => {
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
     console.log('makeNewConversation', newConversationInfo);
     if (!newConversationInfo.source || !newConversationInfo.model) return;
-    newConversationInfo.title =
-      newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
+    // newConversationInfo.title =
+    //   newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
     hasNewConversation.value = true;
@@ -320,7 +321,7 @@ const sendMsg = async () => {
     openai_web_attachments: attachments || null,
   };
   if (conversationStore.newConversation) {
-    askRequest.new_title = conversationStore.newConversation.title;
+    askRequest.new_title = conversationStore.newConversation.title || ''; // 这里可能为空串，表示需要生成标题
   } else {
     askRequest.conversation_id = currentConversationId.value!;
     askRequest.parent = currentConvHistory.value.current_node;
@@ -409,7 +410,21 @@ const sendMsg = async () => {
           allNewMessages.push(msg);
         }
 
-        if (currentConversationId.value == newConversationId) {
+        // 更新对话信息，恢复正常状态
+        if (isCurrentNewConversation.value) {
+          // 尝试生成标题
+          if (askRequest.new_title == undefined || askRequest.new_title.length == 0) {
+            const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
+            console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
+            try {
+              const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
+               currentConvHistory.value!.title = response.data;
+            }
+            catch (err) {
+              console.error('Failed to generate conversation title', err);
+            }
+          }
+
           const newConvHistory = {
             _id: respConversationId!,
             source: 'openai_web',
@@ -431,12 +446,14 @@ const sendMsg = async () => {
         currentSendMessage.value = null;
         currentRecvMessages.value = [];
         currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
+        
+        // 清除附件
+        fileStore.clearAll();
+        
         await conversationStore.fetchAllConversations();
         conversationStore.removeNewConversation();
         hasNewConversation.value = false;
         console.log('done', allNewMessages, currentConversationId.value);
-
-        fileStore.clearAll();
       }
     } else {
       let content = '';
