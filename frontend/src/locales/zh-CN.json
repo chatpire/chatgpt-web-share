@@ -215,7 +215,8 @@
       "429": "OpenAI 接口请求过于频繁 (429 错误)，可能是超过模型使用限制，请稍后再试",
       "unkown": "OpenAI 未知错误，请联系管理员处理"
     },
-    "unknown": "未知错误"
+    "unknown": "未知错误",
+    "invalidRequest": "非法请求"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",

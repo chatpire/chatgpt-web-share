@@ -76,7 +76,6 @@
         <InputRegion
           v-model:input-value="inputValue"
           v-model:auto-scrolling="autoScrolling"
-          v-model:uploaded-file-infos="uploadedFileInfos"
           class="sticky bottom-0 z-10"
           :can-abort="canAbort"
           :can-continue="!loadingAsk && canContinue"
@@ -96,13 +95,13 @@
 
 <script setup lang="ts">
 import { ArrowDown, ChatboxEllipses } from '@vicons/ionicons5';
-import { RemovableRef, useStorage } from '@vueuse/core';
+import { useStorage } from '@vueuse/core';
 import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getAskWebsocketApiUrl } from '@/api/chat';
-import { useAppStore, useConversationStore, useUserStore } from '@/store';
+import { useAppStore, useConversationStore, useFileStore, useUserStore } from '@/store';
 import { newConversationId } from '@/store/modules/conversation';
 import { NewConversationInfo } from '@/types/custom';
 import {
@@ -112,7 +111,6 @@ import {
   BaseConversationHistory,
   BaseConversationSchema,
   OpenaiWebAskAttachment,
-  UploadedFileInfoSchema,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
@@ -134,6 +132,7 @@ const rootRef = ref();
 const historyRef = ref();
 const userStore = useUserStore();
 const appStore = useAppStore();
+const fileStore = useFileStore();
 const conversationStore = useConversationStore();
 
 const loadingAsk = ref(false);
@@ -153,8 +152,7 @@ const isCurrentNewConversation = computed<boolean>(() => {
   return currentConversationId.value?.startsWith('new_conversation') || false;
 });
 const currentConversation = computed<BaseConversationSchema | null>(() => {
-  if (isCurrentNewConversation.value)
-    return conversationStore.newConversation;
+  if (isCurrentNewConversation.value) return conversationStore.newConversation;
   const conv = conversationStore.conversations?.find((conversation: BaseConversationSchema) => {
     return conversation.conversation_id == currentConversationId.value;
   });
@@ -169,9 +167,11 @@ const inputValue = ref('');
 const currentSendMessage = ref<BaseChatMessage | null>(null);
 const currentRecvMessages = ref<BaseChatMessage[]>([]);
 
-const uploadedFileInfos = ref<UploadedFileInfoSchema[]>([]);
 const isFileUploadAvailable = computed(() => {
-  return currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4_code_interpreter';
+  return (
+    currentConversation.value?.source === 'openai_web' &&
+    currentConversation.value.current_model == 'gpt_4_code_interpreter'
+  );
 });
 
 // 实际的 currentMessageList，加上当前正在发送的消息
@@ -226,7 +226,8 @@ const makeNewConversation = () => {
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
     console.log('makeNewConversation', newConversationInfo);
     if (!newConversationInfo.source || !newConversationInfo.model) return;
-    newConversationInfo.title = newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
+    newConversationInfo.title =
+      newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
     hasNewConversation.value = true;
@@ -265,7 +266,7 @@ function buildTemporaryMessage(role: string, content: string, parent: string | u
     role: role,
     parent, // 其实没有用到parent
     children: [],
-    model
+    model,
   };
 }
 
@@ -286,14 +287,17 @@ const sendMsg = async () => {
   let hasGotReply = false;
 
   let attachments = [] as OpenaiWebAskAttachment[];
-  if (isFileUploadAvailable.value && uploadedFileInfos.value.length > 0) {
-    attachments = uploadedFileInfos.value.filter((info) => info.openai_web_info && info.openai_web_info.file_id).map((info) => {
-      return {
-        id: info.openai_web_info!.file_id!,
-        name: info.original_filename,
-        size: info.size,
-      };
-    });
+  const uploadedFileInfos = fileStore.attachments.uploadedFileInfos;
+  if (isFileUploadAvailable.value && uploadedFileInfos.length > 0) {
+    attachments = uploadedFileInfos
+      .filter((info) => info.openai_web_info && info.openai_web_info.file_id)
+      .map((info) => {
+        return {
+          id: info.openai_web_info!.file_id!,
+          name: info.original_filename,
+          size: info.size,
+        };
+      });
   }
 
   const askRequest: AskRequest = {
@@ -301,7 +305,10 @@ const sendMsg = async () => {
     new_conversation: isCurrentNewConversation.value,
     model: currentConversation.value!.current_model!,
     content: text,
-    openai_web_plugin_ids: currentConvHistory.value!.metadata?.source === 'openai_web' ? currentConvHistory.value!.metadata?.plugin_ids : undefined,
+    openai_web_plugin_ids:
+      currentConvHistory.value!.metadata?.source === 'openai_web'
+        ? currentConvHistory.value!.metadata?.plugin_ids
+        : undefined,
     openai_web_attachments: attachments || null,
   };
   if (conversationStore.newConversation) {
@@ -315,10 +322,16 @@ const sendMsg = async () => {
   if (text == ':continue') {
     currentSendMessage.value = null;
     currentRecvMessages.value = [];
-  }
-  else {
-    currentSendMessage.value = buildTemporaryMessage('user', text, currentConvHistory.value?.current_node, currentConversation.value!.current_model!);
-    currentRecvMessages.value = [buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!)];
+  } else {
+    currentSendMessage.value = buildTemporaryMessage(
+      'user',
+      text,
+      currentConvHistory.value?.current_node,
+      currentConversation.value!.current_model!
+    );
+    currentRecvMessages.value = [
+      buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!),
+    ];
   }
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
@@ -364,6 +377,7 @@ const sendMsg = async () => {
       hasError = true;
       console.error('websocket received error message', response);
       wsErrorMessage = response;
+      // TODO Message error
     }
     if (autoScrolling.value) scrollToBottom();
   };
@@ -378,7 +392,6 @@ const sendMsg = async () => {
         let allNewMessages = [] as BaseChatMessage[];
         if (currentSendMessage.value) {
           allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
-          
         }
         for (const msg of currentRecvMessages.value) {
           allNewMessages.push(msg);
@@ -410,6 +423,8 @@ const sendMsg = async () => {
         conversationStore.removeNewConversation();
         hasNewConversation.value = false;
         console.log('done', allNewMessages, currentConversationId.value);
+
+        fileStore.clearAll();
       }
     } else {
       let content = '';
