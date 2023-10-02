@@ -3,27 +3,7 @@
     <n-form :label-placement="'left'" :label-align="'left'" label-width="100px">
       <n-form-item :label="t('labels.title')">
         <n-input v-model:value="newConversationInfo.title" />
-      </n-form-item>
-      <!-- Source selection removed -->
-      <n-form-item :label="t('labels.model')">
-        <n-select v-model:value="newConversationInfo.model" :options="availableModels" />
-      </n-form-item>
-      <n-form-item
-        v-if="newConversationInfo.source === 'openai_web' && newConversationInfo.model === 'gpt_4_plugins'"
-        :label="t('labels.plugins')"
-      >
-        <n-select
-          v-model:value="newConversationInfo.openaiWebPlugins"
-          :options="pluginOptions"
-          clearable
-          multiple
-          :placeholder="selectPluginPlaceholder"
-          :loading="loadingPlugins"
-          :disabled="loadingPlugins"
-          :render-label="renderPluginSelectionLabel"
-          :render-tag="renderPluginSelectionTag"
-        />
-      </n-form-item>
+      </n-form-item>    
     </n-form>
   </div>
 </template>
@@ -41,24 +21,6 @@ import { Message } from '@/utils/tips';
 
 import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
 
-//////
-import { MdPeople } from '@vicons/ionicons4';
-import { EventBusyFilled, QueueFilled } from '@vicons/material';
-import { getServerStatusApi } from '@/api/status';
-import { CommonStatusSchema } from '@/types/schema';
-
-const serverStatus = ref<CommonStatusSchema>({});
-
-const updateData = () => {
-  getServerStatusApi().then((res) => {
-    // console.log(res.data);
-    serverStatus.value = res.data;
-  });
-};
-updateData();
-
-///////
-  
 const t = i18n.global.t as any;
 
 const userStore = useUserStore();
@@ -81,7 +43,7 @@ const defaultModel = 'gpt_3_5';
 
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,
-  source: 'openai_web',
+  source: 'openai_api',
   model: 'gpt_3_5',
   openaiWebPlugins: null,
 });
@@ -165,8 +127,7 @@ watch(
 watch(
   () => {
     const model = newConversationInfo.value.model;
-    const gpt4Count = serverStatus.value?.gpt4_count_in_3_hours ?? 0;
-    const source = (model === 'gpt_4' && gpt4Count > 40) ? 'openai_api' : (model === 'gpt_4') ? 'openai_web' : 'openai_web'; // If GPT Usage is high, then use APIs
+    const source = (model === 'gpt_3_5' || model === 'gpt_4') ? 'openai_api' : 'openai_web';
     
     return {
       title: newConversationInfo.value.title,
@@ -188,5 +149,4 @@ watch(
     newConversationInfo.value.model = null;
   }
 );
-
 </script>
