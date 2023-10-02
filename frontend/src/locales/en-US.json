@@ -1,7 +1,7 @@
 {
   "commons": {
     "notLogin": "Not logged in",
-    "siteTitle": "ChatGPT",
+    "siteTitle": "Claude2",
     "confirm": "Confirm",
     "stayInCurrentPage": "Stay on this page",
     "username": "Username",
@@ -326,7 +326,7 @@
     }
   },
   "models": {
-    "gpt_3_5": "GPT-3.5",
+    "gpt_3_5": "Claude2",
     "gpt_3_5_mobile": "GPT-3.5 Mobile",
     "gpt_4": "GPT-4",
     "gpt_4_mobile": "GPT-4 Mobile",
@@ -336,11 +336,11 @@
   },
   "sources": {
     "openai_web": "OpenAI Web",
-    "openai_api": "OpenAI API"
+    "openai_api": "Anthropic"
   },
   "sources_short": {
     "openai_web": "Web",
-    "openai_api": "API"
+    "openai_api": "Anthropic"
   },
   "desc": {
     "daily_available_time_slots": "It is only allowed to be used during these time periods of the day, if it is empty, it means unlimited.",
