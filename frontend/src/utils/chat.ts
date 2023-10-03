@@ -7,6 +7,8 @@ import {
   OpenaiApiChatModels,
   OpenaiWebChatMessageCodeContent,
   OpenaiWebChatMessageMetadata,
+  OpenaiWebChatMessageMultimodalTextContent,
+  OpenaiWebChatMessageMultimodalTextContentImagePart,
   OpenaiWebChatMessageStderrContent,
   OpenaiWebChatMessageSystemErrorContent,
   OpenaiWebChatMessageTetherBrowsingDisplayContent,
@@ -76,9 +78,28 @@ export const getContentRawText = (message: BaseChatMessage | null): string => {
   } else if (message.content.content_type == 'system_error') {
     const content = message.content as OpenaiWebChatMessageSystemErrorContent;
     return `${content.name}: ${content.text}`;
-  } else {
+  } else if (message.content.content_type == 'multimodal_text') {
+    const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
+    for (const part of content.parts!) {
+      if (typeof part == 'string') return part;
+    }
+    return '';
+  }
+  else {
     return `${message.content}`;
   }
+};
+
+export const getMultimodalContentImageParts = (message: BaseChatMessage | null): OpenaiWebChatMessageMultimodalTextContentImagePart[] => {
+  if (!message || !message.content) return [];
+  if (typeof message.content == 'string') return [];
+  if (message.content.content_type == 'multimodal_text') {
+    const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
+    return content.parts!.filter((part) => {
+      return typeof part !== 'string';
+    }) as OpenaiWebChatMessageMultimodalTextContentImagePart[];
+  }
+  return [];
 };
 
 export function getMessageListFromHistory(

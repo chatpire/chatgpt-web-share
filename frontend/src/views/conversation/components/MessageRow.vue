@@ -32,9 +32,16 @@
           <div v-else-if="item.type == 'code'">
             <MessageRowCodeDisplay :messages="item.messages" />
           </div>
-        </div>
-        <div v-if="attachments.length != 0">
-          <MessageRowAttachmentDisplay :attachments="attachments" />
+          <div v-else-if="item.type == 'multimodal_text'">
+            <MessageRowMultimodalTextDisplay
+              :conversation-id="props.conversationId"
+              :render-markdown="renderMarkdown"
+              :messages="item.messages"
+            />
+          </div>
+          <div v-if="attachments.length != 0">
+            <MessageRowAttachmentDisplay :attachments="attachments" />
+          </div>
         </div>
       </div>
       <div class="flex w-full justify-end items-center space-x-4 pb-1">
@@ -114,6 +121,7 @@ import { Message } from '@/utils/tips';
 import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
 import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
+import MessageRowMultimodalTextDisplay from './MessageRowMultimodalTextDisplay.vue';
 import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
 const { t } = useI18n();
@@ -188,7 +196,7 @@ const relativeTimeString = computed<string>(() => {
   }
 });
 
-type DisplayItemType = 'text' | 'browser' | 'plugin' | 'code' | 'execution_output' | null;
+type DisplayItemType = 'text' | 'browser' | 'plugin' | 'code' | 'execution_output' | 'multimodal_text' | null;
 
 type DisplayItem = {
   type: DisplayItemType;
@@ -211,13 +219,19 @@ const displayItems = computed<DisplayItem[]>(() => {
       });
       continue;
     }
-    // user 发出的消息仅有 text 类型
+    // user 发出的消息仅有 text 或者 multimodal_text 类型
     if (group[0].role == 'user') {
       if (typeof group[0].content == 'string' || group[0].content?.content_type == 'text')
         result.push({
           type: 'text',
           messages: group,
         });
+      else if (group[0].content?.content_type == 'multimodal_text')
+        result.push({
+          type: 'multimodal_text',
+          messages: group,
+        });
+      else console.error('wrong content type in user group', group);
       continue;
     }
     // 适配新的临时对话
@@ -345,7 +359,8 @@ function copyMessageContent() {
 }
 
 @media print {
-  code, .code-result {
+  code,
+  .code-result {
     @apply max-w-160 !important
     @apply whitespace-pre-line;
   }
@@ -356,6 +371,10 @@ function copyMessageContent() {
 
 .markdown p {
   white-space: pre-line;
+}
+
+.markdown p:last-child {
+  margin-bottom: 0;
 }
 
 .markdown ol,

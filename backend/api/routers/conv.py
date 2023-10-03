@@ -221,12 +221,6 @@ async def get_conversation_interpreter_info(conversation_id: str):
     return response(200, result=url)
 
 
-@router.get("/conv/files/{file_id}/download-url", tags=["conversation"])
-async def get_file_download_url(file_id: str):
-    url = await openai_web_manager.get_file_download_url(file_id)
-    return response(200, result=url)
-
-
 @router.get("/conv/{conversation_id}/interpreter/download-url", tags=["conversation"])
 async def get_conversation_interpreter_download_url(conversation_id: str, message_id: str, sandbox_path: str):
     if message_id is None or sandbox_path is None:

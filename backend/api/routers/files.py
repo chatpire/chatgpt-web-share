@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from mimetypes import guess_type
 
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi_cache.decorator import cache
 from starlette.responses import FileResponse
 
 from api.conf import Config
@@ -21,6 +22,16 @@ config = Config()
 router = APIRouter()
 file_provider = FileProvider()
 openai_web_manager = OpenaiWebChatManager()
+
+
+@router.get("/files/{file_id}/download-url", tags=["conversation"], response_model=str)
+@cache(expire=60 * 60 * 24)
+async def get_file_download_url(file_id: str):
+    """
+    file_id: OpenAI 分配的 id，以 file- 开头
+    """
+    url = await openai_web_manager.get_file_download_url(file_id)
+    return url
 
 
 @router.post("/files/local/upload", tags=["files"], response_model=UploadedFileInfoSchema)
