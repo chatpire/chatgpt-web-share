@@ -388,6 +388,56 @@
                       "content_type": {
                         "type": "string",
                         "enum": [
+                          "multimodal_text"
+                        ],
+                        "title": "Content Type"
+                      },
+                      "parts": {
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "properties": {
+                                "asset_pointer": {
+                                  "type": "string",
+                                  "title": "Asset Pointer"
+                                },
+                                "size_bytes": {
+                                  "type": "integer",
+                                  "title": "Size Bytes"
+                                },
+                                "width": {
+                                  "type": "integer",
+                                  "title": "Width"
+                                },
+                                "height": {
+                                  "type": "integer",
+                                  "title": "Height"
+                                }
+                              },
+                              "type": "object",
+                              "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "array",
+                        "title": "Parts"
+                      }
+                    },
+                    "type": "object",
+                    "required": [
+                      "content_type"
+                    ],
+                    "title": "OpenaiWebChatMessageMultimodalTextContent"
+                  },
+                  {
+                    "properties": {
+                      "content_type": {
+                        "type": "string",
+                        "enum": [
                           "code"
                         ],
                         "title": "Content Type"
@@ -1497,6 +1547,56 @@
                   "content_type": {
                     "type": "string",
                     "enum": [
+                      "multimodal_text"
+                    ],
+                    "title": "Content Type"
+                  },
+                  "parts": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "properties": {
+                            "asset_pointer": {
+                              "type": "string",
+                              "title": "Asset Pointer"
+                            },
+                            "size_bytes": {
+                              "type": "integer",
+                              "title": "Size Bytes"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "title": "Width"
+                            },
+                            "height": {
+                              "type": "integer",
+                              "title": "Height"
+                            }
+                          },
+                          "type": "object",
+                          "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "array",
+                    "title": "Parts"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "content_type"
+                ],
+                "title": "OpenaiWebChatMessageMultimodalTextContent"
+              },
+              {
+                "properties": {
+                  "content_type": {
+                    "type": "string",
+                    "enum": [
                       "code"
                     ],
                     "title": "Content Type"
@@ -2155,6 +2255,56 @@
                         "content_type"
                       ],
                       "title": "OpenaiWebChatMessageTextContent"
+                    },
+                    {
+                      "properties": {
+                        "content_type": {
+                          "type": "string",
+                          "enum": [
+                            "multimodal_text"
+                          ],
+                          "title": "Content Type"
+                        },
+                        "parts": {
+                          "items": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "properties": {
+                                  "asset_pointer": {
+                                    "type": "string",
+                                    "title": "Asset Pointer"
+                                  },
+                                  "size_bytes": {
+                                    "type": "integer",
+                                    "title": "Size Bytes"
+                                  },
+                                  "width": {
+                                    "type": "integer",
+                                    "title": "Width"
+                                  },
+                                  "height": {
+                                    "type": "integer",
+                                    "title": "Height"
+                                  }
+                                },
+                                "type": "object",
+                                "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                              },
+                              {}
+                            ]
+                          },
+                          "type": "array",
+                          "title": "Parts"
+                        }
+                      },
+                      "type": "object",
+                      "required": [
+                        "content_type"
+                      ],
+                      "title": "OpenaiWebChatMessageMultimodalTextContent"
                     },
                     {
                       "properties": {
@@ -3257,6 +3407,11 @@
                 "title": "Mongodb Url",
                 "default": "mongodb://cws:password@mongo:27017"
               },
+              "mongodb_db_name": {
+                "type": "string",
+                "title": "Mongodb Db Name",
+                "default": "cws"
+              },
               "run_migration": {
                 "type": "boolean",
                 "title": "Run Migration",
@@ -3278,6 +3433,7 @@
           "data_dir": "./data",
           "database_url": "sqlite+aiosqlite:///data/database.db",
           "mongodb_url": "mongodb://cws:password@mongo:27017",
+          "mongodb_db_name": "cws",
           "run_migration": false,
           "max_file_upload_size": 104857600
         }
@@ -3453,6 +3609,11 @@
         "type": "string",
         "title": "Mongodb Url",
         "default": "mongodb://cws:password@mongo:27017"
+      },
+      "mongodb_db_name": {
+        "type": "string",
+        "title": "Mongodb Db Name",
+        "default": "cws"
       },
       "run_migration": {
         "type": "boolean",
@@ -5446,6 +5607,56 @@
               "content_type": {
                 "type": "string",
                 "enum": [
+                  "multimodal_text"
+                ],
+                "title": "Content Type"
+              },
+              "parts": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "properties": {
+                        "asset_pointer": {
+                          "type": "string",
+                          "title": "Asset Pointer"
+                        },
+                        "size_bytes": {
+                          "type": "integer",
+                          "title": "Size Bytes"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "title": "Width"
+                        },
+                        "height": {
+                          "type": "integer",
+                          "title": "Height"
+                        }
+                      },
+                      "type": "object",
+                      "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                    },
+                    {}
+                  ]
+                },
+                "type": "array",
+                "title": "Parts"
+              }
+            },
+            "type": "object",
+            "required": [
+              "content_type"
+            ],
+            "title": "OpenaiWebChatMessageMultimodalTextContent"
+          },
+          {
+            "properties": {
+              "content_type": {
+                "type": "string",
+                "enum": [
                   "code"
                 ],
                 "title": "Content Type"
@@ -6588,6 +6799,78 @@
     "type": "object",
     "title": "OpenaiWebChatMessageMetadataPlugin"
   },
+  "OpenaiWebChatMessageMultimodalTextContent": {
+    "properties": {
+      "content_type": {
+        "type": "string",
+        "enum": [
+          "multimodal_text"
+        ],
+        "title": "Content Type"
+      },
+      "parts": {
+        "items": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "properties": {
+                "asset_pointer": {
+                  "type": "string",
+                  "title": "Asset Pointer"
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "title": "Size Bytes"
+                },
+                "width": {
+                  "type": "integer",
+                  "title": "Width"
+                },
+                "height": {
+                  "type": "integer",
+                  "title": "Height"
+                }
+              },
+              "type": "object",
+              "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+            },
+            {}
+          ]
+        },
+        "type": "array",
+        "title": "Parts"
+      }
+    },
+    "type": "object",
+    "required": [
+      "content_type"
+    ],
+    "title": "OpenaiWebChatMessageMultimodalTextContent"
+  },
+  "OpenaiWebChatMessageMultimodalTextContentImagePart": {
+    "properties": {
+      "asset_pointer": {
+        "type": "string",
+        "title": "Asset Pointer"
+      },
+      "size_bytes": {
+        "type": "integer",
+        "title": "Size Bytes"
+      },
+      "width": {
+        "type": "integer",
+        "title": "Width"
+      },
+      "height": {
+        "type": "integer",
+        "title": "Height"
+      }
+    },
+    "type": "object",
+    "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+  },
   "OpenaiWebChatMessageStderrContent": {
     "properties": {
       "content_type": {
@@ -6862,6 +7145,56 @@
                     "content_type"
                   ],
                   "title": "OpenaiWebChatMessageTextContent"
+                },
+                {
+                  "properties": {
+                    "content_type": {
+                      "type": "string",
+                      "enum": [
+                        "multimodal_text"
+                      ],
+                      "title": "Content Type"
+                    },
+                    "parts": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "properties": {
+                              "asset_pointer": {
+                                "type": "string",
+                                "title": "Asset Pointer"
+                              },
+                              "size_bytes": {
+                                "type": "integer",
+                                "title": "Size Bytes"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "title": "Width"
+                              },
+                              "height": {
+                                "type": "integer",
+                                "title": "Height"
+                              }
+                            },
+                            "type": "object",
+                            "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                          },
+                          {}
+                        ]
+                      },
+                      "type": "array",
+                      "title": "Parts"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "content_type"
+                  ],
+                  "title": "OpenaiWebChatMessageMultimodalTextContent"
                 },
                 {
                   "properties": {

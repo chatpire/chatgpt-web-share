@@ -9,18 +9,18 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 config = Config()
 
-DATABASE_NAME = "cws"
+
 client: AsyncIOMotorClient | None = None
 
 
 async def init_mongodb():
     global client
     client = AsyncIOMotorClient(config.data.mongodb_url)
-    await init_beanie(database=client[DATABASE_NAME],
+    await init_beanie(database=client[config.data.mongodb_db_name],
                       document_models=[OpenaiApiConversationHistoryDocument, OpenaiWebConversationHistoryDocument, AskLogDocument,
                                        RequestLogDocument])
     # 展示当前mongodb数据库用量
-    db = client[DATABASE_NAME]
+    db = client[config.data.mongodb_db_name]
     stats = await db.command({"dbStats": 1})
     logger.info(
         f"MongoDB initialized. dataSize: {stats['dataSize'] / 1024 / 1024:.2f} MB, objects: {stats['objects']}")
@@ -34,7 +34,7 @@ async def handle_timeseries():
     """
     global client
     assert client is not None, "MongoDB not initialized"
-    db = client[DATABASE_NAME]
+    db = client[config.data.mongodb_db_name]
     time_series_docs = [AskLogDocument, RequestLogDocument]
     config_ttls = [config.stats.ask_stats_ttl, config.stats.request_stats_ttl]
     for doc, config_ttl in zip(time_series_docs, config_ttls):

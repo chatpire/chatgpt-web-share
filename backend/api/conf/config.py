@@ -44,6 +44,7 @@ class DataSetting(BaseModel):
     data_dir: str = './data'
     database_url: str = 'sqlite+aiosqlite:///data/database.db'
     mongodb_url: str = 'mongodb://cws:password@mongo:27017'  # 'mongodb://cws:password@localhost:27017'
+    mongodb_db_name: str = 'cws'
     run_migration: bool = False
     max_file_upload_size: int = Field(100 * 1024 * 1024, ge=0)
 
