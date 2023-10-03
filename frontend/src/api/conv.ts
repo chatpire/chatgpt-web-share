@@ -41,7 +41,7 @@ export function setConversationTitleApi(conversation_id: string, title: string) 
 }
 
 export function generateConversationTitleApi(conversation_id: string, message_id: string) {
-  return axios.patch<BaseConversationSchema>(ApiUrl.Conversation + '/' + conversation_id + '/gen_title', null, {
+  return axios.patch<string>(ApiUrl.Conversation + '/' + conversation_id + '/gen_title', null, {
     params: { message_id },
   });
 }

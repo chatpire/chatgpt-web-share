@@ -230,7 +230,7 @@ class OpenaiWebChatManager:
     async def clear_conversations(self):
         # await self.chatbot.clear_conversations()
         url = f"{config.openai_web.chatgpt_base_url}conversations"
-        response = await self.session.patch(url, data={"is_visible": False})
+        response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
     async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
@@ -320,21 +320,26 @@ class OpenaiWebChatManager:
     async def delete_conversation(self, conversation_id: str):
         # await self.chatbot.delete_conversation(conversation_id)
         url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
-        response = await self.session.patch(url, data='{"is_visible": false}')
+        response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
     async def set_conversation_title(self, conversation_id: str, title: str):
         url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
-        response = await self.session.patch(url, data=f'{{"title": "{title}"}}')
+        response = await self.session.patch(url, json={"title": title})
         await _check_response(response)
 
     async def generate_conversation_title(self, conversation_id: str, message_id: str):
         url = f"{config.openai_web.chatgpt_base_url}conversation/gen_title/{conversation_id}"
         response = await self.session.post(
             url,
-            data=json.dumps({"message_id": message_id, "model": "text-davinci-002-render"}),
+            json={"message_id": message_id},
         )
         await _check_response(response)
+        result = response.json()
+        if result.get("title"):
+            return result.get("title")
+        else:
+            raise OpenaiWebException(f"Failed to generate title: {result.get('message')}")
 
     async def get_plugin_manifests(self, statuses="approved", is_installed=None, offset=0, limit=250):
         if not config.openai_web.is_plus_account:
@@ -459,7 +464,8 @@ class OpenaiWebChatManager:
         upload_url = upload_response.upload_url  # 预签名的 azure 地址
 
         # 上传文件
-        content_type = file_info.content_type or guess_type(file_info.original_filename)[0] or "application/octet-stream"
+        content_type = file_info.content_type or guess_type(file_info.original_filename)[
+            0] or "application/octet-stream"
         headers = {
             'x-ms-blob-type': 'BlockBlob',
             'Content-Type': content_type,

@@ -508,11 +508,11 @@ async def chat(websocket: WebSocket):
             if ask_request.new_conversation:
                 assert conversation_id is not None, "has_got_reply but conversation_id is None"
 
-                # rev设置默认标题
-                if ask_request.source == ChatSourceTypes.openai_web:
+                # 设置默认标题
+                if ask_request.source == ChatSourceTypes.openai_web and ask_request.new_title is not None and \
+                        ask_request.new_title.strip() != "":
                     try:
-                        if ask_request.new_title is not None:
-                            await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
+                        await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
                     except Exception as e:
                         logger.warning(f"set_conversation_title error {e.__class__.__name__}: {str(e)}")
 

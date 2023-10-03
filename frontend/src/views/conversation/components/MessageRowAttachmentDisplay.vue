@@ -1,11 +1,11 @@
 <template>
   <div class="mr-4 w-full max-w-100 mb-1">
     <n-card :content-style="{ padding: 0 }">
-      <n-collapse class="p-0">
+      <n-collapse>
         <template #arrow>
           <n-icon><AttachFileFilled /></n-icon>
         </template>
-        <n-collapse-item :title="$t('commons.viewAttachments', [attachments.length])" name="1">
+        <n-collapse-item class="p-4!" :title="$t('commons.viewAttachments', [attachments.length])" name="1">
           <n-list hoverable>
             <n-list-item v-for="(item, index) of attachments" :key="index">
               <div class="flex flex-row justify-between">

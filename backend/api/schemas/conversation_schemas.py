@@ -29,7 +29,7 @@ class AskRequest(BaseModel):
     source: ChatSourceTypes
     model: str
     new_conversation: bool
-    new_title: Optional[str] = None
+    new_title: Optional[str] = None  # 为空则生成标题
     conversation_id: Optional[uuid.UUID] = None
     parent: Optional[uuid.UUID] = None
     api_context_message_count: int = Field(-1, ge=-1)

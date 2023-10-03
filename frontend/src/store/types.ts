@@ -1,6 +1,7 @@
 import { RemovableRef } from '@vueuse/core';
+import { UploadFileInfo } from 'naive-ui';
 
-import { BaseConversationHistory, BaseConversationSchema, UserRead } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema, UploadedFileInfoSchema, UserRead } from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;
@@ -27,4 +28,15 @@ interface ConversationState {
   conversationHistoryMap: Record<string, BaseConversationHistory>;
 }
 
-export type { AppState, ConversationState, UserState };
+type FileUploadGroup = {
+  uploadedFileInfos: UploadedFileInfoSchema[];
+  naiveUiUploadFileInfos: UploadFileInfo[];
+  naiveUiFileIdToServerFileIdMap: Record<string, string>;
+}
+
+interface FileState {
+  attachments: FileUploadGroup;
+  images: FileUploadGroup;
+}
+
+export type { AppState, ConversationState, FileState, UserState };

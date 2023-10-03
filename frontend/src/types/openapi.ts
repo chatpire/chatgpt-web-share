@@ -89,10 +89,6 @@ export interface paths {
     /** Get Conversation Interpreter Info */
     get: operations["get_conversation_interpreter_info_conv__conversation_id__interpreter_get"];
   };
-  "/conv/files/{file_id}/download-url": {
-    /** Get File Download Url */
-    get: operations["get_file_download_url_conv_files__file_id__download_url_get"];
-  };
   "/conv/{conversation_id}/interpreter/download-url": {
     /** Get Conversation Interpreter Download Url */
     get: operations["get_conversation_interpreter_download_url_conv__conversation_id__interpreter_download_url_get"];
@@ -158,6 +154,13 @@ export interface paths {
      * @description 普通用户获取服务器状态
      */
     get: operations["get_server_status_status_common_get"];
+  };
+  "/files/{file_id}/download-url": {
+    /**
+     * Get File Download Url 
+     * @description file_id: OpenAI 分配的 id，以 file- 开头
+     */
+    get: operations["get_file_download_url_files__file_id__download_url_get"];
   };
   "/files/local/upload": {
     /**
@@ -327,7 +330,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
@@ -554,6 +557,7 @@ export interface components {
        *   "data_dir": "./data",
        *   "database_url": "sqlite+aiosqlite:///data/database.db",
        *   "mongodb_url": "mongodb://cws:password@mongo:27017",
+       *   "mongodb_db_name": "cws",
        *   "run_migration": false,
        *   "max_file_upload_size": 104857600
        * }
@@ -634,6 +638,11 @@ export interface components {
        * @default mongodb://cws:password@mongo:27017
        */
       mongodb_url?: string;
+      /**
+       * Mongodb Db Name 
+       * @default cws
+       */
+      mongodb_db_name?: string;
       /**
        * Run Migration 
        * @default false
@@ -1126,7 +1135,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
+      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
@@ -1268,6 +1277,27 @@ export interface components {
       plugin_id?: string;
       /** Type */
       type?: string;
+    };
+    /** OpenaiWebChatMessageMultimodalTextContent */
+    OpenaiWebChatMessageMultimodalTextContent: {
+      /**
+       * Content Type 
+       * @enum {string}
+       */
+      content_type: "multimodal_text";
+      /** Parts */
+      parts?: (string | components["schemas"]["OpenaiWebChatMessageMultimodalTextContentImagePart"] | Record<string, never>)[];
+    };
+    /** OpenaiWebChatMessageMultimodalTextContentImagePart */
+    OpenaiWebChatMessageMultimodalTextContentImagePart: {
+      /** Asset Pointer */
+      asset_pointer?: string;
+      /** Size Bytes */
+      size_bytes?: number;
+      /** Width */
+      width?: number;
+      /** Height */
+      height?: number;
     };
     /** OpenaiWebChatMessageStderrContent */
     OpenaiWebChatMessageStderrContent: {
@@ -2199,28 +2229,6 @@ export interface operations {
       };
     };
   };
-  get_file_download_url_conv_files__file_id__download_url_get: {
-    /** Get File Download Url */
-    parameters: {
-      path: {
-        file_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   get_conversation_interpreter_download_url_conv__conversation_id__interpreter_download_url_get: {
     /** Get Conversation Interpreter Download Url */
     parameters: {
@@ -2507,6 +2515,31 @@ export interface operations {
       200: {
         content: {
           "application/json": string;
+        };
+      };
+    };
+  };
+  get_file_download_url_files__file_id__download_url_get: {
+    /**
+     * Get File Download Url 
+     * @description file_id: OpenAI 分配的 id，以 file- 开头
+     */
+    parameters: {
+      path: {
+        file_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

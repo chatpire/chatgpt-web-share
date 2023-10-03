@@ -212,7 +212,8 @@
       "429": "The OpenAI interface request is too frequent (429 error), it may be that the model usage limit has been exceeded, please try again later",
       "unkown": "OpenAI unknown error, please contact the administrator"
     },
-    "unknown": "unknown mistake"
+    "unknown": "unknown error",
+    "invalidRequest": "Invalid Request"
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
@@ -271,7 +272,8 @@
     "NewConversationForm": {
       "failedToGetPlugins": "Failed to get list of plugins",
       "loadingPlugins": "Loading plugins...",
-      "selectPlugins": "select plugin"
+      "selectPlugins": "select plugin",
+      "leaveBlankToGenerateTitle": "Leave blank to automatically generate"
     },
     "openaiWebPluginsLengthMoreThan3": "The number of plugins cannot exceed 3"
   },

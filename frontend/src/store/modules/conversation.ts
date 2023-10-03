@@ -18,7 +18,7 @@ const useConversationStore = defineStore('conversation', {
   state: (): ConversationState => ({
     conversations: [],
     conversationHistoryMap: {},
-    newConversation: null,
+    newConversation: null
   }),
   getters: {},
   actions: {
@@ -57,7 +57,6 @@ const useConversationStore = defineStore('conversation', {
 
     createNewConversation(info: NewConversationInfo) {
       if (
-        !info.title ||
         !info.source ||
         !info.model ||
         !(info.source === 'openai_api' || info.source === 'openai_web') ||
@@ -70,7 +69,7 @@ const useConversationStore = defineStore('conversation', {
       this.newConversation = {
         source: info.source,
         conversation_id: newConversationId,
-        title: info.title,
+        title: info.title || '',
         current_model: info.model,
         create_time: currentTime,
         update_time: currentTime,
@@ -78,7 +77,7 @@ const useConversationStore = defineStore('conversation', {
       this.conversationHistoryMap[newConversationId] = {
         _id: newConversationId,
         source: info.source,
-        title: info.title,
+        title: info.title || '',
         current_model: info.model,
         create_time: currentTime,
         update_time: currentTime,

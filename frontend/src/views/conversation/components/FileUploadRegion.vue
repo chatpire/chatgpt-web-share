@@ -1,14 +1,10 @@
 <template>
   <div class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
     <n-upload
-      v-model:file-list="fileList"
+      v-model:file-list="attachments.naiveUiUploadFileInfos"
       class="lt-sm:mb-4"
       multiple
-      action=""
       :show-file-list="false"
-      :show-cancel-button="false"
-      :show-remove-button="false"
-      :show-retry-button="false"
       :trigger-style="{ width: '100%' }"
       :custom-request="customRequest"
     >
@@ -33,10 +29,19 @@
       </n-upload-trigger>
     </n-upload>
 
-    <n-upload v-model:file-list="fileList" abstract multiple>
+    <n-upload
+      v-model:file-list="attachments.naiveUiUploadFileInfos"
+      abstract
+      multiple
+      :custom-request="customRequest"
+      :show-cancel-button="true"
+      :show-remove-button="true"
+      :show-retry-button="true"
+      :on-remove="removeFile"
+    >
       <n-card :content-style="{ padding: '1em' }">
         <n-empty
-          v-if="fileList.length == 0"
+          v-if="attachments.naiveUiUploadFileInfos.length == 0"
           :description="$t('commons.emptyFileList')"
           class="h-full flex items-center justify-center"
         />
@@ -51,6 +56,7 @@
 <script setup lang="ts">
 import { UploadFileRound } from '@vicons/material';
 import { UploadCustomRequestOptions, UploadFileInfo } from 'naive-ui';
+import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -61,31 +67,16 @@ import {
   uploadFileToAzureBlob,
   uploadFileToLocalApi,
 } from '@/api/files';
+import { useFileStore } from '@/store';
 import { UploadedFileInfoSchema } from '@/types/schema';
 import { Message } from '@/utils/tips';
-
 const { t } = useI18n();
-const fileList = ref<UploadFileInfo[]>([]);
 
-const props = defineProps<{
-  uploadedFileInfos: UploadedFileInfoSchema[];
-}>();
-
-const emits = defineEmits<{
-  (e: 'update:uploaded-file-infos', value: UploadedFileInfoSchema[]): void;
-}>();
-
-const uploadedFileInfos = computed({
-  get() {
-    return props.uploadedFileInfos;
-  },
-  set(value) {
-    emits('update:uploaded-file-infos', value);
-  },
-});
+const fileStore = useFileStore();
+const { attachments } = storeToRefs(fileStore);
 
 const isUploading = computed(() => {
-  return fileList.value.some((file) => file.status === 'uploading');
+  return attachments.value.naiveUiUploadFileInfos.some((file) => file.status === 'uploading');
 });
 
 const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
@@ -110,6 +101,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     }
 
     // 2. 若响应中 upload_file_info 不为空，进入 browser 上传流程
+    let uploadedFileInfo;
     if (startUploadResponse.data.upload_file_info) {
       if (!startUploadResponse.data.upload_file_info.openai_web_info) {
         throw new Error('Failed to get the upload url.');
@@ -127,8 +119,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
         throw new Error('Failed to complete the upload process.');
       }
 
-      const uploadedFileInfo = completeUploadResponse.data;
-      uploadedFileInfos.value = [...uploadedFileInfos.value, uploadedFileInfo];
+      uploadedFileInfo = completeUploadResponse.data;
     }
     // 3. 若响应中 upload_file_info 为空，进入服务端中转上传流程
     else {
@@ -146,19 +137,34 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
         throw new Error('Failed to upload the file from local to OpenAI Web.');
       }
 
-      const uploadedFileInfo = fileFromLocalToOpenaiWebResponse.data;
-      uploadedFileInfos.value = [...uploadedFileInfos.value, uploadedFileInfo];
+      uploadedFileInfo = fileFromLocalToOpenaiWebResponse.data;
     }
+
+    attachments.value.uploadedFileInfos = [...attachments.value.uploadedFileInfos, uploadedFileInfo];
+    attachments.value.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.id;
 
     // 文件上传成功完成
     Message.success(t('tips.fileUploadSuccess', [file.name]));
     onFinish();
   } catch (error) {
-    Message.error(t('tips.fileUploadFailed', [file.name]));
+    Message.error(t('tips.fileUploadFailed', [file.name]) + `: ${JSON.stringify(error)}`, { duration: 5 * 1000 });
     console.error(error);
     onError();
   }
 };
 
-defineExpose({ isUploading, fileList });
+const removeFile = async (options: { file: UploadFileInfo, fileList: Array<UploadFileInfo> }) => {
+  const {file} = options;
+  const fileId = attachments.value.naiveUiFileIdToServerFileIdMap[file.id];
+  if (fileId != undefined) {
+    attachments.value.uploadedFileInfos = attachments.value.uploadedFileInfos.filter((uploadedFileInfo: UploadedFileInfoSchema) => {
+      return uploadedFileInfo.id != fileId;
+    });
+    delete attachments.value.naiveUiFileIdToServerFileIdMap[file.id];
+    console.log(`Removed file ${file.name} with id ${fileId}`);
+  }
+  return true;
+};
+
+defineExpose({ isUploading });
 </script>
