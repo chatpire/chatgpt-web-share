@@ -14,10 +14,14 @@
         <JsonViewer :value="props.messages" copyable expanded :expand-depth="2" :theme="appStore.theme" />
       </div>
       <!-- Rendered -->
-      <div v-else>
+      <div v-else class="markdown">
         <div v-for="(item, i) in displayItems" :key="i" class="mr-1">
           <div v-if="item.type == 'text'">
-            <MessageRowTextDisplay :conversation-id="props.conversationId" :render-markdown="renderMarkdown" :messages="item.messages" />
+            <MessageRowTextDisplay
+              :conversation-id="props.conversationId"
+              :render-markdown="renderMarkdown"
+              :messages="item.messages"
+            />
           </div>
           <div v-else-if="item.type == 'browser'">
             <MessageRowBrowserDisplay :messages="item.messages" />
@@ -33,7 +37,7 @@
           <MessageRowAttachmentDisplay :attachments="attachments" />
         </div>
       </div>
-      <div class="hide-in-print flex w-full justify-end items-center space-x-4 pb-1">
+      <div class="flex w-full justify-end items-center space-x-4 pb-1">
         <div class="flex flex-row items-center space-x-4">
           <n-tooltip trigger="hover">
             <template #trigger>
@@ -47,7 +51,7 @@
             {{ $t('commons.messagesCount', [props.messages.length]) }}
           </n-text>
         </div>
-        <div class="flex flex-row items-center space-x-2">
+        <div class="hide-in-print flex flex-row items-center space-x-2">
           <!-- 复制 -->
           <n-tooltip trigger="hover">
             <template #trigger>
@@ -325,15 +329,15 @@ function copyMessageContent() {
 <style>
 /* modified from https://github.com/arronhunt/highlightjs-copy */
 
-pre {
-  @apply w-full flex;
-}
-
 .json-viewer * {
   font-size: 0.6rem;
 }
 
-pre code {
+.markdown pre {
+  @apply w-full flex;
+}
+
+.markdown pre code {
   /* @apply w-full max-w-94 sm: max-w-138 md:max-w-156 lg:max-w-170 */
   @apply w-0 flex-grow mr-0;
   font-size: 0.8rem;
@@ -341,36 +345,46 @@ pre code {
 }
 
 @media print {
-  code {
+  code, .code-result {
     @apply max-w-160 !important
     @apply whitespace-pre-line;
   }
+  .hide-in-print {
+    @apply hidden;
+  }
 }
 
-p {
+.markdown p {
   white-space: pre-line;
 }
 
-ol,
+.markdown ol,
 ul {
   padding-left: 16px;
 }
 
-.message-content table {
+.markdown a {
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
+  color: var(--n-text-color);
+  font-weight: 500;
+}
+
+.markdown table {
   border: gray 1px solid;
   @apply min-w-1/2 text-center border-collapse;
 }
 
-.message-content tr {
+.markdown tr {
   border: gray 1px solid;
 }
 
-.message-content th {
+.markdown th {
   border: gray 1px solid;
   @apply bg-gray-400;
 }
 
-.message-content td {
+.markdown td {
   border: gray 1px solid;
 }
 
