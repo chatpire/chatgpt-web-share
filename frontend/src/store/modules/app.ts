@@ -18,6 +18,8 @@ const useAppStore = defineStore('app', {
       codeAutoWrap: false,
       widerConversationPage: true,
     }),
+    lastSelectedSource: useStorage<string | null>('lastSelectedSource', null),
+    lastSelectedModel: useStorage<string | null>('lastSelectedModel', null),
   }),
   getters: {},
   actions: {

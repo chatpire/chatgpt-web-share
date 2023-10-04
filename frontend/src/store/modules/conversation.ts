@@ -60,8 +60,9 @@ const useConversationStore = defineStore('conversation', {
         !info.source ||
         !info.model ||
         !(info.source === 'openai_api' || info.source === 'openai_web') ||
-        (info.model !== 'gpt_4_plugins' && info.openaiWebPlugins)
+        (info.model !== 'gpt_4_plugins' && info.openaiWebPlugins && info.openaiWebPlugins.length > 0)
       ) {
+        console.error('Invalid conversation info', info);
         throw new Error('Invalid conversation info');
       }
       console.log(info);

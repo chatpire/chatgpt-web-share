@@ -246,13 +246,15 @@ const sendDisabled = computed(() => {
 const makeNewConversation = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
-    console.log('makeNewConversation', newConversationInfo);
     if (!newConversationInfo.source || !newConversationInfo.model) return;
-    // newConversationInfo.title =
-    //   newConversationInfo.title || `New Chat (${t('sources_short.' + newConversationInfo.source)})`;
+    if (newConversationInfo.source == 'openai_api')
+      newConversationInfo.title = newConversationInfo.title || `New Chat (${t('models.' + newConversationInfo.model)})`;
+    console.log('makeNewConversation', newConversationInfo);
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
     hasNewConversation.value = true;
+    appStore.lastSelectedSource = newConversationInfo.source;
+    appStore.lastSelectedModel = newConversationInfo.model;
   });
 };
 
@@ -464,7 +466,10 @@ const sendMsg = async () => {
         // 更新对话信息，恢复正常状态
         if (isCurrentNewConversation.value) {
           // 尝试生成标题
-          if (askRequest.new_title == undefined || askRequest.new_title.length == 0) {
+          if (
+            askRequest.source == 'openai_web' &&
+            (askRequest.new_title == undefined || askRequest.new_title.length == 0)
+          ) {
             const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
             console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
             try {

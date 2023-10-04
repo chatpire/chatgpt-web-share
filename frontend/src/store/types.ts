@@ -20,6 +20,8 @@ interface AppState {
   theme: any;
   language: RemovableRef<'zh-CN' | 'en-US' | string>;
   preference: RemovableRef<Preference>;
+  lastSelectedSource: RemovableRef<string | null>;
+  lastSelectedModel: RemovableRef<string | null>;
 }
 
 interface ConversationState {
