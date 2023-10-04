@@ -20,7 +20,8 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
-    OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent
+    OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent, \
+    OpenaiWebChatMessageMultimodalTextContentImagePart
 from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
@@ -230,12 +231,13 @@ class OpenaiWebChatManager:
     async def clear_conversations(self):
         # await self.chatbot.clear_conversations()
         url = f"{config.openai_web.chatgpt_base_url}conversations"
-        response = await self.session.patch(url, data={"is_visible": False})
+        response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
-    async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
+    async def ask(self, text_content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
                   model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
-                  attachments: list[OpenaiWebAskAttachment] = None, **_kwargs):
+                  attachments: list[OpenaiWebAskAttachment] = None,
+                  multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None, **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
 
@@ -249,7 +251,7 @@ class OpenaiWebChatManager:
         if plugin_ids is not None and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
-        if content == ":continue":
+        if text_content == ":continue":
             data = {
                 "action": "continue",
                 "conversation_id": str(conversation_id) if conversation_id else None,
@@ -259,9 +261,14 @@ class OpenaiWebChatManager:
                 "history_and_training_disabled": False,
             }
         else:
-            content = OpenaiWebChatMessageTextContent(
-                content_type="text", parts=[content]
-            )
+            if not multimodal_image_parts:
+                content = OpenaiWebChatMessageTextContent(
+                    content_type="text", parts=[text_content]
+                )
+            else:
+                content = OpenaiWebChatMessageMultimodalTextContent(
+                    content_type="multimodal_text", parts=multimodal_image_parts + [text_content]
+                )
 
             messages = [
                 {
@@ -320,21 +327,26 @@ class OpenaiWebChatManager:
     async def delete_conversation(self, conversation_id: str):
         # await self.chatbot.delete_conversation(conversation_id)
         url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
-        response = await self.session.patch(url, data='{"is_visible": false}')
+        response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
     async def set_conversation_title(self, conversation_id: str, title: str):
         url = f"{config.openai_web.chatgpt_base_url}conversation/{conversation_id}"
-        response = await self.session.patch(url, data=f'{{"title": "{title}"}}')
+        response = await self.session.patch(url, json={"title": title})
         await _check_response(response)
 
     async def generate_conversation_title(self, conversation_id: str, message_id: str):
         url = f"{config.openai_web.chatgpt_base_url}conversation/gen_title/{conversation_id}"
         response = await self.session.post(
             url,
-            data=json.dumps({"message_id": message_id, "model": "text-davinci-002-render"}),
+            json={"message_id": message_id},
         )
         await _check_response(response)
+        result = response.json()
+        if result.get("title"):
+            return result.get("title")
+        else:
+            raise OpenaiWebException(f"Failed to generate title: {result.get('message')}")
 
     async def get_plugin_manifests(self, statuses="approved", is_installed=None, offset=0, limit=250):
         if not config.openai_web.is_plus_account:
@@ -459,7 +471,8 @@ class OpenaiWebChatManager:
         upload_url = upload_response.upload_url  # 预签名的 azure 地址
 
         # 上传文件
-        content_type = file_info.content_type or guess_type(file_info.original_filename)[0] or "application/octet-stream"
+        content_type = file_info.content_type or guess_type(file_info.original_filename)[
+            0] or "application/octet-stream"
         headers = {
             'x-ms-blob-type': 'BlockBlob',
             'Content-Type': content_type,

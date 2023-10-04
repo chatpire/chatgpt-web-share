@@ -7,6 +7,8 @@ import {
   OpenaiApiChatModels,
   OpenaiWebChatMessageCodeContent,
   OpenaiWebChatMessageMetadata,
+  OpenaiWebChatMessageMultimodalTextContent,
+  OpenaiWebChatMessageMultimodalTextContentImagePart,
   OpenaiWebChatMessageStderrContent,
   OpenaiWebChatMessageSystemErrorContent,
   OpenaiWebChatMessageTetherBrowsingDisplayContent,
@@ -24,7 +26,7 @@ export const chatModelColorMap: Record<string, string> = {
   gpt_4_mobile: 'darkpurple',
   gpt_4_browsing: 'purple',
   gpt_4_plugins: 'purple',
-  gpt_4_code_interpreter: 'darkblue'
+  gpt_4_code_interpreter: 'purple'
 };
 
 export const getChatModelColor = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
@@ -35,6 +37,7 @@ export const getChatModelColor = (model_name: OpenaiWebChatModels | OpenaiApiCha
 export const getChatModelIconStyle = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
   if (model_name == 'gpt_4_plugins') return 'plugins';
   else if (model_name == 'gpt_4_browsing') return 'browsing';
+  else if (model_name == 'gpt_4_code_interpreter') return 'code-interpreter';
   else return 'default';
 };
 
@@ -76,9 +79,28 @@ export const getContentRawText = (message: BaseChatMessage | null): string => {
   } else if (message.content.content_type == 'system_error') {
     const content = message.content as OpenaiWebChatMessageSystemErrorContent;
     return `${content.name}: ${content.text}`;
-  } else {
+  } else if (message.content.content_type == 'multimodal_text') {
+    const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
+    for (const part of content.parts!) {
+      if (typeof part == 'string') return part;
+    }
+    return '';
+  }
+  else {
     return `${message.content}`;
   }
+};
+
+export const getMultimodalContentImageParts = (message: BaseChatMessage | null): OpenaiWebChatMessageMultimodalTextContentImagePart[] => {
+  if (!message || !message.content) return [];
+  if (typeof message.content == 'string') return [];
+  if (message.content.content_type == 'multimodal_text') {
+    const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
+    return content.parts!.filter((part) => {
+      return typeof part !== 'string';
+    }) as OpenaiWebChatMessageMultimodalTextContentImagePart[];
+  }
+  return [];
 };
 
 export function getMessageListFromHistory(

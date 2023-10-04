@@ -213,9 +213,11 @@
       "403": "OpenAI 授权失败 (403 错误)，请联系管理员处理",
       "404": "OpenAI 接口不存在 (404 错误)，请联系管理员处理",
       "429": "OpenAI 接口请求过于频繁 (429 错误)，可能是超过模型使用限制，请稍后再试",
+      "500": "OpenAI 服务器错误 (500 错误)，可能是 OpenAI 服务故障或者模型接口发生变更，请告知管理员",
       "unkown": "OpenAI 未知错误，请联系管理员处理"
     },
-    "unknown": "未知错误"
+    "unknown": "未知错误",
+    "invalidRequest": "非法请求"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
@@ -274,7 +276,8 @@
     "NewConversationForm": {
       "loadingPlugins": "加载插件中……",
       "selectPlugins": "选择插件",
-      "failedToGetPlugins": "获取插件列表失败"
+      "failedToGetPlugins": "获取插件列表失败",
+      "leaveBlankToGenerateTitle": "留空则自动生成"
     },
     "openaiWebPluginsLengthMoreThan3": "插件数量不能超过3",
     "sandboxFileNotFound": "未找到文件 {0}，这可能是因为路径错误，或者是因为解释器已经过期。",
@@ -282,7 +285,9 @@
     "dragFileHere": "点击或拖拽文件到此处以上传文件",
     "fileUploadRequirements": "请不要上传含有敏感信息的文件；文件大小不应过大",
     "fileUploadSuccess": "文件 {0} 上传成功",
-    "fileUploadFailed": "文件 {0} 上传失败"
+    "fileUploadFailed": "文件 {0} 上传失败",
+    "dragImageHere": "拖拽图片到此处以上传",
+    "imageUploadRequirements": "最多能够上传4张图片"
   },
   "labels": {
     "nickname": "昵称",
@@ -341,7 +346,7 @@
     "gpt_4_browsing": "GPT-4 Browsing",
     "gpt_4_plugins": "GPT-4 Plugins",
     "gpt_4_mobile": "GPT-4 Mobile",
-    "gpt_4_code_interpreter": "GPT-4 代码解释器"
+    "gpt_4_code_interpreter": "GPT-4 代码执行器"
   },
   "sources": {
     "openai_web": "OpenAI Web",

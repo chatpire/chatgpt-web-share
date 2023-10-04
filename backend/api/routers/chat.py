@@ -209,8 +209,14 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     # 判断是否允许使用附件
     if ask_request.openai_web_attachments and len(ask_request.openai_web_attachments) > 0:
         if ask_request.model != OpenaiWebChatModels.gpt_4_code_interpreter or \
-                config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.disable_upload:
+                config.openai_web.enable_uploading_attachments is False:
             raise WebsocketInvalidAskException("errors.attachmentsNotAllowed")
+
+    # 判断是否允许使用多模态图片
+    if ask_request.openai_web_multimodal_image_parts and len(ask_request.openai_web_multimodal_image_parts) > 0:
+        if ask_request.model != OpenaiWebChatModels.gpt_4 or \
+                config.openai_web.enable_uploading_multimodal_images is False:
+            raise WebsocketInvalidAskException("errors.multimodalImagesNotAllowed")
 
 
 def check_message(msg: str):
@@ -282,7 +288,7 @@ async def chat(websocket: WebSocket):
     queueing_start_time = None
     queueing_end_time = None
 
-    # rev: 排队
+    # 排队
     if ask_request.source == ChatSourceTypes.openai_web:
         if openai_web_manager.is_busy():
             await reply(AskResponse(
@@ -324,12 +330,14 @@ async def chat(websocket: WebSocket):
             model = OpenaiApiChatModels(ask_request.model)
 
         # stream 传输
-        async for data in manager.ask(content=ask_request.content,
+        async for data in manager.ask(text_content=ask_request.text_content,
                                       conversation_id=ask_request.conversation_id,
                                       parent_id=ask_request.parent,
                                       model=model,
                                       plugin_ids=ask_request.openai_web_plugin_ids,
-                                      attachments=ask_request.openai_web_attachments):
+                                      attachments=ask_request.openai_web_attachments,
+                                      multimodal_image_parts=ask_request.openai_web_multimodal_image_parts,
+                                      ):
             has_got_reply = True
 
             try:
@@ -449,7 +457,7 @@ async def chat(websocket: WebSocket):
         if ask_request.source == ChatSourceTypes.openai_api:
             assert message.parent is not None, "message.parent is None"
 
-            content = ask_request.content
+            content = ask_request.text_content
             if isinstance(content, str):
                 content = OpenaiApiChatMessageTextContent(content_type="text", text=content)
 
@@ -508,11 +516,11 @@ async def chat(websocket: WebSocket):
             if ask_request.new_conversation:
                 assert conversation_id is not None, "has_got_reply but conversation_id is None"
 
-                # rev设置默认标题
-                if ask_request.source == ChatSourceTypes.openai_web:
+                # 设置默认标题
+                if ask_request.source == ChatSourceTypes.openai_web and ask_request.new_title is not None and \
+                        ask_request.new_title.strip() != "":
                     try:
-                        if ask_request.new_title is not None:
-                            await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
+                        await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
                     except Exception as e:
                         logger.warning(f"set_conversation_title error {e.__class__.__name__}: {str(e)}")
 

@@ -44,6 +44,7 @@ class DataSetting(BaseModel):
     data_dir: str = './data'
     database_url: str = 'sqlite+aiosqlite:///data/database.db'
     mongodb_url: str = 'mongodb://cws:password@mongo:27017'  # 'mongodb://cws:password@localhost:27017'
+    mongodb_db_name: str = 'cws'
     run_migration: bool = False
     max_file_upload_size: int = Field(100 * 1024 * 1024, ge=0)
 
@@ -66,7 +67,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     is_plus_account: bool = True
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
-    common_timeout: int = Field(10, ge=1)  # connect, read, write
+    common_timeout: int = Field(20, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
     sync_conversations_on_startup: bool = True
     sync_conversations_schedule: bool = False
@@ -75,6 +76,8 @@ class OpenaiWebChatGPTSetting(BaseModel):
                                                  "gpt_4_browsing"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
+    enable_uploading_attachments: bool = True
+    enable_uploading_multimodal_images: bool = True
 
     @validator("chatgpt_base_url")
     def chatgpt_base_url_end_with_slash(cls, v):

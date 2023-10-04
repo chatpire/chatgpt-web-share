@@ -200,33 +200,24 @@ async def delete_all_conversation(_user: User = Depends(current_super_user)):
     return response(200)
 
 
-@router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=OpenaiWebConversationSchema)
+@router.patch("/conv/{conversation_id}/gen_title", tags=["conversation"], response_model=str)
 async def generate_conversation_title(message_id: str,
                                       conversation: OpenaiWebConversation = Depends(_get_conversation_by_id)):
-    if conversation.title is not None:
-        raise InvalidParamsException("errors.conversationTitleAlreadyGenerated")
     async with get_async_session_context() as session:
-        result = await openai_web_manager.generate_conversation_title(conversation.id, message_id)
-        if result["title"]:
-            conversation.title = result["title"]
+        title = await openai_web_manager.generate_conversation_title(conversation.conversation_id, message_id)
+        if title:
+            conversation.title = title
             session.add(conversation)
             await session.commit()
             await session.refresh(conversation)
         else:
-            raise InvalidParamsException(f"{result['message']}")
-    result = jsonable_encoder(conversation)
-    return result
+            raise InternalException("errors.generateTitleFailed")
+        return title
 
 
 @router.get("/conv/{conversation_id}/interpreter", tags=["conversation"], response_model=OpenaiChatInterpreterInfo)
 async def get_conversation_interpreter_info(conversation_id: str):
     url = await openai_web_manager.get_interpreter_info(conversation_id)
-    return response(200, result=url)
-
-
-@router.get("/conv/files/{file_id}/download-url", tags=["conversation"])
-async def get_file_download_url(file_id: str):
-    url = await openai_web_manager.get_file_download_url(file_id)
     return response(200, result=url)
 
 

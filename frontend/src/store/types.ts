@@ -1,6 +1,7 @@
 import { RemovableRef } from '@vueuse/core';
+import { UploadFileInfo } from 'naive-ui';
 
-import { BaseConversationHistory, BaseConversationSchema, UserRead } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema, UploadedFileInfoSchema, UserRead } from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;
@@ -19,6 +20,8 @@ interface AppState {
   theme: any;
   language: RemovableRef<'zh-CN' | 'en-US' | string>;
   preference: RemovableRef<Preference>;
+  lastSelectedSource: RemovableRef<string | null>;
+  lastSelectedModel: RemovableRef<string | null>;
 }
 
 interface ConversationState {
@@ -27,4 +30,19 @@ interface ConversationState {
   conversationHistoryMap: Record<string, BaseConversationHistory>;
 }
 
-export type { AppState, ConversationState, UserState };
+type FileUploadGroup = {
+  uploadedFileInfos: UploadedFileInfoSchema[];
+  naiveUiUploadFileInfos: UploadFileInfo[];
+  naiveUiFileIdToServerFileIdMap: Record<string, string>;
+}
+
+type ImageUploadGroup = FileUploadGroup & {
+  imageMetadataMap: Record<string, { width: number; height: number }>;  // 使用 server 端的文件 id 作为 key
+}
+
+interface FileState {
+  attachments: FileUploadGroup;
+  images: ImageUploadGroup;
+}
+
+export type { AppState, ConversationState, FileState, UserState };

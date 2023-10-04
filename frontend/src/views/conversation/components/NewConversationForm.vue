@@ -2,7 +2,10 @@
   <div class="mt-6">
     <n-form :label-placement="'left'" :label-align="'left'" label-width="100px">
       <n-form-item :label="t('labels.title')">
-        <n-input v-model:value="newConversationInfo.title" />
+        <n-input
+          v-model:value="newConversationInfo.title"
+          :placeholder="newConversationInfo.source == 'openai_web' ? t('tips.NewConversationForm.leaveBlankToGenerateTitle') : null"
+        />
       </n-form-item>
       <n-form-item :label="t('labels.source')">
         <n-select v-model:value="newConversationInfo.source" :options="availableChatSourceTypes" />
@@ -36,7 +39,7 @@ import { computed, h, ref, watch } from 'vue';
 
 import { getAllOpenaiChatPluginsApi, getInstalledOpenaiChatPluginsApi } from '@/api/chat';
 import { i18n } from '@/i18n';
-import { useUserStore } from '@/store';
+import { useAppStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
 import { OpenaiChatPlugin } from '@/types/schema';
 import { Message } from '@/utils/tips';
@@ -46,6 +49,7 @@ import NewConversationFormSelectionPluginLabel from './NewConversationFormSelect
 const t = i18n.global.t as any;
 
 const userStore = useUserStore();
+const appStore = useAppStore();
 
 const emits = defineEmits<{
   (e: 'input', newConversationInfo: NewConversationInfo): void;
@@ -69,13 +73,6 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
   ];
 });
 
-const newConversationInfo = ref<NewConversationInfo>({
-  title: null,
-  source: availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as string) : null,
-  model: null,
-  openaiWebPlugins: null,
-});
-
 const availableModels = computed<SelectOption[]>(() => {
   if (!userStore.user) {
     return [];
@@ -91,6 +88,13 @@ const availableModels = computed<SelectOption[]>(() => {
       value: model,
     }));
   }
+});
+
+const newConversationInfo = ref<NewConversationInfo>({
+  title: null,
+  source: null,
+  model: null,
+  openaiWebPlugins: null,
 });
 
 const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
@@ -148,6 +152,34 @@ const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
     }
   );
 };
+
+function setDefaultValues() {
+  //   const defaultSource = computed(() => {
+  if (appStore.lastSelectedSource) {
+    if (availableChatSourceTypes.value.find((source) => source.value === appStore.lastSelectedSource)) {
+      newConversationInfo.value.source = appStore.lastSelectedSource;
+    }
+  } else {
+    newConversationInfo.value.source =
+      availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as string) : null;
+  }
+
+  if (appStore.lastSelectedModel) {
+    if (
+      newConversationInfo.value.source === 'openai_web' &&
+      availableModels.value.find((model) => model.value === appStore.lastSelectedModel)
+    ) {
+      newConversationInfo.value.model = appStore.lastSelectedModel;
+    } else if (
+      newConversationInfo.value.source === 'openai_api' &&
+      availableModels.value.find((model) => model.value === appStore.lastSelectedModel)
+    ) {
+      newConversationInfo.value.model = appStore.lastSelectedModel;
+    }
+  }
+}
+
+setDefaultValues();
 
 watch(
   () => {

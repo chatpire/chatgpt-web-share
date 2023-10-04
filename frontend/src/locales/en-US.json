@@ -171,7 +171,10 @@
     "expand": "expand",
     "export": "export",
     "import": "import",
-    "useCodeInterpreter": "Using Code Interpreter"
+    "useCodeInterpreter": "Using Code Interpreter",
+    "emptyFileList": "File list is empty",
+    "selectFile": "Select file(s)",
+    "viewAttachments": "Expand {0} attachments"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -208,11 +211,13 @@
     "openai": {
       "401": "OpenAI authorization failed (401 error), please contact the administrator",
       "403": "OpenAI authorization failed (403 error), please contact the administrator",
-      "404": "The OpenAI interface does not exist (404 error), please contact the administrator",
-      "429": "The OpenAI interface request is too frequent (429 error), it may be that the model usage limit has been exceeded, please try again later",
+      "404": "OpenAI reports a 404 error, please contact the administrator",
+      "429": "OpenAI reports a 429 error, it may be that the model usage limit has been exceeded, please try again later",
+      "500": "OpenAI server error (500 error), it may be that the OpenAI service fails or the model API has changed, please inform the administrator",
       "unkown": "OpenAI unknown error, please contact the administrator"
     },
-    "unknown": "unknown mistake"
+    "unknown": "unknown error",
+    "invalidRequest": "Invalid Request"
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
@@ -271,9 +276,18 @@
     "NewConversationForm": {
       "failedToGetPlugins": "Failed to get list of plugins",
       "loadingPlugins": "Loading plugins...",
-      "selectPlugins": "select plugin"
+      "selectPlugins": "select plugin",
+      "leaveBlankToGenerateTitle": "Leave blank to automatically generate"
     },
-    "openaiWebPluginsLengthMoreThan3": "The number of plugins cannot exceed 3"
+    "openaiWebPluginsLengthMoreThan3": "The number of plugins cannot exceed 3",
+    "dragFileHere": "Click or drag file(s) here to upload",
+    "dragImageHere": "Drag image(s) here to upload",
+    "fileUploadRequirements": "Please do not upload files containing sensitive information; file size shouldn't be excessively large",
+    "fileUploadSuccess": "File {0} uploaded successfully",
+    "fileUploadFailed": "File {0} upload failed",
+    "imageUploadRequirements": "Up to 4 pictures can be uploaded",
+    "sandboxFileDownloadError": "File download error",
+    "sandboxFileNotFound": "File {0} not found, either because the sandbox path is wrong or because the interpreter is expired."
   },
   "labels": {
     "nickname": "Nickname",
@@ -349,6 +363,14 @@
     "config": {
       "enabled_models": "Set which models are enabled globally. Models that are not enabled here will not be available for all accounts.",
       "file_upload_strategy": "Determined how to upload files when using the code interpreter model. See the documentation for details"
+    }
+  },
+  "dialog": {
+    "content": {
+      "syncConversations": "Are you sure you want to sync all conversations manually? \nThis will fetch all conversations info from the OpenAI account and mark deleted conversations as invalid."
+    },
+    "title": {
+      "syncConversations": "Sync conversations"
     }
   }
 }

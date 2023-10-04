@@ -9,7 +9,7 @@
         "is_plus_account": true,
         "chatgpt_base_url": null,
         "proxy": null,
-        "common_timeout": 10,
+        "common_timeout": 20,
         "ask_timeout": 600,
         "sync_conversations_on_startup": true,
         "sync_conversations_schedule": false,
@@ -30,7 +30,9 @@
           "gpt_4_plugins": "gpt-4-plugins",
           "gpt_4_code_interpreter": "gpt-4-code-interpreter"
         },
-        "file_upload_strategy": "browser_upload_only"
+        "file_upload_strategy": "browser_upload_only",
+        "enable_uploading_attachments": true,
+        "enable_uploading_multimodal_images": true
       },
       "allOf": [
         {
@@ -99,6 +101,7 @@
         "data_dir": "./data",
         "database_url": "sqlite+aiosqlite:///data/database.db",
         "mongodb_url": "mongodb://cws:password@mongo:27017",
+        "mongodb_db_name": "cws",
         "run_migration": false,
         "max_file_upload_size": 104857600
       },
@@ -199,7 +202,7 @@
         },
         "common_timeout": {
           "title": "Common Timeout",
-          "default": 10,
+          "default": 20,
           "minimum": 1,
           "type": "integer"
         },
@@ -261,6 +264,16 @@
               "$ref": "#/definitions/OpenaiWebFileUploadStrategyOption"
             }
           ]
+        },
+        "enable_uploading_attachments": {
+          "title": "Enable Uploading Attachments",
+          "default": true,
+          "type": "boolean"
+        },
+        "enable_uploading_multimodal_images": {
+          "title": "Enable Uploading Multimodal Images",
+          "default": true,
+          "type": "boolean"
         }
       }
     },
@@ -400,6 +413,11 @@
         "mongodb_url": {
           "title": "Mongodb Url",
           "default": "mongodb://cws:password@mongo:27017",
+          "type": "string"
+        },
+        "mongodb_db_name": {
+          "title": "Mongodb Db Name",
+          "default": "cws",
           "type": "string"
         },
         "run_migration": {

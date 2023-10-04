@@ -87,15 +87,18 @@ const menuOptions = computed<MenuOption[]>(() => {
     });
   const results = sorted_conversations?.map((conversation: BaseConversationSchema) => {
     return {
-      label: () => h(NEllipsis, null, { default: () => conversation.title }),
+      label: () => h(NEllipsis, null, { default: () => conversation.title || 'New chat' }),
       key: conversation.conversation_id,
       disabled: props.loading == true,
       extra: () => dropdownRenderer(conversation, handleDeleteConversation, handleChangeConversationTitle),
     } as MenuOption;
   });
   if (results && conversationStore.newConversation) {
+    const displayTitle = conversationStore.newConversation.title?.length
+      ? conversationStore.newConversation.title
+      : t('commons.newConversation');
     results.unshift({
-      label: () => conversationStore.newConversation?.title || '',
+      label: () => displayTitle,
       key: conversationStore.newConversation.conversation_id,
       disabled: props.loading == true,
     });

@@ -60,7 +60,7 @@ class OpenaiApiChatManager:
     def reset_session(self):
         self.session = make_session()
 
-    async def ask(self, content: str, conversation_id: uuid.UUID = None,
+    async def ask(self, text_content: str, conversation_id: uuid.UUID = None,
                   parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
                   context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
 
@@ -75,7 +75,7 @@ class OpenaiApiChatManager:
             create_time=now_time,
             parent=parent_id,
             children=[],
-            content=OpenaiApiChatMessageTextContent(content_type="text", text=content),
+            content=OpenaiApiChatMessageTextContent(content_type="text", text=text_content),
             metadata=OpenaiApiChatMessageMetadata(
                 source="openai_api",
             )

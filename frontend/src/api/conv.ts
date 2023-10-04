@@ -41,7 +41,7 @@ export function setConversationTitleApi(conversation_id: string, title: string) 
 }
 
 export function generateConversationTitleApi(conversation_id: string, message_id: string) {
-  return axios.patch<BaseConversationSchema>(ApiUrl.Conversation + '/' + conversation_id + '/gen_title', null, {
+  return axios.patch<string>(ApiUrl.Conversation + '/' + conversation_id + '/gen_title', null, {
     params: { message_id },
   });
 }
@@ -51,7 +51,7 @@ export function assignConversationToUserApi(conversation_id: string, username: s
 }
 
 export function getFileDownloadUrlApi(file_id: string) {
-  return axios.get<string>(`${ApiUrl.Conversation}/files/${file_id}/download-url`);
+  return axios.get<string>(`/files/${file_id}/download-url`);
 }
 
 export function getInterpreterInfoApi(conversation_id: string) {

@@ -14,9 +14,9 @@
     </div>
     <div v-show="expandContent" class="my-3 flex flex-col w-full gap-3">
       <!-- code -->
-      <div class="code-border" v-html="renderedCodeContent" />
+      <div ref="codeRef" class="code-border" v-html="renderedCodeContent" />
       <!-- result -->
-      <div v-if="result != null" class="rounded-md bg-black p-4 text-xs">
+      <div v-if="result != null" class="rounded-md bg-black p-4 text-xs code-result">
         <div class="mb-1 text-gray-400">
           RESULT
         </div>
@@ -37,7 +37,7 @@
 </template>
 <script setup lang="ts">
 import { KeyboardArrowDownRound, KeyboardArrowUpRound } from '@vicons/material';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { getFileDownloadUrlApi } from '@/api/conv';
 import { useAppStore } from '@/store';
@@ -49,13 +49,17 @@ import {
   OpenaiWebChatMessageMetadata,
 } from '@/types/schema';
 import md from '@/utils/markdown';
+import { Message } from '@/utils/tips';
 
-import { processPreTags } from '../utils/codeblock';
+import { bindOnclick, processPreTags } from '../utils/codeblock';
+import { getImageDownloadUrlFromFileServiceSchemaUrl } from '../utils/message';
 
 const appStore = useAppStore();
 const props = defineProps<{
   messages: BaseChatMessage[];
 }>();
+
+const codeRef = ref<HTMLDivElement>();
 
 const code = computed(() => {
   if (props.messages.length === 0) return null;
@@ -105,14 +109,12 @@ async function getImageDownloadUrls() {
     .map((message) => message.image_url); // starts with file-service://
   const result = [];
   for (const url of imageUrls) {
-    if (!url || !url.startsWith('file-service://')) continue;
-    try {
-      const response = await getFileDownloadUrlApi(url.split('file-service://')[1]);
-      result.push(response.data);
+    const downloadUrl = await getImageDownloadUrlFromFileServiceSchemaUrl(url);
+    if (downloadUrl == null) {
+      Message.error(`Failed to get image download url for ${url}`);
+      continue;
     }
-    catch (e) {
-      console.error(e);
-    }
+    result.push(downloadUrl);
   }
   imageDownloadUrls.value = result;
 }
@@ -122,6 +124,23 @@ const expandContent = ref(true);
 function handleExpand() {
   expandContent.value = !expandContent.value;
 }
+
+let observer = null;
+onMounted(() => {
+  if (!codeRef.value) return;
+  // eslint-disable-next-line no-undef
+  const callback: MutationCallback = (mutations: MutationRecord[]) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') {
+        bindOnclick(codeRef);
+      }
+    }
+  };
+
+  observer = new MutationObserver(callback);
+  observer.observe(codeRef.value, { subtree: true, childList: true });
+  bindOnclick(codeRef);
+});
 
 getImageDownloadUrls().then();
 </script>

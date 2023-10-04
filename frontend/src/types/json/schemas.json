@@ -218,9 +218,9 @@
         "title": "Api Context Message Count",
         "default": -1
       },
-      "content": {
+      "text_content": {
         "type": "string",
-        "title": "Content"
+        "title": "Text Content"
       },
       "openai_web_plugin_ids": {
         "items": {
@@ -255,6 +255,32 @@
         },
         "type": "array",
         "title": "Openai Web Attachments"
+      },
+      "openai_web_multimodal_image_parts": {
+        "items": {
+          "properties": {
+            "asset_pointer": {
+              "type": "string",
+              "title": "Asset Pointer"
+            },
+            "size_bytes": {
+              "type": "integer",
+              "title": "Size Bytes"
+            },
+            "width": {
+              "type": "integer",
+              "title": "Width"
+            },
+            "height": {
+              "type": "integer",
+              "title": "Height"
+            }
+          },
+          "type": "object",
+          "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+        },
+        "type": "array",
+        "title": "Openai Web Multimodal Image Parts"
       }
     },
     "type": "object",
@@ -262,7 +288,7 @@
       "source",
       "model",
       "new_conversation",
-      "content"
+      "text_content"
     ],
     "title": "AskRequest"
   },
@@ -382,6 +408,56 @@
                       "content_type"
                     ],
                     "title": "OpenaiWebChatMessageTextContent"
+                  },
+                  {
+                    "properties": {
+                      "content_type": {
+                        "type": "string",
+                        "enum": [
+                          "multimodal_text"
+                        ],
+                        "title": "Content Type"
+                      },
+                      "parts": {
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "properties": {
+                                "asset_pointer": {
+                                  "type": "string",
+                                  "title": "Asset Pointer"
+                                },
+                                "size_bytes": {
+                                  "type": "integer",
+                                  "title": "Size Bytes"
+                                },
+                                "width": {
+                                  "type": "integer",
+                                  "title": "Width"
+                                },
+                                "height": {
+                                  "type": "integer",
+                                  "title": "Height"
+                                }
+                              },
+                              "type": "object",
+                              "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "array",
+                        "title": "Parts"
+                      }
+                    },
+                    "type": "object",
+                    "required": [
+                      "content_type"
+                    ],
+                    "title": "OpenaiWebChatMessageMultimodalTextContent"
                   },
                   {
                     "properties": {
@@ -1497,6 +1573,56 @@
                   "content_type": {
                     "type": "string",
                     "enum": [
+                      "multimodal_text"
+                    ],
+                    "title": "Content Type"
+                  },
+                  "parts": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "properties": {
+                            "asset_pointer": {
+                              "type": "string",
+                              "title": "Asset Pointer"
+                            },
+                            "size_bytes": {
+                              "type": "integer",
+                              "title": "Size Bytes"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "title": "Width"
+                            },
+                            "height": {
+                              "type": "integer",
+                              "title": "Height"
+                            }
+                          },
+                          "type": "object",
+                          "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "array",
+                    "title": "Parts"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "content_type"
+                ],
+                "title": "OpenaiWebChatMessageMultimodalTextContent"
+              },
+              {
+                "properties": {
+                  "content_type": {
+                    "type": "string",
+                    "enum": [
                       "code"
                     ],
                     "title": "Content Type"
@@ -2155,6 +2281,56 @@
                         "content_type"
                       ],
                       "title": "OpenaiWebChatMessageTextContent"
+                    },
+                    {
+                      "properties": {
+                        "content_type": {
+                          "type": "string",
+                          "enum": [
+                            "multimodal_text"
+                          ],
+                          "title": "Content Type"
+                        },
+                        "parts": {
+                          "items": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "properties": {
+                                  "asset_pointer": {
+                                    "type": "string",
+                                    "title": "Asset Pointer"
+                                  },
+                                  "size_bytes": {
+                                    "type": "integer",
+                                    "title": "Size Bytes"
+                                  },
+                                  "width": {
+                                    "type": "integer",
+                                    "title": "Width"
+                                  },
+                                  "height": {
+                                    "type": "integer",
+                                    "title": "Height"
+                                  }
+                                },
+                                "type": "object",
+                                "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                              },
+                              {}
+                            ]
+                          },
+                          "type": "array",
+                          "title": "Parts"
+                        }
+                      },
+                      "type": "object",
+                      "required": [
+                        "content_type"
+                      ],
+                      "title": "OpenaiWebChatMessageMultimodalTextContent"
                     },
                     {
                       "properties": {
@@ -2964,7 +3140,7 @@
                 "type": "integer",
                 "minimum": 1,
                 "title": "Common Timeout",
-                "default": 10
+                "default": 20
               },
               "ask_timeout": {
                 "type": "integer",
@@ -3043,6 +3219,16 @@
                   }
                 ],
                 "default": "browser_upload_only"
+              },
+              "enable_uploading_attachments": {
+                "type": "boolean",
+                "title": "Enable Uploading Attachments",
+                "default": true
+              },
+              "enable_uploading_multimodal_images": {
+                "type": "boolean",
+                "title": "Enable Uploading Multimodal Images",
+                "default": true
               }
             },
             "type": "object",
@@ -3053,7 +3239,7 @@
         "default": {
           "enabled": true,
           "is_plus_account": true,
-          "common_timeout": 10,
+          "common_timeout": 20,
           "ask_timeout": 600,
           "sync_conversations_on_startup": true,
           "sync_conversations_schedule": false,
@@ -3074,7 +3260,9 @@
             "gpt_4_plugins": "gpt-4-plugins",
             "gpt_4_code_interpreter": "gpt-4-code-interpreter"
           },
-          "file_upload_strategy": "browser_upload_only"
+          "file_upload_strategy": "browser_upload_only",
+          "enable_uploading_attachments": true,
+          "enable_uploading_multimodal_images": true
         }
       },
       "openai_api": {
@@ -3257,6 +3445,11 @@
                 "title": "Mongodb Url",
                 "default": "mongodb://cws:password@mongo:27017"
               },
+              "mongodb_db_name": {
+                "type": "string",
+                "title": "Mongodb Db Name",
+                "default": "cws"
+              },
               "run_migration": {
                 "type": "boolean",
                 "title": "Run Migration",
@@ -3278,6 +3471,7 @@
           "data_dir": "./data",
           "database_url": "sqlite+aiosqlite:///data/database.db",
           "mongodb_url": "mongodb://cws:password@mongo:27017",
+          "mongodb_db_name": "cws",
           "run_migration": false,
           "max_file_upload_size": 104857600
         }
@@ -3453,6 +3647,11 @@
         "type": "string",
         "title": "Mongodb Url",
         "default": "mongodb://cws:password@mongo:27017"
+      },
+      "mongodb_db_name": {
+        "type": "string",
+        "title": "Mongodb Db Name",
+        "default": "cws"
       },
       "run_migration": {
         "type": "boolean",
@@ -4940,16 +5139,10 @@
         "title": "File Size"
       },
       "use_case": {
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "string",
-            "enum": [
-              "ace_upload"
-            ]
-          }
+        "type": "string",
+        "enum": [
+          "ace_upload",
+          "multimodal"
         ],
         "title": "Use Case"
       }
@@ -5264,7 +5457,7 @@
         "type": "integer",
         "minimum": 1,
         "title": "Common Timeout",
-        "default": 10
+        "default": 20
       },
       "ask_timeout": {
         "type": "integer",
@@ -5343,6 +5536,16 @@
           }
         ],
         "default": "browser_upload_only"
+      },
+      "enable_uploading_attachments": {
+        "type": "boolean",
+        "title": "Enable Uploading Attachments",
+        "default": true
+      },
+      "enable_uploading_multimodal_images": {
+        "type": "boolean",
+        "title": "Enable Uploading Multimodal Images",
+        "default": true
       }
     },
     "type": "object",
@@ -5440,6 +5643,56 @@
               "content_type"
             ],
             "title": "OpenaiWebChatMessageTextContent"
+          },
+          {
+            "properties": {
+              "content_type": {
+                "type": "string",
+                "enum": [
+                  "multimodal_text"
+                ],
+                "title": "Content Type"
+              },
+              "parts": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "properties": {
+                        "asset_pointer": {
+                          "type": "string",
+                          "title": "Asset Pointer"
+                        },
+                        "size_bytes": {
+                          "type": "integer",
+                          "title": "Size Bytes"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "title": "Width"
+                        },
+                        "height": {
+                          "type": "integer",
+                          "title": "Height"
+                        }
+                      },
+                      "type": "object",
+                      "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                    },
+                    {}
+                  ]
+                },
+                "type": "array",
+                "title": "Parts"
+              }
+            },
+            "type": "object",
+            "required": [
+              "content_type"
+            ],
+            "title": "OpenaiWebChatMessageMultimodalTextContent"
           },
           {
             "properties": {
@@ -6588,6 +6841,78 @@
     "type": "object",
     "title": "OpenaiWebChatMessageMetadataPlugin"
   },
+  "OpenaiWebChatMessageMultimodalTextContent": {
+    "properties": {
+      "content_type": {
+        "type": "string",
+        "enum": [
+          "multimodal_text"
+        ],
+        "title": "Content Type"
+      },
+      "parts": {
+        "items": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "properties": {
+                "asset_pointer": {
+                  "type": "string",
+                  "title": "Asset Pointer"
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "title": "Size Bytes"
+                },
+                "width": {
+                  "type": "integer",
+                  "title": "Width"
+                },
+                "height": {
+                  "type": "integer",
+                  "title": "Height"
+                }
+              },
+              "type": "object",
+              "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+            },
+            {}
+          ]
+        },
+        "type": "array",
+        "title": "Parts"
+      }
+    },
+    "type": "object",
+    "required": [
+      "content_type"
+    ],
+    "title": "OpenaiWebChatMessageMultimodalTextContent"
+  },
+  "OpenaiWebChatMessageMultimodalTextContentImagePart": {
+    "properties": {
+      "asset_pointer": {
+        "type": "string",
+        "title": "Asset Pointer"
+      },
+      "size_bytes": {
+        "type": "integer",
+        "title": "Size Bytes"
+      },
+      "width": {
+        "type": "integer",
+        "title": "Width"
+      },
+      "height": {
+        "type": "integer",
+        "title": "Height"
+      }
+    },
+    "type": "object",
+    "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+  },
   "OpenaiWebChatMessageStderrContent": {
     "properties": {
       "content_type": {
@@ -6862,6 +7187,56 @@
                     "content_type"
                   ],
                   "title": "OpenaiWebChatMessageTextContent"
+                },
+                {
+                  "properties": {
+                    "content_type": {
+                      "type": "string",
+                      "enum": [
+                        "multimodal_text"
+                      ],
+                      "title": "Content Type"
+                    },
+                    "parts": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "properties": {
+                              "asset_pointer": {
+                                "type": "string",
+                                "title": "Asset Pointer"
+                              },
+                              "size_bytes": {
+                                "type": "integer",
+                                "title": "Size Bytes"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "title": "Width"
+                              },
+                              "height": {
+                                "type": "integer",
+                                "title": "Height"
+                              }
+                            },
+                            "type": "object",
+                            "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+                          },
+                          {}
+                        ]
+                      },
+                      "type": "array",
+                      "title": "Parts"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "content_type"
+                  ],
+                  "title": "OpenaiWebChatMessageMultimodalTextContent"
                 },
                 {
                   "properties": {
@@ -7636,6 +8011,14 @@
           "gpt_4_plugins": 0,
           "gpt_4_code_interpreter": 0
         }
+      },
+      "allow_uploading_attachments": {
+        "type": "boolean",
+        "title": "Allow Uploading Attachments"
+      },
+      "allow_uploading_multimodal_images": {
+        "type": "boolean",
+        "title": "Allow Uploading Multimodal Images"
       }
     },
     "type": "object",
@@ -7646,7 +8029,9 @@
       "rate_limits",
       "daily_available_time_slots",
       "available_models",
-      "per_model_ask_count"
+      "per_model_ask_count",
+      "allow_uploading_attachments",
+      "allow_uploading_multimodal_images"
     ],
     "title": "OpenaiWebSourceSettingSchema"
   },
@@ -7767,6 +8152,21 @@
               "file_id": {
                 "type": "string",
                 "title": "File Id"
+              },
+              "use_case": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "ace_upload",
+                      "multimodal"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Use Case"
               },
               "upload_url": {
                 "type": "string",
@@ -7912,6 +8312,21 @@
             "type": "string",
             "title": "File Id"
           },
+          "use_case": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ace_upload",
+                  "multimodal"
+                ]
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Use Case"
+          },
           "upload_url": {
             "type": "string",
             "title": "Upload Url",
@@ -7941,6 +8356,21 @@
       "file_id": {
         "type": "string",
         "title": "File Id"
+      },
+      "use_case": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "ace_upload",
+              "multimodal"
+            ]
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Use Case"
       },
       "upload_url": {
         "type": "string",
@@ -8177,6 +8607,14 @@
                   "gpt_4_plugins": 0,
                   "gpt_4_code_interpreter": 0
                 }
+              },
+              "allow_uploading_attachments": {
+                "type": "boolean",
+                "title": "Allow Uploading Attachments"
+              },
+              "allow_uploading_multimodal_images": {
+                "type": "boolean",
+                "title": "Allow Uploading Multimodal Images"
               }
             },
             "type": "object",
@@ -8187,7 +8625,9 @@
               "rate_limits",
               "daily_available_time_slots",
               "available_models",
-              "per_model_ask_count"
+              "per_model_ask_count",
+              "allow_uploading_attachments",
+              "allow_uploading_multimodal_images"
             ],
             "title": "OpenaiWebSourceSettingSchema"
           },
@@ -8512,6 +8952,14 @@
                   "gpt_4_plugins": 0,
                   "gpt_4_code_interpreter": 0
                 }
+              },
+              "allow_uploading_attachments": {
+                "type": "boolean",
+                "title": "Allow Uploading Attachments"
+              },
+              "allow_uploading_multimodal_images": {
+                "type": "boolean",
+                "title": "Allow Uploading Multimodal Images"
               }
             },
             "type": "object",
@@ -8522,7 +8970,9 @@
               "rate_limits",
               "daily_available_time_slots",
               "available_models",
-              "per_model_ask_count"
+              "per_model_ask_count",
+              "allow_uploading_attachments",
+              "allow_uploading_multimodal_images"
             ],
             "title": "OpenaiWebSourceSettingSchema"
           },
@@ -8806,6 +9256,14 @@
               "gpt_4_plugins": 0,
               "gpt_4_code_interpreter": 0
             }
+          },
+          "allow_uploading_attachments": {
+            "type": "boolean",
+            "title": "Allow Uploading Attachments"
+          },
+          "allow_uploading_multimodal_images": {
+            "type": "boolean",
+            "title": "Allow Uploading Multimodal Images"
           }
         },
         "type": "object",
@@ -8816,7 +9274,9 @@
           "rate_limits",
           "daily_available_time_slots",
           "available_models",
-          "per_model_ask_count"
+          "per_model_ask_count",
+          "allow_uploading_attachments",
+          "allow_uploading_multimodal_images"
         ],
         "title": "OpenaiWebSourceSettingSchema"
       },

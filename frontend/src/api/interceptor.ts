@@ -52,9 +52,7 @@ axios.interceptors.response.use(
       if (res.result) {
         msg += `: ${t(res.result)}`;
       }
-      Message.error(msg, {
-        duration: 5 * 1000,
-      });
+      Message.error(msg, { duration: 3 * 1000 });
       if (
         [10401].includes(res.code) &&
         !([ApiUrl.Login, ApiUrl.Logout] as Array<string>).includes(response.config.url || '')
