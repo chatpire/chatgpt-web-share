@@ -26,7 +26,7 @@ export const chatModelColorMap: Record<string, string> = {
   gpt_4_mobile: 'darkpurple',
   gpt_4_browsing: 'purple',
   gpt_4_plugins: 'purple',
-  gpt_4_code_interpreter: 'darkblue'
+  gpt_4_code_interpreter: 'purple'
 };
 
 export const getChatModelColor = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
@@ -37,6 +37,7 @@ export const getChatModelColor = (model_name: OpenaiWebChatModels | OpenaiApiCha
 export const getChatModelIconStyle = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
   if (model_name == 'gpt_4_plugins') return 'plugins';
   else if (model_name == 'gpt_4_browsing') return 'browsing';
+  else if (model_name == 'gpt_4_code_interpreter') return 'code-interpreter';
   else return 'default';
 };
 
