@@ -26,7 +26,7 @@ openai_web_manager = OpenaiWebChatManager()
 
 
 @router.get("/files/{file_id}/download-url", tags=["conversation"], response_model=str)
-@cache(expire=60 * 60)
+@cache(expire=10 * 60)
 async def get_file_download_url(file_id: str):
     """
     file_id: OpenAI 分配的 id，以 file- 开头
