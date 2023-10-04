@@ -17,6 +17,7 @@ from api.users import auth_backend, fastapi_users, current_active_user, get_user
     get_user_manager, UserManager
 
 router = APIRouter()
+config = Config()
 
 
 # router.include_router(
@@ -93,10 +94,14 @@ async def get_me(user: User = Depends(current_active_user)):
     user_read = UserRead.from_orm(user)
     for source in ["openai_api", "openai_web"]:
         source_setting = getattr(user_read.setting, source)
-        global_enabled_models = getattr(Config(), source).enabled_models
+        global_enabled_models = getattr(config, source).enabled_models
         source_setting.available_models = list(
             set(source_setting.available_models).intersection(set(global_enabled_models)))
         setattr(user_read.setting, source, source_setting)
+    if not config.openai_web.enable_uploading_attachments:
+        user_read.setting.openai_web.allow_uploading_attachments = False
+    if not config.openai_web.enable_uploading_multimodal_images:
+        user_read.setting.openai_web.allow_uploading_multimodal_images = False
     return user_read
 
 

@@ -2,11 +2,14 @@ import datetime
 from typing import Optional
 
 from fastapi_users import schemas
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator, root_validator
 
+from api.conf import Config
 from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels
 from api.models.json import CustomOpenaiApiSettings, TimeWindowRateLimit, DailyTimeSlot, \
     OpenaiWebPerModelAskCount, OpenaiApiPerModelAskCount
+
+config = Config()
 
 
 class BaseSourceSettingSchema(BaseModel):
@@ -45,6 +48,8 @@ class BaseSourceSettingSchema(BaseModel):
 class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     available_models: list[OpenaiWebChatModels]
     per_model_ask_count: OpenaiWebPerModelAskCount
+    allow_uploading_attachments: bool
+    allow_uploading_multimodal_images: bool
 
     @staticmethod
     def default():
@@ -52,6 +57,8 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
             available_models=[OpenaiWebChatModels(m) for m in
                               ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]],
             per_model_ask_count=OpenaiWebPerModelAskCount(),
+            allow_uploading_attachments=config.openai_web.enable_uploading_attachments,
+            allow_uploading_multimodal_images=config.openai_web.enable_uploading_multimodal_images,
             **BaseSourceSettingSchema.default().dict()
         )
 
@@ -60,8 +67,18 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
         return OpenaiWebSourceSettingSchema(
             available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
             per_model_ask_count=OpenaiWebPerModelAskCount.unlimited(),
+            allow_uploading_attachments=True,
+            allow_uploading_multimodal_images=True,
             **BaseSourceSettingSchema.unlimited().dict()
         )
+
+    @root_validator(pre=True)
+    def check(cls, values):
+        if "allow_uploading_attachments" not in values:
+            values["allow_uploading_attachments"] = config.openai_web.enable_uploading_attachments
+        if "allow_uploading_multimodal_images" not in values:
+            values["allow_uploading_multimodal_images"] = config.openai_web.enable_uploading_multimodal_images
+        return values
 
     class Config:
         orm_mode = True

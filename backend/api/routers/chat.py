@@ -209,12 +209,13 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
     # 判断是否允许使用附件
     if ask_request.openai_web_attachments and len(ask_request.openai_web_attachments) > 0:
         if ask_request.model != OpenaiWebChatModels.gpt_4_code_interpreter or \
-                config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.disable_upload:
+                config.openai_web.enable_uploading_attachments is False:
             raise WebsocketInvalidAskException("errors.attachmentsNotAllowed")
 
     # 判断是否允许使用多模态图片
     if ask_request.openai_web_multimodal_image_parts and len(ask_request.openai_web_multimodal_image_parts) > 0:
-        if ask_request.model != OpenaiWebChatModels.gpt_4:
+        if ask_request.model != OpenaiWebChatModels.gpt_4 or \
+                config.openai_web.enable_uploading_multimodal_images is False:
             raise WebsocketInvalidAskException("errors.multimodalImagesNotAllowed")
 
 
@@ -287,7 +288,7 @@ async def chat(websocket: WebSocket):
     queueing_start_time = None
     queueing_end_time = None
 
-    # rev: 排队
+    # 排队
     if ask_request.source == ChatSourceTypes.openai_web:
         if openai_web_manager.is_busy():
             await reply(AskResponse(

@@ -486,7 +486,7 @@ export interface components {
        * @default {
        *   "enabled": true,
        *   "is_plus_account": true,
-       *   "common_timeout": 10,
+       *   "common_timeout": 20,
        *   "ask_timeout": 600,
        *   "sync_conversations_on_startup": true,
        *   "sync_conversations_schedule": false,
@@ -507,7 +507,9 @@ export interface components {
        *     "gpt_4_plugins": "gpt-4-plugins",
        *     "gpt_4_code_interpreter": "gpt-4-code-interpreter"
        *   },
-       *   "file_upload_strategy": "browser_upload_only"
+       *   "file_upload_strategy": "browser_upload_only",
+       *   "enable_uploading_attachments": true,
+       *   "enable_uploading_multimodal_images": true
        * }
        */
       openai_web?: components["schemas"]["OpenaiWebChatGPTSetting"];
@@ -1058,7 +1060,7 @@ export interface components {
       proxy?: string;
       /**
        * Common Timeout 
-       * @default 10
+       * @default 20
        */
       common_timeout?: number;
       /**
@@ -1108,6 +1110,16 @@ export interface components {
       };
       /** @default browser_upload_only */
       file_upload_strategy?: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
+      /**
+       * Enable Uploading Attachments 
+       * @default true
+       */
+      enable_uploading_attachments?: boolean;
+      /**
+       * Enable Uploading Multimodal Images 
+       * @default true
+       */
+      enable_uploading_multimodal_images?: boolean;
     };
     /** OpenaiWebChatMessage */
     OpenaiWebChatMessage: {
@@ -1510,6 +1522,10 @@ export interface components {
       daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
       available_models: (components["schemas"]["OpenaiWebChatModels"])[];
       per_model_ask_count: components["schemas"]["OpenaiWebPerModelAskCount"];
+      /** Allow Uploading Attachments */
+      allow_uploading_attachments: boolean;
+      /** Allow Uploading Multimodal Images */
+      allow_uploading_multimodal_images: boolean;
     };
     /** RequestLogAggregation */
     RequestLogAggregation: {

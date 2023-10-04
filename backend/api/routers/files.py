@@ -13,6 +13,7 @@ from api.exceptions import InvalidRequestException, ResourceNotFoundException, A
 from api.file_provider import FileProvider
 from api.models.db import User, UploadedFileInfo
 from api.models.json import UploadedFileOpenaiWebInfo
+from api.schemas import UserRead
 from api.schemas.file_schemas import UploadedFileInfoSchema, StartUploadResponseSchema
 from api.schemas.openai_schemas import OpenaiChatFileUploadInfo
 from api.sources import OpenaiWebChatManager
@@ -25,7 +26,7 @@ openai_web_manager = OpenaiWebChatManager()
 
 
 @router.get("/files/{file_id}/download-url", tags=["conversation"], response_model=str)
-@cache(expire=60 * 60 * 24)
+@cache(expire=60 * 60)
 async def get_file_download_url(file_id: str):
     """
     file_id: OpenAI 分配的 id，以 file- 开头
@@ -40,8 +41,7 @@ async def upload_file_to_local(file: UploadFile = File(...), user: User = Depend
     上传文件到服务器。文件将被保存在服务器上，返回文件信息。
     仅当需要在服务器留存上传的文件时才使用.
     """
-    if config.openai_web.file_upload_strategy in [OpenaiWebFileUploadStrategyOption.browser_upload_only,
-                                                  OpenaiWebFileUploadStrategyOption.disable_upload]:
+    if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.browser_upload_only:
         raise InvalidRequestException(f"File upload disabled")
     if file.size > config.data.max_file_upload_size:
         raise InvalidRequestException(f"File too large! Max size: {config.data.max_file_upload_size}")
@@ -80,9 +80,16 @@ async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: Us
     """
     file_size_exceed = upload_info.file_size > config.data.max_file_upload_size
     if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.server_upload_only and file_size_exceed:
-        raise InvalidRequestException(f"File too large! Max size: {config.data.max_file_upload_size}")
-    if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.disable_upload:
-        raise InvalidRequestException(f"File upload disabled")
+        raise InvalidRequestException(f"File is too large! Max size: {config.data.max_file_upload_size}")
+    user_info = UserRead.from_orm(user)
+    if upload_info.use_case == "ace_upload" and \
+            (user_info.setting.openai_web.allow_uploading_attachments is False or
+             config.openai_web.enable_uploading_attachments is False):
+        raise InvalidRequestException(f"Uploading attachments disabled")
+    if upload_info.use_case == "multimodal" and \
+            (user_info.setting.openai_web.allow_uploading_multimodal_images is False or
+             config.openai_web.enable_uploading_multimodal_images is False):
+        raise InvalidRequestException(f"Uploading multimodal images disabled")
 
     file_info = None
 

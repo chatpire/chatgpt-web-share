@@ -9,7 +9,7 @@
         "is_plus_account": true,
         "chatgpt_base_url": null,
         "proxy": null,
-        "common_timeout": 10,
+        "common_timeout": 20,
         "ask_timeout": 600,
         "sync_conversations_on_startup": true,
         "sync_conversations_schedule": false,
@@ -30,7 +30,9 @@
           "gpt_4_plugins": "gpt-4-plugins",
           "gpt_4_code_interpreter": "gpt-4-code-interpreter"
         },
-        "file_upload_strategy": "browser_upload_only"
+        "file_upload_strategy": "browser_upload_only",
+        "enable_uploading_attachments": true,
+        "enable_uploading_multimodal_images": true
       },
       "allOf": [
         {
@@ -200,7 +202,7 @@
         },
         "common_timeout": {
           "title": "Common Timeout",
-          "default": 10,
+          "default": 20,
           "minimum": 1,
           "type": "integer"
         },
@@ -262,6 +264,16 @@
               "$ref": "#/definitions/OpenaiWebFileUploadStrategyOption"
             }
           ]
+        },
+        "enable_uploading_attachments": {
+          "title": "Enable Uploading Attachments",
+          "default": true,
+          "type": "boolean"
+        },
+        "enable_uploading_multimodal_images": {
+          "title": "Enable Uploading Multimodal Images",
+          "default": true,
+          "type": "boolean"
         }
       }
     },
