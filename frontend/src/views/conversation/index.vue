@@ -80,7 +80,8 @@
           :can-abort="canAbort"
           :can-continue="!loadingAsk && canContinue"
           :send-disabled="sendDisabled"
-          :enable-file-upload="isFileUploadAvailable"
+          :upload-mode="uploadMode"
+          :upload-disabled="loadingAsk"
           @abort-request="abortRequest"
           @continue-generating="continueGenerating"
           @export-to-markdown-file="exportToMarkdownFile"
@@ -113,6 +114,8 @@ import {
   BaseConversationSchema,
   OpenaiWebAskAttachment,
   OpenaiWebChatMessageMetadata,
+  OpenaiWebChatMessageMultimodalTextContent,
+  OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
@@ -169,11 +172,21 @@ const inputValue = ref('');
 const currentSendMessage = ref<BaseChatMessage | null>(null);
 const currentRecvMessages = ref<BaseChatMessage[]>([]);
 
-const isFileUploadAvailable = computed(() => {
-  return (
+// const isFileUploadAvailable = computed(() => {
+//   return (
+//     currentConversation.value?.source === 'openai_web' &&
+//     currentConversation.value.current_model == 'gpt_4_code_interpreter'
+//   );
+// });
+const uploadMode = computed(() => {
+  if (
     currentConversation.value?.source === 'openai_web' &&
     currentConversation.value.current_model == 'gpt_4_code_interpreter'
-  );
+  )
+    return 'attachments';
+  else if (currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4')
+    return 'images';
+  else return null;
 });
 
 // 实际的 currentMessageList，加上当前正在发送的消息
@@ -259,22 +272,34 @@ const scrollToBottomSmooth = () => {
   });
 };
 
-function buildTemporaryMessage(role: string, content: string, parent: string | undefined, model: string | undefined, openaiWebAttachments: OpenaiWebAskAttachment[] | null = null) {
+function buildTemporaryMessage(
+  role: string,
+  text_content: string,
+  parent: string | undefined,
+  model: string | undefined,
+  openaiWebAttachments: OpenaiWebAskAttachment[] | null = null,
+  openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
+) {
   const random_strid = Math.random().toString(36).substring(2, 16);
   const result = {
     id: `temp_${random_strid}`,
     source: currentConversation.value!.source,
-    content,
+    content: text_content,
     role: role,
     parent, // 其实没有用到parent
     children: [],
-    model
+    model,
   } as BaseChatMessage;
   if (openaiWebAttachments) {
     const metadata = {
-      attachments: openaiWebAttachments
+      attachments: openaiWebAttachments,
     } as OpenaiWebChatMessageMetadata;
     result.metadata = metadata;
+  }
+  if (openaiWebMultimodalImageParts) {
+    result.content = {
+      parts: [...openaiWebMultimodalImageParts, text_content]
+    } as OpenaiWebChatMessageMultimodalTextContent;
   }
   return result;
 }
@@ -295,10 +320,10 @@ const sendMsg = async () => {
   isAborted.value = false;
   let hasGotReply = false;
 
-  let attachments = [] as OpenaiWebAskAttachment[];
-  const uploadedFileInfos = fileStore.attachments.uploadedFileInfos;
-  if (isFileUploadAvailable.value && uploadedFileInfos.length > 0) {
-    attachments = uploadedFileInfos
+  // 处理附件
+  let attachments = null;
+  if (uploadMode.value === 'attachments' && fileStore.attachments.uploadedFileInfos.length > 0) {
+    attachments = fileStore.attachments.uploadedFileInfos
       .filter((info) => info.openai_web_info && info.openai_web_info.file_id)
       .map((info) => {
         return {
@@ -309,16 +334,34 @@ const sendMsg = async () => {
       });
   }
 
+  // 处理 gpt-4 图片
+  let multimodalImages = null;
+  if (uploadMode.value === 'images' && fileStore.images.uploadedFileInfos.length > 0) {
+    multimodalImages = fileStore.images.uploadedFileInfos
+      .filter((info) => info.openai_web_info && info.openai_web_info.file_id)
+      .map((info) => {
+        const fileId = info.openai_web_info!.file_id!;
+        const { width, height } = fileStore.images.imageMetadataMap[info.id] || {};
+        return {
+          asset_pointer: `file-service://${fileId}`,
+          width,
+          height,
+          size_bytes: info.size,
+        } as OpenaiWebChatMessageMultimodalTextContentImagePart;
+      });
+  }
+
   const askRequest: AskRequest = {
     source: currentConversation.value!.source,
     new_conversation: isCurrentNewConversation.value,
     model: currentConversation.value!.current_model!,
-    content: text,
+    text_content: text,
     openai_web_plugin_ids:
       currentConvHistory.value!.metadata?.source === 'openai_web'
         ? currentConvHistory.value!.metadata?.plugin_ids
         : undefined,
-    openai_web_attachments: attachments || null,
+    openai_web_attachments: attachments || undefined,
+    openai_web_multimodal_image_parts: multimodalImages || undefined,
   };
   if (conversationStore.newConversation) {
     askRequest.new_title = conversationStore.newConversation.title || ''; // 这里可能为空串，表示需要生成标题
@@ -337,7 +380,8 @@ const sendMsg = async () => {
       text,
       currentConvHistory.value?.current_node,
       currentConversation.value!.current_model!,
-      attachments
+      attachments,
+      multimodalImages
     );
     currentRecvMessages.value = [
       buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!),
@@ -418,9 +462,8 @@ const sendMsg = async () => {
             console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
             try {
               const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
-               currentConvHistory.value!.title = response.data;
-            }
-            catch (err) {
+              currentConvHistory.value!.title = response.data;
+            } catch (err) {
               console.error('Failed to generate conversation title', err);
             }
           }
@@ -446,10 +489,10 @@ const sendMsg = async () => {
         currentSendMessage.value = null;
         currentRecvMessages.value = [];
         currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
-        
+
         // 清除附件
         fileStore.clearAll();
-        
+
         await conversationStore.fetchAllConversations();
         conversationStore.removeNewConversation();
         hasNewConversation.value = false;

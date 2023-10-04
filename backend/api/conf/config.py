@@ -67,7 +67,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     is_plus_account: bool = True
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
-    common_timeout: int = Field(10, ge=1)  # connect, read, write
+    common_timeout: int = Field(20, ge=1)  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
     sync_conversations_on_startup: bool = True
     sync_conversations_schedule: bool = False

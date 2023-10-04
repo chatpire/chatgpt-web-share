@@ -20,7 +20,8 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
-    OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent
+    OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent, \
+    OpenaiWebChatMessageMultimodalTextContentImagePart
 from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
@@ -233,9 +234,10 @@ class OpenaiWebChatManager:
         response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
-    async def ask(self, content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
+    async def ask(self, text_content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
                   model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
-                  attachments: list[OpenaiWebAskAttachment] = None, **_kwargs):
+                  attachments: list[OpenaiWebAskAttachment] = None,
+                  multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None, **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
 
@@ -249,7 +251,7 @@ class OpenaiWebChatManager:
         if plugin_ids is not None and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
-        if content == ":continue":
+        if text_content == ":continue":
             data = {
                 "action": "continue",
                 "conversation_id": str(conversation_id) if conversation_id else None,
@@ -259,9 +261,14 @@ class OpenaiWebChatManager:
                 "history_and_training_disabled": False,
             }
         else:
-            content = OpenaiWebChatMessageTextContent(
-                content_type="text", parts=[content]
-            )
+            if not multimodal_image_parts:
+                content = OpenaiWebChatMessageTextContent(
+                    content_type="text", parts=[text_content]
+                )
+            else:
+                content = OpenaiWebChatMessageMultimodalTextContent(
+                    content_type="multimodal_text", parts=multimodal_image_parts + [text_content]
+                )
 
             messages = [
                 {

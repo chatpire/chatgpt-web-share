@@ -1,9 +1,10 @@
 <template>
-  <div class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
+  <div v-if="props.mode === 'attachments'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
     <n-upload
       v-model:file-list="attachments.naiveUiUploadFileInfos"
       class="lt-sm:mb-4"
       multiple
+      :disabled="props.disabled"
       :show-file-list="false"
       :trigger-style="{ width: '100%' }"
       :custom-request="customRequest"
@@ -28,11 +29,11 @@
         </n-button>
       </n-upload-trigger>
     </n-upload>
-
     <n-upload
       v-model:file-list="attachments.naiveUiUploadFileInfos"
       abstract
       multiple
+      :disabled="props.disabled"
       :custom-request="customRequest"
       :show-cancel-button="true"
       :show-remove-button="true"
@@ -51,6 +52,47 @@
       </n-card>
     </n-upload>
   </div>
+  <div v-else-if="props.mode === 'images'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
+    <n-upload
+      v-model:file-list="images.naiveUiUploadFileInfos"
+      class="lt-sm:hidden"
+      multiple
+      :show-file-list="false"
+      :trigger-style="{ width: '100%' }"
+      :disabled="props.disabled"
+      :custom-request="customRequest"
+      accept="image/png, image/jpeg, image/gif"
+      :max="4"
+    >
+      <n-upload-dragger class="lt-sm:hidden">
+        <div class="mb-2">
+          <n-icon size="48" :depth="3">
+            <UploadFileRound />
+          </n-icon>
+        </div>
+        <n-text style="font-size: 16px">
+          {{ $t('tips.dragImageHere') }}
+        </n-text>
+        <n-p depth="3" style="margin: 8px 0 0 0">
+          {{ $t('tips.imageUploadRequirements') }}
+        </n-p>
+      </n-upload-dragger>
+    </n-upload>
+
+    <n-upload
+      v-model:file-list="images.naiveUiUploadFileInfos"
+      multiple
+      :disabled="props.disabled"
+      :custom-request="customRequest"
+      :show-cancel-button="true"
+      :show-remove-button="true"
+      :show-retry-button="true"
+      :on-remove="removeFile"
+      list-type="image-card"
+      accept="image/png, image/jpeg, image/gif"
+      :max="4"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -68,15 +110,22 @@ import {
   uploadFileToLocalApi,
 } from '@/api/files';
 import { useFileStore } from '@/store';
-import { UploadedFileInfoSchema } from '@/types/schema';
+import { OpenaiChatFileUploadInfo, UploadedFileInfoSchema } from '@/types/schema';
 import { Message } from '@/utils/tips';
 const { t } = useI18n();
 
 const fileStore = useFileStore();
-const { attachments } = storeToRefs(fileStore);
+const { attachments, images } = storeToRefs(fileStore);
+
+const props = defineProps<{
+  mode: 'images' | 'attachments';
+  disabled: boolean;
+}>();
+
+const fileRef = props.mode === 'images' ? images : attachments;
 
 const isUploading = computed(() => {
-  return attachments.value.naiveUiUploadFileInfos.some((file) => file.status === 'uploading');
+  return fileRef.value.naiveUiUploadFileInfos.some((file) => file.status === 'uploading');
 });
 
 const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
@@ -84,12 +133,15 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     if (!file.file) {
       throw new Error('Failed to get the file.');
     }
+
+    const useCase = props.mode === 'images' ? 'multimodal' : 'ace_upload';
+
     // 1. 先调用 startUploadFileToOpenaiWeb
     const uploadInfo = {
       file_name: file.name,
       file_size: file.file?.size,
-      use_case: 'ace_upload', // 您需要根据实际情况来设定 use_case
-    };
+      use_case: useCase,
+    } as OpenaiChatFileUploadInfo;
 
     onProgress({ percent: 0 });
 
@@ -140,8 +192,32 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
       uploadedFileInfo = fileFromLocalToOpenaiWebResponse.data;
     }
 
-    attachments.value.uploadedFileInfos = [...attachments.value.uploadedFileInfos, uploadedFileInfo];
-    attachments.value.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.id;
+    fileRef.value.uploadedFileInfos = [...fileRef.value.uploadedFileInfos, uploadedFileInfo];
+    fileRef.value.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.id;
+
+    if (props.mode === 'images') {
+      // 处理图片的宽高信息
+      const rawFile = file.file as File;
+      const getImageDimensions = new Promise<{ width: number; height: number }>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          resolve({ width: img.width, height: img.height });
+        };
+        img.onerror = (error) => {
+          reject(new Error(`Failed to load image: ${error}`));
+        };
+        img.src = URL.createObjectURL(rawFile);
+      });
+      try {
+        const dimensions = await getImageDimensions;
+        const width = dimensions.width;
+        const height = dimensions.height;
+        images.value.imageMetadataMap[uploadedFileInfo.id] = { width, height };
+      } catch (error) {
+        console.error(error);
+        onError();
+      }
+    }
 
     // 文件上传成功完成
     Message.success(t('tips.fileUploadSuccess', [file.name]));
@@ -153,14 +229,16 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
   }
 };
 
-const removeFile = async (options: { file: UploadFileInfo, fileList: Array<UploadFileInfo> }) => {
-  const {file} = options;
-  const fileId = attachments.value.naiveUiFileIdToServerFileIdMap[file.id];
+const removeFile = async (options: { file: UploadFileInfo; fileList: Array<UploadFileInfo> }) => {
+  const { file } = options;
+  const fileId = fileRef.value.naiveUiFileIdToServerFileIdMap[file.id];
   if (fileId != undefined) {
-    attachments.value.uploadedFileInfos = attachments.value.uploadedFileInfos.filter((uploadedFileInfo: UploadedFileInfoSchema) => {
-      return uploadedFileInfo.id != fileId;
-    });
-    delete attachments.value.naiveUiFileIdToServerFileIdMap[file.id];
+    fileRef.value.uploadedFileInfos = fileRef.value.uploadedFileInfos.filter(
+      (uploadedFileInfo: UploadedFileInfoSchema) => {
+        return uploadedFileInfo.id != fileId;
+      }
+    );
+    delete fileRef.value.naiveUiFileIdToServerFileIdMap[file.id];
     console.log(`Removed file ${file.name} with id ${fileId}`);
   }
   return true;

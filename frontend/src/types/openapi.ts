@@ -248,12 +248,14 @@ export interface components {
        * @default -1
        */
       api_context_message_count?: number;
-      /** Content */
-      content: string;
+      /** Text Content */
+      text_content: string;
       /** Openai Web Plugin Ids */
       openai_web_plugin_ids?: (string)[];
       /** Openai Web Attachments */
       openai_web_attachments?: (components["schemas"]["OpenaiWebAskAttachment"])[];
+      /** Openai Web Multimodal Image Parts */
+      openai_web_multimodal_image_parts?: (components["schemas"]["OpenaiWebChatMessageMultimodalTextContentImagePart"])[];
     };
     /** AskResponse */
     AskResponse: {
@@ -945,8 +947,11 @@ export interface components {
       file_name: string;
       /** File Size */
       file_size: number;
-      /** Use Case */
-      use_case: string | "ace_upload";
+      /**
+       * Use Case 
+       * @enum {string}
+       */
+      use_case: "ace_upload" | "multimodal";
     };
     /** OpenaiChatInterpreterInfo */
     OpenaiChatInterpreterInfo: {
@@ -1607,6 +1612,8 @@ export interface components {
     UploadedFileOpenaiWebInfo: {
       /** File Id */
       file_id?: string;
+      /** Use Case */
+      use_case?: ("ace_upload" | "multimodal") | string;
       /**
        * Upload Url 
        * @description 上传文件的url, 上传后应清空该字段

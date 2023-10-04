@@ -34,9 +34,13 @@ type FileUploadGroup = {
   naiveUiFileIdToServerFileIdMap: Record<string, string>;
 }
 
+type ImageUploadGroup = FileUploadGroup & {
+  imageMetadataMap: Record<string, { width: number; height: number }>;  // 使用 server 端的文件 id 作为 key
+}
+
 interface FileState {
   attachments: FileUploadGroup;
-  images: FileUploadGroup;
+  images: ImageUploadGroup;
 }
 
 export type { AppState, ConversationState, FileState, UserState };

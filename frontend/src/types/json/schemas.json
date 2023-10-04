@@ -218,9 +218,9 @@
         "title": "Api Context Message Count",
         "default": -1
       },
-      "content": {
+      "text_content": {
         "type": "string",
-        "title": "Content"
+        "title": "Text Content"
       },
       "openai_web_plugin_ids": {
         "items": {
@@ -255,6 +255,32 @@
         },
         "type": "array",
         "title": "Openai Web Attachments"
+      },
+      "openai_web_multimodal_image_parts": {
+        "items": {
+          "properties": {
+            "asset_pointer": {
+              "type": "string",
+              "title": "Asset Pointer"
+            },
+            "size_bytes": {
+              "type": "integer",
+              "title": "Size Bytes"
+            },
+            "width": {
+              "type": "integer",
+              "title": "Width"
+            },
+            "height": {
+              "type": "integer",
+              "title": "Height"
+            }
+          },
+          "type": "object",
+          "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+        },
+        "type": "array",
+        "title": "Openai Web Multimodal Image Parts"
       }
     },
     "type": "object",
@@ -262,7 +288,7 @@
       "source",
       "model",
       "new_conversation",
-      "content"
+      "text_content"
     ],
     "title": "AskRequest"
   },
@@ -5101,16 +5127,10 @@
         "title": "File Size"
       },
       "use_case": {
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "string",
-            "enum": [
-              "ace_upload"
-            ]
-          }
+        "type": "string",
+        "enum": [
+          "ace_upload",
+          "multimodal"
         ],
         "title": "Use Case"
       }
@@ -8101,6 +8121,21 @@
                 "type": "string",
                 "title": "File Id"
               },
+              "use_case": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "ace_upload",
+                      "multimodal"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Use Case"
+              },
               "upload_url": {
                 "type": "string",
                 "title": "Upload Url",
@@ -8245,6 +8280,21 @@
             "type": "string",
             "title": "File Id"
           },
+          "use_case": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ace_upload",
+                  "multimodal"
+                ]
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Use Case"
+          },
           "upload_url": {
             "type": "string",
             "title": "Upload Url",
@@ -8274,6 +8324,21 @@
       "file_id": {
         "type": "string",
         "title": "File Id"
+      },
+      "use_case": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "ace_upload",
+              "multimodal"
+            ]
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Use Case"
       },
       "upload_url": {
         "type": "string",

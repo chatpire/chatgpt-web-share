@@ -1,21 +1,28 @@
 <template>
   <div class="mt-3">
+    <!-- 单张图片 -->
     <n-image
       v-if="imageInfos.length == 1"
-      class="max-w-lg w-full h-auto"
+      class="max-w-sm sm:max-w-md lg:max-w-lg w-full h-auto overflow-hidden rounded-md"
       :src="imageInfos[0].url"
       lazy
-      :width="imageInfos[0].data.width"
-      :height="imageInfos[0].data.height"
+      :width="imageInfos[0].data.width || 100"
+      :height="imageInfos[0].data.height || 100"
       :img-props="{
         alt: 'Uploaded Image',
         class: 'max-w-full h-auto transition-opacity duration-300 opacity-100',
       }"
     >
       <template #placeholder>
-        <div class="w-full h-full bg-gray-100" />
+        <n-card>
+          <div class="w-full h-full flex items-center justify-center content-center">
+            <n-spin size="small" />
+          </div>
+        </n-card>
       </template>
     </n-image>
+
+    <!-- 多张图片 -->
     <n-image-group v-else>
       <div class="max-w-sm sm:max-w-md lg:max-w-lg grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <n-image
@@ -31,9 +38,6 @@
           }"
         >
           <template #placeholder>
-            <!-- <div class="w-full h-full bg-gray-100">
-              <n-spin size="small" />
-            </div> -->
             <n-card>
               <div class="w-full h-full flex items-center justify-center content-center">
                 <n-spin size="small" />

@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, Generic, TypeVar, get_args
+from typing import Optional, Generic, TypeVar, get_args, Literal
 
 from pydantic import BaseModel, Field, create_model, root_validator
 from pydantic.generics import GenericModel
@@ -57,5 +57,6 @@ class CustomOpenaiApiSettings(BaseModel):
 
 class UploadedFileOpenaiWebInfo(BaseModel):
     file_id: Optional[str]
+    use_case: Optional[Literal['ace_upload', 'multimodal'] | str]
     upload_url: Optional[str] = Field(description="上传文件的url, 上传后应清空该字段")
     download_url: Optional[str]

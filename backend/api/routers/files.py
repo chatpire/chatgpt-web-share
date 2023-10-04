@@ -79,8 +79,6 @@ async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: Us
         b. 再调用 upload_local_file_to_openai_web 接口，通知服务器上传文件到 OpenAI Web
     """
     file_size_exceed = upload_info.file_size > config.data.max_file_upload_size
-    if upload_info.use_case != "ace_upload":
-        raise InvalidRequestException(f"Invalid use case: {upload_info.use_case}")
     if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.server_upload_only and file_size_exceed:
         raise InvalidRequestException(f"File too large! Max size: {config.data.max_file_upload_size}")
     if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.disable_upload:

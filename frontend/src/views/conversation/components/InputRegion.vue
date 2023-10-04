@@ -80,10 +80,18 @@
     <!-- 输入框 -->
     <div class="mx-4 mb-4 flex flex-row space-x-2 items-center">
       <!-- 文件上传按钮 -->
-      <n-badge :value="fileStore.attachments.uploadedFileInfos.length" :offset="[-6, 3]">
-        <n-button v-if="$props.enableFileUpload" strong secondary circle @click="showFileUpload = !showFileUpload">
+      <n-badge v-if="$props.uploadMode === 'attachments'" :value="fileStore.attachments.uploadedFileInfos.length" :offset="[-6, 3]">
+        <n-button v-if="$props.uploadMode === 'attachments'" strong secondary circle @click="showFileUpload = !showFileUpload">
           <template #icon>
             <n-icon><AttachFileFilled /></n-icon>
+          </template>
+        </n-button>
+      </n-badge>
+      <!-- 图片上传按钮 -->
+      <n-badge v-else-if="$props.uploadMode === 'images'" :value="fileStore.images.uploadedFileInfos.length" :offset="[-6, 3]">
+        <n-button v-if="$props.uploadMode === 'images'" strong secondary circle @click="showFileUpload = !showFileUpload">
+          <template #icon>
+            <n-icon><MdImages /></n-icon>
           </template>
         </n-button>
       </n-badge>
@@ -122,12 +130,13 @@
 
     <!-- 文件上传区域 -->
     <div v-show="showFileUpload" class="mx-4 mb-4">
-      <FileUploadRegion ref="fileUploadRegionRef" />
+      <FileUploadRegion ref="fileUploadRegionRef" :mode="'images'" :disabled="uploadDisabled" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { MdImages } from '@vicons/ionicons4';
 import { LogoMarkdown, Print, Send, Stop } from '@vicons/ionicons5';
 import {
   AttachFileFilled,
@@ -159,7 +168,8 @@ const props = defineProps<{
   sendDisabled: boolean;
   inputValue: string;
   autoScrolling: boolean;
-  enableFileUpload: boolean;
+  uploadMode: 'images' | 'attachments' | null;
+  uploadDisabled: boolean;
 }>();
 
 const sendDisabled = computed(() => {
@@ -195,7 +205,6 @@ const inputValue = computed({
     emits('update:input-value', value);
   },
 });
-
 
 const emits = defineEmits<{
   (e: 'abort-request'): void;

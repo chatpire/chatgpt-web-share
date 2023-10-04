@@ -13,6 +13,7 @@ const useFileStore = defineStore('file', {
       uploadedFileInfos: [],
       naiveUiUploadFileInfos: [],
       naiveUiFileIdToServerFileIdMap: {},
+      imageMetadataMap: {},
     },
   }),
   actions: {

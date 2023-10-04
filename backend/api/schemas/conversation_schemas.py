@@ -7,7 +7,8 @@ from pydantic import BaseModel, root_validator, validator, Field
 from strenum import StrEnum
 
 from api.enums import ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
-from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage
+from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, \
+    OpenaiWebChatMessageMultimodalTextContentImagePart
 from api.schemas.openai_schemas import OpenaiWebAskAttachment
 from utils.logger import get_logger
 
@@ -33,9 +34,10 @@ class AskRequest(BaseModel):
     conversation_id: Optional[uuid.UUID] = None
     parent: Optional[uuid.UUID] = None
     api_context_message_count: int = Field(-1, ge=-1)
-    content: str
+    text_content: str
     openai_web_plugin_ids: Optional[list[str]] = None
     openai_web_attachments: Optional[list[OpenaiWebAskAttachment]] = None
+    openai_web_multimodal_image_parts: Optional[list[OpenaiWebChatMessageMultimodalTextContentImagePart]] = None
 
     @root_validator
     def check(cls, values):

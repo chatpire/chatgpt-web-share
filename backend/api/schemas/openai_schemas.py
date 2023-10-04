@@ -62,7 +62,7 @@ class OpenaiChatInterpreterInfo(BaseModel):
 class OpenaiChatFileUploadInfo(BaseModel):
     file_name: str
     file_size: int
-    use_case: str | Literal['ace_upload']
+    use_case: Literal['ace_upload', 'multimodal']
 
 
 class OpenaiChatFileUploadUrlResponse(BaseModel):
