@@ -209,7 +209,16 @@ const relativeTimeString = computed<string>(() => {
   }
 });
 
-type DisplayItemType = 'text' | 'browser' | 'plugin' | 'code' | 'execution_output' | 'multimodal_text' | 'dalle_prompt' | 'dalle_result' | null;
+type DisplayItemType =
+  | 'text'
+  | 'browser'
+  | 'plugin'
+  | 'code'
+  | 'execution_output'
+  | 'multimodal_text'
+  | 'dalle_prompt'
+  | 'dalle_result'
+  | null;
 
 type DisplayItem = {
   type: DisplayItemType;
@@ -302,7 +311,11 @@ const displayItems = computed<DisplayItem[]>(() => {
         displayType = 'execution_output';
         break;
       }
-      if (message.role == 'assistant' && message.metadata?.source == 'openai_web' && message.metadata.recipient == 'dalle.text2im') {
+      if (
+        message.role == 'assistant' &&
+        message.metadata?.source == 'openai_web' &&
+        message.metadata.recipient == 'dalle.text2im'
+      ) {
         displayType = 'dalle_prompt';
         break;
       }
@@ -411,11 +424,16 @@ ul {
   padding-left: 16px;
 }
 
+a.sandbox {
+  /* text-decoration-line: none !important; */
+}
+
 .markdown a {
   text-decoration-line: underline;
   text-underline-offset: 2px;
-  color: var(--n-text-color);
   font-weight: 500;
+  /* color: var(--n-text-color); */
+  @apply text-blue-500;
 }
 
 .markdown table {
