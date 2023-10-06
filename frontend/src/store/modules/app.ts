@@ -6,6 +6,7 @@ const osThemeRef = useOsTheme();
 import { useStorage } from '@vueuse/core';
 
 import { setLocale } from '@/i18n';
+import { ChatSourceTypes } from '@/types/schema';
 import { themeRef } from '@/utils/tips';
 
 const useAppStore = defineStore('app', {
@@ -18,7 +19,7 @@ const useAppStore = defineStore('app', {
       codeAutoWrap: false,
       widerConversationPage: true,
     }),
-    lastSelectedSource: useStorage<string | null>('lastSelectedSource', null),
+    lastSelectedSource: useStorage<ChatSourceTypes>('lastSelectedSource', null),
     lastSelectedModel: useStorage<string | null>('lastSelectedModel', null),
   }),
   getters: {},

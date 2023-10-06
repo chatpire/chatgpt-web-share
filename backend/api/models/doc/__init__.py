@@ -85,11 +85,22 @@ class OpenaiWebChatMessageTextContent(BaseModel):
     parts: Optional[list[str]]
 
 
+class OpenaiWebChatMessageMultimodalTextMetadataDalle(BaseModel):
+    prompt: Optional[str]
+    seed: Optional[int]
+    serialization_title: Optional[str]
+
+
+class OpenaiWebChatMessageMultimodalTextMetadata(BaseModel):
+    dalle: Optional[OpenaiWebChatMessageMultimodalTextMetadataDalle]
+
+
 class OpenaiWebChatMessageMultimodalTextContentImagePart(BaseModel):
     asset_pointer: Optional[str]
     size_bytes: Optional[int]
     width: Optional[int]
     height: Optional[int]
+    metadata: Optional[OpenaiWebChatMessageMultimodalTextMetadata]
 
 
 class OpenaiWebChatMessageMultimodalTextContent(BaseModel):

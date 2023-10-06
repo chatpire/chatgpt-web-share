@@ -28,7 +28,8 @@
                       "gpt_4_mobile",
                       "gpt_4_browsing",
                       "gpt_4_plugins",
-                      "gpt_4_code_interpreter"
+                      "gpt_4_code_interpreter",
+                      "gpt_4_dalle"
                     ],
                     "title": "OpenaiWebChatModels",
                     "description": "An enumeration."
@@ -130,7 +131,8 @@
                   "gpt_4_mobile",
                   "gpt_4_browsing",
                   "gpt_4_plugins",
-                  "gpt_4_code_interpreter"
+                  "gpt_4_code_interpreter",
+                  "gpt_4_dalle"
                 ],
                 "title": "OpenaiWebChatModels",
                 "description": "An enumeration."
@@ -274,6 +276,30 @@
             "height": {
               "type": "integer",
               "title": "Height"
+            },
+            "metadata": {
+              "properties": {
+                "dalle": {
+                  "properties": {
+                    "prompt": {
+                      "type": "string",
+                      "title": "Prompt"
+                    },
+                    "seed": {
+                      "type": "integer",
+                      "title": "Seed"
+                    },
+                    "serialization_title": {
+                      "type": "string",
+                      "title": "Serialization Title"
+                    }
+                  },
+                  "type": "object",
+                  "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+                }
+              },
+              "type": "object",
+              "title": "OpenaiWebChatMessageMultimodalTextMetadata"
             }
           },
           "type": "object",
@@ -441,6 +467,30 @@
                                 "height": {
                                   "type": "integer",
                                   "title": "Height"
+                                },
+                                "metadata": {
+                                  "properties": {
+                                    "dalle": {
+                                      "properties": {
+                                        "prompt": {
+                                          "type": "string",
+                                          "title": "Prompt"
+                                        },
+                                        "seed": {
+                                          "type": "integer",
+                                          "title": "Seed"
+                                        },
+                                        "serialization_title": {
+                                          "type": "string",
+                                          "title": "Serialization Title"
+                                        }
+                                      },
+                                      "type": "object",
+                                      "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+                                    }
+                                  },
+                                  "type": "object",
+                                  "title": "OpenaiWebChatMessageMultimodalTextMetadata"
                                 }
                               },
                               "type": "object",
@@ -1600,6 +1650,30 @@
                             "height": {
                               "type": "integer",
                               "title": "Height"
+                            },
+                            "metadata": {
+                              "properties": {
+                                "dalle": {
+                                  "properties": {
+                                    "prompt": {
+                                      "type": "string",
+                                      "title": "Prompt"
+                                    },
+                                    "seed": {
+                                      "type": "integer",
+                                      "title": "Seed"
+                                    },
+                                    "serialization_title": {
+                                      "type": "string",
+                                      "title": "Serialization Title"
+                                    }
+                                  },
+                                  "type": "object",
+                                  "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+                                }
+                              },
+                              "type": "object",
+                              "title": "OpenaiWebChatMessageMultimodalTextMetadata"
                             }
                           },
                           "type": "object",
@@ -2314,6 +2388,30 @@
                                   "height": {
                                     "type": "integer",
                                     "title": "Height"
+                                  },
+                                  "metadata": {
+                                    "properties": {
+                                      "dalle": {
+                                        "properties": {
+                                          "prompt": {
+                                            "type": "string",
+                                            "title": "Prompt"
+                                          },
+                                          "seed": {
+                                            "type": "integer",
+                                            "title": "Seed"
+                                          },
+                                          "serialization_title": {
+                                            "type": "string",
+                                            "title": "Serialization Title"
+                                          }
+                                        },
+                                        "type": "object",
+                                        "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+                                      }
+                                    },
+                                    "type": "object",
+                                    "title": "OpenaiWebChatMessageMultimodalTextMetadata"
                                   }
                                 },
                                 "type": "object",
@@ -3174,7 +3272,8 @@
                     "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_plugins",
-                    "gpt_4_code_interpreter"
+                    "gpt_4_code_interpreter",
+                    "gpt_4_dalle"
                   ],
                   "title": "OpenaiWebChatModels",
                   "description": "An enumeration."
@@ -3201,7 +3300,8 @@
                   "gpt_4_mobile": "gpt-4-mobile",
                   "gpt_4_browsing": "gpt-4-browsing",
                   "gpt_4_plugins": "gpt-4-plugins",
-                  "gpt_4_code_interpreter": "gpt-4-code-interpreter"
+                  "gpt_4_code_interpreter": "gpt-4-code-interpreter",
+                  "gpt_4_dalle": "gpt-4-dalle"
                 }
               },
               "file_upload_strategy": {
@@ -3209,7 +3309,6 @@
                   {
                     "type": "string",
                     "enum": [
-                      "disable_upload",
                       "server_upload_only",
                       "browser_upload_only",
                       "browser_upload_when_file_size_exceed"
@@ -3258,7 +3357,8 @@
             "gpt_4_mobile": "gpt-4-mobile",
             "gpt_4_browsing": "gpt-4-browsing",
             "gpt_4_plugins": "gpt-4-plugins",
-            "gpt_4_code_interpreter": "gpt-4-code-interpreter"
+            "gpt_4_code_interpreter": "gpt-4-code-interpreter",
+            "gpt_4_dalle": "gpt-4-dalle"
           },
           "file_upload_strategy": "browser_upload_only",
           "enable_uploading_attachments": true,
@@ -5420,7 +5520,8 @@
           "gpt_4_mobile",
           "gpt_4_browsing",
           "gpt_4_plugins",
-          "gpt_4_code_interpreter"
+          "gpt_4_code_interpreter",
+          "gpt_4_dalle"
         ],
         "title": "OpenaiWebChatModels",
         "description": "An enumeration."
@@ -5491,7 +5592,8 @@
             "gpt_4_mobile",
             "gpt_4_browsing",
             "gpt_4_plugins",
-            "gpt_4_code_interpreter"
+            "gpt_4_code_interpreter",
+            "gpt_4_dalle"
           ],
           "title": "OpenaiWebChatModels",
           "description": "An enumeration."
@@ -5518,7 +5620,8 @@
           "gpt_4_mobile": "gpt-4-mobile",
           "gpt_4_browsing": "gpt-4-browsing",
           "gpt_4_plugins": "gpt-4-plugins",
-          "gpt_4_code_interpreter": "gpt-4-code-interpreter"
+          "gpt_4_code_interpreter": "gpt-4-code-interpreter",
+          "gpt_4_dalle": "gpt-4-dalle"
         }
       },
       "file_upload_strategy": {
@@ -5526,7 +5629,6 @@
           {
             "type": "string",
             "enum": [
-              "disable_upload",
               "server_upload_only",
               "browser_upload_only",
               "browser_upload_when_file_size_exceed"
@@ -5676,6 +5778,30 @@
                         "height": {
                           "type": "integer",
                           "title": "Height"
+                        },
+                        "metadata": {
+                          "properties": {
+                            "dalle": {
+                              "properties": {
+                                "prompt": {
+                                  "type": "string",
+                                  "title": "Prompt"
+                                },
+                                "seed": {
+                                  "type": "integer",
+                                  "title": "Seed"
+                                },
+                                "serialization_title": {
+                                  "type": "string",
+                                  "title": "Serialization Title"
+                                }
+                              },
+                              "type": "object",
+                              "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+                            }
+                          },
+                          "type": "object",
+                          "title": "OpenaiWebChatMessageMultimodalTextMetadata"
                         }
                       },
                       "type": "object",
@@ -6873,6 +6999,30 @@
                 "height": {
                   "type": "integer",
                   "title": "Height"
+                },
+                "metadata": {
+                  "properties": {
+                    "dalle": {
+                      "properties": {
+                        "prompt": {
+                          "type": "string",
+                          "title": "Prompt"
+                        },
+                        "seed": {
+                          "type": "integer",
+                          "title": "Seed"
+                        },
+                        "serialization_title": {
+                          "type": "string",
+                          "title": "Serialization Title"
+                        }
+                      },
+                      "type": "object",
+                      "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+                    }
+                  },
+                  "type": "object",
+                  "title": "OpenaiWebChatMessageMultimodalTextMetadata"
                 }
               },
               "type": "object",
@@ -6908,10 +7058,76 @@
       "height": {
         "type": "integer",
         "title": "Height"
+      },
+      "metadata": {
+        "properties": {
+          "dalle": {
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "title": "Prompt"
+              },
+              "seed": {
+                "type": "integer",
+                "title": "Seed"
+              },
+              "serialization_title": {
+                "type": "string",
+                "title": "Serialization Title"
+              }
+            },
+            "type": "object",
+            "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+          }
+        },
+        "type": "object",
+        "title": "OpenaiWebChatMessageMultimodalTextMetadata"
       }
     },
     "type": "object",
     "title": "OpenaiWebChatMessageMultimodalTextContentImagePart"
+  },
+  "OpenaiWebChatMessageMultimodalTextMetadata": {
+    "properties": {
+      "dalle": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "serialization_title": {
+            "type": "string",
+            "title": "Serialization Title"
+          }
+        },
+        "type": "object",
+        "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+      }
+    },
+    "type": "object",
+    "title": "OpenaiWebChatMessageMultimodalTextMetadata"
+  },
+  "OpenaiWebChatMessageMultimodalTextMetadataDalle": {
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "title": "Prompt"
+      },
+      "seed": {
+        "type": "integer",
+        "title": "Seed"
+      },
+      "serialization_title": {
+        "type": "string",
+        "title": "Serialization Title"
+      }
+    },
+    "type": "object",
+    "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
   },
   "OpenaiWebChatMessageStderrContent": {
     "properties": {
@@ -7051,7 +7267,8 @@
       "gpt_4_mobile",
       "gpt_4_browsing",
       "gpt_4_plugins",
-      "gpt_4_code_interpreter"
+      "gpt_4_code_interpreter",
+      "gpt_4_dalle"
     ],
     "title": "OpenaiWebChatModels",
     "description": "An enumeration."
@@ -7220,6 +7437,30 @@
                               "height": {
                                 "type": "integer",
                                 "title": "Height"
+                              },
+                              "metadata": {
+                                "properties": {
+                                  "dalle": {
+                                    "properties": {
+                                      "prompt": {
+                                        "type": "string",
+                                        "title": "Prompt"
+                                      },
+                                      "seed": {
+                                        "type": "integer",
+                                        "title": "Seed"
+                                      },
+                                      "serialization_title": {
+                                        "type": "string",
+                                        "title": "Serialization Title"
+                                      }
+                                    },
+                                    "type": "object",
+                                    "title": "OpenaiWebChatMessageMultimodalTextMetadataDalle"
+                                  }
+                                },
+                                "type": "object",
+                                "title": "OpenaiWebChatMessageMultimodalTextMetadata"
                               }
                             },
                             "type": "object",
@@ -7886,7 +8127,6 @@
   "OpenaiWebFileUploadStrategyOption": {
     "type": "string",
     "enum": [
-      "disable_upload",
       "server_upload_only",
       "browser_upload_only",
       "browser_upload_when_file_size_exceed"
@@ -7907,7 +8147,8 @@
       "gpt_4_mobile": 0,
       "gpt_4_browsing": 0,
       "gpt_4_plugins": 0,
-      "gpt_4_code_interpreter": 0
+      "gpt_4_code_interpreter": 0,
+      "gpt_4_dalle": 0
     }
   },
   "OpenaiWebSourceSettingSchema": {
@@ -7989,7 +8230,8 @@
             "gpt_4_mobile",
             "gpt_4_browsing",
             "gpt_4_plugins",
-            "gpt_4_code_interpreter"
+            "gpt_4_code_interpreter",
+            "gpt_4_dalle"
           ],
           "title": "OpenaiWebChatModels",
           "description": "An enumeration."
@@ -8009,7 +8251,8 @@
           "gpt_4_mobile": 0,
           "gpt_4_browsing": 0,
           "gpt_4_plugins": 0,
-          "gpt_4_code_interpreter": 0
+          "gpt_4_code_interpreter": 0,
+          "gpt_4_dalle": 0
         }
       },
       "allow_uploading_attachments": {
@@ -8103,7 +8346,6 @@
       "strategy": {
         "type": "string",
         "enum": [
-          "disable_upload",
           "server_upload_only",
           "browser_upload_only",
           "browser_upload_when_file_size_exceed"
@@ -8585,7 +8827,8 @@
                     "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_plugins",
-                    "gpt_4_code_interpreter"
+                    "gpt_4_code_interpreter",
+                    "gpt_4_dalle"
                   ],
                   "title": "OpenaiWebChatModels",
                   "description": "An enumeration."
@@ -8605,7 +8848,8 @@
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
                   "gpt_4_plugins": 0,
-                  "gpt_4_code_interpreter": 0
+                  "gpt_4_code_interpreter": 0,
+                  "gpt_4_dalle": 0
                 }
               },
               "allow_uploading_attachments": {
@@ -8930,7 +9174,8 @@
                     "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_plugins",
-                    "gpt_4_code_interpreter"
+                    "gpt_4_code_interpreter",
+                    "gpt_4_dalle"
                   ],
                   "title": "OpenaiWebChatModels",
                   "description": "An enumeration."
@@ -8950,7 +9195,8 @@
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
                   "gpt_4_plugins": 0,
-                  "gpt_4_code_interpreter": 0
+                  "gpt_4_code_interpreter": 0,
+                  "gpt_4_dalle": 0
                 }
               },
               "allow_uploading_attachments": {
@@ -9234,7 +9480,8 @@
                 "gpt_4_mobile",
                 "gpt_4_browsing",
                 "gpt_4_plugins",
-                "gpt_4_code_interpreter"
+                "gpt_4_code_interpreter",
+                "gpt_4_dalle"
               ],
               "title": "OpenaiWebChatModels",
               "description": "An enumeration."
@@ -9254,7 +9501,8 @@
               "gpt_4_mobile": 0,
               "gpt_4_browsing": 0,
               "gpt_4_plugins": 0,
-              "gpt_4_code_interpreter": 0
+              "gpt_4_code_interpreter": 0,
+              "gpt_4_dalle": 0
             }
           },
           "allow_uploading_attachments": {

@@ -26,7 +26,8 @@ export const chatModelColorMap: Record<string, string> = {
   gpt_4_mobile: 'darkpurple',
   gpt_4_browsing: 'purple',
   gpt_4_plugins: 'purple',
-  gpt_4_code_interpreter: 'purple'
+  gpt_4_code_interpreter: 'purple',
+  gpt_4_dalle: 'purple'
 };
 
 export const getChatModelColor = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
@@ -38,6 +39,7 @@ export const getChatModelIconStyle = (model_name: OpenaiWebChatModels | OpenaiAp
   if (model_name == 'gpt_4_plugins') return 'plugins';
   else if (model_name == 'gpt_4_browsing') return 'browsing';
   else if (model_name == 'gpt_4_code_interpreter') return 'code-interpreter';
+  else if (model_name == 'gpt_4_dalle') return 'dalle';
   else return 'default';
 };
 
@@ -85,13 +87,14 @@ export const getContentRawText = (message: BaseChatMessage | null): string => {
       if (typeof part == 'string') return part;
     }
     return '';
-  }
-  else {
+  } else {
     return `${message.content}`;
   }
 };
 
-export const getMultimodalContentImageParts = (message: BaseChatMessage | null): OpenaiWebChatMessageMultimodalTextContentImagePart[] => {
+export const getMultimodalContentImageParts = (
+  message: BaseChatMessage | null
+): OpenaiWebChatMessageMultimodalTextContentImagePart[] => {
   if (!message || !message.content) return [];
   if (typeof message.content == 'string') return [];
   if (message.content.content_type == 'multimodal_text') {
@@ -161,12 +164,11 @@ export function mergeContinuousMessages(messages: BaseChatMessage[]): BaseChatMe
 export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessage[][] {
   const result = [] as BaseChatMessage[][];
   let currentMessageList = [] as BaseChatMessage[];
-  let currentMessageListType: 'text' | 'other' | null = null;
-  
+  let currentMessageListType: 'text' | 'dalle' | 'other' | null = null;
+
   for (const message of messages) {
     if (message.source == 'openai_web') {
       const metadata = message.metadata as OpenaiWebChatMessageMetadata;
-      // text: 连续的 content.content_type == "text" 且 recipient == 'all' 放到一组
       if (message.role == 'user') {
         if (messages.length > 1) {
           console.error('found multiple user message in splitMessagesInGroup', messages);
@@ -186,8 +188,16 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
           currentMessageList = [];
         }
         currentMessageList.push(message);
+      } else if (message.author_name == 'dalle.text2im') {
+        if (currentMessageListType !== 'dalle') {
+          currentMessageListType = 'dalle';
+          if (currentMessageList.length > 0) result.push(currentMessageList);
+          currentMessageList = [];
+        }
+        currentMessageList.push(message);
+      
       } else {
-        // 由于同一个对话中 plugins 调用和 browser 调用不能同时出现，因此连续的其它情况放到一组
+        // 连续的其它情况放到一组
         if (currentMessageListType !== 'other') {
           if (currentMessageList.length > 0) result.push(currentMessageList);
           currentMessageListType = 'other';
@@ -221,19 +231,24 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
     else if (typeof message.content == 'string') result += message.content;
     else if (message.content.content_type == 'text') {
       let text = getContentRawText(message);
-      if (message.source == 'openai_web' && message.role==='assistant'&& message.model === 'gpt_4_browsing' ) {
+      if (message.source == 'openai_web' && message.role === 'assistant' && message.model === 'gpt_4_browsing') {
         const metadata = message.metadata as OpenaiWebChatMessageMetadata;
         if (metadata.citations && metadata.citations.length > 0) {
           let processedText = text;
-          metadata.citations.sort((a, b) => {
-            return (a.start_ix as number) - (b.start_ix as number);
-          }).reverse().forEach((citation, _index) => {
-            const start = citation.start_ix!;
-            const end = citation.end_ix!;
-            const originalText = text.slice(start, end);
-            const replacement = `<span class="browsing-citation" data-citation="${encodeURIComponent(JSON.stringify(citation.metadata!))}">${originalText}</span>`;
-            processedText = processedText.slice(0, start) + replacement + processedText.slice(end);
-          });
+          metadata.citations
+            .sort((a, b) => {
+              return (a.start_ix as number) - (b.start_ix as number);
+            })
+            .reverse()
+            .forEach((citation, _index) => {
+              const start = citation.start_ix!;
+              const end = citation.end_ix!;
+              const originalText = text.slice(start, end);
+              const replacement = `<span class="browsing-citation" data-citation="${encodeURIComponent(
+                JSON.stringify(citation.metadata!)
+              )}">${originalText}</span>`;
+              processedText = processedText.slice(0, start) + replacement + processedText.slice(end);
+            });
           text = processedText;
         }
       }
@@ -249,7 +264,7 @@ function replaceMathDelimiters(input: string) {
   let output = input.replace(/\\\[([\s\S]*?)\\\]/g, (match, content) => {
     return `$$\n${content.trim()}\n$$`;
   });
-  
+
   output = output.replace(/\\\((.*?)\\\)/g, (match, content) => {
     return `$${content.trim()}$`;
   });

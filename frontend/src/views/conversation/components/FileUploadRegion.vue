@@ -148,7 +148,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     const startUploadResponse = await startUploadFileToOpenaiWeb(uploadInfo);
 
     // 检查返回的状态，如果有错误或者没有返回 upload_file_info，抛出错误
-    if (!startUploadResponse.data || startUploadResponse.data.strategy === 'disable_upload') {
+    if (!startUploadResponse.data) {
       throw new Error('Failed to start the upload process.');
     }
 

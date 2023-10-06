@@ -174,7 +174,9 @@
     "useCodeInterpreter": "使用代码解释器",
     "viewAttachments": "展开 {0} 个附件",
     "selectFile": "选择文件",
-    "emptyFileList": "文件列表为空"
+    "emptyFileList": "文件列表为空",
+    "modelDescriptions": "模型说明",
+    "remain": "剩余次数"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -343,10 +345,27 @@
     "gpt_3_5": "GPT-3.5",
     "gpt_3_5_mobile": "GPT-3.5 Mobile",
     "gpt_4": "GPT-4",
-    "gpt_4_browsing": "GPT-4 Browsing",
-    "gpt_4_plugins": "GPT-4 Plugins",
+    "gpt_4_browsing": "GPT-4 网页浏览",
+    "gpt_4_plugins": "GPT-4 插件",
     "gpt_4_mobile": "GPT-4 Mobile",
-    "gpt_4_code_interpreter": "GPT-4 代码执行器"
+    "gpt_4_code_interpreter": "GPT-4 代码执行器",
+    "gpt_4_dalle": "GPT-4 DALL·E 3"
+  },
+  "modelDescriptions": {
+    "openai_api": {
+      "gpt_3_5": "最快的模型，非常适合大多数日常任务。",
+      "gpt_4": "最有能力的模型，非常适合需要创造力和高级推理的任务。相对较慢。"
+    },
+    "openai_web": {
+      "gpt_3_5": "最快的模型，非常适合大多数日常任务。",
+      "gpt_3_5_mobile": "GPT-3.5的移动版。不推荐使用。",
+      "gpt_4": "最有能力的模型，非常适合需要创造力和高级推理的任务。所有用户将共享每 3 小时 50 条 GPT-4 消息的使用限制（包括所有 GPT-4）模型。",
+      "gpt_4_browsing": "实验性模型，知道何时以及如何浏览网页来解决问题。",
+      "gpt_4_plugins": "实验性模型，能够利用多种插件。",
+      "gpt_4_mobile": "GPT-4的移动版。不推荐使用。",
+      "gpt_4_code_interpreter": "实验性模型，可以通过生成 Python 代码并在 Jupyter Notebook 中执行来解决任务。\n你可以上传任何类型的文件，并要求模型分析它，或生成一个新文件供你下载。",
+      "gpt_4_dalle": "使用 DALL·E 3 模型从自然文本描述生成图像。"
+    }
   },
   "sources": {
     "openai_web": "OpenAI Web",

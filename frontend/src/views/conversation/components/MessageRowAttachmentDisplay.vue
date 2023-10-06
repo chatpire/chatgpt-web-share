@@ -1,5 +1,5 @@
 <template>
-  <div class="mr-4 w-full max-w-100 mb-1">
+  <div class="mr-4 w-full max-w-100 mt-2 mb-1">
     <n-card :content-style="{ padding: 0 }">
       <n-collapse>
         <template #arrow>

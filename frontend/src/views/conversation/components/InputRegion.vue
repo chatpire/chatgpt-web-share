@@ -80,16 +80,36 @@
     <!-- 输入框 -->
     <div class="mx-4 mb-4 flex flex-row space-x-2 items-center">
       <!-- 文件上传按钮 -->
-      <n-badge v-if="$props.uploadMode === 'attachments'" :value="fileStore.attachments.uploadedFileInfos.length" :offset="[-6, 3]">
-        <n-button v-if="$props.uploadMode === 'attachments'" strong secondary circle @click="showFileUpload = !showFileUpload">
+      <n-badge
+        v-if="$props.uploadMode === 'attachments'"
+        :value="fileStore.attachments.uploadedFileInfos.length"
+        :offset="[-6, 3]"
+      >
+        <n-button
+          v-if="$props.uploadMode === 'attachments'"
+          strong
+          secondary
+          circle
+          @click="showFileUpload = !showFileUpload"
+        >
           <template #icon>
             <n-icon><AttachFileFilled /></n-icon>
           </template>
         </n-button>
       </n-badge>
       <!-- 图片上传按钮 -->
-      <n-badge v-else-if="$props.uploadMode === 'images'" :value="fileStore.images.uploadedFileInfos.length" :offset="[-6, 3]">
-        <n-button v-if="$props.uploadMode === 'images'" strong secondary circle @click="showFileUpload = !showFileUpload">
+      <n-badge
+        v-else-if="$props.uploadMode === 'images'"
+        :value="fileStore.images.uploadedFileInfos.length"
+        :offset="[-6, 3]"
+      >
+        <n-button
+          v-if="$props.uploadMode === 'images'"
+          strong
+          secondary
+          circle
+          @click="showFileUpload = !showFileUpload"
+        >
           <template #icon>
             <n-icon><MdImages /></n-icon>
           </template>
@@ -129,8 +149,8 @@
       </div> -->
 
     <!-- 文件上传区域 -->
-    <div v-show="showFileUpload" class="mx-4 mb-4">
-      <FileUploadRegion ref="fileUploadRegionRef" :mode="'images'" :disabled="uploadDisabled" />
+    <div v-if="props.uploadMode" v-show="showFileUpload" class="mx-4 mb-4">
+      <FileUploadRegion ref="fileUploadRegionRef" :mode="props.uploadMode" :disabled="uploadDisabled" />
     </div>
   </div>
 </template>

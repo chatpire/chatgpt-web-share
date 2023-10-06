@@ -505,7 +505,8 @@ export interface components {
        *     "gpt_4_mobile": "gpt-4-mobile",
        *     "gpt_4_browsing": "gpt-4-browsing",
        *     "gpt_4_plugins": "gpt-4-plugins",
-       *     "gpt_4_code_interpreter": "gpt-4-code-interpreter"
+       *     "gpt_4_code_interpreter": "gpt-4-code-interpreter",
+       *     "gpt_4_dalle": "gpt-4-dalle"
        *   },
        *   "file_upload_strategy": "browser_upload_only",
        *   "enable_uploading_attachments": true,
@@ -1102,7 +1103,8 @@ export interface components {
        *   "gpt_4_mobile": "gpt-4-mobile",
        *   "gpt_4_browsing": "gpt-4-browsing",
        *   "gpt_4_plugins": "gpt-4-plugins",
-       *   "gpt_4_code_interpreter": "gpt-4-code-interpreter"
+       *   "gpt_4_code_interpreter": "gpt-4-code-interpreter",
+       *   "gpt_4_dalle": "gpt-4-dalle"
        * }
        */
       model_code_mapping?: {
@@ -1315,6 +1317,20 @@ export interface components {
       width?: number;
       /** Height */
       height?: number;
+      metadata?: components["schemas"]["OpenaiWebChatMessageMultimodalTextMetadata"];
+    };
+    /** OpenaiWebChatMessageMultimodalTextMetadata */
+    OpenaiWebChatMessageMultimodalTextMetadata: {
+      dalle?: components["schemas"]["OpenaiWebChatMessageMultimodalTextMetadataDalle"];
+    };
+    /** OpenaiWebChatMessageMultimodalTextMetadataDalle */
+    OpenaiWebChatMessageMultimodalTextMetadataDalle: {
+      /** Prompt */
+      prompt?: string;
+      /** Seed */
+      seed?: number;
+      /** Serialization Title */
+      serialization_title?: string;
     };
     /** OpenaiWebChatMessageStderrContent */
     OpenaiWebChatMessageStderrContent: {
@@ -1379,7 +1395,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins" | "gpt_4_code_interpreter";
+    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins" | "gpt_4_code_interpreter" | "gpt_4_dalle";
     /**
      * OpenaiWebChatStatus 
      * @description An enumeration. 
@@ -1487,7 +1503,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    OpenaiWebFileUploadStrategyOption: "disable_upload" | "server_upload_only" | "browser_upload_only" | "browser_upload_when_file_size_exceed";
+    OpenaiWebFileUploadStrategyOption: "server_upload_only" | "browser_upload_only" | "browser_upload_when_file_size_exceed";
     /**
      * OpenaiWebPerModelAskCount 
      * @default {
@@ -1497,7 +1513,8 @@ export interface components {
      *   "gpt_4_mobile": 0,
      *   "gpt_4_browsing": 0,
      *   "gpt_4_plugins": 0,
-     *   "gpt_4_code_interpreter": 0
+     *   "gpt_4_code_interpreter": 0,
+     *   "gpt_4_dalle": 0
      * }
      */
     OpenaiWebPerModelAskCount: {

@@ -1,7 +1,7 @@
 import { RemovableRef } from '@vueuse/core';
 import { UploadFileInfo } from 'naive-ui';
 
-import { BaseConversationHistory, BaseConversationSchema, UploadedFileInfoSchema, UserRead } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema, ChatSourceTypes, UploadedFileInfoSchema, UserRead } from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;
@@ -20,7 +20,7 @@ interface AppState {
   theme: any;
   language: RemovableRef<'zh-CN' | 'en-US' | string>;
   preference: RemovableRef<Preference>;
-  lastSelectedSource: RemovableRef<string | null>;
+  lastSelectedSource: RemovableRef<ChatSourceTypes | null>;
   lastSelectedModel: RemovableRef<string | null>;
 }
 

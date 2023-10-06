@@ -14,7 +14,7 @@
       collapsed-trigger-style="top: 27px; right: -26px;"
       bordered
       show-trigger="arrow-circle"
-      :width="260"
+      :width="280"
       class="h-full"
     >
       <LeftBar
@@ -172,12 +172,6 @@ const inputValue = ref('');
 const currentSendMessage = ref<BaseChatMessage | null>(null);
 const currentRecvMessages = ref<BaseChatMessage[]>([]);
 
-// const isFileUploadAvailable = computed(() => {
-//   return (
-//     currentConversation.value?.source === 'openai_web' &&
-//     currentConversation.value.current_model == 'gpt_4_code_interpreter'
-//   );
-// });
 const uploadMode = computed(() => {
   const allowAttachmentsUploading = userStore.userInfo?.setting.openai_web.allow_uploading_attachments;
   const allowMultimodalImagesUploading = userStore.userInfo?.setting.openai_web.allow_uploading_multimodal_images;
