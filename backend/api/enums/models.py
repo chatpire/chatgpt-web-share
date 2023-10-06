@@ -45,6 +45,7 @@ class OpenaiWebChatModels(BaseChatModelEnum):
     gpt_4_browsing = auto()
     gpt_4_plugins = auto()
     gpt_4_code_interpreter = auto()
+    gpt_4_dalle = auto()
 
 
 class OpenaiApiChatModels(BaseChatModelEnum):

@@ -346,7 +346,8 @@
     "gpt_4_mobile": "GPT-4 Mobile",
     "gpt_4_browsing": "GPT-4 Browsing",
     "gpt_4_plugins": "GPT-4 Plugins",
-    "gpt_4_code_interpreter": "GPT-4 Code Interpreter"
+    "gpt_4_code_interpreter": "GPT-4 Code Interpreter",
+    "gpt_4_dalle": "GPT-4 DALL·E 3"
   },
   "sources": {
     "openai_web": "OpenAI Web",

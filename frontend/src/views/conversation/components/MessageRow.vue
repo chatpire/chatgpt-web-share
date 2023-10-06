@@ -39,6 +39,16 @@
               :messages="item.messages"
             />
           </div>
+          <div v-else-if="item.type == 'dalle_prompt'">
+            <MessageRowDallePromptDisplay :messages="item.messages" />
+          </div>
+          <div v-else-if="item.type == 'dalle_result'">
+            <MessageRowMultimodalTextDalleDisplay
+              :conversation-id="props.conversationId"
+              :render-markdown="renderMarkdown"
+              :messages="item.messages"
+            />
+          </div>
           <div v-if="attachments.length != 0">
             <MessageRowAttachmentDisplay :attachments="attachments" />
           </div>
@@ -121,9 +131,12 @@ import { Message } from '@/utils/tips';
 import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
 import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
+import MessageRowDallePromptDisplay from './MessageRowDallePromptDisplay.vue';
+import MessageRowMultimodalTextDalleDisplay from './MessageRowMultimodalTextDalleDisplay.vue';
 import MessageRowMultimodalTextDisplay from './MessageRowMultimodalTextDisplay.vue';
 import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
+
 const { t } = useI18n();
 
 const themeVars = useThemeVars();
@@ -196,7 +209,7 @@ const relativeTimeString = computed<string>(() => {
   }
 });
 
-type DisplayItemType = 'text' | 'browser' | 'plugin' | 'code' | 'execution_output' | 'multimodal_text' | null;
+type DisplayItemType = 'text' | 'browser' | 'plugin' | 'code' | 'execution_output' | 'multimodal_text' | 'dalle_prompt' | 'dalle_result' | null;
 
 type DisplayItem = {
   type: DisplayItemType;
@@ -269,6 +282,10 @@ const displayItems = computed<DisplayItem[]>(() => {
     }
     // 辨认当前 group 的类型
     for (const message of group) {
+      if (typeof message.content == 'string') {
+        console.error('string content mixed in non-user group', group);
+        break;
+      }
       if (message.role == 'assistant' && message.model == 'gpt_4_plugins') {
         displayType = 'plugin';
         break;
@@ -277,12 +294,24 @@ const displayItems = computed<DisplayItem[]>(() => {
         displayType = 'browser';
         break;
       }
-      if (typeof message.content != 'string' && message.content?.content_type == 'code') {
+      if (message.content?.content_type == 'code') {
         displayType = 'code';
         break;
       }
-      if (typeof message.content != 'string' && message.content?.content_type == 'execution_output') {
+      if (message.content?.content_type == 'execution_output') {
         displayType = 'execution_output';
+        break;
+      }
+      if (message.role == 'assistant' && message.metadata?.source == 'openai_web' && message.metadata.recipient == 'dalle.text2im') {
+        displayType = 'dalle_prompt';
+        break;
+      }
+      if (message.author_name == 'dalle.text2im') {
+        displayType = 'dalle_result';
+        break;
+      }
+      if (message.content?.content_type == 'multimodal_text') {
+        displayType = 'multimodal_text';
         break;
       }
     }
