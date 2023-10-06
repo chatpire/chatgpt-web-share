@@ -95,9 +95,16 @@ async def get_me(user: User = Depends(current_active_user)):
     for source in ["openai_api", "openai_web"]:
         source_setting = getattr(user_read.setting, source)
         global_enabled_models = getattr(config, source).enabled_models
-        source_setting.available_models = list(
-            set(source_setting.available_models).intersection(set(global_enabled_models)))
+        available_models = []
+        for model in source_setting.available_models:
+            if model in global_enabled_models:
+                available_models.append(model)
+        source_setting.available_models = available_models
         setattr(user_read.setting, source, source_setting)
+    if not config.openai_web.enabled:
+        user_read.setting.openai_web.allow_to_use = False
+    if not config.openai_api.enabled:
+        user_read.setting.openai_api.allow_to_use = False
     if not config.openai_web.enable_uploading_attachments:
         user_read.setting.openai_web.allow_uploading_attachments = False
     if not config.openai_web.enable_uploading_multimodal_images:
