@@ -164,12 +164,11 @@ export function mergeContinuousMessages(messages: BaseChatMessage[]): BaseChatMe
 export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessage[][] {
   const result = [] as BaseChatMessage[][];
   let currentMessageList = [] as BaseChatMessage[];
-  let currentMessageListType: 'text' | 'assistant_to_other' | 'tool' | 'other' | null = null;
+  let currentMessageListType: 'text' | 'dalle' | 'other' | null = null;
 
   for (const message of messages) {
     if (message.source == 'openai_web') {
       const metadata = message.metadata as OpenaiWebChatMessageMetadata;
-      // text: 连续的 content.content_type == "text" 且 recipient == 'all' 放到一组
       if (message.role == 'user') {
         if (messages.length > 1) {
           console.error('found multiple user message in splitMessagesInGroup', messages);
@@ -189,19 +188,16 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
           currentMessageList = [];
         }
         currentMessageList.push(message);
-      } else if (message.role == 'assistant' && metadata.recipient != 'all') {
-        currentMessageListType = 'assistant_to_other';
-        if (currentMessageList.length > 0) result.push(currentMessageList);
-        currentMessageList = [message];
-      } else if (message.role == 'tool') {
-        if (currentMessageListType !== 'tool') {
+      } else if (message.author_name == 'dalle.text2im') {
+        if (currentMessageListType !== 'dalle') {
+          currentMessageListType = 'dalle';
           if (currentMessageList.length > 0) result.push(currentMessageList);
-          currentMessageListType = 'tool';
           currentMessageList = [];
         }
         currentMessageList.push(message);
+      
       } else {
-        // 由于同一个对话中 plugins 调用和 browser 调用不能同时出现，因此连续的其它情况放到一组
+        // 连续的其它情况放到一组
         if (currentMessageListType !== 'other') {
           if (currentMessageList.length > 0) result.push(currentMessageList);
           currentMessageListType = 'other';
