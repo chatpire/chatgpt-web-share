@@ -38,6 +38,7 @@ import { MenuOption, NEllipsis } from 'naive-ui';
 import { computed, h } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useConversationStore } from '@/store';
 import { BaseConversationSchema } from '@/types/schema';
 import { dropdownRenderer, popupChangeConversationTitleDialog } from '@/utils/renders';
@@ -90,6 +91,7 @@ const menuOptions = computed<MenuOption[]>(() => {
       label: () => h(NEllipsis, null, { default: () => conversation.title || 'New chat' }),
       key: conversation.conversation_id,
       disabled: props.loading == true,
+      icon: () => h(ChatGPTAvatar, { model: conversation.current_model, size: 20, class: 'opacity-80' }, { default: () => null}),
       extra: () => dropdownRenderer(conversation, handleDeleteConversation, handleChangeConversationTitle),
     } as MenuOption;
   });

@@ -9,8 +9,9 @@
   >
     <div v-if="!props.loading" class="relative">
       <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
-        <n-text>
+        <n-text class="flex h-full items-center">
           {{ $t('commons.currentConversationModel') }}:
+          <ChatGPTAvatar class="ml-2 mr-1" :model="convHistory?.current_model" :size="20" />
           {{ getChatModelNameTrans(convHistory?.current_model || null) }} ({{ t(`sources.${convHistory?.source}`) }})
         </n-text>
         <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
@@ -70,6 +71,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getOpenaiChatPluginApi } from '@/api/chat';
+import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import OpenaiWebPluginDetailCard from '@/components/OpenaiWebPluginDetailCard.vue';
 import { useConversationStore } from '@/store';
 import { BaseChatMessage, BaseConversationHistory, OpenaiChatPlugin } from '@/types/schema';
