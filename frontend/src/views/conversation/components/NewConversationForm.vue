@@ -4,11 +4,30 @@
       <n-form-item :label="t('labels.title')">
         <n-input
           v-model:value="newConversationInfo.title"
-          :placeholder="newConversationInfo.source == 'openai_web' ? t('tips.NewConversationForm.leaveBlankToGenerateTitle') : null"
+          :placeholder="
+            newConversationInfo.source == 'openai_web' ? t('tips.NewConversationForm.leaveBlankToGenerateTitle') : null
+          "
         />
       </n-form-item>
       <n-form-item :label="t('labels.model')">
-        <n-select v-model:value="newConversationInfo.model" :options="availableModels" />
+        <n-select
+          v-model:value="newConversationInfo.model"
+          :options="availableModels"
+          :virtual-scroll="false"
+          :render-label="renderModelSelectionLabel"
+          :render-option="renderModelSelectionOption"
+        >
+          <template #action>
+            <div class="my-1 flex flex-col justify-between">
+              <div class="mb-2 text-xs">
+                <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span> {{ t(`modelDescriptions.${newConversationInfo.source}.${currentHoveringModel || newConversationInfo.model}`) }}
+              </div>
+              <div class="text-xs text-right">
+                {{ t('commons.remain') }}: {{ getCountTrans(userStore.user?.setting[newConversationInfo.source!].per_model_ask_count[newConversationInfo.model!]) }}
+              </div>
+            </div>
+          </template>
+        </n-select>
       </n-form-item>
       <n-form-item
         v-if="newConversationInfo.source === 'openai_web' && newConversationInfo.model === 'gpt_4_plugins'"
@@ -31,35 +50,19 @@
 </template>
 
 <script setup lang="ts">
-import { NAvatar, NTag, SelectOption, SelectRenderTag } from 'naive-ui';
-import { computed, h, ref, watch } from 'vue';
+import { NAvatar, NTag, NTooltip, SelectOption, SelectRenderTag } from 'naive-ui';
+import { computed, h, ref, VNode, watch } from 'vue';
 
 import { getAllOpenaiChatPluginsApi, getInstalledOpenaiChatPluginsApi } from '@/api/chat';
 import { i18n } from '@/i18n';
 import { useAppStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
-import { OpenaiChatPlugin } from '@/types/schema';
+import { ChatSourceTypes, OpenaiChatPlugin } from '@/types/schema';
+import {getCountTrans} from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
-import NewConversationFormSelectionPluginLabel from './NewConversationFormSelectionPluginLabel.vue';
-
-//////
-import { MdPeople } from '@vicons/ionicons4';
-import { EventBusyFilled, QueueFilled } from '@vicons/material';
-import { getServerStatusApi } from '@/api/status';
-import { CommonStatusSchema } from '@/types/schema';
-
-const serverStatus = ref<CommonStatusSchema>({});
-
-const updateData = () => {
-  getServerStatusApi().then((res) => {
-    // console.log(res.data);
-    serverStatus.value = res.data;
-  });
-};
-updateData();
-
-///////
+import NewConversationFormModelSelectionLabel from './NewConversationFormModelSelectionLabel.vue';
+import NewConversationFormPluginSelectionLabel from './NewConversationFormPluginSelectionLabel.vue';
 
 const t = i18n.global.t as any;
 
@@ -69,6 +72,8 @@ const appStore = useAppStore();
 const emits = defineEmits<{
   (e: 'input', newConversationInfo: NewConversationInfo): void;
 }>();
+
+const currentHoveringModel = ref<string | null>(null);
 
 const availableChatSourceTypes = computed<SelectOption[]>(() => {
   if (!userStore.user) {
@@ -107,8 +112,8 @@ const availableModels = computed<SelectOption[]>(() => {
 
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,
-  source: 'openai_web',
-  model: 'gpt_3_5',
+  source: null,
+  model: null,
   openaiWebPlugins: null,
 });
 
@@ -131,9 +136,34 @@ const pluginOptions = computed<SelectOption[]>(() => {
   }));
 });
 
+function renderModelSelectionLabel(option: SelectOption) {
+  return h(NewConversationFormModelSelectionLabel, {
+    source: newConversationInfo.value.source!,
+    model: option.value as string,
+  });
+}
+
+function renderModelSelectionOption ({ node, option }: { node: VNode; option: SelectOption }) {
+  return h(NTooltip, {
+    class: 'hidden',
+    onUpdateShow: (value: boolean) => {
+      console.log('on-update:show', value);
+      if (value) {
+        currentHoveringModel.value = option.value as string;
+      } else {
+        currentHoveringModel.value = null;
+      }
+    }
+  }, {
+    trigger: () => node,
+    default: () => null,
+    
+  });
+}
+
 function renderPluginSelectionLabel(option: SelectOption) {
   const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
-  return h(NewConversationFormSelectionPluginLabel, {
+  return h(NewConversationFormPluginSelectionLabel, {
     plugin,
   });
 }
@@ -190,14 +220,10 @@ watch(
 
 watch(
   () => {
-    const model = newConversationInfo.value.model;
-    const gpt4Count = serverStatus.value?.gpt4_count_in_3_hours ?? 0;
-    const source = (model === 'gpt_4' && gpt4Count > 40) ? 'openai_api' : (model === 'gpt_4') ? 'openai_web' : 'openai_web'; // If GPT Usage is high, then use APIs
-    
     return {
       title: newConversationInfo.value.title,
-      source: source,
-      model: model,
+      source: newConversationInfo.value.source,
+      model: newConversationInfo.value.model,
       openaiWebPlugins: newConversationInfo.value.openaiWebPlugins,
     } as NewConversationInfo;
   },
@@ -214,5 +240,4 @@ watch(
     newConversationInfo.value.model = null;
   }
 );
-
 </script>
