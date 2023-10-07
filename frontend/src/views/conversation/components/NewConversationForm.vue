@@ -9,7 +9,7 @@
           "
         />
       </n-form-item>
-      <n-form-item :label="t('labels.model')">
+        <n-form-item :label="t('labels.model')">
         <n-select
           v-model:value="newConversationInfo.model"
           :options="availableModels"
@@ -197,6 +197,34 @@ const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
     }
   );
 };
+
+function setDefaultValues() {
+  //   const defaultSource = computed(() => {
+  if (appStore.lastSelectedSource) {
+    if (availableChatSourceTypes.value.find((source) => source.value === appStore.lastSelectedSource)) {
+      newConversationInfo.value.source = appStore.lastSelectedSource;
+    }
+  } else {
+    newConversationInfo.value.source =
+      availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as ChatSourceTypes) : null;
+  }
+
+  if (appStore.lastSelectedModel) {
+    if (
+      newConversationInfo.value.source === 'openai_web' &&
+      availableModels.value.find((model) => model.value === appStore.lastSelectedModel)
+    ) {
+      newConversationInfo.value.model = appStore.lastSelectedModel;
+    } else if (
+      newConversationInfo.value.source === 'openai_api' &&
+      availableModels.value.find((model) => model.value === appStore.lastSelectedModel)
+    ) {
+      newConversationInfo.value.model = appStore.lastSelectedModel;
+    }
+  }
+}
+
+setDefaultValues();
 
 watch(
   () => {
