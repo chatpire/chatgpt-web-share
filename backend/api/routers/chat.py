@@ -184,7 +184,7 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
         raise WebsocketInvalidAskException("errors.modelNotEnabled")
 
     # 对话次数判断
-    model_ask_count = source_setting.per_model_ask_count.__root__.get(ask_request.model, -1)
+    model_ask_count = source_setting.per_model_ask_count.__root__.get(ask_request.model, 0)
     total_ask_count = source_setting.total_ask_count
     if total_ask_count != -1 and total_ask_count <= 0:
         # await websocket.close(1008, "errors.noAvailableTotalAskCount")

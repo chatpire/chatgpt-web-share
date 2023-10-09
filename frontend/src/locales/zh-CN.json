@@ -207,7 +207,8 @@
     "httpError": "HTTP错误",
     "invalidParams": "参数不合法",
     "internal": "内部错误",
-    "noAvailableTotalAskCount": "该类型对话方式无可用总对话次数",
+    "noAvailableTotalAskCount": "总对话次数为0，请联系管理员增加使用次数",
+    "noAvailableModelAskCount": "该模型剩余对话次数为0，请联系管理员增加使用次数",
     "userChatTypeExpired": "该对话类型有效期已到期，请联系管理员增加时长",
     "userNotAllowToAskAtThisTime": "当前时间段不允许提问",
     "openai": {

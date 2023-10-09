@@ -207,7 +207,6 @@
     "httpError": "HTTP Error",
     "internal": "Internal Error",
     "invalidParams": "Invalid Params",
-    "noAvailableTotalAskCount": "The total number of conversations that are not available for this type of conversation",
     "userChatTypeExpired": "The validity period of this conversation type has expired, please contact the administrator to increase the duration",
     "userNotAllowToAskAtThisTime": "Questions are not allowed in the current time period",
     "openai": {
@@ -219,7 +218,9 @@
       "unkown": "OpenAI unknown error, please contact the administrator"
     },
     "unknown": "unknown error",
-    "invalidRequest": "Invalid Request"
+    "invalidRequest": "Invalid Request",
+    "noAvailableModelAskCount": "The remaining number of available ask count for this model is 0. Please contact the administrator to increase the number of times of use.",
+    "noAvailableTotalAskCount": "The total number of conversations is 0. Please contact the administrator to increase the number of conversations."
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
