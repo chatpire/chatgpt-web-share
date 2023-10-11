@@ -419,6 +419,10 @@ function copyMessageContent() {
   margin-bottom: 0;
 }
 
+.katex-error {
+  @apply text-red-500
+}
+
 .markdown ol,
 ul {
   padding-left: 16px;
