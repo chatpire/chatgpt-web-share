@@ -208,7 +208,8 @@ function setDefaultValues() {
       newConversationInfo.value.model = appStore.lastSelectedModel;
     } else 
     {
-      source.value === 'openai_web'
+      newConversationInfo.value.source = 'openai_web';
+      newConversationInfo.value.model = 'gpt_3_5';
     } 
   }
 }
