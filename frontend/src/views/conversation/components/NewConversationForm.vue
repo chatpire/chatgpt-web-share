@@ -241,6 +241,8 @@ watch(
         Message.error(t('tips.NewConversationForm.failedToGetPlugins'));
       }
       loadingPlugins.value = false;
+    } else {
+      availablePlugins.value = null;
     }
   },
   { immediate: true }

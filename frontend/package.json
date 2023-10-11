@@ -19,6 +19,7 @@
     "@vueuse/core": "^9.13.0",
     "axios": "^1.5.1",
     "clipboard-polyfill": "^4.0.1",
+    "dompurify": "^3.0.6",
     "echarts": "^5.4.3",
     "file-saver": "^2.0.5",
     "highlight.js": "^11.8.0",
@@ -34,7 +35,9 @@
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
+    "@types/dompurify": "^3.0.3",
     "@types/file-saver": "^2.0.5",
+    "@types/katex": "^0.16.3",
     "@types/markdown-it": "^12.2.3",
     "@types/node": "^18.18.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",

@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+import DOMPurify from 'dompurify';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -35,7 +36,8 @@ const renderedContent = computed(() => {
   if (!props.renderMarkdown) {
     return content.value;
   }
-  const result = md.render(content.value || '');
+  console.log;
+  const result = DOMPurify.sanitize(md.render(content.value || ''));
   return processPreTags(result, appStore.preference.codeAutoWrap);
 });
 

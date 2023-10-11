@@ -27,7 +27,7 @@ export const chatModelColorMap: Record<string, string> = {
   gpt_4_browsing: 'purple',
   gpt_4_plugins: 'purple',
   gpt_4_code_interpreter: 'purple',
-  gpt_4_dalle: 'purple'
+  gpt_4_dalle: 'purple',
 };
 
 export const getChatModelColor = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
@@ -195,7 +195,6 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
           currentMessageList = [];
         }
         currentMessageList.push(message);
-      
       } else {
         // 连续的其它情况放到一组
         if (currentMessageListType !== 'other') {
@@ -260,14 +259,29 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
   return result;
 }
 
-function replaceMathDelimiters(input: string) {
-  let output = input.replace(/\\\[([\s\S]*?)\\\]/g, (match, content) => {
-    return `$$\n${content.trim()}\n$$`;
-  });
-
-  output = output.replace(/\\\((.*?)\\\)/g, (match, content) => {
-    return `$${content.trim()}$`;
-  });
-
+export function replaceMathDelimiters(input: string) {
+  let output = '';
+  let pos = 0;
+  while (pos < input.length) {
+    if (input.charCodeAt(pos) === 0x5C /* \ */) {
+      const nextChar = input.charAt(pos + 1);
+      if (nextChar === '(' || nextChar === '[') {
+        const isInline = nextChar === '(';
+        const endMarker = isInline ? '\\)' : '\\]';
+        const endPos = input.indexOf(endMarker, pos + 2);
+        if (endPos >= 0) {
+          output += isInline ? '$' : '$$';
+          output += input.substring(pos + 2, endPos);
+          output += isInline ? '$' : '$$';
+          pos = endPos + endMarker.length;
+          continue;
+        }
+      }
+    }
+    output += input.charAt(pos);
+    pos++;
+  }
+  // return output;
   return output;
 }
+
