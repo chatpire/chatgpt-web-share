@@ -39,7 +39,8 @@ async def get_server_status(_user: User = Depends(current_active_user)):
                                                OpenaiWebChatModels.gpt_4_mobile,
                                                OpenaiWebChatModels.gpt_4_browsing,
                                                OpenaiWebChatModels.gpt_4_plugins,
-                                               OpenaiWebChatModels.gpt_4_code_interpreter]},
+                                               OpenaiWebChatModels.gpt_4_code_interpreter,
+                                               OpenaiWebChatModels.gpt_4_dalle]},
                         'meta.source': 'openai_web'}
                     },
                     {'$count': 'total'}
