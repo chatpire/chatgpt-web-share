@@ -199,19 +199,8 @@ const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
 };
 
 function setDefaultValues() {
-
-  if (appStore.lastSelectedModel) {
-    if (
-      newConversationInfo.value.source === 'openai_web' &&
-      availableModels.value.find((model) => model.value === appStore.lastSelectedModel)
-    ) {
-      newConversationInfo.value.model = appStore.lastSelectedModel;
-    } else 
-    {
       newConversationInfo.value.source = 'openai_web';
       newConversationInfo.value.model = 'gpt_3_5';
-    } 
-  }
 }
 
 setDefaultValues();
