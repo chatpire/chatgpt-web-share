@@ -34,6 +34,12 @@ export type DisplayItem = {
   messages: BaseChatMessage[];
 };
 
+export type PluginAction = {
+  pluginName: string;
+  request?: string;
+  response?: string;
+};
+
 export function determineMessageType(group: BaseChatMessage[]): DisplayItemType | null {
   // api 仅有 text 类型
   if (group[0].source == 'openai_api') {
@@ -236,3 +242,25 @@ export async function getImageDownloadUrlFromFileServiceSchemaUrl(url: string | 
     return null;
   }
 }
+
+export function splitPluginActions (messages: BaseChatMessage[]) {
+  const result = [] as PluginAction[];
+  // 每两条 message 是一个完整的 action
+  // request: role == 'assistant'
+  // response: role == 'tool'
+  for (let i = 0; i < messages.length; i += 2) {
+    const requestMessage = messages[i];
+    const responseMessage = messages[i + 1];
+    if (!requestMessage || !responseMessage) continue;
+    if (requestMessage.role == 'assistant' && responseMessage.role == 'tool') {
+      const requestMeta = requestMessage.metadata as OpenaiWebChatMessageMetadata;
+      result.push({
+        pluginName: requestMeta.recipient || '',
+        request: getContentRawText(requestMessage) || '',
+        response: getContentRawText(responseMessage) || '',
+      });
+    }
+  }
+  return result;
+}
+
