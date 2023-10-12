@@ -332,7 +332,7 @@ export interface components {
       /** Children */
       children: (string)[];
       /** Content */
-      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | string;
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"];
       /** Metadata */
       metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
     };
@@ -1395,7 +1395,7 @@ export interface components {
      * @description An enumeration. 
      * @enum {string}
      */
-    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_plugins" | "gpt_4_code_interpreter" | "gpt_4_dalle";
+    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_code_interpreter" | "gpt_4_plugins" | "gpt_4_dalle";
     /**
      * OpenaiWebChatStatus 
      * @description An enumeration. 
@@ -1512,8 +1512,8 @@ export interface components {
      *   "gpt_4": 0,
      *   "gpt_4_mobile": 0,
      *   "gpt_4_browsing": 0,
-     *   "gpt_4_plugins": 0,
      *   "gpt_4_code_interpreter": 0,
+     *   "gpt_4_plugins": 0,
      *   "gpt_4_dalle": 0
      * }
      */

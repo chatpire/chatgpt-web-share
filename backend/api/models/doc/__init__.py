@@ -172,11 +172,7 @@ class BaseChatMessage(BaseModel):
     create_time: Optional[datetime.datetime]
     parent: Optional[uuid.UUID]
     children: list[uuid.UUID]
-    content: Optional[OpenaiWebChatMessageContent | OpenaiApiChatMessageTextContent | str]
-    """
-    关于 content:
-    这里的 str 仅方便前端临时使用，实际上不可以直接存储 str
-    """
+    content: Optional[OpenaiWebChatMessageContent | OpenaiApiChatMessageTextContent]
     metadata: Optional[
         Annotated[Union[OpenaiWebChatMessageMetadata, OpenaiApiChatMessageMetadata], Field(discriminator='source')]]
 

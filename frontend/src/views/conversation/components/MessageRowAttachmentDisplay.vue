@@ -25,6 +25,7 @@ import { AttachFileFilled } from '@vicons/material';
 import { computed } from 'vue';
 
 import { OpenaiWebChatMessageMetadataAttachment } from '@/types/schema';
+import { sizeToHumanReadable } from '@/utils/media';
 
 // metadata
 const props = defineProps<{
@@ -34,14 +35,4 @@ const props = defineProps<{
 const attachments = computed(() => {
   return props.attachments;
 });
-
-function sizeToHumanReadable(size: number) {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
-  let unitIndex = 0;
-  while (size > 1024) {
-    size /= 1024;
-    unitIndex++;
-  }
-  return `${size.toFixed(2)} ${units[unitIndex]}`;
-}
 </script>

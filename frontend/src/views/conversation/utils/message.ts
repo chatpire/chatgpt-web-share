@@ -1,59 +1,145 @@
 import { getFileDownloadUrlApi, getInterpreterSandboxFileDownloadUrlApi } from '@/api/conv';
 import { i18n } from '@/i18n';
-import { BaseChatMessage, OpenaiWebChatMessageMetadataCiteData } from '@/types/schema';
+import {
+  BaseChatMessage,
+  ChatSourceTypes,
+  OpenaiApiChatMessage,
+  OpenaiApiChatMessageTextContent,
+  OpenaiWebAskAttachment,
+  OpenaiWebChatMessage,
+  OpenaiWebChatMessageMetadata,
+  OpenaiWebChatMessageMetadataCiteData,
+  OpenaiWebChatMessageMultimodalTextContent,
+  OpenaiWebChatMessageMultimodalTextContentImagePart,
+  OpenaiWebChatMessageTextContent,
+} from '@/types/schema';
 import { getContentRawText, getTextMessageContent } from '@/utils/chat';
 import { Dialog } from '@/utils/tips';
 
 const t = i18n.global.t as any;
 
-// DisplayItem 表示由几条消息合并而来的一条消息，例如前面是若干次插件调用/browse，最后是正常的文本
-interface BaseDisplayItem {
-  type: 'text' | 'plugin_call' | 'browse_sequence';
-  finishTime: string | undefined; // 最后一条消息的 create_time
-}
+export type DisplayItemType =
+  | 'text'
+  | 'browser'
+  | 'plugin'
+  | 'code'
+  | 'execution_output'
+  | 'multimodal_text'
+  | 'dalle_prompt'
+  | 'dalle_result'
+  | null;
 
-interface DisplayItemText extends BaseDisplayItem {
-  type: 'text';
-  content: string;
-  mergeCount: number; // 由几条消息合并而来
-}
+export type DisplayItem = {
+  type: DisplayItemType;
+  messages: BaseChatMessage[];
+};
 
-interface DisplayItemPluginCall extends BaseDisplayItem {
-  type: 'plugin_call';
-  requestContent: string | undefined;
-  recipient: string | undefined; // plugin_name.xxx
-  responseContent: string | undefined;
-}
+export type PluginAction = {
+  pluginName: string;
+  request?: string;
+  response?: string;
+};
 
-type DisplayItem = DisplayItemText | DisplayItemPluginCall;
-
-export function processDisplayItems(messages: BaseChatMessage[]) {
-  const result: DisplayItem[] = [];
-  let currentItem = null as DisplayItem | null;
-  for (const message of messages) {
-    if (message.source == 'openai_web') {
-      if (!message || !message.content) continue;
-      // 对于文本类型，合并连续内容
-      if (typeof message.content == 'string' || message.content.content_type == 'text') {
-        if (currentItem && currentItem.type == 'text') {
-          currentItem.content += getContentRawText(message);
-          currentItem.mergeCount += 1;
-        } else {
-          if (currentItem != null) result.push(currentItem);
-          currentItem = {
-            type: 'text',
-            finishTime: message.create_time,
-            content: getContentRawText(message),
-            mergeCount: 1,
-          };
-        }
-      }
+export function determineMessageType(group: BaseChatMessage[]): DisplayItemType | null {
+  // api 仅有 text 类型
+  if (group[0].source == 'openai_api') {
+    if (group[0].content?.content_type !== 'text') {
+      console.error('wrong content type in openai_api message', group);
     }
+    return 'text';
+  }
+  for (const message of group) {
+    if (message.source !== 'openai_web') {
+      console.error('wrong message mixed in non-text content group', group);
+      return null;
+    }
+  }
+
+  let displayType: DisplayItemType | null = null;
+  for (const message of group) {
+    const metadata = message.metadata as OpenaiWebChatMessageMetadata;
+    if (message.role == 'assistant' && message.model == 'gpt_4_plugins' && metadata.recipient !== 'all') {
+      displayType = 'plugin';
+    } else if (message.role == 'assistant' && message.model == 'gpt_4_browsing') {
+      displayType = 'browser';
+    } else if (message.content?.content_type == 'code') {
+      displayType = 'code';
+    } else if (message.content?.content_type == 'execution_output') {
+      displayType = 'execution_output';
+    } else if (
+      message.role == 'assistant' &&
+      message.metadata?.source == 'openai_web' &&
+      message.metadata.recipient == 'dalle.text2im'
+    ) {
+      displayType = 'dalle_prompt';
+    } else if (message.author_name == 'dalle.text2im') {
+      displayType = 'dalle_result';
+    } else if (message.content?.content_type == 'text') {
+      displayType = 'text';
+    } else if (message.content?.content_type == 'multimodal_text') {
+      displayType = 'multimodal_text';
+    }
+    if (displayType) break;
+  }
+
+  if (!displayType) console.error('cannot find display type for group', group);
+  return displayType;
+}
+
+export function buildTemporaryMessage(
+  source: ChatSourceTypes,
+  role: string,
+  text_content: string,
+  parent: string | undefined,
+  model: string | undefined,
+  openaiWebAttachments: OpenaiWebAskAttachment[] | null = null,
+  openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
+) {
+  const random_strid = Math.random().toString(36).substring(2, 16);
+  const result = {
+    id: `temp_${random_strid}`,
+    source,
+    content: {
+      content_type: 'text',
+      parts: [text_content],
+    },
+    role: role,
+    parent, // 其实没有用到parent
+    children: [],
+    model,
+  } as BaseChatMessage;
+  if (openaiWebAttachments) {
+    const metadata = {
+      attachments: openaiWebAttachments,
+    } as OpenaiWebChatMessageMetadata;
+    result.metadata = metadata;
+  }
+  if (openaiWebMultimodalImageParts) {
+    result.content = {
+      parts: [...openaiWebMultimodalImageParts, text_content],
+    } as OpenaiWebChatMessageMultimodalTextContent;
   }
   return result;
 }
 
-export function htmlToElement(html: string) {
+export function modifiyTemporaryMessageContent(message: BaseChatMessage, textContent: string) {
+  if (message.content?.content_type != 'text') {
+    console.error('wrong content type in temporary openai_api message', message);
+    return message.content;
+  }
+  if (message.source == 'openai_api') {
+    const content = message.content as OpenaiApiChatMessageTextContent;
+    content.text = textContent;
+    return content;
+  } else if (message.source == 'openai_web') {
+    const content = message.content as OpenaiWebChatMessageTextContent;
+    content.parts = [textContent];
+    return content;
+  }
+  return message.content;
+}
+
+function htmlToElement(html: string) {
   const template = document.createElement('template');
   template.innerHTML = html.trim();
   return template.content.firstChild;
@@ -151,9 +237,30 @@ export async function getImageDownloadUrlFromFileServiceSchemaUrl(url: string | 
   try {
     const response = await getFileDownloadUrlApi(url.split('file-service://')[1]);
     return response.data;
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e);
     return null;
   }
 }
+
+export function splitPluginActions (messages: BaseChatMessage[]) {
+  const result = [] as PluginAction[];
+  // 每两条 message 是一个完整的 action
+  // request: role == 'assistant'
+  // response: role == 'tool'
+  for (let i = 0; i < messages.length; i += 2) {
+    const requestMessage = messages[i];
+    const responseMessage = messages[i + 1];
+    if (!requestMessage || !responseMessage) continue;
+    if (requestMessage.role == 'assistant' && responseMessage.role == 'tool') {
+      const requestMeta = requestMessage.metadata as OpenaiWebChatMessageMetadata;
+      result.push({
+        pluginName: requestMeta.recipient || '',
+        request: getContentRawText(requestMessage) || '',
+        response: getContentRawText(responseMessage) || '',
+      });
+    }
+  }
+  return result;
+}
+

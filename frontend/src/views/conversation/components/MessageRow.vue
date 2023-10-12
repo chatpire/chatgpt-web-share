@@ -128,6 +128,7 @@ import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
+import { determineMessageType, DisplayItem } from '../utils/message';
 import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
 import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
 import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
@@ -209,22 +210,6 @@ const relativeTimeString = computed<string>(() => {
   }
 });
 
-type DisplayItemType =
-  | 'text'
-  | 'browser'
-  | 'plugin'
-  | 'code'
-  | 'execution_output'
-  | 'multimodal_text'
-  | 'dalle_prompt'
-  | 'dalle_result'
-  | null;
-
-type DisplayItem = {
-  type: DisplayItemType;
-  messages: BaseChatMessage[];
-};
-
 const messageGroups = computed<BaseChatMessage[][]>(() => {
   return splitMessagesInGroup(props.messages);
 });
@@ -232,106 +217,8 @@ const messageGroups = computed<BaseChatMessage[][]>(() => {
 const displayItems = computed<DisplayItem[]>(() => {
   const result = [] as DisplayItem[];
   for (const group of messageGroups.value) {
-    let displayType: DisplayItemType | null = null;
-    // 当前 api 仅有 text 类型
-    if (group[0].source == 'openai_api') {
-      result.push({
-        type: 'text',
-        messages: group,
-      });
-      continue;
-    }
-    // user 发出的消息仅有 text 或者 multimodal_text 类型
-    if (group[0].role == 'user') {
-      if (typeof group[0].content == 'string' || group[0].content?.content_type == 'text')
-        result.push({
-          type: 'text',
-          messages: group,
-        });
-      else if (group[0].content?.content_type == 'multimodal_text')
-        result.push({
-          type: 'multimodal_text',
-          messages: group,
-        });
-      else console.error('wrong content type in user group', group);
-      continue;
-    }
-    // 适配新的临时对话
-    if (typeof group[0].content == 'string') {
-      if (group[0].id.startsWith('temp_')) {
-        result.push({
-          type: 'text',
-          messages: group,
-        });
-      } else {
-        console.error('string content mixed in non-user group', group);
-      }
-      continue;
-    }
-    if (group[0].content?.content_type == 'text') {
-      const metadata = group[0].metadata as OpenaiWebChatMessageMetadata;
-      if (metadata.recipient == 'all' && group[0].role == 'assistant') {
-        result.push({
-          type: 'text',
-          messages: group,
-        });
-        continue;
-      }
-    }
-    // 简单检查 group 的一致性
-    if (group[0].role == 'user') {
-      console.error('user role has non-text content', group);
-      continue;
-    }
-    for (const message of group) {
-      if (message.source !== 'openai_web' || typeof message.content == 'string') {
-        console.error('wrong message mixed in non-text content group', group);
-        continue;
-      }
-    }
-    // 辨认当前 group 的类型
-    for (const message of group) {
-      if (typeof message.content == 'string') {
-        console.error('string content mixed in non-user group', group);
-        break;
-      }
-      if (message.role == 'assistant' && message.model == 'gpt_4_plugins') {
-        displayType = 'plugin';
-        break;
-      }
-      if (message.role == 'assistant' && message.model == 'gpt_4_browsing') {
-        displayType = 'browser';
-        break;
-      }
-      if (message.content?.content_type == 'code') {
-        displayType = 'code';
-        break;
-      }
-      if (message.content?.content_type == 'execution_output') {
-        displayType = 'execution_output';
-        break;
-      }
-      if (
-        message.role == 'assistant' &&
-        message.metadata?.source == 'openai_web' &&
-        message.metadata.recipient == 'dalle.text2im'
-      ) {
-        displayType = 'dalle_prompt';
-        break;
-      }
-      if (message.author_name == 'dalle.text2im') {
-        displayType = 'dalle_result';
-        break;
-      }
-      if (message.content?.content_type == 'multimodal_text') {
-        displayType = 'multimodal_text';
-        break;
-      }
-    }
-
-    if (!displayType) console.error('cannot find display type for group', group);
     result.push({
-      type: displayType,
+      type: determineMessageType(group),
       messages: group,
     });
   }
@@ -420,7 +307,7 @@ function copyMessageContent() {
 }
 
 .katex-error {
-  @apply text-red-500
+  @apply text-red-500;
 }
 
 .markdown ol,
