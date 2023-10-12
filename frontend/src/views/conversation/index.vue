@@ -104,7 +104,6 @@ import { useI18n } from 'vue-i18n';
 import { getAskWebsocketApiUrl } from '@/api/chat';
 import { generateConversationTitleApi } from '@/api/conv';
 import { useAppStore, useConversationStore, useFileStore, useUserStore } from '@/store';
-import { newConversationId } from '@/store/modules/conversation';
 import { NewConversationInfo } from '@/types/custom';
 import {
   AskRequest,
@@ -112,9 +111,6 @@ import {
   BaseChatMessage,
   BaseConversationHistory,
   BaseConversationSchema,
-  OpenaiWebAskAttachment,
-  OpenaiWebChatMessageMetadata,
-  OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
@@ -126,6 +122,7 @@ import InputRegion from '@/views/conversation/components/InputRegion.vue';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 
 import { saveAsMarkdown } from './utils/export';
+import { buildTemporaryMessage, modifiyTemporaryMessageContent } from './utils/message';
 
 const themeVars = useThemeVars();
 
@@ -275,38 +272,6 @@ const scrollToBottomSmooth = () => {
   });
 };
 
-function buildTemporaryMessage(
-  role: string,
-  text_content: string,
-  parent: string | undefined,
-  model: string | undefined,
-  openaiWebAttachments: OpenaiWebAskAttachment[] | null = null,
-  openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
-) {
-  const random_strid = Math.random().toString(36).substring(2, 16);
-  const result = {
-    id: `temp_${random_strid}`,
-    source: currentConversation.value!.source,
-    content: text_content,
-    role: role,
-    parent, // 其实没有用到parent
-    children: [],
-    model,
-  } as BaseChatMessage;
-  if (openaiWebAttachments) {
-    const metadata = {
-      attachments: openaiWebAttachments,
-    } as OpenaiWebChatMessageMetadata;
-    result.metadata = metadata;
-  }
-  if (openaiWebMultimodalImageParts) {
-    result.content = {
-      parts: [...openaiWebMultimodalImageParts, text_content],
-    } as OpenaiWebChatMessageMultimodalTextContent;
-  }
-  return result;
-}
-
 const sendMsg = async () => {
   if (sendDisabled.value || loadingAsk.value || currentConvHistory.value == null) {
     Message.error(t('tips.pleaseSelectConversation'));
@@ -379,6 +344,7 @@ const sendMsg = async () => {
     currentRecvMessages.value = [];
   } else {
     currentSendMessage.value = buildTemporaryMessage(
+      currentConversation.value!.source,
       'user',
       text,
       currentConvHistory.value?.current_node,
@@ -387,7 +353,13 @@ const sendMsg = async () => {
       multimodalImages
     );
     currentRecvMessages.value = [
-      buildTemporaryMessage('assistant', '...', currentSendMessage.value.id, currentConversation.value!.current_model!),
+      buildTemporaryMessage(
+        currentConversation.value!.source,
+        'assistant',
+        '...',
+        currentSendMessage.value.id,
+        currentConversation.value!.current_model!
+      ),
     ];
   }
   const wsUrl = getAskWebsocketApiUrl();
@@ -408,11 +380,17 @@ const sendMsg = async () => {
     if (response.type === 'waiting') {
       // 等待回复
       canAbort.value = false;
-      currentRecvMessages.value![0].content = t(response.tip || 'tips.waiting');
+      currentRecvMessages.value![0].content = modifiyTemporaryMessageContent(
+        currentRecvMessages.value![0],
+        t(response.tip || 'tips.waiting')
+      );
     } else if (response.type === 'queueing') {
       // 正在排队
       canAbort.value = true;
-      currentRecvMessages.value![0].content = t(response.tip || 'tips.queueing');
+      currentRecvMessages.value![0].content = modifiyTemporaryMessageContent(
+        currentRecvMessages.value![0],
+        t(response.tip || 'tips.queueing')
+      );
     } else if (response.type === 'message') {
       if (!hasGotReply) {
         currentRecvMessages.value = [];

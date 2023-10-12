@@ -27,8 +27,8 @@
                       "gpt_4",
                       "gpt_4_mobile",
                       "gpt_4_browsing",
-                      "gpt_4_plugins",
                       "gpt_4_code_interpreter",
+                      "gpt_4_plugins",
                       "gpt_4_dalle"
                     ],
                     "title": "OpenaiWebChatModels",
@@ -130,8 +130,8 @@
                   "gpt_4",
                   "gpt_4_mobile",
                   "gpt_4_browsing",
-                  "gpt_4_plugins",
                   "gpt_4_code_interpreter",
+                  "gpt_4_plugins",
                   "gpt_4_dalle"
                 ],
                 "title": "OpenaiWebChatModels",
@@ -1864,9 +1864,6 @@
               "text"
             ],
             "title": "OpenaiApiChatMessageTextContent"
-          },
-          {
-            "type": "string"
           }
         ],
         "title": "Content"
@@ -2602,9 +2599,6 @@
                     "text"
                   ],
                   "title": "OpenaiApiChatMessageTextContent"
-                },
-                {
-                  "type": "string"
                 }
               ],
               "title": "Content"
@@ -3271,8 +3265,8 @@
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
-                    "gpt_4_plugins",
                     "gpt_4_code_interpreter",
+                    "gpt_4_plugins",
                     "gpt_4_dalle"
                   ],
                   "title": "OpenaiWebChatModels",
@@ -5519,8 +5513,8 @@
           "gpt_4",
           "gpt_4_mobile",
           "gpt_4_browsing",
-          "gpt_4_plugins",
           "gpt_4_code_interpreter",
+          "gpt_4_plugins",
           "gpt_4_dalle"
         ],
         "title": "OpenaiWebChatModels",
@@ -5591,8 +5585,8 @@
             "gpt_4",
             "gpt_4_mobile",
             "gpt_4_browsing",
-            "gpt_4_plugins",
             "gpt_4_code_interpreter",
+            "gpt_4_plugins",
             "gpt_4_dalle"
           ],
           "title": "OpenaiWebChatModels",
@@ -7266,8 +7260,8 @@
       "gpt_4",
       "gpt_4_mobile",
       "gpt_4_browsing",
-      "gpt_4_plugins",
       "gpt_4_code_interpreter",
+      "gpt_4_plugins",
       "gpt_4_dalle"
     ],
     "title": "OpenaiWebChatModels",
@@ -8146,8 +8140,8 @@
       "gpt_4": 0,
       "gpt_4_mobile": 0,
       "gpt_4_browsing": 0,
-      "gpt_4_plugins": 0,
       "gpt_4_code_interpreter": 0,
+      "gpt_4_plugins": 0,
       "gpt_4_dalle": 0
     }
   },
@@ -8229,8 +8223,8 @@
             "gpt_4",
             "gpt_4_mobile",
             "gpt_4_browsing",
-            "gpt_4_plugins",
             "gpt_4_code_interpreter",
+            "gpt_4_plugins",
             "gpt_4_dalle"
           ],
           "title": "OpenaiWebChatModels",
@@ -8250,8 +8244,8 @@
           "gpt_4": 0,
           "gpt_4_mobile": 0,
           "gpt_4_browsing": 0,
-          "gpt_4_plugins": 0,
           "gpt_4_code_interpreter": 0,
+          "gpt_4_plugins": 0,
           "gpt_4_dalle": 0
         }
       },
@@ -8826,8 +8820,8 @@
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
-                    "gpt_4_plugins",
                     "gpt_4_code_interpreter",
+                    "gpt_4_plugins",
                     "gpt_4_dalle"
                   ],
                   "title": "OpenaiWebChatModels",
@@ -8847,8 +8841,8 @@
                   "gpt_4": 0,
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
-                  "gpt_4_plugins": 0,
                   "gpt_4_code_interpreter": 0,
+                  "gpt_4_plugins": 0,
                   "gpt_4_dalle": 0
                 }
               },
@@ -9173,8 +9167,8 @@
                     "gpt_4",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
-                    "gpt_4_plugins",
                     "gpt_4_code_interpreter",
+                    "gpt_4_plugins",
                     "gpt_4_dalle"
                   ],
                   "title": "OpenaiWebChatModels",
@@ -9194,8 +9188,8 @@
                   "gpt_4": 0,
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
-                  "gpt_4_plugins": 0,
                   "gpt_4_code_interpreter": 0,
+                  "gpt_4_plugins": 0,
                   "gpt_4_dalle": 0
                 }
               },
@@ -9479,8 +9473,8 @@
                 "gpt_4",
                 "gpt_4_mobile",
                 "gpt_4_browsing",
-                "gpt_4_plugins",
                 "gpt_4_code_interpreter",
+                "gpt_4_plugins",
                 "gpt_4_dalle"
               ],
               "title": "OpenaiWebChatModels",
@@ -9500,8 +9494,8 @@
               "gpt_4": 0,
               "gpt_4_mobile": 0,
               "gpt_4_browsing": 0,
-              "gpt_4_plugins": 0,
               "gpt_4_code_interpreter": 0,
+              "gpt_4_plugins": 0,
               "gpt_4_dalle": 0
             }
           },

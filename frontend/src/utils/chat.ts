@@ -180,7 +180,7 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
         message.role == 'assistant' &&
         typeof message.content !== 'string' &&
         message.content?.content_type == 'text' &&
-        metadata.recipient == 'all'
+        metadata?.recipient == 'all'
       ) {
         if (currentMessageListType !== 'text') {
           currentMessageListType = 'text';
