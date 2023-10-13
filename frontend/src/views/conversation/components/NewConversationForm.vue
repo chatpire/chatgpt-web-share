@@ -17,16 +17,6 @@
           :render-label="renderModelSelectionLabel"
           :render-option="renderModelSelectionOption"
         >
-          <template #action>
-            <div class="my-1 flex flex-col justify-between">
-              <div class="mb-2 text-xs">
-                <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span> {{ t(`modelDescriptions.${newConversationInfo.source}.${currentHoveringModel || newConversationInfo.model}`) }}
-              </div>
-              <div class="text-xs text-right">
-                {{ t('commons.remain') }}: {{ getCountTrans(userStore.user?.setting[newConversationInfo.source!].per_model_ask_count[newConversationInfo.model!]) }}
-              </div>
-            </div>
-          </template>
         </n-select>
       </n-form-item>
       <n-form-item
