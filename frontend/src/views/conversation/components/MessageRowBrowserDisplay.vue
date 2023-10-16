@@ -77,7 +77,8 @@
 
 <script setup lang="ts">
 import { KeyboardArrowDownRound, KeyboardArrowUpRound } from '@vicons/material';
-import { computed, ref } from 'vue';
+import { NScrollbar } from 'naive-ui';
+import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BrowsingIcon from '@/components/BrowsingIcon.vue';
@@ -190,6 +191,7 @@ function getSearchUrl(searchContent: string | undefined) {
 
 function getCiteUrl(citeIndex: string | number | undefined, citeMetadata: CiteMetadata) {
   if (!citeIndex || !citeMetadata) return '#';
+  if (citeMetadata.metadata_list?.length === 1) return citeMetadata.metadata_list[0].url;
   const index = typeof citeIndex === 'number' ? citeIndex : parseInt(citeIndex);
   if (citeMetadata.metadata_list && citeMetadata.metadata_list[index]) {
     return citeMetadata.metadata_list[index].url;
@@ -198,13 +200,14 @@ function getCiteUrl(citeIndex: string | number | undefined, citeMetadata: CiteMe
 
 function getCiteTitle(citeIndex: string | number | undefined, citeMetadata: CiteMetadata) {
   if (!citeIndex || !citeMetadata) return citeIndex;
+  if (citeMetadata.metadata_list?.length === 1) return citeMetadata.metadata_list[0].title;
   const index = typeof citeIndex === 'number' ? citeIndex : parseInt(citeIndex);
   if (citeMetadata.metadata_list && citeMetadata.metadata_list[index]) {
     return citeMetadata.metadata_list[index].title;
   }
 }
 
-const expandContent = ref(false);
+const expandContent = ref(true);
 
 function handleExpand() {
   expandContent.value = !expandContent.value;
@@ -213,7 +216,9 @@ function handleExpand() {
 function showContent(action: BrowsingAction) {
   Dialog.info({
     title: t('commons.detail'),
-    content: getContentRawText(action.message),
+    // content: getContentRawText(action.message),
+    // 给一个 200px 宽的 div
+    content: () => h(NScrollbar, { style: 'width: "auto"; max-height: 80vh', class: 'whitespace-pre-wrap' }, { default: () => getContentRawText(action.message) }),
   });
 }
 </script>
