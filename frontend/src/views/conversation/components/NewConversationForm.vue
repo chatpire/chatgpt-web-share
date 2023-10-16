@@ -17,11 +17,12 @@
           v-model:value="newConversationInfo.model"
           :options="availableModels"
           :virtual-scroll="false"
+          :consistent-menu-width="false"
           :render-label="renderModelSelectionLabel"
           :render-option="renderModelSelectionOption"
         >
           <template #action>
-            <div class="my-1 flex flex-col justify-between">
+            <div class="my-1 h-23 w-100 lt-sm:max-w-70 flex flex-col justify-between">
               <div class="mb-2 text-xs">
                 <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span>
                 {{
