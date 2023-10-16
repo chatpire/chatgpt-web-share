@@ -55,6 +55,7 @@
     <n-data-table
       v-model:checked-row-keys="checkedRowKeys"
       size="small"
+      :scroll-x="1600"
       :columns="columns"
       :data="data"
       :bordered="true"
@@ -175,7 +176,7 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
     title: t('commons.title'),
     key: 'title',
     sorter: 'default',
-    width: 600,
+    width: 450,
     render: (row) => {
       return h(
         NButton,
@@ -251,6 +252,7 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
   {
     title: t('commons.modelName'),
     key: 'current_model',
+    width: 200,
     render(row) {
       return row.current_model ? getChatModelNameTrans(row.current_model) : t('commons.unknown');
     },
