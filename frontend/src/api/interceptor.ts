@@ -42,7 +42,6 @@ const successCode = [200, 201, 204];
 axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse>) => {
     const res = response.data;
-    console.log('response data', response);
     if (!successCode.includes(res.code)) {
       console.warn('Error: ', res);
       let msg = `${res.code}`;

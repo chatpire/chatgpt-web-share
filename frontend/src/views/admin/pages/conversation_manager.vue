@@ -70,7 +70,7 @@
 import { TrashOutline } from '@vicons/ionicons5';
 import { CloudDownloadFilled, EmojiFlagsFilled, PersonAddAlt1Filled, RefreshFilled } from '@vicons/material';
 import type { DataTableColumns } from 'naive-ui';
-import { NButton, NIcon, NTooltip } from 'naive-ui';
+import { NButton, NEllipsis, NIcon, NTooltip } from 'naive-ui';
 import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -83,7 +83,8 @@ import {
   vanishConversationApi,
 } from '@/api/conv';
 import { runActionSyncOpenaiWebConversations } from '@/api/system';
-import { BaseConversationSchema } from '@/types/schema';
+import { getAllUserApi } from '@/api/user';
+import { BaseConversationSchema, UserRead, UserReadAdmin } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
@@ -91,7 +92,8 @@ import { Dialog, Message } from '@/utils/tips';
 import UserSelector from '../components/UserSelector.vue';
 const { t } = useI18n();
 const router = useRouter();
-const data = ref<Array<BaseConversationSchema>>([]);
+const data = ref<BaseConversationSchema[]>([]);
+const userInfo = ref<UserReadAdmin[] | null>(null);
 const rowKey = (row: BaseConversationSchema) => row.conversation_id;
 const checkedRowKeys = ref<Array<string>>([]);
 
@@ -128,18 +130,28 @@ const syncConversations = () => {
   });
 };
 
-const columns: DataTableColumns<BaseConversationSchema> = [
+const filterOptions = computed(() => {
+  return userInfo.value?.map((user) => {
+    return {
+      label: user.username,
+      value: user.id,
+    };
+  });
+});
+
+const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
   {
     type: 'selection',
   },
-  {
-    title: '#',
-    key: 'id',
-    sorter: 'default',
-  },
+  // {
+  //   title: '#',
+  //   key: 'id',
+  //   sorter: 'default',
+  // },
   {
     title: 'UUID',
     key: 'conversation_id',
+    width: 80,
     render: (row) => {
       return h(
         NTooltip,
@@ -154,6 +166,7 @@ const columns: DataTableColumns<BaseConversationSchema> = [
   {
     title: t('labels.source'),
     key: 'type',
+    width: 80,
     render: (row) => {
       return t(`sources_short.${row.source}`);
     },
@@ -162,6 +175,7 @@ const columns: DataTableColumns<BaseConversationSchema> = [
     title: t('commons.title'),
     key: 'title',
     sorter: 'default',
+    width: 600,
     render: (row) => {
       return h(
         NButton,
@@ -175,8 +189,12 @@ const columns: DataTableColumns<BaseConversationSchema> = [
           target: '_blank',
         },
         {
-          default: () => (row.title ? row.title : t('commons.empty')),
-          // }
+          default: () =>
+            h(
+              NEllipsis,
+              { style: 'max-width: 400px' },
+              { default: () => (row.title ? row.title : t('commons.empty')) }
+            ),
         }
       );
     },
@@ -184,14 +202,38 @@ const columns: DataTableColumns<BaseConversationSchema> = [
   {
     title: t('commons.belongToUser'),
     key: 'user_id',
+    width: 160,
     render: (row) => {
-      return row.user_id ? row.user_id : t('commons.empty');
+      // return userInfo.value?.find((user) => user.id === row.user_id)?.username || t('commons.empty');
+      const user = userInfo.value?.find((user) => user.id === row.user_id);
+      return h(
+        NTooltip,
+        { trigger: 'hover' },
+        {
+          trigger: () => user?.username || t('commons.empty'),
+          default: () => {
+            let result = user?.nickname || user?.username || t('commons.empty');
+            if (user?.remark) {
+              result += ` (${user.remark})`;
+            }
+            return result;
+          }
+        }
+      );
     },
-    sorter: 'default',
+    ellipsis: {
+      tooltip: true,
+    },
+    filterOptions: filterOptions.value,
+    defaultFilterOptionValues: userInfo.value?.map((user) => user.id),
+    filter: (value, row) => {
+      return row.user_id === value;
+    },
   },
   {
     title: t('commons.createTime'),
     key: 'create_time',
+    width: 200,
     defaultSortOrder: 'descend',
     sorter: getDateStringSorter<BaseConversationSchema>('create_time'),
     render: (row) => {
@@ -217,6 +259,7 @@ const columns: DataTableColumns<BaseConversationSchema> = [
   {
     title: t('commons.isValid'),
     key: 'is_valid',
+    width: 120,
     render(row) {
       return row.is_valid ? t('commons.yes') : t('commons.no');
     },
@@ -226,7 +269,7 @@ const columns: DataTableColumns<BaseConversationSchema> = [
       return val_a - val_b;
     },
   },
-];
+]);
 
 const handleInvalidateConversations = () => {
   const d = Dialog.info({
@@ -405,6 +448,10 @@ const handleClearAllConversations = () => {
     },
   });
 };
+
+getAllUserApi().then((res) => {
+  userInfo.value = res.data;
+});
 
 getAdminAllConversationsApi(false).then((res) => {
   data.value = res.data;

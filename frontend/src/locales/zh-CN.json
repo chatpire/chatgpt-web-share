@@ -176,7 +176,8 @@
     "selectFile": "选择文件",
     "emptyFileList": "文件列表为空",
     "modelDescriptions": "模型说明",
-    "remain": "剩余次数"
+    "remain": "剩余次数",
+    "updateTime": "更新时间"
   },
   "errors": {
     "403": "403 错误：无访问权限",

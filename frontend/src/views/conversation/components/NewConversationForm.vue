@@ -164,7 +164,6 @@ function renderModelSelectionOption({ node, option }: { node: VNode; option: Sel
     {
       class: 'hidden',
       onUpdateShow: (value: boolean) => {
-        console.log('on-update:show', value);
         if (value) {
           currentHoveringModel.value = option.value as string;
         } else {

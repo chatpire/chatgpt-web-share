@@ -57,8 +57,8 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
 
   let displayType: DisplayItemType | null = null;
   for (const message of group) {
-    const metadata = message.metadata as OpenaiWebChatMessageMetadata;
-    if (message.role == 'assistant' && message.content?.content_type == 'text' && metadata.recipient == 'all') {
+    const metadata = message.metadata as OpenaiWebChatMessageMetadata | undefined;
+    if (message.role == 'assistant' && message.content?.content_type == 'text' && metadata?.recipient == 'all') {
       displayType = 'text';
     } else if (message.model == 'gpt_4_plugins') {
       displayType = 'plugin';
