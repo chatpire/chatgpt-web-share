@@ -4,7 +4,7 @@
     <div class="w-full box-border min-h-screen flex flex-col">
       <n-layout>
         <PageHeader />
-        <div style="height: calc(100vh - var(--header-height)); height: calc(100dvh - var(--header-height));">
+        <div style="height: calc(100vh - var(--header-height)); height: calc(100dvh - var(--header-height))">
           <router-view />
         </div>
       </n-layout>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEventListener,useScreenSafeArea } from '@vueuse/core';
+import { useEventListener, useScreenSafeArea } from '@vueuse/core';
 import { darkTheme } from 'naive-ui';
 import { computed } from 'vue';
 

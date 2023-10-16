@@ -91,7 +91,8 @@ const menuOptions = computed<MenuOption[]>(() => {
       label: () => h(NEllipsis, null, { default: () => conversation.title || 'New chat' }),
       key: conversation.conversation_id,
       disabled: props.loading == true,
-      icon: () => h(ChatGPTAvatar, { model: conversation.current_model, size: 20, class: 'opacity-80' }, { default: () => null}),
+      icon: () =>
+        h(ChatGPTAvatar, { model: conversation.current_model, size: 20, class: 'opacity-80' }, { default: () => null }),
       extra: () => dropdownRenderer(conversation, handleDeleteConversation, handleChangeConversationTitle),
     } as MenuOption;
   });

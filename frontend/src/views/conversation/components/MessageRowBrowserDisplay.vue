@@ -218,7 +218,12 @@ function showContent(action: BrowsingAction) {
     title: t('commons.detail'),
     // content: getContentRawText(action.message),
     // 给一个 200px 宽的 div
-    content: () => h(NScrollbar, { style: 'width: "auto"; max-height: 80vh', class: 'whitespace-pre-wrap' }, { default: () => getContentRawText(action.message) }),
+    content: () =>
+      h(
+        NScrollbar,
+        { style: 'width: "auto"; max-height: 80vh', class: 'whitespace-pre-wrap' },
+        { default: () => getContentRawText(action.message) }
+      ),
   });
 }
 </script>

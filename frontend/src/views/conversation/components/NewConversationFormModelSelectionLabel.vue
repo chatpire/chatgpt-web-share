@@ -5,7 +5,7 @@
     </div>
     <div class="flex items-center">
       <div class="text-sm font-medium">
-        {{ t("models." + props.model) }}
+        {{ t('models.' + props.model) }}
       </div>
       <!-- <div class="text-xs text-gray-400">
         {{ t(`modelDescriptions.${props.source}.${props.model}`) }}
@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { i18n } from '@/i18n';
 const t = i18n.global.t as any;
@@ -24,7 +23,6 @@ const props = defineProps<{
   source: 'openai_web' | 'openai_api' | string;
   model: string;
 }>();
-
 </script>
 
 <style scoped>

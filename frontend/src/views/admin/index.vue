@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { ChatbubbleEllipses, FileTrayFull, InformationCircle } from '@vicons/ionicons5';
 import { SettingsRound, SupervisedUserCircleRound } from '@vicons/material';
-import { NIcon , useThemeVars } from 'naive-ui';
+import { NIcon, useThemeVars } from 'naive-ui';
 import { h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

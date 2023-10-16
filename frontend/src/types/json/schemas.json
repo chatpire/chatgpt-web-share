@@ -14,9 +14,7 @@
                 "properties": {
                   "source": {
                     "type": "string",
-                    "enum": [
-                      "openai_web"
-                    ],
+                    "enum": ["openai_web"],
                     "title": "Source"
                   },
                   "model": {
@@ -36,36 +34,25 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "source",
-                  "model"
-                ],
+                "required": ["source", "model"],
                 "title": "OpenaiWebAskLogMeta"
               },
               {
                 "properties": {
                   "source": {
                     "type": "string",
-                    "enum": [
-                      "openai_api"
-                    ],
+                    "enum": ["openai_api"],
                     "title": "Source"
                   },
                   "model": {
                     "type": "string",
-                    "enum": [
-                      "gpt_3_5",
-                      "gpt_4"
-                    ],
+                    "enum": ["gpt_3_5", "gpt_4"],
                     "title": "OpenaiApiChatModels",
                     "description": "An enumeration."
                   }
                 },
                 "type": "object",
-                "required": [
-                  "source",
-                  "model"
-                ],
+                "required": ["source", "model"],
                 "title": "OpenaiApiAskLogMeta"
               }
             ],
@@ -73,9 +60,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "start_time"
-        ],
+        "required": ["start_time"],
         "title": "AskLogAggregationID"
       },
       "count": {
@@ -99,9 +84,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "count"
-    ],
+    "required": ["count"],
     "title": "AskLogAggregation"
   },
   "AskLogAggregationID": {
@@ -117,9 +100,7 @@
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_web"
-                ],
+                "enum": ["openai_web"],
                 "title": "Source"
               },
               "model": {
@@ -139,36 +120,25 @@
               }
             },
             "type": "object",
-            "required": [
-              "source",
-              "model"
-            ],
+            "required": ["source", "model"],
             "title": "OpenaiWebAskLogMeta"
           },
           {
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_api"
-                ],
+                "enum": ["openai_api"],
                 "title": "Source"
               },
               "model": {
                 "type": "string",
-                "enum": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ],
+                "enum": ["gpt_3_5", "gpt_4"],
                 "title": "OpenaiApiChatModels",
                 "description": "An enumeration."
               }
             },
             "type": "object",
-            "required": [
-              "source",
-              "model"
-            ],
+            "required": ["source", "model"],
             "title": "OpenaiApiAskLogMeta"
           }
         ],
@@ -176,19 +146,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "start_time"
-    ],
+    "required": ["start_time"],
     "title": "AskLogAggregationID"
   },
   "AskRequest": {
     "properties": {
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web",
-          "openai_api"
-        ],
+        "enum": ["openai_web", "openai_api"],
         "title": "ChatSourceTypes",
         "description": "An enumeration."
       },
@@ -248,11 +213,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "name",
-            "id",
-            "size"
-          ],
+          "required": ["name", "id", "size"],
           "title": "OpenaiWebAskAttachment"
         },
         "type": "array",
@@ -310,24 +271,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "source",
-      "model",
-      "new_conversation",
-      "text_content"
-    ],
+    "required": ["source", "model", "new_conversation", "text_content"],
     "title": "AskRequest"
   },
   "AskResponse": {
     "properties": {
       "type": {
         "type": "string",
-        "enum": [
-          "waiting",
-          "queueing",
-          "message",
-          "error"
-        ],
+        "enum": ["waiting", "queueing", "message", "error"],
         "title": "AskResponseType",
         "description": "An enumeration."
       },
@@ -351,21 +302,14 @@
               },
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_web"
-                ],
+                "enum": ["openai_web"],
                 "title": "Source"
               },
               "role": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "system",
-                      "user",
-                      "assistant",
-                      "tool"
-                    ]
+                    "enum": ["system", "user", "assistant", "tool"]
                   },
                   {
                     "type": "string"
@@ -377,10 +321,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "browser",
-                      "python"
-                    ]
+                    "enum": ["browser", "python"]
                   },
                   {
                     "type": "string"
@@ -416,9 +357,7 @@
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "text"
-                        ],
+                        "enum": ["text"],
                         "title": "Content Type"
                       },
                       "parts": {
@@ -430,18 +369,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageTextContent"
                   },
                   {
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "multimodal_text"
-                        ],
+                        "enum": ["multimodal_text"],
                         "title": "Content Type"
                       },
                       "parts": {
@@ -504,18 +439,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageMultimodalTextContent"
                   },
                   {
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "code"
-                        ],
+                        "enum": ["code"],
                         "title": "Content Type"
                       },
                       "language": {
@@ -528,18 +459,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageCodeContent"
                   },
                   {
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "execution_output"
-                        ],
+                        "enum": ["execution_output"],
                         "title": "Content Type"
                       },
                       "text": {
@@ -548,18 +475,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageExecutionOutputContent"
                   },
                   {
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "stderr"
-                        ],
+                        "enum": ["stderr"],
                         "title": "Content Type"
                       },
                       "text": {
@@ -568,18 +491,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageStderrContent"
                   },
                   {
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "tether_browsing_display"
-                        ],
+                        "enum": ["tether_browsing_display"],
                         "title": "Content Type"
                       },
                       "result": {
@@ -588,18 +507,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent"
                   },
                   {
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "tether_quote"
-                        ],
+                        "enum": ["tether_quote"],
                         "title": "Content Type"
                       },
                       "url": {
@@ -620,27 +535,21 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageTetherQuoteContent"
                   },
                   {
                     "properties": {
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "system_error"
-                        ],
+                        "enum": ["system_error"],
                         "title": "Content Type"
                       },
                       "name": {
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": [
-                              "tool_error"
-                            ]
+                            "enum": ["tool_error"]
                           },
                           {
                             "type": "string"
@@ -654,9 +563,7 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "content_type"
-                    ],
+                    "required": ["content_type"],
                     "title": "OpenaiWebChatMessageSystemErrorContent"
                   }
                 ],
@@ -668,9 +575,7 @@
                     "properties": {
                       "source": {
                         "type": "string",
-                        "enum": [
-                          "openai_web"
-                        ],
+                        "enum": ["openai_web"],
                         "title": "Source"
                       },
                       "finish_details": {
@@ -693,11 +598,7 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": [
-                              "all",
-                              "browser",
-                              "python"
-                            ]
+                            "enum": ["all", "browser", "python"]
                           },
                           {
                             "type": "string"
@@ -734,9 +635,7 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": [
-                              "search"
-                            ]
+                            "enum": ["search"]
                           },
                           {
                             "type": "string"
@@ -755,9 +654,7 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": [
-                              "finished"
-                            ]
+                            "enum": ["finished"]
                           },
                           {
                             "type": "string"
@@ -865,10 +762,7 @@
                             "anyOf": [
                               {
                                 "type": "string",
-                                "enum": [
-                                  "failed_with_in_kernel_exception",
-                                  "success"
-                                ]
+                                "enum": ["failed_with_in_kernel_exception", "success"]
                               },
                               {
                                 "type": "string"
@@ -910,10 +804,7 @@
                                   "anyOf": [
                                     {
                                       "type": "string",
-                                      "enum": [
-                                        "image",
-                                        "stream"
-                                      ]
+                                      "enum": ["image", "stream"]
                                     },
                                     {
                                       "type": "string"
@@ -929,9 +820,7 @@
                                   "anyOf": [
                                     {
                                       "type": "string",
-                                      "enum": [
-                                        "server"
-                                      ]
+                                      "enum": ["server"]
                                     },
                                     {
                                       "type": "string"
@@ -969,18 +858,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "source"
-                    ],
+                    "required": ["source"],
                     "title": "OpenaiWebChatMessageMetadata"
                   },
                   {
                     "properties": {
                       "source": {
                         "type": "string",
-                        "enum": [
-                          "openai_api"
-                        ],
+                        "enum": ["openai_api"],
                         "title": "Source"
                       },
                       "usage": {
@@ -1003,9 +888,7 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "source"
-                    ],
+                    "required": ["source"],
                     "title": "OpenaiApiChatMessageMetadata"
                   }
                 ],
@@ -1013,12 +896,7 @@
               }
             },
             "type": "object",
-            "required": [
-              "id",
-              "source",
-              "role",
-              "children"
-            ],
+            "required": ["id", "source", "role", "children"],
             "title": "OpenaiWebChatMessage"
           },
           {
@@ -1030,21 +908,14 @@
               },
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_api"
-                ],
+                "enum": ["openai_api"],
                 "title": "Source"
               },
               "role": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "system",
-                      "user",
-                      "assistant",
-                      "tool"
-                    ]
+                    "enum": ["system", "user", "assistant", "tool"]
                   },
                   {
                     "type": "string"
@@ -1056,10 +927,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "browser",
-                      "python"
-                    ]
+                    "enum": ["browser", "python"]
                   },
                   {
                     "type": "string"
@@ -1093,9 +961,7 @@
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "text"
-                    ],
+                    "enum": ["text"],
                     "title": "Content Type"
                   },
                   "text": {
@@ -1104,10 +970,7 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type",
-                  "text"
-                ],
+                "required": ["content_type", "text"],
                 "title": "OpenaiApiChatMessageTextContent"
               },
               "metadata": {
@@ -1116,9 +979,7 @@
                     "properties": {
                       "source": {
                         "type": "string",
-                        "enum": [
-                          "openai_web"
-                        ],
+                        "enum": ["openai_web"],
                         "title": "Source"
                       },
                       "finish_details": {
@@ -1141,11 +1002,7 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": [
-                              "all",
-                              "browser",
-                              "python"
-                            ]
+                            "enum": ["all", "browser", "python"]
                           },
                           {
                             "type": "string"
@@ -1182,9 +1039,7 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": [
-                              "search"
-                            ]
+                            "enum": ["search"]
                           },
                           {
                             "type": "string"
@@ -1203,9 +1058,7 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": [
-                              "finished"
-                            ]
+                            "enum": ["finished"]
                           },
                           {
                             "type": "string"
@@ -1313,10 +1166,7 @@
                             "anyOf": [
                               {
                                 "type": "string",
-                                "enum": [
-                                  "failed_with_in_kernel_exception",
-                                  "success"
-                                ]
+                                "enum": ["failed_with_in_kernel_exception", "success"]
                               },
                               {
                                 "type": "string"
@@ -1358,10 +1208,7 @@
                                   "anyOf": [
                                     {
                                       "type": "string",
-                                      "enum": [
-                                        "image",
-                                        "stream"
-                                      ]
+                                      "enum": ["image", "stream"]
                                     },
                                     {
                                       "type": "string"
@@ -1377,9 +1224,7 @@
                                   "anyOf": [
                                     {
                                       "type": "string",
-                                      "enum": [
-                                        "server"
-                                      ]
+                                      "enum": ["server"]
                                     },
                                     {
                                       "type": "string"
@@ -1417,18 +1262,14 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "source"
-                    ],
+                    "required": ["source"],
                     "title": "OpenaiWebChatMessageMetadata"
                   },
                   {
                     "properties": {
                       "source": {
                         "type": "string",
-                        "enum": [
-                          "openai_api"
-                        ],
+                        "enum": ["openai_api"],
                         "title": "Source"
                       },
                       "usage": {
@@ -1451,9 +1292,7 @@
                       }
                     },
                     "type": "object",
-                    "required": [
-                      "source"
-                    ],
+                    "required": ["source"],
                     "title": "OpenaiApiChatMessageMetadata"
                   }
                 ],
@@ -1461,12 +1300,7 @@
               }
             },
             "type": "object",
-            "required": [
-              "id",
-              "source",
-              "role",
-              "children"
-            ],
+            "required": ["id", "source", "role", "children"],
             "title": "OpenaiApiChatMessage"
           }
         ],
@@ -1478,19 +1312,12 @@
       }
     },
     "type": "object",
-    "required": [
-      "type"
-    ],
+    "required": ["type"],
     "title": "AskResponse"
   },
   "AskResponseType": {
     "type": "string",
-    "enum": [
-      "waiting",
-      "queueing",
-      "message",
-      "error"
-    ],
+    "enum": ["waiting", "queueing", "message", "error"],
     "title": "AskResponseType",
     "description": "An enumeration."
   },
@@ -1531,22 +1358,14 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web",
-          "openai_api"
-        ],
+        "enum": ["openai_web", "openai_api"],
         "title": "Source"
       },
       "role": {
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "system",
-              "user",
-              "assistant",
-              "tool"
-            ]
+            "enum": ["system", "user", "assistant", "tool"]
           },
           {
             "type": "string"
@@ -1558,10 +1377,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "browser",
-              "python"
-            ]
+            "enum": ["browser", "python"]
           },
           {
             "type": "string"
@@ -1599,9 +1415,7 @@
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "text"
-                    ],
+                    "enum": ["text"],
                     "title": "Content Type"
                   },
                   "parts": {
@@ -1613,18 +1427,14 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageTextContent"
               },
               {
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "multimodal_text"
-                    ],
+                    "enum": ["multimodal_text"],
                     "title": "Content Type"
                   },
                   "parts": {
@@ -1687,18 +1497,14 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageMultimodalTextContent"
               },
               {
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "code"
-                    ],
+                    "enum": ["code"],
                     "title": "Content Type"
                   },
                   "language": {
@@ -1711,18 +1517,14 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageCodeContent"
               },
               {
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "execution_output"
-                    ],
+                    "enum": ["execution_output"],
                     "title": "Content Type"
                   },
                   "text": {
@@ -1731,18 +1533,14 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageExecutionOutputContent"
               },
               {
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "stderr"
-                    ],
+                    "enum": ["stderr"],
                     "title": "Content Type"
                   },
                   "text": {
@@ -1751,18 +1549,14 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageStderrContent"
               },
               {
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "tether_browsing_display"
-                    ],
+                    "enum": ["tether_browsing_display"],
                     "title": "Content Type"
                   },
                   "result": {
@@ -1771,18 +1565,14 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent"
               },
               {
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "tether_quote"
-                    ],
+                    "enum": ["tether_quote"],
                     "title": "Content Type"
                   },
                   "url": {
@@ -1803,27 +1593,21 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageTetherQuoteContent"
               },
               {
                 "properties": {
                   "content_type": {
                     "type": "string",
-                    "enum": [
-                      "system_error"
-                    ],
+                    "enum": ["system_error"],
                     "title": "Content Type"
                   },
                   "name": {
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": [
-                          "tool_error"
-                        ]
+                        "enum": ["tool_error"]
                       },
                       {
                         "type": "string"
@@ -1837,9 +1621,7 @@
                   }
                 },
                 "type": "object",
-                "required": [
-                  "content_type"
-                ],
+                "required": ["content_type"],
                 "title": "OpenaiWebChatMessageSystemErrorContent"
               }
             ]
@@ -1848,9 +1630,7 @@
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "text"
-                ],
+                "enum": ["text"],
                 "title": "Content Type"
               },
               "text": {
@@ -1859,10 +1639,7 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type",
-              "text"
-            ],
+            "required": ["content_type", "text"],
             "title": "OpenaiApiChatMessageTextContent"
           }
         ],
@@ -1874,9 +1651,7 @@
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_web"
-                ],
+                "enum": ["openai_web"],
                 "title": "Source"
               },
               "finish_details": {
@@ -1899,11 +1674,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "all",
-                      "browser",
-                      "python"
-                    ]
+                    "enum": ["all", "browser", "python"]
                   },
                   {
                     "type": "string"
@@ -1940,9 +1711,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "search"
-                    ]
+                    "enum": ["search"]
                   },
                   {
                     "type": "string"
@@ -1961,9 +1730,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "finished"
-                    ]
+                    "enum": ["finished"]
                   },
                   {
                     "type": "string"
@@ -2071,10 +1838,7 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": [
-                          "failed_with_in_kernel_exception",
-                          "success"
-                        ]
+                        "enum": ["failed_with_in_kernel_exception", "success"]
                       },
                       {
                         "type": "string"
@@ -2116,10 +1880,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "image",
-                                "stream"
-                              ]
+                              "enum": ["image", "stream"]
                             },
                             {
                               "type": "string"
@@ -2135,9 +1896,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "server"
-                              ]
+                              "enum": ["server"]
                             },
                             {
                               "type": "string"
@@ -2175,18 +1934,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiWebChatMessageMetadata"
           },
           {
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_api"
-                ],
+                "enum": ["openai_api"],
                 "title": "Source"
               },
               "usage": {
@@ -2209,9 +1964,7 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiApiChatMessageMetadata"
           }
         ],
@@ -2219,12 +1972,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "id",
-      "source",
-      "role",
-      "children"
-    ],
+    "required": ["id", "source", "role", "children"],
     "title": "BaseChatMessage"
   },
   "BaseConversationHistory": {
@@ -2236,10 +1984,7 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web",
-          "openai_api"
-        ],
+        "enum": ["openai_web", "openai_api"],
         "title": "Source"
       },
       "title": {
@@ -2266,22 +2011,14 @@
             },
             "source": {
               "type": "string",
-              "enum": [
-                "openai_web",
-                "openai_api"
-              ],
+              "enum": ["openai_web", "openai_api"],
               "title": "Source"
             },
             "role": {
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "system",
-                    "user",
-                    "assistant",
-                    "tool"
-                  ]
+                  "enum": ["system", "user", "assistant", "tool"]
                 },
                 {
                   "type": "string"
@@ -2293,10 +2030,7 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "browser",
-                    "python"
-                  ]
+                  "enum": ["browser", "python"]
                 },
                 {
                   "type": "string"
@@ -2334,9 +2068,7 @@
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "text"
-                          ],
+                          "enum": ["text"],
                           "title": "Content Type"
                         },
                         "parts": {
@@ -2348,18 +2080,14 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageTextContent"
                     },
                     {
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "multimodal_text"
-                          ],
+                          "enum": ["multimodal_text"],
                           "title": "Content Type"
                         },
                         "parts": {
@@ -2422,18 +2150,14 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageMultimodalTextContent"
                     },
                     {
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "code"
-                          ],
+                          "enum": ["code"],
                           "title": "Content Type"
                         },
                         "language": {
@@ -2446,18 +2170,14 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageCodeContent"
                     },
                     {
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "execution_output"
-                          ],
+                          "enum": ["execution_output"],
                           "title": "Content Type"
                         },
                         "text": {
@@ -2466,18 +2186,14 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageExecutionOutputContent"
                     },
                     {
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "stderr"
-                          ],
+                          "enum": ["stderr"],
                           "title": "Content Type"
                         },
                         "text": {
@@ -2486,18 +2202,14 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageStderrContent"
                     },
                     {
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "tether_browsing_display"
-                          ],
+                          "enum": ["tether_browsing_display"],
                           "title": "Content Type"
                         },
                         "result": {
@@ -2506,18 +2218,14 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent"
                     },
                     {
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "tether_quote"
-                          ],
+                          "enum": ["tether_quote"],
                           "title": "Content Type"
                         },
                         "url": {
@@ -2538,27 +2246,21 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageTetherQuoteContent"
                     },
                     {
                       "properties": {
                         "content_type": {
                           "type": "string",
-                          "enum": [
-                            "system_error"
-                          ],
+                          "enum": ["system_error"],
                           "title": "Content Type"
                         },
                         "name": {
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "tool_error"
-                              ]
+                              "enum": ["tool_error"]
                             },
                             {
                               "type": "string"
@@ -2572,9 +2274,7 @@
                         }
                       },
                       "type": "object",
-                      "required": [
-                        "content_type"
-                      ],
+                      "required": ["content_type"],
                       "title": "OpenaiWebChatMessageSystemErrorContent"
                     }
                   ]
@@ -2583,9 +2283,7 @@
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "text"
-                      ],
+                      "enum": ["text"],
                       "title": "Content Type"
                     },
                     "text": {
@@ -2594,10 +2292,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type",
-                    "text"
-                  ],
+                  "required": ["content_type", "text"],
                   "title": "OpenaiApiChatMessageTextContent"
                 }
               ],
@@ -2609,9 +2304,7 @@
                   "properties": {
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "openai_web"
-                      ],
+                      "enum": ["openai_web"],
                       "title": "Source"
                     },
                     "finish_details": {
@@ -2634,11 +2327,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "all",
-                            "browser",
-                            "python"
-                          ]
+                          "enum": ["all", "browser", "python"]
                         },
                         {
                           "type": "string"
@@ -2675,9 +2364,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "search"
-                          ]
+                          "enum": ["search"]
                         },
                         {
                           "type": "string"
@@ -2696,9 +2383,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "finished"
-                          ]
+                          "enum": ["finished"]
                         },
                         {
                           "type": "string"
@@ -2806,10 +2491,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "failed_with_in_kernel_exception",
-                                "success"
-                              ]
+                              "enum": ["failed_with_in_kernel_exception", "success"]
                             },
                             {
                               "type": "string"
@@ -2851,10 +2533,7 @@
                                 "anyOf": [
                                   {
                                     "type": "string",
-                                    "enum": [
-                                      "image",
-                                      "stream"
-                                    ]
+                                    "enum": ["image", "stream"]
                                   },
                                   {
                                     "type": "string"
@@ -2870,9 +2549,7 @@
                                 "anyOf": [
                                   {
                                     "type": "string",
-                                    "enum": [
-                                      "server"
-                                    ]
+                                    "enum": ["server"]
                                   },
                                   {
                                     "type": "string"
@@ -2910,18 +2587,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "source"
-                  ],
+                  "required": ["source"],
                   "title": "OpenaiWebChatMessageMetadata"
                 },
                 {
                   "properties": {
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "openai_api"
-                      ],
+                      "enum": ["openai_api"],
                       "title": "Source"
                     },
                     "usage": {
@@ -2944,9 +2617,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "source"
-                  ],
+                  "required": ["source"],
                   "title": "OpenaiApiChatMessageMetadata"
                 }
               ],
@@ -2954,12 +2625,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "id",
-            "source",
-            "role",
-            "children"
-          ],
+          "required": ["id", "source", "role", "children"],
           "title": "BaseChatMessage"
         },
         "type": "object",
@@ -2980,9 +2646,7 @@
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_web"
-                ],
+                "enum": ["openai_web"],
                 "title": "Source"
               },
               "moderation_results": {
@@ -2999,25 +2663,19 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiWebConversationHistoryMeta"
           },
           {
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_api"
-                ],
+                "enum": ["openai_api"],
                 "title": "Source"
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiApiConversationHistoryMeta"
           }
         ],
@@ -3025,13 +2683,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "source",
-      "title",
-      "create_time",
-      "update_time",
-      "mapping"
-    ],
+    "required": ["source", "title", "create_time", "update_time", "mapping"],
     "title": "BaseConversationHistory"
   },
   "BaseConversationSchema": {
@@ -3043,10 +2695,7 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web",
-          "openai_api"
-        ],
+        "enum": ["openai_web", "openai_api"],
         "title": "ChatSourceTypes",
         "description": "An enumeration."
       },
@@ -3084,9 +2733,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "source"
-    ],
+    "required": ["source"],
     "title": "BaseConversationSchema"
   },
   "Body_auth_jwt_login_auth_login_post": {
@@ -3119,10 +2766,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "username",
-      "password"
-    ],
+    "required": ["username", "password"],
     "title": "Body_auth_jwt_login_auth_login_post"
   },
   "Body_upload_file_to_local_files_local_upload_post": {
@@ -3134,17 +2778,12 @@
       }
     },
     "type": "object",
-    "required": [
-      "file"
-    ],
+    "required": ["file"],
     "title": "Body_upload_file_to_local_files_local_upload_post"
   },
   "ChatSourceTypes": {
     "type": "string",
-    "enum": [
-      "openai_web",
-      "openai_api"
-    ],
+    "enum": ["openai_web", "openai_api"],
     "title": "ChatSourceTypes",
     "description": "An enumeration."
   },
@@ -3273,13 +2912,7 @@
                   "description": "An enumeration."
                 },
                 "type": "array",
-                "default": [
-                  "gpt_3_5",
-                  "gpt_4",
-                  "gpt_4_code_interpreter",
-                  "gpt_4_plugins",
-                  "gpt_4_browsing"
-                ]
+                "default": ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]
               },
               "model_code_mapping": {
                 "additionalProperties": {
@@ -3302,11 +2935,7 @@
                 "allOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "server_upload_only",
-                      "browser_upload_only",
-                      "browser_upload_when_file_size_exceed"
-                    ],
+                    "enum": ["server_upload_only", "browser_upload_only", "browser_upload_when_file_size_exceed"],
                     "title": "OpenaiWebFileUploadStrategyOption",
                     "description": "An enumeration."
                   }
@@ -3337,13 +2966,7 @@
           "sync_conversations_on_startup": true,
           "sync_conversations_schedule": false,
           "sync_conversations_schedule_interval_hours": 12,
-          "enabled_models": [
-            "gpt_3_5",
-            "gpt_4",
-            "gpt_4_code_interpreter",
-            "gpt_4_plugins",
-            "gpt_4_browsing"
-          ],
+          "enabled_models": ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"],
           "model_code_mapping": {
             "gpt_3_5": "text-davinci-002-render-sha",
             "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
@@ -3392,18 +3015,12 @@
               "enabled_models": {
                 "items": {
                   "type": "string",
-                  "enum": [
-                    "gpt_3_5",
-                    "gpt_4"
-                  ],
+                  "enum": ["gpt_3_5", "gpt_4"],
                   "title": "OpenaiApiChatModels",
                   "description": "An enumeration."
                 },
                 "type": "array",
-                "default": [
-                  "gpt_3_5",
-                  "gpt_4"
-                ]
+                "default": ["gpt_3_5", "gpt_4"]
               },
               "model_code_mapping": {
                 "additionalProperties": {
@@ -3427,10 +3044,7 @@
           "openai_base_url": "https://api.openai.com/v1/",
           "connect_timeout": 10,
           "read_timeout": 20,
-          "enabled_models": [
-            "gpt_3_5",
-            "gpt_4"
-          ],
+          "enabled_models": ["gpt_3_5", "gpt_4"],
           "model_code_mapping": {
             "gpt_3_5": "gpt-3.5-turbo",
             "gpt_4": "gpt-4"
@@ -3629,9 +3243,7 @@
                 },
                 "type": "array",
                 "title": "Request Stats Filter Keywords",
-                "default": [
-                  "/status"
-                ]
+                "default": ["/status"]
               }
             },
             "type": "object",
@@ -3642,9 +3254,7 @@
         "default": {
           "ask_stats_ttl": 7776000,
           "request_stats_ttl": 2592000,
-          "request_stats_filter_keywords": [
-            "/status"
-          ]
+          "request_stats_filter_keywords": ["/status"]
         }
       },
       "log": {
@@ -3653,11 +3263,7 @@
             "properties": {
               "console_log_level": {
                 "type": "string",
-                "enum": [
-                  "INFO",
-                  "DEBUG",
-                  "WARNING"
-                ],
+                "enum": ["INFO", "DEBUG", "WARNING"],
                 "title": "Console Log Level",
                 "default": "INFO"
               }
@@ -3719,10 +3325,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "start_time",
-      "end_time"
-    ],
+    "required": ["start_time", "end_time"],
     "title": "DailyTimeSlot"
   },
   "DataSetting": {
@@ -3791,11 +3394,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "loc",
-            "msg",
-            "type"
-          ],
+          "required": ["loc", "msg", "type"],
           "title": "ValidationError"
         },
         "type": "array",
@@ -3825,12 +3424,7 @@
         },
         "type": "array",
         "title": "Cors Allow Origins",
-        "default": [
-          "http://localhost:8000",
-          "http://localhost:5173",
-          "http://127.0.0.1:8000",
-          "http://127.0.0.1:5173"
-        ]
+        "default": ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000", "http://127.0.0.1:5173"]
       }
     },
     "type": "object",
@@ -3858,11 +3452,7 @@
     "properties": {
       "console_log_level": {
         "type": "string",
-        "enum": [
-          "INFO",
-          "DEBUG",
-          "WARNING"
-        ],
+        "enum": ["INFO", "DEBUG", "WARNING"],
         "title": "Console Log Level",
         "default": "INFO"
       }
@@ -3874,26 +3464,18 @@
     "properties": {
       "source": {
         "type": "string",
-        "enum": [
-          "openai_api"
-        ],
+        "enum": ["openai_api"],
         "title": "Source"
       },
       "model": {
         "type": "string",
-        "enum": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
+        "enum": ["gpt_3_5", "gpt_4"],
         "title": "OpenaiApiChatModels",
         "description": "An enumeration."
       }
     },
     "type": "object",
-    "required": [
-      "source",
-      "model"
-    ],
+    "required": ["source", "model"],
     "title": "OpenaiApiAskLogMeta"
   },
   "OpenaiApiChatMessage": {
@@ -3905,21 +3487,14 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_api"
-        ],
+        "enum": ["openai_api"],
         "title": "Source"
       },
       "role": {
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "system",
-              "user",
-              "assistant",
-              "tool"
-            ]
+            "enum": ["system", "user", "assistant", "tool"]
           },
           {
             "type": "string"
@@ -3931,10 +3506,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "browser",
-              "python"
-            ]
+            "enum": ["browser", "python"]
           },
           {
             "type": "string"
@@ -3968,9 +3540,7 @@
         "properties": {
           "content_type": {
             "type": "string",
-            "enum": [
-              "text"
-            ],
+            "enum": ["text"],
             "title": "Content Type"
           },
           "text": {
@@ -3979,10 +3549,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "content_type",
-          "text"
-        ],
+        "required": ["content_type", "text"],
         "title": "OpenaiApiChatMessageTextContent"
       },
       "metadata": {
@@ -3991,9 +3558,7 @@
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_web"
-                ],
+                "enum": ["openai_web"],
                 "title": "Source"
               },
               "finish_details": {
@@ -4016,11 +3581,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "all",
-                      "browser",
-                      "python"
-                    ]
+                    "enum": ["all", "browser", "python"]
                   },
                   {
                     "type": "string"
@@ -4057,9 +3618,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "search"
-                    ]
+                    "enum": ["search"]
                   },
                   {
                     "type": "string"
@@ -4078,9 +3637,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "finished"
-                    ]
+                    "enum": ["finished"]
                   },
                   {
                     "type": "string"
@@ -4188,10 +3745,7 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": [
-                          "failed_with_in_kernel_exception",
-                          "success"
-                        ]
+                        "enum": ["failed_with_in_kernel_exception", "success"]
                       },
                       {
                         "type": "string"
@@ -4233,10 +3787,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "image",
-                                "stream"
-                              ]
+                              "enum": ["image", "stream"]
                             },
                             {
                               "type": "string"
@@ -4252,9 +3803,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "server"
-                              ]
+                              "enum": ["server"]
                             },
                             {
                               "type": "string"
@@ -4292,18 +3841,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiWebChatMessageMetadata"
           },
           {
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_api"
-                ],
+                "enum": ["openai_api"],
                 "title": "Source"
               },
               "usage": {
@@ -4326,9 +3871,7 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiApiChatMessageMetadata"
           }
         ],
@@ -4336,21 +3879,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "id",
-      "source",
-      "role",
-      "children"
-    ],
+    "required": ["id", "source", "role", "children"],
     "title": "OpenaiApiChatMessage"
   },
   "OpenaiApiChatMessageMetadata": {
     "properties": {
       "source": {
         "type": "string",
-        "enum": [
-          "openai_api"
-        ],
+        "enum": ["openai_api"],
         "title": "Source"
       },
       "usage": {
@@ -4373,18 +3909,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "source"
-    ],
+    "required": ["source"],
     "title": "OpenaiApiChatMessageMetadata"
   },
   "OpenaiApiChatMessageTextContent": {
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "text"
-        ],
+        "enum": ["text"],
         "title": "Content Type"
       },
       "text": {
@@ -4393,18 +3925,12 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type",
-      "text"
-    ],
+    "required": ["content_type", "text"],
     "title": "OpenaiApiChatMessageTextContent"
   },
   "OpenaiApiChatModels": {
     "type": "string",
-    "enum": [
-      "gpt_3_5",
-      "gpt_4"
-    ],
+    "enum": ["gpt_3_5", "gpt_4"],
     "title": "OpenaiApiChatModels",
     "description": "An enumeration."
   },
@@ -4417,9 +3943,7 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_api"
-        ],
+        "enum": ["openai_api"],
         "title": "Source"
       },
       "title": {
@@ -4446,21 +3970,14 @@
             },
             "source": {
               "type": "string",
-              "enum": [
-                "openai_api"
-              ],
+              "enum": ["openai_api"],
               "title": "Source"
             },
             "role": {
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "system",
-                    "user",
-                    "assistant",
-                    "tool"
-                  ]
+                  "enum": ["system", "user", "assistant", "tool"]
                 },
                 {
                   "type": "string"
@@ -4472,10 +3989,7 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "browser",
-                    "python"
-                  ]
+                  "enum": ["browser", "python"]
                 },
                 {
                   "type": "string"
@@ -4509,9 +4023,7 @@
               "properties": {
                 "content_type": {
                   "type": "string",
-                  "enum": [
-                    "text"
-                  ],
+                  "enum": ["text"],
                   "title": "Content Type"
                 },
                 "text": {
@@ -4520,10 +4032,7 @@
                 }
               },
               "type": "object",
-              "required": [
-                "content_type",
-                "text"
-              ],
+              "required": ["content_type", "text"],
               "title": "OpenaiApiChatMessageTextContent"
             },
             "metadata": {
@@ -4532,9 +4041,7 @@
                   "properties": {
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "openai_web"
-                      ],
+                      "enum": ["openai_web"],
                       "title": "Source"
                     },
                     "finish_details": {
@@ -4557,11 +4064,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "all",
-                            "browser",
-                            "python"
-                          ]
+                          "enum": ["all", "browser", "python"]
                         },
                         {
                           "type": "string"
@@ -4598,9 +4101,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "search"
-                          ]
+                          "enum": ["search"]
                         },
                         {
                           "type": "string"
@@ -4619,9 +4120,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "finished"
-                          ]
+                          "enum": ["finished"]
                         },
                         {
                           "type": "string"
@@ -4729,10 +4228,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "failed_with_in_kernel_exception",
-                                "success"
-                              ]
+                              "enum": ["failed_with_in_kernel_exception", "success"]
                             },
                             {
                               "type": "string"
@@ -4774,10 +4270,7 @@
                                 "anyOf": [
                                   {
                                     "type": "string",
-                                    "enum": [
-                                      "image",
-                                      "stream"
-                                    ]
+                                    "enum": ["image", "stream"]
                                   },
                                   {
                                     "type": "string"
@@ -4793,9 +4286,7 @@
                                 "anyOf": [
                                   {
                                     "type": "string",
-                                    "enum": [
-                                      "server"
-                                    ]
+                                    "enum": ["server"]
                                   },
                                   {
                                     "type": "string"
@@ -4833,18 +4324,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "source"
-                  ],
+                  "required": ["source"],
                   "title": "OpenaiWebChatMessageMetadata"
                 },
                 {
                   "properties": {
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "openai_api"
-                      ],
+                      "enum": ["openai_api"],
                       "title": "Source"
                     },
                     "usage": {
@@ -4867,9 +4354,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "source"
-                  ],
+                  "required": ["source"],
                   "title": "OpenaiApiChatMessageMetadata"
                 }
               ],
@@ -4877,12 +4362,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "id",
-            "source",
-            "role",
-            "children"
-          ],
+          "required": ["id", "source", "role", "children"],
           "title": "OpenaiApiChatMessage"
         },
         "type": "object",
@@ -4903,9 +4383,7 @@
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_web"
-                ],
+                "enum": ["openai_web"],
                 "title": "Source"
               },
               "moderation_results": {
@@ -4922,25 +4400,19 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiWebConversationHistoryMeta"
           },
           {
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_api"
-                ],
+                "enum": ["openai_api"],
                 "title": "Source"
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiApiConversationHistoryMeta"
           }
         ],
@@ -4948,13 +4420,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "source",
-      "title",
-      "create_time",
-      "update_time",
-      "mapping"
-    ],
+    "required": ["source", "title", "create_time", "update_time", "mapping"],
     "title": "OpenaiApiConversationHistoryDocument",
     "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class"
   },
@@ -4962,16 +4428,12 @@
     "properties": {
       "source": {
         "type": "string",
-        "enum": [
-          "openai_api"
-        ],
+        "enum": ["openai_api"],
         "title": "Source"
       }
     },
     "type": "object",
-    "required": [
-      "source"
-    ],
+    "required": ["source"],
     "title": "OpenaiApiConversationHistoryMeta"
   },
   "OpenaiApiConversationSchema": {
@@ -4983,9 +4445,7 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_api"
-        ],
+        "enum": ["openai_api"],
         "title": "Source"
       },
       "conversation_id": {
@@ -5022,9 +4482,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "source"
-    ],
+    "required": ["source"],
     "title": "OpenaiApiConversationSchema"
   },
   "OpenaiApiPerModelAskCount": {
@@ -5069,18 +4527,12 @@
       "enabled_models": {
         "items": {
           "type": "string",
-          "enum": [
-            "gpt_3_5",
-            "gpt_4"
-          ],
+          "enum": ["gpt_3_5", "gpt_4"],
           "title": "OpenaiApiChatModels",
           "description": "An enumeration."
         },
         "type": "array",
-        "default": [
-          "gpt_3_5",
-          "gpt_4"
-        ]
+        "default": ["gpt_3_5", "gpt_4"]
       },
       "model_code_mapping": {
         "additionalProperties": {
@@ -5131,10 +4583,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "window_seconds",
-            "max_requests"
-          ],
+          "required": ["window_seconds", "max_requests"],
           "title": "TimeWindowRateLimit"
         },
         "type": "array",
@@ -5157,10 +4606,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "start_time",
-            "end_time"
-          ],
+          "required": ["start_time", "end_time"],
           "title": "DailyTimeSlot"
         },
         "type": "array",
@@ -5169,10 +4615,7 @@
       "available_models": {
         "items": {
           "type": "string",
-          "enum": [
-            "gpt_3_5",
-            "gpt_4"
-          ],
+          "enum": ["gpt_3_5", "gpt_4"],
           "title": "OpenaiApiChatModels",
           "description": "An enumeration."
         },
@@ -5234,19 +4677,12 @@
       },
       "use_case": {
         "type": "string",
-        "enum": [
-          "ace_upload",
-          "multimodal"
-        ],
+        "enum": ["ace_upload", "multimodal"],
         "title": "Use Case"
       }
     },
     "type": "object",
-    "required": [
-      "file_name",
-      "file_size",
-      "use_case"
-    ],
+    "required": ["file_name", "file_size", "use_case"],
     "title": "OpenaiChatFileUploadInfo"
   },
   "OpenaiChatInterpreterInfo": {
@@ -5345,9 +4781,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "approved"
-            ]
+            "enum": ["approved"]
           },
           {
             "type": "string"
@@ -5489,20 +4923,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "name",
-      "id",
-      "size"
-    ],
+    "required": ["name", "id", "size"],
     "title": "OpenaiWebAskAttachment"
   },
   "OpenaiWebAskLogMeta": {
     "properties": {
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web"
-        ],
+        "enum": ["openai_web"],
         "title": "Source"
       },
       "model": {
@@ -5522,10 +4950,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "source",
-      "model"
-    ],
+    "required": ["source", "model"],
     "title": "OpenaiWebAskLogMeta"
   },
   "OpenaiWebChatGPTSetting": {
@@ -5593,13 +5018,7 @@
           "description": "An enumeration."
         },
         "type": "array",
-        "default": [
-          "gpt_3_5",
-          "gpt_4",
-          "gpt_4_code_interpreter",
-          "gpt_4_plugins",
-          "gpt_4_browsing"
-        ]
+        "default": ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]
       },
       "model_code_mapping": {
         "additionalProperties": {
@@ -5622,11 +5041,7 @@
         "allOf": [
           {
             "type": "string",
-            "enum": [
-              "server_upload_only",
-              "browser_upload_only",
-              "browser_upload_when_file_size_exceed"
-            ],
+            "enum": ["server_upload_only", "browser_upload_only", "browser_upload_when_file_size_exceed"],
             "title": "OpenaiWebFileUploadStrategyOption",
             "description": "An enumeration."
           }
@@ -5656,21 +5071,14 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web"
-        ],
+        "enum": ["openai_web"],
         "title": "Source"
       },
       "role": {
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "system",
-              "user",
-              "assistant",
-              "tool"
-            ]
+            "enum": ["system", "user", "assistant", "tool"]
           },
           {
             "type": "string"
@@ -5682,10 +5090,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "browser",
-              "python"
-            ]
+            "enum": ["browser", "python"]
           },
           {
             "type": "string"
@@ -5721,9 +5126,7 @@
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "text"
-                ],
+                "enum": ["text"],
                 "title": "Content Type"
               },
               "parts": {
@@ -5735,18 +5138,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageTextContent"
           },
           {
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "multimodal_text"
-                ],
+                "enum": ["multimodal_text"],
                 "title": "Content Type"
               },
               "parts": {
@@ -5809,18 +5208,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageMultimodalTextContent"
           },
           {
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "code"
-                ],
+                "enum": ["code"],
                 "title": "Content Type"
               },
               "language": {
@@ -5833,18 +5228,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageCodeContent"
           },
           {
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "execution_output"
-                ],
+                "enum": ["execution_output"],
                 "title": "Content Type"
               },
               "text": {
@@ -5853,18 +5244,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageExecutionOutputContent"
           },
           {
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "stderr"
-                ],
+                "enum": ["stderr"],
                 "title": "Content Type"
               },
               "text": {
@@ -5873,18 +5260,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageStderrContent"
           },
           {
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "tether_browsing_display"
-                ],
+                "enum": ["tether_browsing_display"],
                 "title": "Content Type"
               },
               "result": {
@@ -5893,18 +5276,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent"
           },
           {
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "tether_quote"
-                ],
+                "enum": ["tether_quote"],
                 "title": "Content Type"
               },
               "url": {
@@ -5925,27 +5304,21 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageTetherQuoteContent"
           },
           {
             "properties": {
               "content_type": {
                 "type": "string",
-                "enum": [
-                  "system_error"
-                ],
+                "enum": ["system_error"],
                 "title": "Content Type"
               },
               "name": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "tool_error"
-                    ]
+                    "enum": ["tool_error"]
                   },
                   {
                     "type": "string"
@@ -5959,9 +5332,7 @@
               }
             },
             "type": "object",
-            "required": [
-              "content_type"
-            ],
+            "required": ["content_type"],
             "title": "OpenaiWebChatMessageSystemErrorContent"
           }
         ],
@@ -5973,9 +5344,7 @@
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_web"
-                ],
+                "enum": ["openai_web"],
                 "title": "Source"
               },
               "finish_details": {
@@ -5998,11 +5367,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "all",
-                      "browser",
-                      "python"
-                    ]
+                    "enum": ["all", "browser", "python"]
                   },
                   {
                     "type": "string"
@@ -6039,9 +5404,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "search"
-                    ]
+                    "enum": ["search"]
                   },
                   {
                     "type": "string"
@@ -6060,9 +5423,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "finished"
-                    ]
+                    "enum": ["finished"]
                   },
                   {
                     "type": "string"
@@ -6170,10 +5531,7 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": [
-                          "failed_with_in_kernel_exception",
-                          "success"
-                        ]
+                        "enum": ["failed_with_in_kernel_exception", "success"]
                       },
                       {
                         "type": "string"
@@ -6215,10 +5573,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "image",
-                                "stream"
-                              ]
+                              "enum": ["image", "stream"]
                             },
                             {
                               "type": "string"
@@ -6234,9 +5589,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "server"
-                              ]
+                              "enum": ["server"]
                             },
                             {
                               "type": "string"
@@ -6274,18 +5627,14 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiWebChatMessageMetadata"
           },
           {
             "properties": {
               "source": {
                 "type": "string",
-                "enum": [
-                  "openai_api"
-                ],
+                "enum": ["openai_api"],
                 "title": "Source"
               },
               "usage": {
@@ -6308,9 +5657,7 @@
               }
             },
             "type": "object",
-            "required": [
-              "source"
-            ],
+            "required": ["source"],
             "title": "OpenaiApiChatMessageMetadata"
           }
         ],
@@ -6318,21 +5665,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "id",
-      "source",
-      "role",
-      "children"
-    ],
+    "required": ["id", "source", "role", "children"],
     "title": "OpenaiWebChatMessage"
   },
   "OpenaiWebChatMessageCodeContent": {
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "code"
-        ],
+        "enum": ["code"],
         "title": "Content Type"
       },
       "language": {
@@ -6345,18 +5685,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageCodeContent"
   },
   "OpenaiWebChatMessageExecutionOutputContent": {
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "execution_output"
-        ],
+        "enum": ["execution_output"],
         "title": "Content Type"
       },
       "text": {
@@ -6365,18 +5701,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageExecutionOutputContent"
   },
   "OpenaiWebChatMessageMetadata": {
     "properties": {
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web"
-        ],
+        "enum": ["openai_web"],
         "title": "Source"
       },
       "finish_details": {
@@ -6399,11 +5731,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "all",
-              "browser",
-              "python"
-            ]
+            "enum": ["all", "browser", "python"]
           },
           {
             "type": "string"
@@ -6440,9 +5768,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "search"
-            ]
+            "enum": ["search"]
           },
           {
             "type": "string"
@@ -6461,9 +5787,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "finished"
-            ]
+            "enum": ["finished"]
           },
           {
             "type": "string"
@@ -6571,10 +5895,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": [
-                  "failed_with_in_kernel_exception",
-                  "success"
-                ]
+                "enum": ["failed_with_in_kernel_exception", "success"]
               },
               {
                 "type": "string"
@@ -6616,10 +5937,7 @@
                   "anyOf": [
                     {
                       "type": "string",
-                      "enum": [
-                        "image",
-                        "stream"
-                      ]
+                      "enum": ["image", "stream"]
                     },
                     {
                       "type": "string"
@@ -6635,9 +5953,7 @@
                   "anyOf": [
                     {
                       "type": "string",
-                      "enum": [
-                        "server"
-                      ]
+                      "enum": ["server"]
                     },
                     {
                       "type": "string"
@@ -6675,9 +5991,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "source"
-    ],
+    "required": ["source"],
     "title": "OpenaiWebChatMessageMetadata"
   },
   "OpenaiWebChatMessageMetadataAggregateResult": {
@@ -6686,10 +6000,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "failed_with_in_kernel_exception",
-              "success"
-            ]
+            "enum": ["failed_with_in_kernel_exception", "success"]
           },
           {
             "type": "string"
@@ -6731,10 +6042,7 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "image",
-                    "stream"
-                  ]
+                  "enum": ["image", "stream"]
                 },
                 {
                   "type": "string"
@@ -6750,9 +6058,7 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "server"
-                  ]
+                  "enum": ["server"]
                 },
                 {
                   "type": "string"
@@ -6794,10 +6100,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "image",
-              "stream"
-            ]
+            "enum": ["image", "stream"]
           },
           {
             "type": "string"
@@ -6813,9 +6116,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "server"
-            ]
+            "enum": ["server"]
           },
           {
             "type": "string"
@@ -6965,9 +6266,7 @@
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "multimodal_text"
-        ],
+        "enum": ["multimodal_text"],
         "title": "Content Type"
       },
       "parts": {
@@ -7030,9 +6329,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageMultimodalTextContent"
   },
   "OpenaiWebChatMessageMultimodalTextContentImagePart": {
@@ -7127,9 +6424,7 @@
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "stderr"
-        ],
+        "enum": ["stderr"],
         "title": "Content Type"
       },
       "text": {
@@ -7138,27 +6433,21 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageStderrContent"
   },
   "OpenaiWebChatMessageSystemErrorContent": {
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "system_error"
-        ],
+        "enum": ["system_error"],
         "title": "Content Type"
       },
       "name": {
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "tool_error"
-            ]
+            "enum": ["tool_error"]
           },
           {
             "type": "string"
@@ -7172,18 +6461,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageSystemErrorContent"
   },
   "OpenaiWebChatMessageTetherBrowsingDisplayContent": {
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "tether_browsing_display"
-        ],
+        "enum": ["tether_browsing_display"],
         "title": "Content Type"
       },
       "result": {
@@ -7192,18 +6477,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent"
   },
   "OpenaiWebChatMessageTetherQuoteContent": {
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "tether_quote"
-        ],
+        "enum": ["tether_quote"],
         "title": "Content Type"
       },
       "url": {
@@ -7224,18 +6505,14 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageTetherQuoteContent"
   },
   "OpenaiWebChatMessageTextContent": {
     "properties": {
       "content_type": {
         "type": "string",
-        "enum": [
-          "text"
-        ],
+        "enum": ["text"],
         "title": "Content Type"
       },
       "parts": {
@@ -7247,9 +6524,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "content_type"
-    ],
+    "required": ["content_type"],
     "title": "OpenaiWebChatMessageTextContent"
   },
   "OpenaiWebChatModels": {
@@ -7269,11 +6544,7 @@
   },
   "OpenaiWebChatStatus": {
     "type": "string",
-    "enum": [
-      "asking",
-      "queueing",
-      "idling"
-    ],
+    "enum": ["asking", "queueing", "idling"],
     "title": "OpenaiWebChatStatus",
     "description": "An enumeration."
   },
@@ -7286,9 +6557,7 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web"
-        ],
+        "enum": ["openai_web"],
         "title": "Source"
       },
       "title": {
@@ -7315,21 +6584,14 @@
             },
             "source": {
               "type": "string",
-              "enum": [
-                "openai_web"
-              ],
+              "enum": ["openai_web"],
               "title": "Source"
             },
             "role": {
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "system",
-                    "user",
-                    "assistant",
-                    "tool"
-                  ]
+                  "enum": ["system", "user", "assistant", "tool"]
                 },
                 {
                   "type": "string"
@@ -7341,10 +6603,7 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "browser",
-                    "python"
-                  ]
+                  "enum": ["browser", "python"]
                 },
                 {
                   "type": "string"
@@ -7380,9 +6639,7 @@
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "text"
-                      ],
+                      "enum": ["text"],
                       "title": "Content Type"
                     },
                     "parts": {
@@ -7394,18 +6651,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageTextContent"
                 },
                 {
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "multimodal_text"
-                      ],
+                      "enum": ["multimodal_text"],
                       "title": "Content Type"
                     },
                     "parts": {
@@ -7468,18 +6721,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageMultimodalTextContent"
                 },
                 {
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "code"
-                      ],
+                      "enum": ["code"],
                       "title": "Content Type"
                     },
                     "language": {
@@ -7492,18 +6741,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageCodeContent"
                 },
                 {
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "execution_output"
-                      ],
+                      "enum": ["execution_output"],
                       "title": "Content Type"
                     },
                     "text": {
@@ -7512,18 +6757,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageExecutionOutputContent"
                 },
                 {
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "stderr"
-                      ],
+                      "enum": ["stderr"],
                       "title": "Content Type"
                     },
                     "text": {
@@ -7532,18 +6773,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageStderrContent"
                 },
                 {
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "tether_browsing_display"
-                      ],
+                      "enum": ["tether_browsing_display"],
                       "title": "Content Type"
                     },
                     "result": {
@@ -7552,18 +6789,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageTetherBrowsingDisplayContent"
                 },
                 {
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "tether_quote"
-                      ],
+                      "enum": ["tether_quote"],
                       "title": "Content Type"
                     },
                     "url": {
@@ -7584,27 +6817,21 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageTetherQuoteContent"
                 },
                 {
                   "properties": {
                     "content_type": {
                       "type": "string",
-                      "enum": [
-                        "system_error"
-                      ],
+                      "enum": ["system_error"],
                       "title": "Content Type"
                     },
                     "name": {
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "tool_error"
-                          ]
+                          "enum": ["tool_error"]
                         },
                         {
                           "type": "string"
@@ -7618,9 +6845,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "content_type"
-                  ],
+                  "required": ["content_type"],
                   "title": "OpenaiWebChatMessageSystemErrorContent"
                 }
               ],
@@ -7632,9 +6857,7 @@
                   "properties": {
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "openai_web"
-                      ],
+                      "enum": ["openai_web"],
                       "title": "Source"
                     },
                     "finish_details": {
@@ -7657,11 +6880,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "all",
-                            "browser",
-                            "python"
-                          ]
+                          "enum": ["all", "browser", "python"]
                         },
                         {
                           "type": "string"
@@ -7698,9 +6917,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "search"
-                          ]
+                          "enum": ["search"]
                         },
                         {
                           "type": "string"
@@ -7719,9 +6936,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "finished"
-                          ]
+                          "enum": ["finished"]
                         },
                         {
                           "type": "string"
@@ -7829,10 +7044,7 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": [
-                                "failed_with_in_kernel_exception",
-                                "success"
-                              ]
+                              "enum": ["failed_with_in_kernel_exception", "success"]
                             },
                             {
                               "type": "string"
@@ -7874,10 +7086,7 @@
                                 "anyOf": [
                                   {
                                     "type": "string",
-                                    "enum": [
-                                      "image",
-                                      "stream"
-                                    ]
+                                    "enum": ["image", "stream"]
                                   },
                                   {
                                     "type": "string"
@@ -7893,9 +7102,7 @@
                                 "anyOf": [
                                   {
                                     "type": "string",
-                                    "enum": [
-                                      "server"
-                                    ]
+                                    "enum": ["server"]
                                   },
                                   {
                                     "type": "string"
@@ -7933,18 +7140,14 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "source"
-                  ],
+                  "required": ["source"],
                   "title": "OpenaiWebChatMessageMetadata"
                 },
                 {
                   "properties": {
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "openai_api"
-                      ],
+                      "enum": ["openai_api"],
                       "title": "Source"
                     },
                     "usage": {
@@ -7967,9 +7170,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "source"
-                  ],
+                  "required": ["source"],
                   "title": "OpenaiApiChatMessageMetadata"
                 }
               ],
@@ -7977,12 +7178,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "id",
-            "source",
-            "role",
-            "children"
-          ],
+          "required": ["id", "source", "role", "children"],
           "title": "OpenaiWebChatMessage"
         },
         "type": "object",
@@ -8001,9 +7197,7 @@
         "properties": {
           "source": {
             "type": "string",
-            "enum": [
-              "openai_web"
-            ],
+            "enum": ["openai_web"],
             "title": "Source"
           },
           "moderation_results": {
@@ -8020,20 +7214,12 @@
           }
         },
         "type": "object",
-        "required": [
-          "source"
-        ],
+        "required": ["source"],
         "title": "OpenaiWebConversationHistoryMeta"
       }
     },
     "type": "object",
-    "required": [
-      "source",
-      "title",
-      "create_time",
-      "update_time",
-      "mapping"
-    ],
+    "required": ["source", "title", "create_time", "update_time", "mapping"],
     "title": "OpenaiWebConversationHistoryDocument",
     "description": "Document Mapping class.\n\nFields:\n\n- `id` - MongoDB document ObjectID \"_id\" field.\nMapped to the PydanticObjectId class"
   },
@@ -8041,9 +7227,7 @@
     "properties": {
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web"
-        ],
+        "enum": ["openai_web"],
         "title": "Source"
       },
       "moderation_results": {
@@ -8060,9 +7244,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "source"
-    ],
+    "required": ["source"],
     "title": "OpenaiWebConversationHistoryMeta"
   },
   "OpenaiWebConversationSchema": {
@@ -8074,9 +7256,7 @@
       },
       "source": {
         "type": "string",
-        "enum": [
-          "openai_web"
-        ],
+        "enum": ["openai_web"],
         "title": "Source"
       },
       "conversation_id": {
@@ -8113,18 +7293,12 @@
       }
     },
     "type": "object",
-    "required": [
-      "source"
-    ],
+    "required": ["source"],
     "title": "OpenaiWebConversationSchema"
   },
   "OpenaiWebFileUploadStrategyOption": {
     "type": "string",
-    "enum": [
-      "server_upload_only",
-      "browser_upload_only",
-      "browser_upload_when_file_size_exceed"
-    ],
+    "enum": ["server_upload_only", "browser_upload_only", "browser_upload_when_file_size_exceed"],
     "title": "OpenaiWebFileUploadStrategyOption",
     "description": "An enumeration."
   },
@@ -8179,10 +7353,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "window_seconds",
-            "max_requests"
-          ],
+          "required": ["window_seconds", "max_requests"],
           "title": "TimeWindowRateLimit"
         },
         "type": "array",
@@ -8205,10 +7376,7 @@
             }
           },
           "type": "object",
-          "required": [
-            "start_time",
-            "end_time"
-          ],
+          "required": ["start_time", "end_time"],
           "title": "DailyTimeSlot"
         },
         "type": "array",
@@ -8310,10 +7478,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "_id",
-      "count"
-    ],
+    "required": ["_id", "count"],
     "title": "RequestLogAggregation"
   },
   "RequestLogAggregationID": {
@@ -8339,11 +7504,7 @@
     "properties": {
       "strategy": {
         "type": "string",
-        "enum": [
-          "server_upload_only",
-          "browser_upload_only",
-          "browser_upload_when_file_size_exceed"
-        ],
+        "enum": ["server_upload_only", "browser_upload_only", "browser_upload_when_file_size_exceed"],
         "title": "OpenaiWebFileUploadStrategyOption",
         "description": "An enumeration."
       },
@@ -8393,10 +7554,7 @@
                 "anyOf": [
                   {
                     "type": "string",
-                    "enum": [
-                      "ace_upload",
-                      "multimodal"
-                    ]
+                    "enum": ["ace_upload", "multimodal"]
                   },
                   {
                     "type": "string"
@@ -8419,21 +7577,12 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "original_filename",
-          "size",
-          "upload_time",
-          "uploader_id"
-        ],
+        "required": ["id", "original_filename", "size", "upload_time", "uploader_id"],
         "title": "UploadedFileInfoSchema"
       }
     },
     "type": "object",
-    "required": [
-      "strategy",
-      "file_max_size"
-    ],
+    "required": ["strategy", "file_max_size"],
     "title": "StartUploadResponseSchema"
   },
   "StatsSetting": {
@@ -8454,9 +7603,7 @@
         },
         "type": "array",
         "title": "Request Stats Filter Keywords",
-        "default": [
-          "/status"
-        ]
+        "default": ["/status"]
       }
     },
     "type": "object",
@@ -8482,12 +7629,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "startup_time",
-      "total_user_count",
-      "total_conversation_count",
-      "valid_conversation_count"
-    ],
+    "required": ["startup_time", "total_user_count", "total_conversation_count", "valid_conversation_count"],
     "title": "SystemInfo"
   },
   "TimeWindowRateLimit": {
@@ -8504,10 +7646,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "window_seconds",
-      "max_requests"
-    ],
+    "required": ["window_seconds", "max_requests"],
     "title": "TimeWindowRateLimit"
   },
   "UploadedFileInfoSchema": {
@@ -8552,10 +7691,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": [
-                  "ace_upload",
-                  "multimodal"
-                ]
+                "enum": ["ace_upload", "multimodal"]
               },
               {
                 "type": "string"
@@ -8578,13 +7714,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "id",
-      "original_filename",
-      "size",
-      "upload_time",
-      "uploader_id"
-    ],
+    "required": ["id", "original_filename", "size", "upload_time", "uploader_id"],
     "title": "UploadedFileInfoSchema"
   },
   "UploadedFileOpenaiWebInfo": {
@@ -8597,10 +7727,7 @@
         "anyOf": [
           {
             "type": "string",
-            "enum": [
-              "ace_upload",
-              "multimodal"
-            ]
+            "enum": ["ace_upload", "multimodal"]
           },
           {
             "type": "string"
@@ -8665,12 +7792,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "email",
-      "password",
-      "username",
-      "nickname"
-    ],
+    "required": ["email", "password", "username", "nickname"],
     "title": "UserCreate"
   },
   "UserRead": {
@@ -8734,11 +7856,7 @@
           },
           "openai_web_chat_status": {
             "type": "string",
-            "enum": [
-              "asking",
-              "queueing",
-              "idling"
-            ],
+            "enum": ["asking", "queueing", "idling"],
             "title": "OpenaiWebChatStatus",
             "description": "An enumeration."
           },
@@ -8776,10 +7894,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "window_seconds",
-                    "max_requests"
-                  ],
+                  "required": ["window_seconds", "max_requests"],
                   "title": "TimeWindowRateLimit"
                 },
                 "type": "array",
@@ -8802,10 +7917,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "start_time",
-                    "end_time"
-                  ],
+                  "required": ["start_time", "end_time"],
                   "title": "DailyTimeSlot"
                 },
                 "type": "array",
@@ -8903,10 +8015,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "window_seconds",
-                    "max_requests"
-                  ],
+                  "required": ["window_seconds", "max_requests"],
                   "title": "TimeWindowRateLimit"
                 },
                 "type": "array",
@@ -8929,10 +8038,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "start_time",
-                    "end_time"
-                  ],
+                  "required": ["start_time", "end_time"],
                   "title": "DailyTimeSlot"
                 },
                 "type": "array",
@@ -8941,10 +8047,7 @@
               "available_models": {
                 "items": {
                   "type": "string",
-                  "enum": [
-                    "gpt_3_5",
-                    "gpt_4"
-                  ],
+                  "enum": ["gpt_3_5", "gpt_4"],
                   "title": "OpenaiApiChatModels",
                   "description": "An enumeration."
                 },
@@ -8996,12 +8099,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "credits",
-          "openai_web_chat_status",
-          "openai_web",
-          "openai_api"
-        ],
+        "required": ["credits", "openai_web_chat_status", "openai_web", "openai_api"],
         "title": "UserSettingSchema"
       }
     },
@@ -9081,11 +8179,7 @@
           },
           "openai_web_chat_status": {
             "type": "string",
-            "enum": [
-              "asking",
-              "queueing",
-              "idling"
-            ],
+            "enum": ["asking", "queueing", "idling"],
             "title": "OpenaiWebChatStatus",
             "description": "An enumeration."
           },
@@ -9123,10 +8217,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "window_seconds",
-                    "max_requests"
-                  ],
+                  "required": ["window_seconds", "max_requests"],
                   "title": "TimeWindowRateLimit"
                 },
                 "type": "array",
@@ -9149,10 +8240,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "start_time",
-                    "end_time"
-                  ],
+                  "required": ["start_time", "end_time"],
                   "title": "DailyTimeSlot"
                 },
                 "type": "array",
@@ -9250,10 +8338,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "window_seconds",
-                    "max_requests"
-                  ],
+                  "required": ["window_seconds", "max_requests"],
                   "title": "TimeWindowRateLimit"
                 },
                 "type": "array",
@@ -9276,10 +8361,7 @@
                     }
                   },
                   "type": "object",
-                  "required": [
-                    "start_time",
-                    "end_time"
-                  ],
+                  "required": ["start_time", "end_time"],
                   "title": "DailyTimeSlot"
                 },
                 "type": "array",
@@ -9288,10 +8370,7 @@
               "available_models": {
                 "items": {
                   "type": "string",
-                  "enum": [
-                    "gpt_3_5",
-                    "gpt_4"
-                  ],
+                  "enum": ["gpt_3_5", "gpt_4"],
                   "title": "OpenaiApiChatModels",
                   "description": "An enumeration."
                 },
@@ -9343,12 +8422,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "credits",
-          "openai_web_chat_status",
-          "openai_web",
-          "openai_api"
-        ],
+        "required": ["credits", "openai_web_chat_status", "openai_web", "openai_api"],
         "title": "UserSettingSchema"
       },
       "remark": {
@@ -9387,11 +8461,7 @@
       },
       "openai_web_chat_status": {
         "type": "string",
-        "enum": [
-          "asking",
-          "queueing",
-          "idling"
-        ],
+        "enum": ["asking", "queueing", "idling"],
         "title": "OpenaiWebChatStatus",
         "description": "An enumeration."
       },
@@ -9429,10 +8499,7 @@
                 }
               },
               "type": "object",
-              "required": [
-                "window_seconds",
-                "max_requests"
-              ],
+              "required": ["window_seconds", "max_requests"],
               "title": "TimeWindowRateLimit"
             },
             "type": "array",
@@ -9455,10 +8522,7 @@
                 }
               },
               "type": "object",
-              "required": [
-                "start_time",
-                "end_time"
-              ],
+              "required": ["start_time", "end_time"],
               "title": "DailyTimeSlot"
             },
             "type": "array",
@@ -9556,10 +8620,7 @@
                 }
               },
               "type": "object",
-              "required": [
-                "window_seconds",
-                "max_requests"
-              ],
+              "required": ["window_seconds", "max_requests"],
               "title": "TimeWindowRateLimit"
             },
             "type": "array",
@@ -9582,10 +8643,7 @@
                 }
               },
               "type": "object",
-              "required": [
-                "start_time",
-                "end_time"
-              ],
+              "required": ["start_time", "end_time"],
               "title": "DailyTimeSlot"
             },
             "type": "array",
@@ -9594,10 +8652,7 @@
           "available_models": {
             "items": {
               "type": "string",
-              "enum": [
-                "gpt_3_5",
-                "gpt_4"
-              ],
+              "enum": ["gpt_3_5", "gpt_4"],
               "title": "OpenaiApiChatModels",
               "description": "An enumeration."
             },
@@ -9649,12 +8704,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "credits",
-      "openai_web_chat_status",
-      "openai_web",
-      "openai_api"
-    ],
+    "required": ["credits", "openai_web_chat_status", "openai_web", "openai_api"],
     "title": "UserSettingSchema"
   },
   "UserUpdate": {
@@ -9759,11 +8809,7 @@
       }
     },
     "type": "object",
-    "required": [
-      "loc",
-      "msg",
-      "type"
-    ],
+    "required": ["loc", "msg", "type"],
     "title": "ValidationError"
   }
 }

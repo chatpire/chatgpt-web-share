@@ -23,10 +23,22 @@
           <template #action>
             <div class="my-1 flex flex-col justify-between">
               <div class="mb-2 text-xs">
-                <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span> {{ t(`modelDescriptions.${newConversationInfo.source}.${currentHoveringModel || newConversationInfo.model}`) }}
+                <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span>
+                {{
+                  t(
+                    `modelDescriptions.${newConversationInfo.source}.${
+                      currentHoveringModel || newConversationInfo.model
+                    }`
+                  )
+                }}
               </div>
               <div class="text-xs text-right">
-                {{ t('commons.remain') }}: {{ getCountTrans(userStore.user?.setting[newConversationInfo.source!].per_model_ask_count[newConversationInfo.model!]) }}
+                {{ t('commons.remain') }}:
+                {{
+                  getCountTrans(
+                    userStore.user?.setting[newConversationInfo.source!].per_model_ask_count[newConversationInfo.model!]
+                  )
+                }}
               </div>
             </div>
           </template>
@@ -61,7 +73,7 @@ import { i18n } from '@/i18n';
 import { useAppStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
 import { ChatSourceTypes, OpenaiChatPlugin } from '@/types/schema';
-import {getCountTrans} from '@/utils/chat';
+import { getCountTrans } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
 import NewConversationFormModelSelectionLabel from './NewConversationFormModelSelectionLabel.vue';
@@ -146,22 +158,25 @@ function renderModelSelectionLabel(option: SelectOption) {
   });
 }
 
-function renderModelSelectionOption ({ node, option }: { node: VNode; option: SelectOption }) {
-  return h(NTooltip, {
-    class: 'hidden',
-    onUpdateShow: (value: boolean) => {
-      console.log('on-update:show', value);
-      if (value) {
-        currentHoveringModel.value = option.value as string;
-      } else {
-        currentHoveringModel.value = null;
-      }
+function renderModelSelectionOption({ node, option }: { node: VNode; option: SelectOption }) {
+  return h(
+    NTooltip,
+    {
+      class: 'hidden',
+      onUpdateShow: (value: boolean) => {
+        console.log('on-update:show', value);
+        if (value) {
+          currentHoveringModel.value = option.value as string;
+        } else {
+          currentHoveringModel.value = null;
+        }
+      },
+    },
+    {
+      trigger: () => node,
+      default: () => null,
     }
-  }, {
-    trigger: () => node,
-    default: () => null,
-    
-  });
+  );
 }
 
 function renderPluginSelectionLabel(option: SelectOption) {

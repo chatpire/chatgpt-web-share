@@ -1,9 +1,5 @@
 <template>
-  <n-form
-    :label-placement="'left'"
-    :label-align="'left'"
-    label-width="240px"
-  >
+  <n-form :label-placement="'left'" :label-align="'left'" label-width="240px">
     <n-form-item :label="'ID'">
       <n-text strong>
         {{ props.user?.id }}
@@ -20,7 +16,7 @@
   </n-form>
   <div class="my-2">
     <n-text depth="3">
-      {{ $t("tips.seperate_settings") }}
+      {{ $t('tips.seperate_settings') }}
     </n-text>
   </div>
   <UpdateChatSourceSettingForm :user="props.user" @save="handleSave" />

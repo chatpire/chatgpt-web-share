@@ -1,7 +1,7 @@
 import { useOsTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
 
-import { AppState , Preference } from '../types';
+import { AppState, Preference } from '../types';
 const osThemeRef = useOsTheme();
 import { useStorage } from '@vueuse/core';
 

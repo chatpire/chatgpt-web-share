@@ -55,7 +55,7 @@ const refresh = async () => {
   // After the animation plays, reset the spinning state
   setTimeout(() => {
     isSpinning.value = false;
-  }, 1000);  // Adjust the timeout to match the animation duration
+  }, 1000); // Adjust the timeout to match the animation duration
 
   emits('refresh');
 };
@@ -112,8 +112,12 @@ const statistics = computed(() => {
 
 <style scoped>
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .spin {

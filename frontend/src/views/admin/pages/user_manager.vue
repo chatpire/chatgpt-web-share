@@ -91,7 +91,9 @@ const columns: DataTableColumns<UserReadAdmin> = [
     title: t('commons.status'),
     key: 'rev_chat_status',
     render(row) {
-      return row.setting.openai_web_chat_status ? t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap]) : '';
+      return row.setting.openai_web_chat_status
+        ? t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap])
+        : '';
     },
     sorter: 'default',
   },

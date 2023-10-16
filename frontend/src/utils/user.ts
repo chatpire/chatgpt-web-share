@@ -4,7 +4,7 @@ import { h } from 'vue';
 import ChatModelTagsRow from '@/components/ChatModelTagsRow.vue';
 import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { i18n } from '@/i18n';
-import { openaiApiChatModelNames, openaiWebChatModelNames} from '@/types/json_schema';
+import { openaiApiChatModelNames, openaiWebChatModelNames } from '@/types/json_schema';
 import { chatStatusMap, UserRead, UserSettingSchema } from '@/types/schema';
 import { getCountTrans } from '@/utils/chat';
 
@@ -54,7 +54,9 @@ export function getUserAttrColumns(): ListAttr<UserRead>[] {
       title: t('labels.openai_web_chat_status'),
       key: 'rev_chat_status',
       render(row) {
-        return row.setting.openai_web_chat_status ? t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap]) : '';
+        return row.setting.openai_web_chat_status
+          ? t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap])
+          : '';
       },
     },
     {

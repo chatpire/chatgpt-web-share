@@ -159,5 +159,4 @@ const color = computed(() => {
 
   return result;
 });
-
 </script>

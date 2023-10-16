@@ -30,7 +30,7 @@ const useFileStore = defineStore('file', {
       this.images.uploadedFileInfos = [];
       this.images.naiveUiUploadFileInfos = [];
       this.attachments.naiveUiFileIdToServerFileIdMap = {};
-    }
+    },
   },
 });
 

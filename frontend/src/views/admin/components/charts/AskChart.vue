@@ -84,25 +84,27 @@ function makeDatasets(askRecords: AskLogAggregation[]) {
 
   Object.entries(askRecordsGroupByTypeAndModel).forEach(([key, value], idx) => {
     const [type, model] = key.split('|');
-    const source = value.filter((v) => {
-      return v._id !== null;
-    }).map((v) => {
-      return {
-        timestamp: new Date(v._id!.start_time).getTime(),
-        count: v.count,
-        // userIds: v.user_ids || [],
-        // findUsername 生成 string，超过5人则省略；格式：'user1, user2, user3, ... 等 x 人'
-        users: v.user_ids
-          ? v.user_ids.length > 5
-            ? `${findUsername(v.user_ids[0])}, ${findUsername(
-              v.user_ids[1],
-            )}, ${findUsername(v.user_ids[2])}, ... and ${v.user_ids.length - 3} more`
-            : v.user_ids.map((id) => findUsername(id)).join(', ')
-          : '',
-        totalAskTime: v.total_ask_time?.toFixed(2) || 0,
-        totalQueueingTime: v.total_queueing_time?.toFixed(2) || 0,
-      } as AskStatRecord;
-    });
+    const source = value
+      .filter((v) => {
+        return v._id !== null;
+      })
+      .map((v) => {
+        return {
+          timestamp: new Date(v._id!.start_time).getTime(),
+          count: v.count,
+          // userIds: v.user_ids || [],
+          // findUsername 生成 string，超过5人则省略；格式：'user1, user2, user3, ... 等 x 人'
+          users: v.user_ids
+            ? v.user_ids.length > 5
+              ? `${findUsername(v.user_ids[0])}, ${findUsername(v.user_ids[1])}, ${findUsername(
+                v.user_ids[2]
+              )}, ... and ${v.user_ids.length - 3} more`
+              : v.user_ids.map((id) => findUsername(id)).join(', ')
+            : '',
+          totalAskTime: v.total_ask_time?.toFixed(2) || 0,
+          totalQueueingTime: v.total_queueing_time?.toFixed(2) || 0,
+        } as AskStatRecord;
+      });
     datasets.push({
       id: idx,
       source,
@@ -218,7 +220,7 @@ const dataZoomOption = computed(() => {
       type: 'slider',
       show: showDataZoom.value,
       xAxisIndex: 0,
-      startValue: currentTimestamp - 1000 * 60 * 60 * 24 * 3,  // 默认显示 3 天内
+      startValue: currentTimestamp - 1000 * 60 * 60 * 24 * 3, // 默认显示 3 天内
       endValue: currentTimestamp,
       filterMode: 'filter',
     },
@@ -316,7 +318,7 @@ const option = computed(() => {
       top: 40,
       textStyle: {
         color: isDark.value ? '#EDEDED' : '#4E5969',
-      }
+      },
     },
 
     toolbox: {

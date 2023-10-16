@@ -59,15 +59,19 @@ const openaiApiChatSourceSettingModel = ref<OpenaiApiSourceSettingSchema | null>
 
 const PerModelAskCountField = defineComponent({
   inheritAttrs: false,
-  setup(props, {attrs, slots}) {
+  setup(props, { attrs, slots }) {
     return () => {
-      return h(ModelDictField, {
-        inputComponent: CountNumberInputWithAdd,
-        defaultExpanded: true,
-        ...(attrs as any),
-      }, slots);
+      return h(
+        ModelDictField,
+        {
+          inputComponent: CountNumberInputWithAdd,
+          defaultExpanded: true,
+          ...(attrs as any),
+        },
+        slots
+      );
     };
-  }
+  },
 });
 
 setUniqueItemsForEnumProperties(jsonOpenaiWebSourceSettingSchema);
@@ -129,7 +133,7 @@ const uiSchema = computed(() => {
     },
     per_model_ask_count: {
       'ui:title': t('labels.per_model_ask_count'),
-      'ui:field': PerModelAskCountField
+      'ui:field': PerModelAskCountField,
     },
     daily_available_time_slots: {
       'ui:title': t('labels.daily_available_time_slots'),

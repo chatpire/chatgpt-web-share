@@ -46,7 +46,11 @@ export function requestUploadFileFromLocalToOpenaiWeb(fileId: string) {
 //   return response;
 // }
 
-export async function uploadFileToAzureBlob(file: File, signedUrl: string, onProgress: (e: { percent: number }) => void): Promise<void> {
+export async function uploadFileToAzureBlob(
+  file: File,
+  signedUrl: string,
+  onProgress: (e: { percent: number }) => void
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
 

@@ -24,16 +24,20 @@ export type OpenaiWebChatMessageMetadata = components['schemas']['OpenaiWebChatM
 export type OpenaiApiChatMessageMetadata = components['schemas']['OpenaiApiChatMessageMetadata'];
 export type OpenaiWebChatMessageMetadataAttachment = components['schemas']['OpenaiWebChatMessageMetadataAttachment'];
 export type OpenaiWebChatMessageTextContent = components['schemas']['OpenaiWebChatMessageTextContent'];
-export type OpenaiWebChatMessageMultimodalTextContent = components['schemas']['OpenaiWebChatMessageMultimodalTextContent'];
+export type OpenaiWebChatMessageMultimodalTextContent =
+  components['schemas']['OpenaiWebChatMessageMultimodalTextContent'];
 export type OpenaiWebChatMessageCodeContent = components['schemas']['OpenaiWebChatMessageCodeContent'];
-export type OpenaiWebChatMessageExecutionOutputContent = components['schemas']['OpenaiWebChatMessageExecutionOutputContent'];
+export type OpenaiWebChatMessageExecutionOutputContent =
+  components['schemas']['OpenaiWebChatMessageExecutionOutputContent'];
 export type OpenaiWebChatMessageStderrContent = components['schemas']['OpenaiWebChatMessageStderrContent'];
-export type OpenaiWebChatMessageTetherBrowsingDisplayContent = components['schemas']['OpenaiWebChatMessageTetherBrowsingDisplayContent'];
+export type OpenaiWebChatMessageTetherBrowsingDisplayContent =
+  components['schemas']['OpenaiWebChatMessageTetherBrowsingDisplayContent'];
 export type OpenaiWebChatMessageMetadataCiteData = components['schemas']['OpenaiWebChatMessageMetadataCiteData'];
 export type OpenaiWebChatMessageTetherQuoteContent = components['schemas']['OpenaiWebChatMessageTetherQuoteContent'];
 export type OpenaiWebChatMessageSystemErrorContent = components['schemas']['OpenaiWebChatMessageSystemErrorContent'];
 export type OpenaiApiChatMessageTextContent = components['schemas']['OpenaiApiChatMessageTextContent'];
-export type OpenaiWebChatMessageMultimodalTextContentImagePart = components['schemas']['OpenaiWebChatMessageMultimodalTextContentImagePart'];
+export type OpenaiWebChatMessageMultimodalTextContentImagePart =
+  components['schemas']['OpenaiWebChatMessageMultimodalTextContentImagePart'];
 
 export type BaseChatMessage = components['schemas']['BaseChatMessage'];
 export type OpenaiApiChatMessage = components['schemas']['OpenaiApiChatMessage'];

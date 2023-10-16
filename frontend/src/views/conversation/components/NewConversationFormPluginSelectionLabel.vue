@@ -19,7 +19,6 @@ import { watchEffect } from 'vue';
 
 import { OpenaiChatPlugin } from '@/types/schema';
 
-
 const props = defineProps<{
   plugin?: OpenaiChatPlugin;
 }>();
@@ -27,7 +26,6 @@ const props = defineProps<{
 watchEffect(() => {
   console.log(props.plugin);
 });
-
 </script>
 
 <style scoped>

@@ -58,7 +58,12 @@ export function getInterpreterInfoApi(conversation_id: string) {
   return axios.get<OpenaiChatInterpreterInfo>(`${ApiUrl.Conversation}/${conversation_id}/interpreter`);
 }
 
-export function getInterpreterSandboxFileDownloadUrlApi(conversation_id: string, message_id: string, sandbox_path: string) {
-  return axios.get<string>(`${ApiUrl.Conversation}/${conversation_id}/interpreter/download-url`,
-    { params: { message_id, sandbox_path } });
+export function getInterpreterSandboxFileDownloadUrlApi(
+  conversation_id: string,
+  message_id: string,
+  sandbox_path: string
+) {
+  return axios.get<string>(`${ApiUrl.Conversation}/${conversation_id}/interpreter/download-url`, {
+    params: { message_id, sandbox_path },
+  });
 }

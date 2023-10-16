@@ -1,7 +1,6 @@
 import * as clipboard from 'clipboard-polyfill';
 import { Ref } from 'vue';
 
-
 export function bindOnclick(contentRef: Ref<HTMLElement | undefined>) {
   // 获取模板引用中的所有 pre 元素和其子元素中的 button 元素
   const preElements = contentRef.value?.querySelectorAll('pre');

@@ -91,7 +91,7 @@ const configUiSchema = {
     file_upload_strategy: {
       'ui:title': t('labels.config.file_upload_strategy'),
       'ui:description': t('desc.config.file_upload_strategy'),
-    }
+    },
   },
   openai_api: {
     enabled_models: {
@@ -101,8 +101,8 @@ const configUiSchema = {
     model_code_mapping: {
       'ui:title': t('labels.config.model_code_mapping'),
       'ui:field': ModelDictField,
-    }
-  }
+    },
+  },
 };
 
 const credentialsUiSchema = {
@@ -158,12 +158,12 @@ const handleExport = (tabName: string) => {
 };
 
 type TabInfo = {
-  name: string,
-  title: string,
-  model: any,
-  uiSchema: any,
-  schema: any,
-  saveHandler: any
+  name: string;
+  title: string;
+  model: any;
+  uiSchema: any;
+  schema: any;
+  saveHandler: any;
 };
 
 const tabInfos = computed<TabInfo[]>(() => [
@@ -193,5 +193,4 @@ getSystemConfig().then((res) => {
 getSystemCredentials().then((res) => {
   credentialsModel.value = res.data;
 });
-
 </script>

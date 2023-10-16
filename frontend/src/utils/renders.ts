@@ -3,7 +3,7 @@ import { NButton, NDropdown, NIcon, NInput } from 'naive-ui';
 import { h } from 'vue';
 
 import { i18n } from '@/i18n';
-import {NewConversationInfo} from '@/types/custom';
+import { NewConversationInfo } from '@/types/custom';
 import { BaseConversationSchema } from '@/types/schema';
 import { Dialog, Message } from '@/utils/tips';
 import NewConversationForm from '@/views/conversation/components/NewConversationForm.vue';
@@ -117,7 +117,7 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
           input = newConversationInfo;
         },
       }),
-    style: {width: '500px'},
+    style: { width: '500px' },
     onPositiveClick() {
       d.loading = true;
       return new Promise((resolve, _reject) => {
@@ -146,4 +146,3 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
     },
   });
 };
-

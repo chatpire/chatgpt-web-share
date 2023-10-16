@@ -126,7 +126,7 @@ const getOptions = (): Array<DropdownOption> => {
             title: t('commons.userProfile'),
             content: () => h(UserProfileCard, {}, {}),
             positiveText: t('commons.confirm'),
-            style: {width: '600px'}
+            style: { width: '600px' },
           }),
       },
     },

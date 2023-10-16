@@ -5,7 +5,7 @@ type UseDrawerOption = {
   title: string;
   beforeOpen?: (row: any) => void;
   afterClose?: () => void;
-}
+};
 
 export function useDrawer(options: UseDrawerOption[]) {
   const show = ref(false);

@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-import { AskLogAggregation, ConfigModel, CredentialsModel, LogFilterOptions, RequestLogAggregation, SystemInfo } from '@/types/schema';
+import {
+  AskLogAggregation,
+  ConfigModel,
+  CredentialsModel,
+  LogFilterOptions,
+  RequestLogAggregation,
+  SystemInfo,
+} from '@/types/schema';
 
 import ApiUrl from './url';
 

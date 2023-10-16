@@ -18,7 +18,8 @@ interface Options extends KatexOptions {
 // Test if potential opening or closing delimieter
 // Assumes that there is a "$" at state.src[pos]
 function isValidDelim(state: StateInline, pos: number) {
-  let can_open = true, can_close = true;
+  let can_open = true,
+    can_close = true;
 
   const max = state.posMax;
   const prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1;

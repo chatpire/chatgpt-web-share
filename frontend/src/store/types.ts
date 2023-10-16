@@ -1,7 +1,13 @@
 import { RemovableRef } from '@vueuse/core';
 import { UploadFileInfo } from 'naive-ui';
 
-import { BaseConversationHistory, BaseConversationSchema, ChatSourceTypes, UploadedFileInfoSchema, UserRead } from '@/types/schema';
+import {
+  BaseConversationHistory,
+  BaseConversationSchema,
+  ChatSourceTypes,
+  UploadedFileInfoSchema,
+  UserRead,
+} from '@/types/schema';
 
 interface UserState {
   user: UserRead | null;
@@ -34,11 +40,11 @@ type FileUploadGroup = {
   uploadedFileInfos: UploadedFileInfoSchema[];
   naiveUiUploadFileInfos: UploadFileInfo[];
   naiveUiFileIdToServerFileIdMap: Record<string, string>;
-}
+};
 
 type ImageUploadGroup = FileUploadGroup & {
-  imageMetadataMap: Record<string, { width: number; height: number }>;  // 使用 server 端的文件 id 作为 key
-}
+  imageMetadataMap: Record<string, { width: number; height: number }>; // 使用 server 端的文件 id 作为 key
+};
 
 interface FileState {
   attachments: FileUploadGroup;

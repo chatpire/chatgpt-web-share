@@ -40,13 +40,12 @@ const items = computed(() => {
     let value: VNode | string | null = null;
     if (column.render) {
       value = column.render(user);
-      
     } else {
       const key = column.key as keyof UserRead;
       value = `${user[key]}` || '';
     }
     if (typeof value === 'string') {
-      value = h('div', null, {default: () => value});
+      value = h('div', null, { default: () => value });
     }
     return { title: translateKey(column.key), value: value as VNode };
   });

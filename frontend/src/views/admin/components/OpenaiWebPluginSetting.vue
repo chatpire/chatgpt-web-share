@@ -197,9 +197,10 @@ function showPluginDetail(plugin: OpenaiChatPlugin) {
     style: {
       width: '630px',
     },
-    content: () => h(OpenaiWebPluginDetailCard, {
-      plugin
-    })
+    content: () =>
+      h(OpenaiWebPluginDetailCard, {
+        plugin,
+      }),
   });
 }
 

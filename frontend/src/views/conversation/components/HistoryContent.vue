@@ -49,7 +49,12 @@
         </div>
       </div>
       <!-- 消息记录 -->
-      <MessageRow v-for="messages in filteredMessagesList" :key="messages[0].id" :messages="messages" :conversation-id="conversationId" />
+      <MessageRow
+        v-for="messages in filteredMessagesList"
+        :key="messages[0].id"
+        :messages="messages"
+        :conversation-id="conversationId"
+      />
     </div>
     <n-empty
       v-else
@@ -120,10 +125,14 @@ const rawMessages = computed<BaseChatMessage[]>(() => {
   let result = convHistory.value ? getMessageListFromHistory(convHistory.value) : [];
   result = result.concat(props.extraMessages || []);
   let canContinue = false;
-  if (result.length > 0){
+  if (result.length > 0) {
     const lastMessage = result[result.length - 1];
-    if (lastMessage.role == 'assistant' && lastMessage.source == 'openai_web' &&  lastMessage.metadata?.source === 'openai_web' &&
-  lastMessage.metadata.finish_details?.type === 'max_tokens') {
+    if (
+      lastMessage.role == 'assistant' &&
+      lastMessage.source == 'openai_web' &&
+      lastMessage.metadata?.source === 'openai_web' &&
+      lastMessage.metadata.finish_details?.type === 'max_tokens'
+    ) {
       canContinue = true;
     }
   }
