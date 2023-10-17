@@ -91,7 +91,7 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
 export function buildTemporaryMessage(
   source: ChatSourceTypes,
   role: string,
-  text_content: string,
+  textContent: string,
   parent: string | undefined,
   model: string | undefined,
   openaiWebAttachments: OpenaiWebAskAttachment[] | null = null,
@@ -103,7 +103,7 @@ export function buildTemporaryMessage(
     source,
     content: {
       content_type: 'text',
-      parts: [text_content],
+      parts: [textContent],
     },
     role: role,
     parent, // 其实没有用到parent
@@ -118,7 +118,8 @@ export function buildTemporaryMessage(
   }
   if (openaiWebMultimodalImageParts) {
     result.content = {
-      parts: [...openaiWebMultimodalImageParts, text_content],
+      content_type: 'multimodal_text',
+      parts: [...openaiWebMultimodalImageParts, textContent],
     } as OpenaiWebChatMessageMultimodalTextContent;
   }
   return result;
@@ -134,7 +135,7 @@ export function modifiyTemporaryMessageContent(message: BaseChatMessage, textCon
     content.text = textContent;
     return content;
   } else if (message.source == 'openai_web') {
-    const content = message.content as OpenaiWebChatMessageTextContent;
+    const content = message.content as OpenaiWebChatMessageTextContent | OpenaiWebChatMessageMultimodalTextContent;
     content.parts = [textContent];
     return content;
   }
