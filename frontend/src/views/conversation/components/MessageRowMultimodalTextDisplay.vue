@@ -55,13 +55,12 @@
 </template>
 
 <script setup lang="ts">
-import DOMPurify from 'dompurify';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAppStore } from '@/store';
 import { BaseChatMessage, OpenaiWebChatMessageMultimodalTextContentImagePart } from '@/types/schema';
-import { getContentRawText, getMultimodalContentImageParts, getTextMessageContent } from '@/utils/chat';
+import { dompurifyRenderedHtml, getContentRawText, getMultimodalContentImageParts } from '@/utils/chat';
 import md from '@/utils/markdown';
 
 import { bindOnclick, processPreTags } from '../utils/codeblock';
@@ -88,7 +87,7 @@ const renderedContent = computed(() => {
   if (!props.renderMarkdown) {
     return content.value;
   }
-  const result = DOMPurify.sanitize(md.render(content.value || ''));
+  const result = dompurifyRenderedHtml(md.render(content.value || ''));
   return processPreTags(result, appStore.preference.codeAutoWrap);
 });
 

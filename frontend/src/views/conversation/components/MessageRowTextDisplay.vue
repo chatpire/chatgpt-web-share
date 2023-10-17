@@ -6,13 +6,12 @@
 </template>
 
 <script setup lang="ts">
-import DOMPurify from 'dompurify';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAppStore } from '@/store';
 import { BaseChatMessage } from '@/types/schema';
-import { getTextMessageContent } from '@/utils/chat';
+import { dompurifyRenderedHtml, getTextMessageContent } from '@/utils/chat';
 import md from '@/utils/markdown';
 
 import { bindOnclick, processPreTags } from '../utils/codeblock';
@@ -37,7 +36,7 @@ const renderedContent = computed(() => {
     return content.value;
   }
   console.log;
-  const result = DOMPurify.sanitize(md.render(content.value || ''));
+  const result = dompurifyRenderedHtml(md.render(content.value || ''));
   return processPreTags(result, appStore.preference.codeAutoWrap);
 });
 

@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 import { i18n } from '@/i18n';
 import { allChatModelNames } from '@/types/json_schema';
 import {
@@ -16,7 +18,6 @@ import {
   OpenaiWebChatMessageTextContent,
   OpenaiWebChatModels,
 } from '@/types/schema';
-
 const t = i18n.global.t as any;
 
 export const chatModelColorMap: Record<string, string> = {
@@ -311,4 +312,8 @@ export function replaceMathDelimiters(input: string) {
   }
   // return output;
   return output;
+}
+
+export function dompurifyRenderedHtml(html: string) {
+  return DOMPurify.sanitize(html, {ALLOW_UNKNOWN_PROTOCOLS: true});
 }
