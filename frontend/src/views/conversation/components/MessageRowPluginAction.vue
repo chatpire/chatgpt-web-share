@@ -1,13 +1,9 @@
 <template>
   <div class="flex flex-col items-start my-2">
-    <div class="flex items-center text-xs rounded p-3 text-gray-900 bg-gray-100" @click="handleExpand">
-      <div>
-        <div class="flex items-center gap-3">
-          <div>
-            {{ $t('commons.usePlugin') }} <b>{{ props.pluginName }}</b>
-          </div>
-        </div>
-      </div>
+    <div class="flex items-center text-xs rounded p-3 text-gray-900 bg-gray-100 max-w-full box-border" @click="handleExpand">
+      <n-ellipsis class="flex items-center gap-3">
+        {{ $t('commons.usePlugin') }} <b>{{ props.pluginName }}</b>
+      </n-ellipsis>
       <div class="ml-12 flex items-center gap-2" role="button">
         <n-icon :size="16" :component="expandContent ? KeyboardArrowUpRound : KeyboardArrowDownRound" />
       </div>
@@ -17,10 +13,12 @@
         <div
           class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"
         >
-          <span class="uppercase">{{ $t('commons.requestTo', [props.pluginName]) }}</span>
-          <n-icon class="ml-16" :size="16">
+          <n-ellipsis class="uppercase">
+            {{ $t('commons.requestTo', [props.pluginName]) }}
+          </n-ellipsis>
+          <!-- <n-icon class="ml-16" :size="16">
             <InformationCircleOutline />
-          </n-icon>
+          </n-icon> -->
         </div>
         <div class="p-4 overflow-y-auto">
           <code class="!whitespace-pre-wrap">
@@ -32,10 +30,12 @@
         <div
           class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"
         >
-          <span class="uppercase">{{ $t('commons.responseTo', [props.pluginName]) }}</span>
-          <n-icon class="ml-16" :size="16">
+          <n-ellipsis class="uppercase">
+            {{ $t('commons.responseTo', [props.pluginName]) }}
+          </n-ellipsis>
+          <!-- <n-icon class="ml-16" :size="16">
             <InformationCircleOutline />
-          </n-icon>
+          </n-icon> -->
         </div>
         <div class="p-4 overflow-y-auto">
           <code class="!whitespace-pre-wrap">
