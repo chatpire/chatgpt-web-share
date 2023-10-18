@@ -240,6 +240,9 @@ const makeNewConversation = () => {
     if (!newConversationInfo.source || !newConversationInfo.model) return;
     if (newConversationInfo.source == 'openai_api')
       newConversationInfo.title = newConversationInfo.title || `New Chat (${t('models.' + newConversationInfo.model)})`;
+    if (newConversationInfo.openaiWebPlugins && newConversationInfo.model !== 'gpt_4_plugins') {
+      newConversationInfo.openaiWebPlugins = null;
+    }
     console.log('makeNewConversation', newConversationInfo);
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;

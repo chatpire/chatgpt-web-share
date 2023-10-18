@@ -248,7 +248,7 @@ class OpenaiWebChatManager:
         else:
             parent_id = str(uuid.uuid4())
 
-        if plugin_ids is not None and model != OpenaiWebChatModels.gpt_4_plugins:
+        if plugin_ids is not None and len(plugin_ids) > 0 and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
         if text_content == ":continue":
