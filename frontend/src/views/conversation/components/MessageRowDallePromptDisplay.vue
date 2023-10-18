@@ -65,18 +65,18 @@
                 DALL·E 3
               </div>
               <div class="max-w-full truncate opacity-70">
-                size: {{ jsonContent.size }}
+                {{ statusText }}
               </div>
             </div>
           </div>
         </div>
-        <div class="mx-4 h-full flex items-center">
+        <div v-show="jsonContent.prompts.length > 0" class="mx-4 h-full flex items-center">
           <n-icon :component="expandPrompt ? ExpandLessRound : ExpandMoreRound" size="24px" />
         </div>
       </div>
     </n-card>
 
-    <n-card v-show="expandPrompt" class="rounded-xl border-black/10 shadow-xxs" :content-style="{ padding: 0 }">
+    <n-card v-show="expandPrompt && jsonContent.prompts.length > 0" class="rounded-xl border-black/10 shadow-xxs" :content-style="{ padding: 0 }">
       <n-list hoverable clickable class="rounded-xl">
         <n-list-item v-for="(prompt, i) of jsonContent.prompts" :key="prompt" @click="copyPrompt(prompt)">
           <template #prefix>
@@ -106,12 +106,25 @@ const props = defineProps<{
 const expandPrompt = ref(false);
 
 type DallePrompt = {
-  size: string;
   prompts: string[];
 };
 
 const jsonContent = computed(() => {
-  return JSON.parse(getContentRawText(props.messages[0])) as DallePrompt;
+  try {
+    const dallePrompt = JSON.parse(getContentRawText(props.messages[0])) as DallePrompt;
+    return dallePrompt;
+  } catch (e) {
+    return {
+      prompts: [],
+    };
+  }
+});
+
+const statusText = computed(() => {
+  if (jsonContent.value.prompts.length === 0) {
+    return 'Creating prompts...';
+  }
+  return `Created ${jsonContent.value.prompts.length} prompt${jsonContent.value.prompts.length > 1 ? 's' : ''}`;
 });
 
 function copyPrompt(prompt: string) {
