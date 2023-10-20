@@ -97,6 +97,7 @@ const imageDownloadUrls = ref<string[]>([]);
 
 async function getImageDownloadUrls() {
   const message = props.messages[1] as OpenaiWebChatMessage;
+  if (!message) return;
   if (message.content?.content_type !== 'execution_output') {
     console.error('MessageRowCodeDisplay: message content type is not execution_output', message);
   }
