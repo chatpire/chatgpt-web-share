@@ -1,3 +1,4 @@
+import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 
 import { getUserMeApi, loginApi, LoginData, logoutApi } from '@/api/user';
@@ -9,12 +10,15 @@ import { UserState } from '../types';
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
-    savedUsername: null,
-    savedPassword: null,
+    savedLoginForm: useStorage('savedLoginForm', {
+      rememberPassword: false,
+      savedUsername: undefined,
+      savedPassword: undefined,
+    }),
   }),
   getters: {
-    userInfo(state: UserState): UserRead | null {
-      return state.user;
+    userInfo(): UserRead | null {
+      return this.user;
     },
   },
 
@@ -25,7 +29,8 @@ const useUserStore = defineStore('user', {
     },
 
     setSavedLoginInfo(username: string, password: string) {
-      this.$patch({ savedUsername: username, savedPassword: password });
+      this.savedLoginForm.savedUsername = username;
+      this.savedLoginForm.savedPassword = password;
     },
 
     // Reset user's information

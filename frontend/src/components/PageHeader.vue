@@ -3,7 +3,7 @@
     <n-page-header>
       <template #title>
         <n-space :align="'center'">
-          <div>
+          <div class="lt-sm:hidden">
             <a href="/" style="text-decoration: none; color: inherit">{{ $t('commons.siteTitle') }}</a>
           </div>
           <div class="hidden sm:block">
@@ -21,29 +21,28 @@
       </template>
       <template #extra>
         <n-space>
-          <div class="space-x-2">
+          <div class="flex space-x-2 items-center">
             <div v-if="userStore.user" class="inline-block">
-              <span class="hidden sm:inline mr-1">Hi, {{ userStore.user.nickname }}</span>
               <n-dropdown :options="getOptions()" placement="bottom-start">
-                <n-button circle class="ml-2">
-                  <n-icon :component="SettingsSharp" />
+                <n-button strong round secondary class="px-2">
+                  <n-ellipsis :tooltip="false" style="max-width: 6rem">
+                    {{ userStore.user.nickname }}
+                  </n-ellipsis>
+                  <template #icon>
+                    <n-icon><PersonCircleOutline /></n-icon>
+                  </template>
                 </n-button>
               </n-dropdown>
             </div>
             <div v-else class="text-gray-500 inline-block">
               {{ $t('commons.notLogin') }}
             </div>
-            <n-button v-if="userStore.user?.is_superuser" circle @click="jumpToAdminOrConv">
+            <n-button v-if="userStore.user?.is_superuser" secondary circle @click="jumpToAdminOrConv">
               <n-icon :component="isInAdmin ? ChatFilled : ManageAccountsFilled" />
             </n-button>
-            <n-button circle @click="toggleTheme">
+            <n-button secondary circle @click="toggleTheme">
               <n-icon :component="themeIcon" />
             </n-button>
-            <n-dropdown :options="languageOptions" placement="bottom-start">
-              <n-button circle>
-                <n-icon :component="Language" />
-              </n-button>
-            </n-dropdown>
           </div>
         </n-space>
       </template>
@@ -52,9 +51,15 @@
 </template>
 
 <script setup lang="ts">
-import { Language, LogoGithub, SettingsSharp } from '@vicons/ionicons5';
-import { ChatFilled, DarkModeRound, LightModeRound, ManageAccountsFilled } from '@vicons/material';
-import { DropdownOption } from 'naive-ui';
+import {
+  InformationCircleOutline,
+  LogoGithub,
+  LogOutOutline,
+  PersonCircleOutline,
+  SettingsSharp,
+} from '@vicons/ionicons5';
+import { ChatFilled, DarkModeRound, LightModeRound, ManageAccountsFilled, PasswordRound } from '@vicons/material';
+import { DropdownOption, NIcon } from 'naive-ui';
 import { computed, h } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
@@ -94,32 +99,16 @@ const toggleTheme = () => {
   appStore.toggleTheme();
 };
 
-const languageOptions = [
-  {
-    label: '简体中文',
-    key: 'zh-CN',
-    props: {
-      onClick: () => {
-        appStore.setLanguage('zh-CN');
-      },
-    },
-  },
-  {
-    label: 'English',
-    key: 'en-US',
-    props: {
-      onClick: () => {
-        appStore.setLanguage('en-US');
-      },
-    },
-  },
-];
-
 const getOptions = (): Array<DropdownOption> => {
   const options: Array<DropdownOption> = [
     {
       label: t('commons.userProfile'),
       key: 'profile',
+      icon() {
+        return h(NIcon, null, {
+          default: () => h(InformationCircleOutline),
+        });
+      },
       props: {
         onClick: () =>
           Dialog.info({
@@ -133,6 +122,11 @@ const getOptions = (): Array<DropdownOption> => {
     {
       label: t('commons.resetPassword'),
       key: 'resetpwd',
+      icon() {
+        return h(NIcon, null, {
+          default: () => h(PasswordRound),
+        });
+      },
       props: {
         onClick: resetPassword,
       },
@@ -140,6 +134,11 @@ const getOptions = (): Array<DropdownOption> => {
     {
       label: t('commons.preferences'),
       key: 'preference',
+      icon() {
+        return h(NIcon, null, {
+          default: () => h(SettingsSharp),
+        });
+      },
       props: {
         onClick: () => {
           let preference: Preference = {
@@ -167,8 +166,17 @@ const getOptions = (): Array<DropdownOption> => {
       },
     },
     {
+      type: 'divider',
+      key: 'd1',
+    },
+    {
       label: t('commons.logout'),
       key: 'logout',
+      icon() {
+        return h(NIcon, null, {
+          default: () => h(LogOutOutline),
+        });
+      },
       props: {
         onClick: () =>
           Dialog.info({

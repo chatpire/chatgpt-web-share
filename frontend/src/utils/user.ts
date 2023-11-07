@@ -85,6 +85,6 @@ export function getUserAttrColumns(): ListAttr<UserRead>[] {
         // return getCountTrans(row.available_ask_count!);
         return renderUserPerModelCounts(row.setting, true);
       },
-    },
+    }
   ];
 }

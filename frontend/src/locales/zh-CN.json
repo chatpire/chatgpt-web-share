@@ -106,9 +106,9 @@
     "continueGenerating": "继续生成",
     "clearAllConversations": "清空所有对话",
     "readyToClearAllConversations": "警告：你即将要清空所有对话，这将销毁所有对话数据。确定要清空所有对话吗？",
-    "sendKey": "发送快捷键",
+    "sendKey": "发送消息快捷键",
     "preferences": "偏好设置",
-    "renderUserMessageInMd": "渲染用户回复为Markdown",
+    "renderUserMessageInMd": "渲染用户消息为Markdown",
     "codeAutoWrap": "代码自动换行",
     "widerConversationPage": "对话界面宽屏展示",
     "configManager": "系统配置",
@@ -177,7 +177,9 @@
     "modelDescriptions": "模型说明",
     "remain": "剩余次数",
     "updateTime": "更新时间",
-    "expired": "已过期"
+    "expired": "已过期",
+    "language": "界面语言",
+    "rememberPassword": "记住密码"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -225,8 +227,8 @@
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
-    "pleaseEnterUsername": "请输入用户名",
-    "pleaseEnterPassword": "请输入密码",
+    "pleaseEnterUsername": "用户名",
+    "pleaseEnterPassword": "密码",
     "waiting": "正在思考中...",
     "queueing": "正在回复其他用户，排队中...",
     "deleteConversation": "确定要删除该会话吗？将无法找回历史记录！",

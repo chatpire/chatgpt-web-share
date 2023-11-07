@@ -3,7 +3,7 @@
     <n-global-style />
     <div class="w-full box-border min-h-screen flex flex-col">
       <n-layout>
-        <PageHeader />
+        <PageHeader v-if="userStore.user" />
         <div style="height: calc(100vh - var(--header-height)); height: calc(100dvh - var(--header-height))">
           <router-view />
         </div>
@@ -18,9 +18,10 @@ import { darkTheme } from 'naive-ui';
 import { computed } from 'vue';
 
 import PageHeader from './components/PageHeader.vue';
-import { useAppStore } from './store';
+import { useAppStore, useUserStore } from './store';
 
 const appStore = useAppStore();
+const userStore = useUserStore();
 
 const { bottom } = useScreenSafeArea();
 

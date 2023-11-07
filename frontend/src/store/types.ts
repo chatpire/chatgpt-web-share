@@ -1,5 +1,6 @@
 import { RemovableRef } from '@vueuse/core';
 import { UploadFileInfo } from 'naive-ui';
+import { Ref } from 'vue';
 
 import {
   BaseConversationHistory,
@@ -9,10 +10,15 @@ import {
   UserRead,
 } from '@/types/schema';
 
+export type SavedLoginForm = {
+  rememberPassword: boolean;
+  savedUsername: string | undefined;
+  savedPassword: string | undefined;
+}
+
 interface UserState {
   user: UserRead | null;
-  savedUsername: string | null;
-  savedPassword: string | null;
+  savedLoginForm: Ref<SavedLoginForm>;
 }
 
 export type Preference = {
@@ -24,10 +30,10 @@ export type Preference = {
 
 interface AppState {
   theme: any;
-  language: RemovableRef<'zh-CN' | 'en-US' | string>;
-  preference: RemovableRef<Preference>;
-  lastSelectedSource: RemovableRef<ChatSourceTypes | null>;
-  lastSelectedModel: RemovableRef<string | null>;
+  language: Ref<'zh-CN' | 'en-US' | string>;
+  preference: Ref<Preference>;
+  lastSelectedSource: Ref<ChatSourceTypes | null>;
+  lastSelectedModel: Ref<string | null>;
 }
 
 interface ConversationState {
