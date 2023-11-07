@@ -131,7 +131,7 @@ const syncConversations = () => {
   });
 };
 
-const filterOptions = computed(() => {
+const userIdFilterOptions = computed(() => {
   return userInfo.value?.map((user) => {
     return {
       label: user.username,
@@ -225,7 +225,7 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
     ellipsis: {
       tooltip: true,
     },
-    filterOptions: filterOptions.value,
+    filterOptions: userIdFilterOptions.value,
     defaultFilterOptionValues: userInfo.value?.map((user) => user.id),
     filter: (value, row) => {
       return row.user_id === value;

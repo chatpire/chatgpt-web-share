@@ -47,7 +47,7 @@
 import { Pencil, TrashOutline } from '@vicons/ionicons5';
 import { RefreshFilled, SettingsRound } from '@vicons/material';
 import { DataTableColumns, NButton, NIcon } from 'naive-ui';
-import { h, ref } from 'vue';
+import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
@@ -83,28 +83,69 @@ getAllUserApi().then((res) => {
   data.value = res.data;
 });
 
+const isUserExpired = (user: UserReadAdmin) => {
+  const currentTime = new Date().getTime();
+  // valid_until: format like 2023-11-07T04:57:26.887525+00:00
+  if (user.setting.openai_web?.valid_until && currentTime > new Date(user.setting.openai_web.valid_until).getTime()) {
+    return true;
+  } else if (
+    user.setting.openai_api?.valid_until &&
+    currentTime > new Date(user.setting.openai_api.valid_until).getTime()
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const getUserStatusText = (user: UserReadAdmin) => {
+  let result = '';
+  if (user.setting.openai_web_chat_status) {
+    result = t(chatStatusMap[user.setting.openai_web_chat_status as keyof typeof chatStatusMap]);
+  }
+  if (isUserExpired(user)) {
+    result += ` (${t('commons.expired')})`;
+  }
+  return result;
+};
+
+const userStateFilterOptions = computed(() => {
+  const values = {
+    idling: 'commons.idlingChatStatus',
+    asking: 'commons.askingChatStatus',
+    queueing: 'commons.queueingChatStatus',
+    expired: 'commons.expired',
+  };
+  return Object.keys(values).map((key) => {
+    return {
+      label: t(values[key as keyof typeof values]),
+      value: key,
+    };
+  });
+});
+
 const columns: DataTableColumns<UserReadAdmin> = [
-  { title: '#', key: 'id' },
+  { title: '#', key: 'id', sorter: 'default' },
   { title: t('commons.username'), key: 'username' },
   { title: t('commons.nickname'), key: 'nickname' },
   {
     title: t('commons.status'),
     key: 'rev_chat_status',
     render(row) {
-      let result = '';
-      if (row.setting.openai_web_chat_status) {
-        result = t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap]);
-      }
-      const currentTime = new Date().getTime();
-      // valid_until: format like 2023-11-07T04:57:26.887525+00:00
-      if (row.setting.openai_web?.valid_until && currentTime > new Date(row.setting.openai_web.valid_until).getTime()) {
-        result += ` (${t('commons.expired')})`;
-      } else if (row.setting.openai_api?.valid_until && currentTime > new Date(row.setting.openai_api.valid_until).getTime()) {
-        result += ` (${t('commons.expired')})`;
-      }
-      return result;
+      return getUserStatusText(row);
     },
-    sorter: 'default',
+    sorter: (userA, userB) => {
+      const getStatus = (user: UserReadAdmin) => {
+        if (user.setting.openai_web_chat_status === 'asking') return 2;
+        else if (user.setting.openai_web_chat_status === 'queueing') return 1;
+        else return 0;
+      };
+      return getStatus(userB) - getStatus(userA);
+    },
+    filterOptions: userStateFilterOptions.value,
+    filter: (value, row) => {
+      if (value === 'expired' && isUserExpired(row)) return true;
+      return row.setting.openai_web_chat_status === value;
+    },
   },
   {
     title: t('commons.activeTime'),
@@ -132,6 +173,24 @@ const columns: DataTableColumns<UserReadAdmin> = [
     render(row) {
       // return getCountTrans(row.available_ask_count!);
       return renderUserPerModelCounts(row.setting, true);
+    },
+    sorter(userA, userB) {
+      const getCount = (count: number | undefined) => {
+        if (count === undefined) return 0;
+        else if (count < 0) return Infinity;
+        else return count;
+      };
+      const getCountSum = (user: UserReadAdmin) => {
+        return (
+          Object.keys(user.setting.openai_web.per_model_ask_count)
+            .map((key) => getCount(user.setting.openai_web.per_model_ask_count[key]))
+            .reduce((a, b) => a + b, 0) +
+          Object.keys(user.setting.openai_api.per_model_ask_count)
+            .map((key) => getCount(user.setting.openai_api.per_model_ask_count[key]))
+            .reduce((a, b) => a + b, 0)
+        );
+      };
+      return getCountSum(userA) - getCountSum(userB);
     },
   },
   // TODO
