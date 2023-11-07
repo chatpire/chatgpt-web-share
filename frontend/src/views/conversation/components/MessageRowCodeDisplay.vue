@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-start my-2">
+  <div class="flex flex-col items-start mt-3">
     <div class="flex items-center text-xs rounded p-3 text-gray-900 bg-gray-100" @click="handleExpand">
       <div>
         <div class="flex items-center gap-3">
@@ -12,7 +12,7 @@
         <n-icon :size="16" :component="expandContent ? KeyboardArrowUpRound : KeyboardArrowDownRound" />
       </div>
     </div>
-    <div v-show="expandContent" class="my-3 flex flex-col w-full gap-3">
+    <div v-show="expandContent" class="my-2 flex flex-col w-full gap-3">
       <!-- code -->
       <div ref="codeRef" class="code-border" v-html="renderedCodeContent" />
       <!-- result -->

@@ -176,7 +176,8 @@
     "selectFile": "Select file(s)",
     "viewAttachments": "Expand {0} attachments",
     "modelDescriptions": "Description",
-    "remain": "Available Ask Count"
+    "remain": "Available Ask Count",
+    "expired": "Expired"
   },
   "errors": {
     "403": "403 error: access denied",

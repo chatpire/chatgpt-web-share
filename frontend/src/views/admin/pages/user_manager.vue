@@ -91,9 +91,18 @@ const columns: DataTableColumns<UserReadAdmin> = [
     title: t('commons.status'),
     key: 'rev_chat_status',
     render(row) {
-      return row.setting.openai_web_chat_status
-        ? t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap])
-        : '';
+      let result = '';
+      if (row.setting.openai_web_chat_status) {
+        result = t(chatStatusMap[row.setting.openai_web_chat_status as keyof typeof chatStatusMap]);
+      }
+      const currentTime = new Date().getTime();
+      // valid_until: format like 2023-11-07T04:57:26.887525+00:00
+      if (row.setting.openai_web?.valid_until && currentTime > new Date(row.setting.openai_web.valid_until).getTime()) {
+        result += ` (${t('commons.expired')})`;
+      } else if (row.setting.openai_api?.valid_until && currentTime > new Date(row.setting.openai_api.valid_until).getTime()) {
+        result += ` (${t('commons.expired')})`;
+      }
+      return result;
     },
     sorter: 'default',
   },
