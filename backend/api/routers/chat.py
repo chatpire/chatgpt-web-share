@@ -212,12 +212,11 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
                 config.openai_web.enable_uploading_attachments is False:
             raise WebsocketInvalidAskException("errors.attachmentsNotAllowed")
 
-    # 判断是否允许使用多模态图片
-    if ask_request.openai_web_multimodal_image_parts and len(ask_request.openai_web_multimodal_image_parts) > 0:
-        if ask_request.model != OpenaiWebChatModels.gpt_4 or \
-                config.openai_web.enable_uploading_multimodal_images is False:
-            raise WebsocketInvalidAskException("errors.multimodalImagesNotAllowed")
-
+    if ask_request.openai_web_attachments and len(ask_request.openai_web_attachments) > 0:
+        if ask_request.model != OpenaiWebChatModels.gpt_4_code_interpreter or 
+            ask_request.model != OpenaiWebChatModels.gpt_4 or
+            config.openai_web.enable_uploading_attachments is False:
+            raise WebsocketInvalidAskException("errors.attachmentsNotAllowed")
 
 def check_message(msg: str):
     # 检查消息中的敏感信息
