@@ -231,7 +231,7 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
     else if (typeof message.content == 'string') result += message.content;
     else if (message.content.content_type == 'text') {
       let text = getContentRawText(message);
-      if (message.source == 'openai_web' && message.role === 'assistant' && message.model === 'gpt_4_browsing') {
+      if (message.source == 'openai_web' && message.role === 'assistant') {
         const metadata = message.metadata as OpenaiWebChatMessageMetadata;
         if (metadata.citations && metadata.citations.length > 0) {
           let processedText = text;

@@ -14,7 +14,13 @@
         "sync_conversations_on_startup": true,
         "sync_conversations_schedule": false,
         "sync_conversations_schedule_interval_hours": 12,
-        "enabled_models": ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"],
+        "enabled_models": [
+          "gpt_3_5",
+          "gpt_4",
+          "gpt_4_code_interpreter",
+          "gpt_4_plugins",
+          "gpt_4_browsing"
+        ],
         "model_code_mapping": {
           "gpt_3_5": "text-davinci-002-render-sha",
           "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
@@ -43,7 +49,10 @@
         "proxy": null,
         "connect_timeout": 10,
         "read_timeout": 20,
-        "enabled_models": ["gpt_3_5", "gpt_4"],
+        "enabled_models": [
+          "gpt_3_5",
+          "gpt_4"
+        ],
         "model_code_mapping": {
           "gpt_3_5": "gpt-3.5-turbo",
           "gpt_4": "gpt-4"
@@ -122,7 +131,9 @@
       "default": {
         "ask_stats_ttl": 7776000,
         "request_stats_ttl": 2592000,
-        "request_stats_filter_keywords": ["/status"]
+        "request_stats_filter_keywords": [
+          "/status"
+        ]
       },
       "allOf": [
         {
@@ -161,7 +172,11 @@
     "OpenaiWebFileUploadStrategyOption": {
       "title": "OpenaiWebFileUploadStrategyOption",
       "description": "An enumeration.",
-      "enum": ["server_upload_only", "browser_upload_only", "browser_upload_when_file_size_exceed"],
+      "enum": [
+        "server_upload_only",
+        "browser_upload_only",
+        "browser_upload_when_file_size_exceed"
+      ],
       "type": "string"
     },
     "OpenaiWebChatGPTSetting": {
@@ -215,7 +230,13 @@
           "type": "integer"
         },
         "enabled_models": {
-          "default": ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"],
+          "default": [
+            "gpt_3_5",
+            "gpt_4",
+            "gpt_4_code_interpreter",
+            "gpt_4_plugins",
+            "gpt_4_browsing"
+          ],
           "type": "array",
           "items": {
             "$ref": "#/definitions/OpenaiWebChatModels"
@@ -261,7 +282,10 @@
     "OpenaiApiChatModels": {
       "title": "OpenaiApiChatModels",
       "description": "An enumeration.",
-      "enum": ["gpt_3_5", "gpt_4"],
+      "enum": [
+        "gpt_3_5",
+        "gpt_4"
+      ],
       "type": "string"
     },
     "OpenaiApiSetting": {
@@ -295,7 +319,10 @@
           "type": "integer"
         },
         "enabled_models": {
-          "default": ["gpt_3_5", "gpt_4"],
+          "default": [
+            "gpt_3_5",
+            "gpt_4"
+          ],
           "type": "array",
           "items": {
             "$ref": "#/definitions/OpenaiApiChatModels"
@@ -452,7 +479,9 @@
         },
         "request_stats_filter_keywords": {
           "title": "Request Stats Filter Keywords",
-          "default": ["/status"],
+          "default": [
+            "/status"
+          ],
           "type": "array",
           "items": {
             "type": "string"
@@ -467,7 +496,11 @@
         "console_log_level": {
           "title": "Console Log Level",
           "default": "INFO",
-          "enum": ["INFO", "DEBUG", "WARNING"],
+          "enum": [
+            "INFO",
+            "DEBUG",
+            "WARNING"
+          ],
           "type": "string"
         }
       }

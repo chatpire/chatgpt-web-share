@@ -70,17 +70,17 @@
             </div>
           </div>
         </div>
-        <div v-show="jsonContent.prompts.length > 0" class="mx-4 h-full flex items-center">
+        <div v-show="prompts.length > 0" class="mx-4 h-full flex items-center">
           <n-icon :component="expandPrompt ? ExpandLessRound : ExpandMoreRound" size="24px" />
         </div>
       </div>
     </n-card>
 
-    <n-card v-show="expandPrompt && jsonContent.prompts.length > 0" class="rounded-xl border-black/10 shadow-xxs" :content-style="{ padding: 0 }">
+    <n-card v-show="expandPrompt && prompts.length > 0" class="rounded-xl border-black/10 shadow-xxs" :content-style="{ padding: 0 }">
       <n-list hoverable clickable class="rounded-xl">
-        <n-list-item v-for="(prompt, i) of jsonContent.prompts" :key="prompt" @click="copyPrompt(prompt)">
+        <n-list-item v-for="(prompt, i) of prompts" :key="prompt" @click="copyPrompt(prompt)">
           <template #prefix>
-            <n-tag :bordered="false" type="info">
+            <n-tag v-if="prompts.length > 1" :bordered="false" type="info">
               {{ i }}
             </n-tag>
           </template>
@@ -95,7 +95,7 @@
 import { ExpandLessRound, ExpandMoreRound } from '@vicons/material';
 import { computed, ref } from 'vue';
 
-import { BaseChatMessage } from '@/types/schema';
+import { BaseChatMessage, OpenaiWebChatMessage } from '@/types/schema';
 import { getContentRawText } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
@@ -106,25 +106,43 @@ const props = defineProps<{
 const expandPrompt = ref(false);
 
 type DallePrompt = {
-  prompts: string[];
+  prompts?: string[];
+  prompt?: string;
 };
 
 const jsonContent = computed(() => {
   try {
-    const dallePrompt = JSON.parse(getContentRawText(props.messages[0])) as DallePrompt;
+    const message = props.messages[0] as OpenaiWebChatMessage;
+    if (message.content?.content_type !== 'code') {
+      console.error('Invalid message type');
+      return {
+      };
+    }
+    const dallePrompt = JSON.parse(getContentRawText(message)) as DallePrompt;
     return dallePrompt;
   } catch (e) {
     return {
-      prompts: [],
     };
   }
 });
 
+const prompts = computed(() => {
+  const prompts = [];
+  if (jsonContent.value.prompt) {
+    prompts.push(jsonContent.value.prompt);
+  }
+  else if (jsonContent.value.prompts) {
+    prompts.push(...jsonContent.value.prompts);
+  }
+  return prompts;
+});
+
 const statusText = computed(() => {
-  if (jsonContent.value.prompts.length === 0) {
+  if (!jsonContent.value || jsonContent.value.prompts?.length === 0) {
     return 'Creating prompts...';
   }
-  return `Created ${jsonContent.value.prompts.length} prompt${jsonContent.value.prompts.length > 1 ? 's' : ''}`;
+  
+  return `Created ${prompts.value.length} prompt${prompts.value.length > 1 ? 's' : ''}`;
 });
 
 function copyPrompt(prompt: string) {

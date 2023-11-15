@@ -235,10 +235,10 @@ class OpenaiWebChatManager:
         response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
-    async def ask(self, text_content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
-                  model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
-                  attachments: list[OpenaiWebAskAttachment] = None,
-                  multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None, **_kwargs):
+    async def complete(self, text_content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
+                       model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
+                       attachments: list[OpenaiWebAskAttachment] = None,
+                       multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None, **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
 

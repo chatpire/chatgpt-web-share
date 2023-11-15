@@ -330,14 +330,14 @@ async def chat(websocket: WebSocket):
             model = OpenaiApiChatModels(ask_request.model)
 
         # stream 传输
-        async for data in manager.ask(text_content=ask_request.text_content,
-                                      conversation_id=ask_request.conversation_id,
-                                      parent_id=ask_request.parent,
-                                      model=model,
-                                      plugin_ids=ask_request.openai_web_plugin_ids,
-                                      attachments=ask_request.openai_web_attachments,
-                                      multimodal_image_parts=ask_request.openai_web_multimodal_image_parts,
-                                      ):
+        async for data in manager.complete(text_content=ask_request.text_content,
+                                           conversation_id=ask_request.conversation_id,
+                                           parent_id=ask_request.parent,
+                                           model=model,
+                                           plugin_ids=ask_request.openai_web_plugin_ids,
+                                           attachments=ask_request.openai_web_attachments,
+                                           multimodal_image_parts=ask_request.openai_web_multimodal_image_parts,
+                                           ):
             has_got_reply = True
 
             try:

@@ -17,6 +17,11 @@ config = Config()
 
 # metadata 相关
 
+
+class OpenaiWebChatMessageMetadataFinishDetails(BaseModel):
+    type: Optional[Literal['stop'] | str]
+    stop_tokens: Optional[list[int]]
+
 class OpenaiWebChatMessageMetadataPlugin(BaseModel):
     http_response_status: Optional[int]
     namespace: Optional[str]
@@ -62,13 +67,15 @@ class OpenaiWebChatMessageMetadata(BaseModel):
     # browsing 相关
     command: Optional[Literal['search'] | str]
     args: Optional[list[str]]  # 例如：['May 17, 2023 stock market news']
-    status: Optional[Literal['finished'] | str]
     cite_metadata: Optional[OpenaiWebChatMessageMetadataCite] = Field(alias="_cite_metadata")  # _cite_metadata
     citations: Optional[list[OpenaiWebChatMessageMetadataCitation]]
     # code execution 相关
     attachments: Optional[list[OpenaiWebChatMessageMetadataAttachment]]
+    status: Optional[Literal['finished_successfully'] | str]
     is_complete: Optional[bool]
     aggregate_result: Optional[OpenaiWebChatMessageMetadataAggregateResult]
+
+    timestamp_: Optional[datetime.datetime | str]
 
 
 class OpenaiApiChatMessageMetadata(BaseModel):
