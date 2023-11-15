@@ -25,7 +25,8 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
 from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
-    OpenaiChatFileUploadUrlResponse, OpenaiWebAskAttachment
+    OpenaiChatFileUploadUrlResponse, OpenaiWebAskAttachment, OpenaiWebCompleteRequest, \
+    OpenaiWebCompleteRequestConversationMode
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -252,15 +253,10 @@ class OpenaiWebChatManager:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
         if text_content == ":continue":
-            data = {
-                "action": "continue",
-                "conversation_id": str(conversation_id) if conversation_id else None,
-                "parent_message_id": str(parent_id) if parent_id else None,
-                "model": model.code(),
-                "timezone_offset_min": -480,
-                "history_and_training_disabled": False,
-            }
+            messages = None
+            action = "continue"
         else:
+            action = "next"
             if not multimodal_image_parts:
                 content = OpenaiWebChatMessageTextContent(
                     content_type="text", parts=[text_content]
@@ -282,24 +278,25 @@ class OpenaiWebChatManager:
             if attachments and len(attachments) > 0:
                 messages[0]["metadata"]["attachments"] = [attachment.dict() for attachment in attachments]
 
-            data = {
-                "action": "next",
-                "messages": messages,
-                "conversation_id": str(conversation_id) if conversation_id else None,
-                "parent_message_id": str(parent_id) if parent_id else None,
-                "model": model.code(),
-                "history_and_training_disabled": False,
-                "arkose_token": None
-            }
-        if plugin_ids and conversation_id is None:
-            data["plugin_ids"] = plugin_ids
-
         timeout = httpx.Timeout(Config().openai_web.common_timeout, read=Config().openai_web.ask_timeout)
+
+        completion_request = OpenaiWebCompleteRequest(
+            action=action,
+            arkose_token=None,
+            conversation_mode=OpenaiWebCompleteRequestConversationMode(kind="primary_assistant"),
+            conversation_id=str(conversation_id) if conversation_id else None,
+            messages=messages,
+            parent_message_id=str(parent_id) if parent_id else None,
+            model=model.code(),
+            plugin_ids=plugin_ids
+        ).dict(exclude_none=True)
+        completion_request["arkose_token"] = None
+        data_json = json.dumps(jsonable_encoder(completion_request))
 
         async with self.session.stream(
                 method="POST",
                 url=f"{config.openai_web.chatgpt_base_url}conversation",
-                data=json.dumps(data),
+                data=data_json,
                 timeout=timeout,
         ) as response:
             await _check_response(response)

@@ -1,3 +1,4 @@
+import datetime
 from typing import Literal, Optional, Any
 
 from pydantic import BaseModel, Field
@@ -77,3 +78,42 @@ class OpenaiWebAskAttachment(BaseModel):
     name: str
     id: str
     size: int
+
+
+class OpenaiWebGizmo(BaseModel):
+    id: Optional[str]
+    name: Optional[str]
+    author_name: Optional[str]
+    author: Any
+    config: Any
+    description: Optional[str]
+    owner_id: Optional[str]
+    updated_at: Optional[datetime.datetime]
+    profile_pic_permalink: Optional[str]
+    share_recipient: Optional[str]
+    version: Optional[str]
+    live_version: Optional[str]
+    short_url: Optional[str]
+    product_features: Any
+
+
+class OpenaiWebCompleteRequestConversationMode(BaseModel):
+    kind: Literal['primary_assistant', 'gizmo_interaction'] | str
+    gizmo_id: Optional[str]
+    gizmo: Optional[OpenaiWebGizmo]
+
+
+class OpenaiWebCompleteRequest(BaseModel):
+    action: Literal['next'] | str
+    arkose_token: Optional[str] = None
+    conversation_id: Optional[str]
+    conversation_mode: Optional[OpenaiWebCompleteRequestConversationMode]
+    force_paragen: bool = False
+    force_rate_limit: bool = False
+    history_and_training_disabled: bool = False
+    messages: list[dict[str, Any]]
+    model: str
+    parent_message_id: Optional[str]
+    plugin_ids: Optional[list[str]]
+    suggestions: list[str] = []
+    timezone_offset_min: Optional[int]
