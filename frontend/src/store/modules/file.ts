@@ -7,14 +7,12 @@ const useFileStore = defineStore('file', {
     uploadedFileInfos: [],
     naiveUiUploadFileInfos: [],
     naiveUiFileIdToServerFileIdMap: {},
-    imageMetadataMap: {},
   }),
   actions: {
     clear() {
       this.uploadedFileInfos = [];
       this.naiveUiUploadFileInfos = [];
       this.naiveUiFileIdToServerFileIdMap = {};
-      this.imageMetadataMap = {};
     },
   },
 });
