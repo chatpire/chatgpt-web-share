@@ -178,7 +178,11 @@
     "remain": "Available Ask Count",
     "expired": "Expired",
     "language": "Language",
-    "rememberPassword": "Remember"
+    "rememberPassword": "Remember",
+    "myFileBrowser": "My File Browser",
+    "content": "Content",
+    "readFileResult": "Result",
+    "updateTime": "Update Time"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -236,7 +240,7 @@
     "changeConversationTitleSuccess": "Title changed successfully",
     "changeConversationTitleFailed": "Failed to change title",
     "rename": "Please enter new title",
-    "sendMessage": "Please enter message, press {0} to send",
+    "sendMessage": "Press {0} to send",
     "logoutConfirm": "Are you sure you want to log out?",
     "pleaseEnterNickname": "Please enter nickname",
     "pleaseEnterEmail": "Please enter email",
@@ -254,8 +258,8 @@
     "vanishConversation": "Are you sure you want to destroy this conversation? It will be removed from the database and the records on the OpenAI account will be cleared.",
     "conversationTitle": "Enter conversation title, leave blank to use default title",
     "whetherUsePaidModel": "Please choose the model to use, leave blank to use default model",
-    "loadConversation": "Select a conversation from the left to load, or",
-    "newConversation": "start a new conversation",
+    "loadConversation": "Select a conversation from the menu, or",
+    "newConversation": "Start New Conversation",
     "loginSuccess": "Logged in successfully",
     "jumpingPage": "Jumping...",
     "terminated": "Connection terminated by the server",
@@ -292,7 +296,9 @@
     "fileUploadFailed": "File {0} upload failed",
     "imageUploadRequirements": "Up to 4 pictures can be uploaded",
     "sandboxFileDownloadError": "File download error",
-    "sandboxFileNotFound": "File {0} not found, either because the sandbox path is wrong or because the interpreter is expired."
+    "sandboxFileNotFound": "File {0} not found, either because the sandbox path is wrong or because the interpreter is expired.",
+    "dragFileOrImageHere": "Click or drag any file here to upload",
+    "gpt4UploadingRequirements": "No more than 10 files or images, each file no larger than 512MB. Please ensure the files do not contain sensitive information."
   },
   "labels": {
     "nickname": "Nickname",

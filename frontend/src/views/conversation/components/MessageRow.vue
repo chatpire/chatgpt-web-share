@@ -49,6 +49,11 @@
               :messages="item.messages"
             />
           </div>
+          <div v-else-if="item.type == 'myfiles_browser'">
+            <MessageRowMyFilesBrowserDisplay
+              :messages="item.messages"
+            />
+          </div>
           <div v-if="attachments.length != 0">
             <MessageRowAttachmentDisplay :attachments="attachments" />
           </div>
@@ -135,6 +140,7 @@ import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
 import MessageRowDallePromptDisplay from './MessageRowDallePromptDisplay.vue';
 import MessageRowMultimodalTextDalleDisplay from './MessageRowMultimodalTextDalleDisplay.vue';
 import MessageRowMultimodalTextDisplay from './MessageRowMultimodalTextDisplay.vue';
+import MessageRowMyFilesBrowserDisplay from './MessageRowMyFilesBrowserDisplay.vue';
 import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
 

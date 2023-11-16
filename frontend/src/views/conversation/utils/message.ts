@@ -27,6 +27,7 @@ export type DisplayItemType =
   | 'multimodal_text'
   | 'dalle_prompt'
   | 'dalle_result'
+  | 'myfiles_browser'
   | null;
 
 export type DisplayItem = {
@@ -86,11 +87,14 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
       const recipient = metadata?.recipient;
       if (recipient == 'browser') displayType = 'browser';
       else if (recipient === 'dalle.text2im') displayType = 'dalle_prompt';
+      else if (recipient === 'myfiles_browser') displayType = 'myfiles_browser';
       else if (recipient !== 'all' && message.model == 'gpt_4_plugins') displayType = 'plugin';
       if (displayType) break;
+
     } else if (message.role == 'tool') {
       if (message.author_name == 'browser') displayType = 'browser';
       else if (message.author_name == 'dalle.text2im') displayType = 'dalle_result';
+      else if (message.author_name == 'myfiles_browser') displayType = 'myfiles_browser';
       else displayType = 'plugin';
       break;
     }
