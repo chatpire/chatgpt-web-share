@@ -5,9 +5,9 @@ import {
   ChatSourceTypes,
   OpenaiApiChatMessage,
   OpenaiApiChatMessageTextContent,
-  OpenaiWebAskAttachment,
   OpenaiWebChatMessage,
   OpenaiWebChatMessageMetadata,
+  OpenaiWebChatMessageMetadataAttachment,
   OpenaiWebChatMessageMetadataCiteData,
   OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
@@ -115,7 +115,7 @@ export function buildTemporaryMessage(
   textContent: string,
   parent: string | undefined,
   model: string | undefined,
-  openaiWebAttachments: OpenaiWebAskAttachment[] | null = null,
+  openaiWebAttachments: OpenaiWebChatMessageMetadataAttachment[] | null = null,
   openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
 ) {
   const random_strid = Math.random().toString(36).substring(2, 16);

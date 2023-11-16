@@ -233,7 +233,7 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
       let text = getContentRawText(message);
       if (message.source == 'openai_web' && message.role === 'assistant') {
         const metadata = message.metadata as OpenaiWebChatMessageMetadata;
-        if (metadata.citations && metadata.citations.length > 0) {
+        if (metadata?.citations && metadata.citations.length > 0) {
           let processedText = text;
           metadata.citations
             .sort((a, b) => {

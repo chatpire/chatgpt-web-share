@@ -185,6 +185,10 @@ export interface paths {
      */
     post: operations["start_upload_to_openai_files_openai_web_upload_start_post"];
   };
+  "/files/openai-web/__browser_upload_schema__": {
+    /** Browser Upload Schema */
+    options: operations["__browser_upload_schema___files_openai_web___browser_upload_schema___options"];
+  };
   "/files/openai-web/upload-complete/{file_id}": {
     /** Complete Upload To Openai */
     post: operations["complete_upload_to_openai_files_openai_web_upload_complete__file_id__post"];
@@ -253,7 +257,7 @@ export interface components {
       /** Openai Web Plugin Ids */
       openai_web_plugin_ids?: (string)[];
       /** Openai Web Attachments */
-      openai_web_attachments?: (components["schemas"]["OpenaiWebAskAttachment"])[];
+      openai_web_attachments?: (components["schemas"]["OpenaiWebChatMessageMetadataAttachment"])[];
       /** Openai Web Multimodal Image Parts */
       openai_web_multimodal_image_parts?: (components["schemas"]["OpenaiWebChatMessageMultimodalTextContentImagePart"])[];
     };
@@ -509,8 +513,7 @@ export interface components {
        *     "gpt_4_dalle": "gpt-4-dalle"
        *   },
        *   "file_upload_strategy": "browser_upload_only",
-       *   "enable_uploading_attachments": true,
-       *   "enable_uploading_multimodal_images": true
+       *   "disable_uploading": false
        * }
        */
       openai_web?: components["schemas"]["OpenaiWebChatGPTSetting"];
@@ -944,8 +947,8 @@ export interface components {
       allow_custom_openai_api: boolean;
       custom_openai_api_settings: components["schemas"]["CustomOpenaiApiSettings"];
     };
-    /** OpenaiChatFileUploadInfo */
-    OpenaiChatFileUploadInfo: {
+    /** OpenaiChatFileUploadUrlRequest */
+    OpenaiChatFileUploadUrlRequest: {
       /** File Name */
       file_name: string;
       /** File Size */
@@ -954,7 +957,7 @@ export interface components {
        * Use Case 
        * @enum {string}
        */
-      use_case: "ace_upload" | "multimodal";
+      use_case: "my_files" | "multimodal";
     };
     /** OpenaiChatInterpreterInfo */
     OpenaiChatInterpreterInfo: {
@@ -1024,15 +1027,6 @@ export interface components {
       prompt_tokens?: number;
       /** Completion Tokens */
       completion_tokens?: number;
-    };
-    /** OpenaiWebAskAttachment */
-    OpenaiWebAskAttachment: {
-      /** Name */
-      name: string;
-      /** Id */
-      id: string;
-      /** Size */
-      size: number;
     };
     /** OpenaiWebAskLogMeta */
     OpenaiWebAskLogMeta: {
@@ -1113,15 +1107,10 @@ export interface components {
       /** @default browser_upload_only */
       file_upload_strategy?: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
       /**
-       * Enable Uploading Attachments 
-       * @default true
+       * Disable Uploading 
+       * @default false
        */
-      enable_uploading_attachments?: boolean;
-      /**
-       * Enable Uploading Multimodal Images 
-       * @default true
-       */
-      enable_uploading_multimodal_images?: boolean;
+      disable_uploading?: boolean;
     };
     /** OpenaiWebChatMessage */
     OpenaiWebChatMessage: {
@@ -1204,16 +1193,18 @@ export interface components {
       command?: "search" | string;
       /** Args */
       args?: (string)[];
-      /** Status */
-      status?: "finished" | string;
       _cite_metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCite"];
       /** Citations */
       citations?: (components["schemas"]["OpenaiWebChatMessageMetadataCitation"])[];
       /** Attachments */
       attachments?: (components["schemas"]["OpenaiWebChatMessageMetadataAttachment"])[];
+      /** Status */
+      status?: "finished_successfully" | string;
       /** Is Complete */
       is_complete?: boolean;
       aggregate_result?: components["schemas"]["OpenaiWebChatMessageMetadataAggregateResult"];
+      /** Timestamp */
+      timestamp_?: string | string;
     };
     /** OpenaiWebChatMessageMetadataAggregateResult */
     OpenaiWebChatMessageMetadataAggregateResult: {
@@ -1261,6 +1252,12 @@ export interface components {
       id?: string;
       /** Size */
       size?: number;
+      /** Height */
+      height?: number;
+      /** Width */
+      width?: number;
+      /** Mimetype */
+      mimeType?: string;
     };
     /** OpenaiWebChatMessageMetadataCitation */
     OpenaiWebChatMessageMetadataCitation: {
@@ -1539,10 +1536,8 @@ export interface components {
       daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
       available_models: (components["schemas"]["OpenaiWebChatModels"])[];
       per_model_ask_count: components["schemas"]["OpenaiWebPerModelAskCount"];
-      /** Allow Uploading Attachments */
-      allow_uploading_attachments: boolean;
-      /** Allow Uploading Multimodal Images */
-      allow_uploading_multimodal_images: boolean;
+      /** Disable Uploading */
+      disable_uploading: boolean;
     };
     /** RequestLogAggregation */
     RequestLogAggregation: {
@@ -1565,6 +1560,24 @@ export interface components {
       route_path?: string;
       /** Method */
       method?: string;
+    };
+    /** StartUploadRequestSchema */
+    StartUploadRequestSchema: {
+      /** File Name */
+      file_name: string;
+      /** File Size */
+      file_size: number;
+      /** Width */
+      width?: number;
+      /** Height */
+      height?: number;
+      /** Mime Type */
+      mime_type?: string;
+      /**
+       * Use Case 
+       * @enum {string}
+       */
+      use_case: "my_files" | "multimodal";
     };
     /** StartUploadResponseSchema */
     StartUploadResponseSchema: {
@@ -1617,6 +1630,13 @@ export interface components {
        */
       max_requests: number;
     };
+    /** UploadedFileExtraInfo */
+    UploadedFileExtraInfo: {
+      /** Width */
+      width?: number;
+      /** Height */
+      height?: number;
+    };
     /** UploadedFileInfoSchema */
     UploadedFileInfoSchema: {
       /**
@@ -1640,13 +1660,14 @@ export interface components {
       /** Uploader Id */
       uploader_id: number;
       openai_web_info?: components["schemas"]["UploadedFileOpenaiWebInfo"];
+      extra_info?: components["schemas"]["UploadedFileExtraInfo"];
     };
     /** UploadedFileOpenaiWebInfo */
     UploadedFileOpenaiWebInfo: {
       /** File Id */
       file_id?: string;
       /** Use Case */
-      use_case?: ("ace_upload" | "multimodal") | string;
+      use_case?: ("my_files" | "multimodal") | string;
       /**
        * Upload Url 
        * @description 上传文件的url, 上传后应清空该字段
@@ -2643,7 +2664,7 @@ export interface operations {
      */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["OpenaiChatFileUploadInfo"];
+        "application/json": components["schemas"]["StartUploadRequestSchema"];
       };
     };
     responses: {
@@ -2657,6 +2678,17 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  __browser_upload_schema___files_openai_web___browser_upload_schema___options: {
+    /** Browser Upload Schema */
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
         };
       };
     };

@@ -105,10 +105,8 @@ async def get_me(user: User = Depends(current_active_user)):
         user_read.setting.openai_web.allow_to_use = False
     if not config.openai_api.enabled:
         user_read.setting.openai_api.allow_to_use = False
-    if not config.openai_web.enable_uploading_attachments:
-        user_read.setting.openai_web.allow_uploading_attachments = False
-    if not config.openai_web.enable_uploading_multimodal_images:
-        user_read.setting.openai_web.allow_uploading_multimodal_images = False
+    if config.openai_web.disable_uploading:
+        user_read.setting.openai_web.disable_uploading = True
     return user_read
 
 

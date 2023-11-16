@@ -285,9 +285,9 @@
       "leaveBlankToGenerateTitle": "Leave blank to automatically generate"
     },
     "openaiWebPluginsLengthMoreThan3": "The number of plugins cannot exceed 3",
-    "dragFileHere": "Click or drag file(s) here to upload",
+    "dragFileHere": "Click or drag files or images here to upload",
     "dragImageHere": "Drag image(s) here to upload",
-    "fileUploadRequirements": "Please do not upload files containing sensitive information; file size shouldn't be excessively large",
+    "fileUploadRequirements": "Please do not upload files containing sensitive information; file size should not be larger than 512MB",
     "fileUploadSuccess": "File {0} uploaded successfully",
     "fileUploadFailed": "File {0} upload failed",
     "imageUploadRequirements": "Up to 4 pictures can be uploaded",

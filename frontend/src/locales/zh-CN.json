@@ -289,11 +289,13 @@
     "sandboxFileNotFound": "未找到文件 {0}，这可能是因为路径错误，或者是因为解释器已经过期。",
     "sandboxFileDownloadError": "文件下载错误",
     "dragFileHere": "点击或拖拽文件到此处以上传文件",
-    "fileUploadRequirements": "请不要上传含有敏感信息的文件；文件大小不应过大",
+    "fileUploadRequirements": "请不要上传含有敏感信息的文件；文件大小不大于512MB",
     "fileUploadSuccess": "文件 {0} 上传成功",
     "fileUploadFailed": "文件 {0} 上传失败",
     "dragImageHere": "拖拽图片到此处以上传",
-    "imageUploadRequirements": "最多能够上传4张图片"
+    "imageUploadRequirements": "最多能够上传4张图片",
+    "dragFileOrImageHere": "点击或拖拽任何文件到此处以上传",
+    "gpt4UploadingRequirements": "不超过10份文件或图片，每份文件不超过512MB；请确保文件不含敏感信息"
   },
   "labels": {
     "nickname": "昵称",

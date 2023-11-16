@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { OpenaiChatFileUploadInfo, StartUploadResponseSchema, UploadedFileInfoSchema } from '@/types/schema';
+import { OpenaiChatFileUploadUrlRequest, StartUploadRequestSchema, StartUploadResponseSchema, UploadedFileInfoSchema } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -18,8 +18,8 @@ export function getLocalFileDownloadUrl(fileId: string) {
   return `${ApiUrl.FilesLocalDownload}/${fileId}`;
 }
 
-export function startUploadFileToOpenaiWeb(uploadInfo: OpenaiChatFileUploadInfo) {
-  return axios.post<StartUploadResponseSchema>(ApiUrl.FilesOpenaiWebUploadStart, uploadInfo);
+export function startUploadFileToOpenaiWeb(uploadRequest: StartUploadRequestSchema) {
+  return axios.post<StartUploadResponseSchema>(ApiUrl.FilesOpenaiWebUploadStart, uploadRequest);
 }
 
 export function completeUploadFileToOpenaiWeb(uploadId: string) {

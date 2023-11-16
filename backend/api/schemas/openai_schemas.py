@@ -60,10 +60,10 @@ class OpenaiChatInterpreterInfo(BaseModel):
     time_remaining_ms: Optional[int]
 
 
-class OpenaiChatFileUploadInfo(BaseModel):
+class OpenaiChatFileUploadUrlRequest(BaseModel):
     file_name: str
     file_size: int
-    use_case: Literal['ace_upload', 'multimodal']
+    use_case: Literal['my_files', 'multimodal']
 
 
 class OpenaiChatFileUploadUrlResponse(BaseModel):
@@ -72,12 +72,6 @@ class OpenaiChatFileUploadUrlResponse(BaseModel):
     file_id: Optional[str] = Field(None, description="OpenAI Web file id")
     error_code: Optional[str]
     error_message: Optional[str]
-
-
-class OpenaiWebAskAttachment(BaseModel):
-    name: str
-    id: str
-    size: int
 
 
 class OpenaiWebGizmo(BaseModel):

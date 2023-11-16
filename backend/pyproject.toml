@@ -31,6 +31,7 @@ pydantic = "^1.10.13"
 aiofiles = "^23.2.1"
 aiohttp = "^3.8.5"
 fastapi-cache2 = "^0.2.1"
+pillow = "^10.1.0"
 
 
 [build-system]

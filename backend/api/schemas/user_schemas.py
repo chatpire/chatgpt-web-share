@@ -48,8 +48,7 @@ class BaseSourceSettingSchema(BaseModel):
 class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     available_models: list[OpenaiWebChatModels]
     per_model_ask_count: OpenaiWebPerModelAskCount
-    allow_uploading_attachments: bool
-    allow_uploading_multimodal_images: bool
+    disable_uploading: bool
 
     @staticmethod
     def default():
@@ -57,8 +56,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
             available_models=[OpenaiWebChatModels(m) for m in
                               ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]],
             per_model_ask_count=OpenaiWebPerModelAskCount(),
-            allow_uploading_attachments=config.openai_web.enable_uploading_attachments,
-            allow_uploading_multimodal_images=config.openai_web.enable_uploading_multimodal_images,
+            disable_uploading=False,
             **BaseSourceSettingSchema.default().dict()
         )
 
@@ -67,17 +65,14 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
         return OpenaiWebSourceSettingSchema(
             available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
             per_model_ask_count=OpenaiWebPerModelAskCount.unlimited(),
-            allow_uploading_attachments=True,
-            allow_uploading_multimodal_images=True,
+            disable_uploading=False,
             **BaseSourceSettingSchema.unlimited().dict()
         )
 
     @root_validator(pre=True)
     def check(cls, values):
-        if "allow_uploading_attachments" not in values:
-            values["allow_uploading_attachments"] = config.openai_web.enable_uploading_attachments
-        if "allow_uploading_multimodal_images" not in values:
-            values["allow_uploading_multimodal_images"] = config.openai_web.enable_uploading_multimodal_images
+        if "disable_uploading" not in values:
+            values["disable_uploading"] = config.openai_web.disable_uploading
         return values
 
     class Config:

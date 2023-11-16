@@ -9,13 +9,13 @@ from starlette.responses import FileResponse
 from api.conf import Config
 from api.database.sqlalchemy import get_async_session_context
 from api.enums.options import OpenaiWebFileUploadStrategyOption
-from api.exceptions import InvalidRequestException, ResourceNotFoundException, AuthorityDenyException
+from api.exceptions import InvalidRequestException, ResourceNotFoundException, AuthorityDenyException, InternalException
 from api.file_provider import FileProvider
 from api.models.db import User, UploadedFileInfo
-from api.models.json import UploadedFileOpenaiWebInfo
+from api.models.json import UploadedFileOpenaiWebInfo, UploadedFileExtraInfo
 from api.schemas import UserRead
-from api.schemas.file_schemas import UploadedFileInfoSchema, StartUploadResponseSchema
-from api.schemas.openai_schemas import OpenaiChatFileUploadInfo
+from api.schemas.file_schemas import UploadedFileInfoSchema, StartUploadResponseSchema, StartUploadRequestSchema
+from api.schemas.openai_schemas import OpenaiChatFileUploadUrlRequest
 from api.sources import OpenaiWebChatManager
 from api.users import current_active_user
 
@@ -70,7 +70,7 @@ async def download_file_from_local(file_id: uuid.UUID, user: User = Depends(curr
 
 
 @router.post("/files/openai-web/upload-start", tags=["files"], response_model=StartUploadResponseSchema)
-async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: User = Depends(current_active_user)):
+async def start_upload_to_openai(upload_request: StartUploadRequestSchema, user: User = Depends(current_active_user)):
     """
     要上传文件到 OpenAI Web，前端需要先调用此接口.
     1. 若最终上传方法是前端直接上传 (Browser -> Azure Blob)，则获取上传地址并记录文件信息，响应中 upload_file_info 不为空
@@ -78,37 +78,42 @@ async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: Us
         a. 先调用 upload_file_to_local 接口上传文件到服务器，拿到文件的 uuid
         b. 再调用 upload_local_file_to_openai_web 接口，通知服务器上传文件到 OpenAI Web
     """
-    file_size_exceed = upload_info.file_size > config.data.max_file_upload_size
+    file_size_exceed = upload_request.file_size > config.data.max_file_upload_size
     if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.server_upload_only and file_size_exceed:
         raise InvalidRequestException(f"File is too large! Max size: {config.data.max_file_upload_size}")
     user_info = UserRead.from_orm(user)
-    if upload_info.use_case == "ace_upload" and \
-            (user_info.setting.openai_web.allow_uploading_attachments is False or
-             config.openai_web.enable_uploading_attachments is False):
-        raise InvalidRequestException(f"Uploading attachments disabled")
-    if upload_info.use_case == "multimodal" and \
-            (user_info.setting.openai_web.allow_uploading_multimodal_images is False or
-             config.openai_web.enable_uploading_multimodal_images is False):
-        raise InvalidRequestException(f"Uploading multimodal images disabled")
+    if user_info.setting.openai_web.disable_uploading or config.openai_web.disable_uploading:
+        raise InvalidRequestException(f"Uploading disabled")
+
+    # TODO 验证图片是否给出宽和高
 
     file_info = None
 
     # 浏览器直接上传
     if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.browser_upload_only or \
             config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.browser_upload_when_file_size_exceed and file_size_exceed:
+        upload_info = OpenaiChatFileUploadUrlRequest(
+            file_name=upload_request.file_name,
+            file_size=upload_request.file_size,
+            use_case=upload_request.use_case
+        )
         response = await openai_web_manager.get_file_upload_url(upload_info)
         file_info = UploadedFileInfoSchema(
             id=uuid.uuid4(),
-            original_filename=upload_info.file_name,
-            size=upload_info.file_size,
-            content_type=guess_type(upload_info.file_name)[0],
+            original_filename=upload_request.file_name,
+            size=upload_request.file_size,
+            content_type=guess_type(upload_request.file_name)[0],
             storage_path=None,
             uploader_id=user.id,
             upload_time=datetime.now().astimezone(tz=timezone.utc),
             openai_web_info=UploadedFileOpenaiWebInfo(
                 file_id=response.file_id,
                 upload_url=response.upload_url,
-                download_url=None
+                download_url=None,
+            ),
+            extra_info=UploadedFileExtraInfo(
+                width=upload_request.width,
+                height=upload_request.height,
             )
         )
         async with get_async_session_context() as session:
@@ -120,6 +125,12 @@ async def start_upload_to_openai(upload_info: OpenaiChatFileUploadInfo, user: Us
         file_max_size=config.data.max_file_upload_size,
         upload_file_info=file_info
     )
+
+
+@router.options("/files/openai-web/__browser_upload_schema__", tags=["files"],
+                response_model=OpenaiChatFileUploadUrlRequest)
+async def __browser_upload_schema__():
+    raise InternalException()
 
 
 @router.post("/files/openai-web/upload-complete/{file_id}", tags=["files"], response_model=UploadedFileInfoSchema)

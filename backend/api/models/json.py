@@ -57,6 +57,11 @@ class CustomOpenaiApiSettings(BaseModel):
 
 class UploadedFileOpenaiWebInfo(BaseModel):
     file_id: Optional[str]
-    use_case: Optional[Literal['ace_upload', 'multimodal'] | str]
+    use_case: Optional[Literal['my_files', 'multimodal'] | str]
     upload_url: Optional[str] = Field(description="上传文件的url, 上传后应清空该字段")
     download_url: Optional[str]
+
+
+class UploadedFileExtraInfo(BaseModel):
+    width: Optional[int]
+    height: Optional[int]

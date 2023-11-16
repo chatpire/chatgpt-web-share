@@ -1,13 +1,14 @@
 <template>
-  <div v-if="props.mode === 'attachments'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
+  <div v-if="props.mode === 'legacy_code_interpreter'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
     <n-upload
-      v-model:file-list="attachments.naiveUiUploadFileInfos"
+      v-model:file-list="fileStore.naiveUiUploadFileInfos"
       class="lt-sm:mb-4"
       multiple
       :disabled="props.disabled"
       :show-file-list="false"
       :trigger-style="{ width: '100%' }"
       :custom-request="customRequest"
+      :max="10"
     >
       <n-upload-dragger class="lt-sm:hidden">
         <div class="mb-2">
@@ -30,7 +31,7 @@
       </n-upload-trigger>
     </n-upload>
     <n-upload
-      v-model:file-list="attachments.naiveUiUploadFileInfos"
+      v-model:file-list="fileStore.naiveUiUploadFileInfos"
       abstract
       multiple
       :disabled="props.disabled"
@@ -39,10 +40,11 @@
       :show-remove-button="true"
       :show-retry-button="true"
       :on-remove="removeFile"
+      :max="10"
     >
       <n-card :content-style="{ padding: '1em' }">
         <n-empty
-          v-if="attachments.naiveUiUploadFileInfos.length == 0"
+          v-if="fileStore.naiveUiUploadFileInfos.length == 0"
           :description="$t('commons.emptyFileList')"
           class="h-full flex items-center justify-center"
         />
@@ -52,17 +54,19 @@
       </n-card>
     </n-upload>
   </div>
-  <div v-else-if="props.mode === 'images'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
+
+  <div v-else-if="props.mode === 'all'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
     <n-upload
-      v-model:file-list="images.naiveUiUploadFileInfos"
+      v-model:file-list="fileStore.naiveUiUploadFileInfos"
       class="lt-sm:hidden"
       multiple
       :show-file-list="false"
       :trigger-style="{ width: '100%' }"
       :disabled="props.disabled"
       :custom-request="customRequest"
-      accept="image/png, image/jpeg, image/gif"
-      :max="4"
+      :accept="acceptedMimeTypes.join(',')"
+      :on-before-upload="checkFileBeforeUpload"
+      :max="10"
     >
       <n-upload-dragger class="lt-sm:hidden">
         <div class="mb-2">
@@ -71,16 +75,16 @@
           </n-icon>
         </div>
         <n-text style="font-size: 16px">
-          {{ $t('tips.dragImageHere') }}
+          {{ $t('tips.dragFileOrImageHere') }}
         </n-text>
         <n-p depth="3" style="margin: 8px 0 0 0">
-          {{ $t('tips.imageUploadRequirements') }}
+          {{ $t('tips.gpt4UploadingRequirements') }}
         </n-p>
       </n-upload-dragger>
     </n-upload>
 
     <n-upload
-      v-model:file-list="images.naiveUiUploadFileInfos"
+      v-model:file-list="fileStore.naiveUiUploadFileInfos"
       multiple
       :disabled="props.disabled"
       :custom-request="customRequest"
@@ -89,8 +93,9 @@
       :show-retry-button="true"
       :on-remove="removeFile"
       list-type="image-card"
-      accept="image/png, image/jpeg, image/gif"
-      :max="4"
+      :accept="acceptedMimeTypes.join(',')"
+      :on-before-upload="checkFileBeforeUpload"
+      :max="10"
     />
   </div>
 </template>
@@ -110,23 +115,35 @@ import {
   uploadFileToLocalApi,
 } from '@/api/files';
 import { useFileStore } from '@/store';
-import { OpenaiChatFileUploadInfo, UploadedFileInfoSchema } from '@/types/schema';
+import { OpenaiChatFileUploadUrlRequest, StartUploadRequestSchema, UploadedFileInfoSchema } from '@/types/schema';
 import { Message } from '@/utils/tips';
+
+import { acceptedMimeTypes, getImageDimensions, isImage, isSupportedImage } from '../utils/files';
 const { t } = useI18n();
 
 const fileStore = useFileStore();
-const { attachments, images } = storeToRefs(fileStore);
 
 const props = defineProps<{
-  mode: 'images' | 'attachments';
+  mode: 'all' | 'legacy_code_interpreter';
   disabled: boolean;
 }>();
 
-const fileRef = props.mode === 'images' ? images : attachments;
-
 const isUploading = computed(() => {
-  return fileRef.value.naiveUiUploadFileInfos.some((file) => file.status === 'uploading');
+  return fileStore.naiveUiUploadFileInfos.some((file) => file.status === 'uploading');
 });
+
+const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
+  const rawFile = options.file.file as File;
+  if (isImage(rawFile) && !isSupportedImage(rawFile)) {
+    Message.warning(t('tips.unsupportedImageFormat', [options.file.name]));
+    return false;
+  }
+  if (rawFile.size > 512 * 1024 * 1024) {
+    Message.warning(t('tips.fileSizeTooLarge', [options.file.name]));
+    return false;
+  }
+  return true;
+};
 
 const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
   try {
@@ -134,14 +151,31 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
       throw new Error('Failed to get the file.');
     }
 
-    const useCase = props.mode === 'images' ? 'multimodal' : 'ace_upload';
+    const rawFile = file.file as File;
+    if (isImage(rawFile) && !isSupportedImage(rawFile)) {
+      Message.warning(t('tips.unsupportedImageFormat', [file.name]));
+      onError();
+      return;
+    }
+    const isImageType = isSupportedImage(rawFile);
+
+    let useCase;
+    if (isImageType) useCase = 'multimodal';
+    else useCase = 'my_files';
 
     // 1. 先调用 startUploadFileToOpenaiWeb
     const uploadInfo = {
       file_name: file.name,
       file_size: file.file?.size,
       use_case: useCase,
-    } as OpenaiChatFileUploadInfo;
+      mime_type: file.file?.type,
+    } as StartUploadRequestSchema;
+
+    if (isImageType) {
+      const { width, height } = await getImageDimensions(rawFile);
+      uploadInfo.width = width;
+      uploadInfo.height = height;
+    }
 
     onProgress({ percent: 0 });
 
@@ -190,34 +224,11 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
       }
 
       uploadedFileInfo = fileFromLocalToOpenaiWebResponse.data;
+      console.log('uploadedFileInfo', uploadedFileInfo);
     }
 
-    fileRef.value.uploadedFileInfos = [...fileRef.value.uploadedFileInfos, uploadedFileInfo];
-    fileRef.value.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.id;
-
-    if (props.mode === 'images') {
-      // 处理图片的宽高信息
-      const rawFile = file.file as File;
-      const getImageDimensions = new Promise<{ width: number; height: number }>((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          resolve({ width: img.width, height: img.height });
-        };
-        img.onerror = (error) => {
-          reject(new Error(`Failed to load image: ${error}`));
-        };
-        img.src = URL.createObjectURL(rawFile);
-      });
-      try {
-        const dimensions = await getImageDimensions;
-        const width = dimensions.width;
-        const height = dimensions.height;
-        images.value.imageMetadataMap[uploadedFileInfo.id] = { width, height };
-      } catch (error) {
-        console.error(error);
-        onError();
-      }
-    }
+    fileStore.uploadedFileInfos = [...fileStore.uploadedFileInfos, uploadedFileInfo];
+    fileStore.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.id;
 
     // 文件上传成功完成
     Message.success(t('tips.fileUploadSuccess', [file.name]));
@@ -231,14 +242,12 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
 
 const removeFile = async (options: { file: UploadFileInfo; fileList: Array<UploadFileInfo> }) => {
   const { file } = options;
-  const fileId = fileRef.value.naiveUiFileIdToServerFileIdMap[file.id];
+  const fileId = fileStore.naiveUiFileIdToServerFileIdMap[file.id];
   if (fileId != undefined) {
-    fileRef.value.uploadedFileInfos = fileRef.value.uploadedFileInfos.filter(
-      (uploadedFileInfo: UploadedFileInfoSchema) => {
-        return uploadedFileInfo.id != fileId;
-      }
-    );
-    delete fileRef.value.naiveUiFileIdToServerFileIdMap[file.id];
+    fileStore.uploadedFileInfos = fileStore.uploadedFileInfos.filter((uploadedFileInfo: UploadedFileInfoSchema) => {
+      return uploadedFileInfo.id != fileId;
+    });
+    delete fileStore.naiveUiFileIdToServerFileIdMap[file.id];
     console.log(`Removed file ${file.name} with id ${fileId}`);
   }
   return true;

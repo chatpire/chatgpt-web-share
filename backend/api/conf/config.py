@@ -77,8 +77,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
                                                  "gpt_4_browsing"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
-    enable_uploading_attachments: bool = True
-    enable_uploading_multimodal_images: bool = True
+    disable_uploading: bool = False
 
     @validator("chatgpt_base_url")
     def chatgpt_base_url_end_with_slash(cls, v):

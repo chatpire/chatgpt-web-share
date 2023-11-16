@@ -111,6 +111,7 @@ import {
   BaseChatMessage,
   BaseConversationHistory,
   BaseConversationSchema,
+  OpenaiWebChatMessageMetadataAttachment,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
@@ -170,20 +171,15 @@ const currentSendMessage = ref<BaseChatMessage | null>(null);
 const currentRecvMessages = ref<BaseChatMessage[]>([]);
 
 const uploadMode = computed(() => {
-  const allowAttachmentsUploading = userStore.userInfo?.setting.openai_web.allow_uploading_attachments;
-  const allowMultimodalImagesUploading = userStore.userInfo?.setting.openai_web.allow_uploading_multimodal_images;
+  const disableUploading = userStore.userInfo?.setting.openai_web.disable_uploading;
+  if (disableUploading) return null;
   if (
-    allowAttachmentsUploading &&
     currentConversation.value?.source === 'openai_web' &&
     currentConversation.value.current_model == 'gpt_4_code_interpreter'
   )
-    return 'attachments';
-  else if (
-    allowMultimodalImagesUploading &&
-    currentConversation.value?.source === 'openai_web' &&
-    currentConversation.value.current_model == 'gpt_4'
-  )
-    return 'images';
+    return 'legacy_code_interpreter';
+  else if (currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4')
+    return 'all';
   else return null;
 });
 
@@ -292,27 +288,33 @@ const sendMsg = async () => {
   let hasGotReply = false;
 
   // 处理附件
-  let attachments = null;
-  if (uploadMode.value === 'attachments' && fileStore.attachments.uploadedFileInfos.length > 0) {
-    attachments = fileStore.attachments.uploadedFileInfos
+  let attachments = null as OpenaiWebChatMessageMetadataAttachment[] | null;
+  if (uploadMode.value !== null && fileStore.uploadedFileInfos.length > 0) {
+    attachments = fileStore.uploadedFileInfos
       .filter((info) => info.openai_web_info && info.openai_web_info.file_id)
       .map((info) => {
-        return {
+        const result = {
           id: info.openai_web_info!.file_id!,
           name: info.original_filename,
           size: info.size,
-        };
+          mimeType: info.content_type,
+        } as OpenaiWebChatMessageMetadataAttachment;
+        if (info.extra_info && info.extra_info.height !== undefined) {
+          result.height = info.extra_info.height;
+          result.width = info.extra_info.width;
+        }
+        return result;
       });
   }
 
   // 处理 gpt-4 图片
   let multimodalImages = null;
-  if (uploadMode.value === 'images' && fileStore.images.uploadedFileInfos.length > 0) {
-    multimodalImages = fileStore.images.uploadedFileInfos
-      .filter((info) => info.openai_web_info && info.openai_web_info.file_id)
+  if (uploadMode.value === 'all') {
+    multimodalImages = fileStore.uploadedFileInfos
+      .filter((info) => info.openai_web_info && info.openai_web_info.file_id && info.content_type?.startsWith('image/'))
       .map((info) => {
         const fileId = info.openai_web_info!.file_id!;
-        const { width, height } = fileStore.images.imageMetadataMap[info.id] || {};
+        const { width, height } = info.extra_info || {};
         return {
           asset_pointer: `file-service://${fileId}`,
           width,
@@ -478,7 +480,7 @@ const sendMsg = async () => {
         currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
 
         // 清除附件
-        fileStore.clearAll();
+        fileStore.clear();
 
         await conversationStore.fetchAllConversations();
         conversationStore.removeNewConversation();

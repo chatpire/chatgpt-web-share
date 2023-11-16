@@ -14,7 +14,7 @@ export type SavedLoginForm = {
   rememberPassword: boolean;
   savedUsername: string | undefined;
   savedPassword: string | undefined;
-}
+};
 
 interface UserState {
   user: UserRead | null;
@@ -42,19 +42,11 @@ interface ConversationState {
   conversationHistoryMap: Record<string, BaseConversationHistory>;
 }
 
-type FileUploadGroup = {
+interface FileState {
   uploadedFileInfos: UploadedFileInfoSchema[];
   naiveUiUploadFileInfos: UploadFileInfo[];
   naiveUiFileIdToServerFileIdMap: Record<string, string>;
-};
-
-type ImageUploadGroup = FileUploadGroup & {
-  imageMetadataMap: Record<string, { width: number; height: number }>; // 使用 server 端的文件 id 作为 key
-};
-
-interface FileState {
-  attachments: FileUploadGroup;
-  images: ImageUploadGroup;
+  // imageMetadataMap: Record<string, { width: number; height: number }>; // 使用 server 端的文件 id 作为 key
 }
 
 export type { AppState, ConversationState, FileState, UserState };

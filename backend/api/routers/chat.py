@@ -206,17 +206,19 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
         # await websocket.close(1008, "errors.maxConversationCountReached")
         raise WebsocketInvalidAskException("errors.maxConversationCountReached")
 
-    # 判断是否允许使用附件
+    # 判断是否允许上传文件
     if ask_request.openai_web_attachments and len(ask_request.openai_web_attachments) > 0:
-        if ask_request.model != OpenaiWebChatModels.gpt_4_code_interpreter or \
-                config.openai_web.enable_uploading_attachments is False:
-            raise WebsocketInvalidAskException("errors.attachmentsNotAllowed")
-
-    # 判断是否允许使用多模态图片
+        if ask_request.model != OpenaiWebChatModels.gpt_4_code_interpreter and \
+                ask_request.model != OpenaiWebChatModels.gpt_4:
+            raise WebsocketInvalidAskException("errors.uploadingNotAllowed",
+                                               "only gpt-4 and gpt-4-code-interpreter models support uploading")
+        if user.setting.openai_web.disable_uploading or config.openai_web.disable_uploading:
+            raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "uploading disabled")
     if ask_request.openai_web_multimodal_image_parts and len(ask_request.openai_web_multimodal_image_parts) > 0:
-        if ask_request.model != OpenaiWebChatModels.gpt_4 or \
-                config.openai_web.enable_uploading_multimodal_images is False:
-            raise WebsocketInvalidAskException("errors.multimodalImagesNotAllowed")
+        if ask_request.model != OpenaiWebChatModels.gpt_4:
+            raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "only gpt-4 support uploading images")
+        if user.setting.openai_web.disable_uploading or config.openai_web.disable_uploading:
+            raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "uploading disabled")
 
 
 def check_message(msg: str):

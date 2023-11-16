@@ -32,8 +32,7 @@
           "gpt_4_dalle": "gpt-4-dalle"
         },
         "file_upload_strategy": "browser_upload_only",
-        "enable_uploading_attachments": true,
-        "enable_uploading_multimodal_images": true
+        "disable_uploading": false
       },
       "allOf": [
         {
@@ -267,14 +266,9 @@
             }
           ]
         },
-        "enable_uploading_attachments": {
-          "title": "Enable Uploading Attachments",
-          "default": true,
-          "type": "boolean"
-        },
-        "enable_uploading_multimodal_images": {
-          "title": "Enable Uploading Multimodal Images",
-          "default": true,
+        "disable_uploading": {
+          "title": "Disable Uploading",
+          "default": false,
           "type": "boolean"
         }
       }

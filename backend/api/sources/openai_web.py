@@ -21,11 +21,11 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
     OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent, \
-    OpenaiWebChatMessageMultimodalTextContentImagePart
+    OpenaiWebChatMessageMultimodalTextContentImagePart, OpenaiWebChatMessageMetadataAttachment
 from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
-from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadInfo, \
-    OpenaiChatFileUploadUrlResponse, OpenaiWebAskAttachment, OpenaiWebCompleteRequest, \
+from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadUrlRequest, \
+    OpenaiChatFileUploadUrlResponse, OpenaiWebCompleteRequest, \
     OpenaiWebCompleteRequestConversationMode
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
@@ -237,7 +237,7 @@ class OpenaiWebChatManager:
 
     async def complete(self, text_content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
                        model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
-                       attachments: list[OpenaiWebAskAttachment] = None,
+                       attachments: list[OpenaiWebChatMessageMetadataAttachment] = None,
                        multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None, **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
@@ -410,7 +410,7 @@ class OpenaiWebChatManager:
             raise ResourceNotFoundException(
                 f"{conversation_id} Failed to get download url: {result.get('error_code')}({result.get('error_message')})")
 
-    async def get_file_upload_url(self, upload_info: OpenaiChatFileUploadInfo) -> OpenaiChatFileUploadUrlResponse:
+    async def get_file_upload_url(self, upload_info: OpenaiChatFileUploadUrlRequest) -> OpenaiChatFileUploadUrlResponse:
         """
         获取文件在 azure blob 的上传地址
         """
@@ -449,6 +449,8 @@ class OpenaiWebChatManager:
     async def upload_file_in_server(self, file_info: UploadedFileInfoSchema) -> UploadedFileOpenaiWebInfo:
         """
         将已上传到服务器上的文件上传到OpenAI Web
+
+        TODO 暂时无法使用，因为会被 Cloudflare 阻止
         """
 
         # 检查文件是否仍然存在
@@ -459,10 +461,10 @@ class OpenaiWebChatManager:
                 f"File {file_info.original_filename} ({file_info.id}) not exists. This may be caused by file cleanup.")
 
         # 获取 cdn 上传地址
-        upload_info = OpenaiChatFileUploadInfo(
+        upload_info = OpenaiChatFileUploadUrlRequest(
             file_name=file_info.original_filename,
             file_size=file_info.size,
-            use_case="ace_upload"
+            use_case="my_files"
         )
         upload_response = await self.get_file_upload_url(upload_info)
         upload_url = upload_response.upload_url  # 预签名的 azure 地址
@@ -470,12 +472,13 @@ class OpenaiWebChatManager:
         # 上传文件
         content_type = file_info.content_type or guess_type(file_info.original_filename)[
             0] or "application/octet-stream"
-        headers = {
+        headers = self.session.headers.copy()
+        headers.update({
             'x-ms-blob-type': 'BlockBlob',
             'Content-Type': content_type,
             'x-ms-version': '2020-04-08',
             'Origin': 'https://chat.openai.com',
-        }
+        })
         async with aiofiles.open(file_path, mode='rb') as file:
             content = await file.read()
         async with aiohttp.ClientSession() as session:

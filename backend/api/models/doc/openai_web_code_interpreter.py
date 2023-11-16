@@ -7,6 +7,9 @@ class OpenaiWebChatMessageMetadataAttachment(BaseModel):
     name: Optional[str]
     id: Optional[str]
     size: Optional[int]
+    height: Optional[int]
+    width: Optional[int]
+    mimeType: Optional[str]
 
 
 class OpenaiWebChatMessageMetadataAggregateResultMessage(BaseModel):

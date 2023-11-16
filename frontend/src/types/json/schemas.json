@@ -245,15 +245,22 @@
             "size": {
               "type": "integer",
               "title": "Size"
+            },
+            "height": {
+              "type": "integer",
+              "title": "Height"
+            },
+            "width": {
+              "type": "integer",
+              "title": "Width"
+            },
+            "mimeType": {
+              "type": "string",
+              "title": "Mimetype"
             }
           },
           "type": "object",
-          "required": [
-            "name",
-            "id",
-            "size"
-          ],
-          "title": "OpenaiWebAskAttachment"
+          "title": "OpenaiWebChatMessageMetadataAttachment"
         },
         "type": "array",
         "title": "Openai Web Attachments"
@@ -751,20 +758,6 @@
                         "type": "array",
                         "title": "Args"
                       },
-                      "status": {
-                        "anyOf": [
-                          {
-                            "type": "string",
-                            "enum": [
-                              "finished"
-                            ]
-                          },
-                          {
-                            "type": "string"
-                          }
-                        ],
-                        "title": "Status"
-                      },
                       "_cite_metadata": {
                         "properties": {
                           "citation_format": {
@@ -847,6 +840,18 @@
                             "size": {
                               "type": "integer",
                               "title": "Size"
+                            },
+                            "height": {
+                              "type": "integer",
+                              "title": "Height"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "title": "Width"
+                            },
+                            "mimeType": {
+                              "type": "string",
+                              "title": "Mimetype"
                             }
                           },
                           "type": "object",
@@ -854,6 +859,20 @@
                         },
                         "type": "array",
                         "title": "Attachments"
+                      },
+                      "status": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "finished_successfully"
+                            ]
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "title": "Status"
                       },
                       "is_complete": {
                         "type": "boolean",
@@ -966,6 +985,18 @@
                         },
                         "type": "object",
                         "title": "OpenaiWebChatMessageMetadataAggregateResult"
+                      },
+                      "timestamp_": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "title": "Timestamp "
                       }
                     },
                     "type": "object",
@@ -1199,20 +1230,6 @@
                         "type": "array",
                         "title": "Args"
                       },
-                      "status": {
-                        "anyOf": [
-                          {
-                            "type": "string",
-                            "enum": [
-                              "finished"
-                            ]
-                          },
-                          {
-                            "type": "string"
-                          }
-                        ],
-                        "title": "Status"
-                      },
                       "_cite_metadata": {
                         "properties": {
                           "citation_format": {
@@ -1295,6 +1312,18 @@
                             "size": {
                               "type": "integer",
                               "title": "Size"
+                            },
+                            "height": {
+                              "type": "integer",
+                              "title": "Height"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "title": "Width"
+                            },
+                            "mimeType": {
+                              "type": "string",
+                              "title": "Mimetype"
                             }
                           },
                           "type": "object",
@@ -1302,6 +1331,20 @@
                         },
                         "type": "array",
                         "title": "Attachments"
+                      },
+                      "status": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "finished_successfully"
+                            ]
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "title": "Status"
                       },
                       "is_complete": {
                         "type": "boolean",
@@ -1414,6 +1457,18 @@
                         },
                         "type": "object",
                         "title": "OpenaiWebChatMessageMetadataAggregateResult"
+                      },
+                      "timestamp_": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "title": "Timestamp "
                       }
                     },
                     "type": "object",
@@ -1957,20 +2012,6 @@
                 "type": "array",
                 "title": "Args"
               },
-              "status": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "enum": [
-                      "finished"
-                    ]
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "title": "Status"
-              },
               "_cite_metadata": {
                 "properties": {
                   "citation_format": {
@@ -2053,6 +2094,18 @@
                     "size": {
                       "type": "integer",
                       "title": "Size"
+                    },
+                    "height": {
+                      "type": "integer",
+                      "title": "Height"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "title": "Width"
+                    },
+                    "mimeType": {
+                      "type": "string",
+                      "title": "Mimetype"
                     }
                   },
                   "type": "object",
@@ -2060,6 +2113,20 @@
                 },
                 "type": "array",
                 "title": "Attachments"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "finished_successfully"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Status"
               },
               "is_complete": {
                 "type": "boolean",
@@ -2172,6 +2239,18 @@
                 },
                 "type": "object",
                 "title": "OpenaiWebChatMessageMetadataAggregateResult"
+              },
+              "timestamp_": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Timestamp "
               }
             },
             "type": "object",
@@ -2692,20 +2771,6 @@
                       "type": "array",
                       "title": "Args"
                     },
-                    "status": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "finished"
-                          ]
-                        },
-                        {
-                          "type": "string"
-                        }
-                      ],
-                      "title": "Status"
-                    },
                     "_cite_metadata": {
                       "properties": {
                         "citation_format": {
@@ -2788,6 +2853,18 @@
                           "size": {
                             "type": "integer",
                             "title": "Size"
+                          },
+                          "height": {
+                            "type": "integer",
+                            "title": "Height"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "title": "Width"
+                          },
+                          "mimeType": {
+                            "type": "string",
+                            "title": "Mimetype"
                           }
                         },
                         "type": "object",
@@ -2795,6 +2872,20 @@
                       },
                       "type": "array",
                       "title": "Attachments"
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "finished_successfully"
+                          ]
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "title": "Status"
                     },
                     "is_complete": {
                       "type": "boolean",
@@ -2907,6 +2998,18 @@
                       },
                       "type": "object",
                       "title": "OpenaiWebChatMessageMetadataAggregateResult"
+                    },
+                    "timestamp_": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "title": "Timestamp "
                     }
                   },
                   "type": "object",
@@ -3313,15 +3416,10 @@
                 ],
                 "default": "browser_upload_only"
               },
-              "enable_uploading_attachments": {
+              "disable_uploading": {
                 "type": "boolean",
-                "title": "Enable Uploading Attachments",
-                "default": true
-              },
-              "enable_uploading_multimodal_images": {
-                "type": "boolean",
-                "title": "Enable Uploading Multimodal Images",
-                "default": true
+                "title": "Disable Uploading",
+                "default": false
               }
             },
             "type": "object",
@@ -3355,8 +3453,7 @@
             "gpt_4_dalle": "gpt-4-dalle"
           },
           "file_upload_strategy": "browser_upload_only",
-          "enable_uploading_attachments": true,
-          "enable_uploading_multimodal_images": true
+          "disable_uploading": false
         }
       },
       "openai_api": {
@@ -4074,20 +4171,6 @@
                 "type": "array",
                 "title": "Args"
               },
-              "status": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "enum": [
-                      "finished"
-                    ]
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "title": "Status"
-              },
               "_cite_metadata": {
                 "properties": {
                   "citation_format": {
@@ -4170,6 +4253,18 @@
                     "size": {
                       "type": "integer",
                       "title": "Size"
+                    },
+                    "height": {
+                      "type": "integer",
+                      "title": "Height"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "title": "Width"
+                    },
+                    "mimeType": {
+                      "type": "string",
+                      "title": "Mimetype"
                     }
                   },
                   "type": "object",
@@ -4177,6 +4272,20 @@
                 },
                 "type": "array",
                 "title": "Attachments"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "finished_successfully"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Status"
               },
               "is_complete": {
                 "type": "boolean",
@@ -4289,6 +4398,18 @@
                 },
                 "type": "object",
                 "title": "OpenaiWebChatMessageMetadataAggregateResult"
+              },
+              "timestamp_": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Timestamp "
               }
             },
             "type": "object",
@@ -4615,20 +4736,6 @@
                       "type": "array",
                       "title": "Args"
                     },
-                    "status": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "finished"
-                          ]
-                        },
-                        {
-                          "type": "string"
-                        }
-                      ],
-                      "title": "Status"
-                    },
                     "_cite_metadata": {
                       "properties": {
                         "citation_format": {
@@ -4711,6 +4818,18 @@
                           "size": {
                             "type": "integer",
                             "title": "Size"
+                          },
+                          "height": {
+                            "type": "integer",
+                            "title": "Height"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "title": "Width"
+                          },
+                          "mimeType": {
+                            "type": "string",
+                            "title": "Mimetype"
                           }
                         },
                         "type": "object",
@@ -4718,6 +4837,20 @@
                       },
                       "type": "array",
                       "title": "Attachments"
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "finished_successfully"
+                          ]
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "title": "Status"
                     },
                     "is_complete": {
                       "type": "boolean",
@@ -4830,6 +4963,18 @@
                       },
                       "type": "object",
                       "title": "OpenaiWebChatMessageMetadataAggregateResult"
+                    },
+                    "timestamp_": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "title": "Timestamp "
                     }
                   },
                   "type": "object",
@@ -5222,7 +5367,7 @@
     ],
     "title": "OpenaiApiSourceSettingSchema"
   },
-  "OpenaiChatFileUploadInfo": {
+  "OpenaiChatFileUploadUrlRequest": {
     "properties": {
       "file_name": {
         "type": "string",
@@ -5235,7 +5380,7 @@
       "use_case": {
         "type": "string",
         "enum": [
-          "ace_upload",
+          "my_files",
           "multimodal"
         ],
         "title": "Use Case"
@@ -5247,7 +5392,7 @@
       "file_size",
       "use_case"
     ],
-    "title": "OpenaiChatFileUploadInfo"
+    "title": "OpenaiChatFileUploadUrlRequest"
   },
   "OpenaiChatInterpreterInfo": {
     "properties": {
@@ -5473,29 +5618,6 @@
     "type": "object",
     "title": "OpenaiChatResponseUsage"
   },
-  "OpenaiWebAskAttachment": {
-    "properties": {
-      "name": {
-        "type": "string",
-        "title": "Name"
-      },
-      "id": {
-        "type": "string",
-        "title": "Id"
-      },
-      "size": {
-        "type": "integer",
-        "title": "Size"
-      }
-    },
-    "type": "object",
-    "required": [
-      "name",
-      "id",
-      "size"
-    ],
-    "title": "OpenaiWebAskAttachment"
-  },
   "OpenaiWebAskLogMeta": {
     "properties": {
       "source": {
@@ -5633,15 +5755,10 @@
         ],
         "default": "browser_upload_only"
       },
-      "enable_uploading_attachments": {
+      "disable_uploading": {
         "type": "boolean",
-        "title": "Enable Uploading Attachments",
-        "default": true
-      },
-      "enable_uploading_multimodal_images": {
-        "type": "boolean",
-        "title": "Enable Uploading Multimodal Images",
-        "default": true
+        "title": "Disable Uploading",
+        "default": false
       }
     },
     "type": "object",
@@ -6056,20 +6173,6 @@
                 "type": "array",
                 "title": "Args"
               },
-              "status": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "enum": [
-                      "finished"
-                    ]
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "title": "Status"
-              },
               "_cite_metadata": {
                 "properties": {
                   "citation_format": {
@@ -6152,6 +6255,18 @@
                     "size": {
                       "type": "integer",
                       "title": "Size"
+                    },
+                    "height": {
+                      "type": "integer",
+                      "title": "Height"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "title": "Width"
+                    },
+                    "mimeType": {
+                      "type": "string",
+                      "title": "Mimetype"
                     }
                   },
                   "type": "object",
@@ -6159,6 +6274,20 @@
                 },
                 "type": "array",
                 "title": "Attachments"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "finished_successfully"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Status"
               },
               "is_complete": {
                 "type": "boolean",
@@ -6271,6 +6400,18 @@
                 },
                 "type": "object",
                 "title": "OpenaiWebChatMessageMetadataAggregateResult"
+              },
+              "timestamp_": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Timestamp "
               }
             },
             "type": "object",
@@ -6457,20 +6598,6 @@
         "type": "array",
         "title": "Args"
       },
-      "status": {
-        "anyOf": [
-          {
-            "type": "string",
-            "enum": [
-              "finished"
-            ]
-          },
-          {
-            "type": "string"
-          }
-        ],
-        "title": "Status"
-      },
       "_cite_metadata": {
         "properties": {
           "citation_format": {
@@ -6553,6 +6680,18 @@
             "size": {
               "type": "integer",
               "title": "Size"
+            },
+            "height": {
+              "type": "integer",
+              "title": "Height"
+            },
+            "width": {
+              "type": "integer",
+              "title": "Width"
+            },
+            "mimeType": {
+              "type": "string",
+              "title": "Mimetype"
             }
           },
           "type": "object",
@@ -6560,6 +6699,20 @@
         },
         "type": "array",
         "title": "Attachments"
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "finished_successfully"
+            ]
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Status"
       },
       "is_complete": {
         "type": "boolean",
@@ -6672,6 +6825,18 @@
         },
         "type": "object",
         "title": "OpenaiWebChatMessageMetadataAggregateResult"
+      },
+      "timestamp_": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Timestamp "
       }
     },
     "type": "object",
@@ -6852,6 +7017,18 @@
       "size": {
         "type": "integer",
         "title": "Size"
+      },
+      "height": {
+        "type": "integer",
+        "title": "Height"
+      },
+      "width": {
+        "type": "integer",
+        "title": "Width"
+      },
+      "mimeType": {
+        "type": "string",
+        "title": "Mimetype"
       }
     },
     "type": "object",
@@ -7715,20 +7892,6 @@
                       "type": "array",
                       "title": "Args"
                     },
-                    "status": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "finished"
-                          ]
-                        },
-                        {
-                          "type": "string"
-                        }
-                      ],
-                      "title": "Status"
-                    },
                     "_cite_metadata": {
                       "properties": {
                         "citation_format": {
@@ -7811,6 +7974,18 @@
                           "size": {
                             "type": "integer",
                             "title": "Size"
+                          },
+                          "height": {
+                            "type": "integer",
+                            "title": "Height"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "title": "Width"
+                          },
+                          "mimeType": {
+                            "type": "string",
+                            "title": "Mimetype"
                           }
                         },
                         "type": "object",
@@ -7818,6 +7993,20 @@
                       },
                       "type": "array",
                       "title": "Attachments"
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "finished_successfully"
+                          ]
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "title": "Status"
                     },
                     "is_complete": {
                       "type": "boolean",
@@ -7930,6 +8119,18 @@
                       },
                       "type": "object",
                       "title": "OpenaiWebChatMessageMetadataAggregateResult"
+                    },
+                    "timestamp_": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "title": "Timestamp "
                     }
                   },
                   "type": "object",
@@ -8249,13 +8450,9 @@
           "gpt_4_dalle": 0
         }
       },
-      "allow_uploading_attachments": {
+      "disable_uploading": {
         "type": "boolean",
-        "title": "Allow Uploading Attachments"
-      },
-      "allow_uploading_multimodal_images": {
-        "type": "boolean",
-        "title": "Allow Uploading Multimodal Images"
+        "title": "Disable Uploading"
       }
     },
     "type": "object",
@@ -8267,8 +8464,7 @@
       "daily_available_time_slots",
       "available_models",
       "per_model_ask_count",
-      "allow_uploading_attachments",
-      "allow_uploading_multimodal_images"
+      "disable_uploading"
     ],
     "title": "OpenaiWebSourceSettingSchema"
   },
@@ -8335,6 +8531,45 @@
     "type": "object",
     "title": "RequestLogAggregationID"
   },
+  "StartUploadRequestSchema": {
+    "properties": {
+      "file_name": {
+        "type": "string",
+        "title": "File Name"
+      },
+      "file_size": {
+        "type": "integer",
+        "title": "File Size"
+      },
+      "width": {
+        "type": "integer",
+        "title": "Width"
+      },
+      "height": {
+        "type": "integer",
+        "title": "Height"
+      },
+      "mime_type": {
+        "type": "string",
+        "title": "Mime Type"
+      },
+      "use_case": {
+        "type": "string",
+        "enum": [
+          "my_files",
+          "multimodal"
+        ],
+        "title": "Use Case"
+      }
+    },
+    "type": "object",
+    "required": [
+      "file_name",
+      "file_size",
+      "use_case"
+    ],
+    "title": "StartUploadRequestSchema"
+  },
   "StartUploadResponseSchema": {
     "properties": {
       "strategy": {
@@ -8394,7 +8629,7 @@
                   {
                     "type": "string",
                     "enum": [
-                      "ace_upload",
+                      "my_files",
                       "multimodal"
                     ]
                   },
@@ -8416,6 +8651,20 @@
             },
             "type": "object",
             "title": "UploadedFileOpenaiWebInfo"
+          },
+          "extra_info": {
+            "properties": {
+              "width": {
+                "type": "integer",
+                "title": "Width"
+              },
+              "height": {
+                "type": "integer",
+                "title": "Height"
+              }
+            },
+            "type": "object",
+            "title": "UploadedFileExtraInfo"
           }
         },
         "type": "object",
@@ -8510,6 +8759,20 @@
     ],
     "title": "TimeWindowRateLimit"
   },
+  "UploadedFileExtraInfo": {
+    "properties": {
+      "width": {
+        "type": "integer",
+        "title": "Width"
+      },
+      "height": {
+        "type": "integer",
+        "title": "Height"
+      }
+    },
+    "type": "object",
+    "title": "UploadedFileExtraInfo"
+  },
   "UploadedFileInfoSchema": {
     "properties": {
       "id": {
@@ -8553,7 +8816,7 @@
               {
                 "type": "string",
                 "enum": [
-                  "ace_upload",
+                  "my_files",
                   "multimodal"
                 ]
               },
@@ -8575,6 +8838,20 @@
         },
         "type": "object",
         "title": "UploadedFileOpenaiWebInfo"
+      },
+      "extra_info": {
+        "properties": {
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          }
+        },
+        "type": "object",
+        "title": "UploadedFileExtraInfo"
       }
     },
     "type": "object",
@@ -8598,7 +8875,7 @@
           {
             "type": "string",
             "enum": [
-              "ace_upload",
+              "my_files",
               "multimodal"
             ]
           },
@@ -8846,13 +9123,9 @@
                   "gpt_4_dalle": 0
                 }
               },
-              "allow_uploading_attachments": {
+              "disable_uploading": {
                 "type": "boolean",
-                "title": "Allow Uploading Attachments"
-              },
-              "allow_uploading_multimodal_images": {
-                "type": "boolean",
-                "title": "Allow Uploading Multimodal Images"
+                "title": "Disable Uploading"
               }
             },
             "type": "object",
@@ -8864,8 +9137,7 @@
               "daily_available_time_slots",
               "available_models",
               "per_model_ask_count",
-              "allow_uploading_attachments",
-              "allow_uploading_multimodal_images"
+              "disable_uploading"
             ],
             "title": "OpenaiWebSourceSettingSchema"
           },
@@ -9193,13 +9465,9 @@
                   "gpt_4_dalle": 0
                 }
               },
-              "allow_uploading_attachments": {
+              "disable_uploading": {
                 "type": "boolean",
-                "title": "Allow Uploading Attachments"
-              },
-              "allow_uploading_multimodal_images": {
-                "type": "boolean",
-                "title": "Allow Uploading Multimodal Images"
+                "title": "Disable Uploading"
               }
             },
             "type": "object",
@@ -9211,8 +9479,7 @@
               "daily_available_time_slots",
               "available_models",
               "per_model_ask_count",
-              "allow_uploading_attachments",
-              "allow_uploading_multimodal_images"
+              "disable_uploading"
             ],
             "title": "OpenaiWebSourceSettingSchema"
           },
@@ -9499,13 +9766,9 @@
               "gpt_4_dalle": 0
             }
           },
-          "allow_uploading_attachments": {
+          "disable_uploading": {
             "type": "boolean",
-            "title": "Allow Uploading Attachments"
-          },
-          "allow_uploading_multimodal_images": {
-            "type": "boolean",
-            "title": "Allow Uploading Multimodal Images"
+            "title": "Disable Uploading"
           }
         },
         "type": "object",
@@ -9517,8 +9780,7 @@
           "daily_available_time_slots",
           "available_models",
           "per_model_ask_count",
-          "allow_uploading_attachments",
-          "allow_uploading_multimodal_images"
+          "disable_uploading"
         ],
         "title": "OpenaiWebSourceSettingSchema"
       },
