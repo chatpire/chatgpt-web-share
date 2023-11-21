@@ -3,7 +3,6 @@ name: Build and publish Docker image
 on:
   push:
     tags: ["v*"]
-    branches: ["test-workflow"]
   workflow_dispatch:
     inputs:
       version:
@@ -12,6 +11,7 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.repository }}
+  VERSION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version || github.ref_name }}
 
 jobs:
   build-and-push-x64-image:
@@ -88,11 +88,8 @@ jobs:
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: release.zip
-          tag_name: ${{ github.ref }}
-          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
+          tag_name: ${{ env.VERSION }}
+          prerelease: ${{ contains(env.VERSION, 'alpha') || contains(env.VERSION, 'beta') }}
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
