@@ -81,15 +81,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Create a ZIP file
-        run: |
-          zip -r release.zip . -x "*.git*" -x "*.github*"
-
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: release.zip
           tag_name: ${{ env.VERSION }}
           prerelease: ${{ contains(env.VERSION, 'alpha') || contains(env.VERSION, 'beta') }}
           generate_release_notes: true
