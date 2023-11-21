@@ -30,6 +30,7 @@
         </n-button>
       </n-upload-trigger>
     </n-upload>
+    
     <n-upload
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
       abstract
@@ -67,8 +68,8 @@
       :accept="acceptedMimeTypes.join(',')"
       :on-before-upload="checkFileBeforeUpload"
       :max="10"
-    >
-      <n-upload-dragger class="lt-sm:hidden">
+    > 
+      <n-upload-dragger class="lt-sm:hidden h-44">
         <div class="mb-2">
           <n-icon size="48" :depth="3">
             <UploadFileRound />
@@ -85,6 +86,7 @@
 
     <n-upload
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
+      abstract
       multiple
       :disabled="props.disabled"
       :custom-request="customRequest"
@@ -92,11 +94,28 @@
       :show-remove-button="true"
       :show-retry-button="true"
       :on-remove="removeFile"
-      list-type="image-card"
+      list-type="image"
       :accept="acceptedMimeTypes.join(',')"
       :on-before-upload="checkFileBeforeUpload"
       :max="10"
-    />
+    >
+      <n-upload-trigger abstract>
+        <n-button class="sm:hidden mb-3">
+          {{ $t('commons.selectFile') }}
+        </n-button>
+      </n-upload-trigger>
+
+      <n-card :content-style="{ padding: '0.75rem' }">
+        <n-empty
+          v-if="fileStore.naiveUiUploadFileInfos.length == 0"
+          :description="$t('commons.emptyFileList')"
+          class="h-full flex items-center justify-center"
+        />
+        <n-scrollbar v-else class="sm:max-h-37 max-h-44">
+          <n-upload-file-list />
+        </n-scrollbar>
+      </n-card>
+    </n-upload>
   </div>
 </template>
 
