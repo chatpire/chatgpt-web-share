@@ -17,18 +17,17 @@ from websockets.exceptions import ConnectionClosed
 from api.conf import Config
 from api.database.sqlalchemy import get_async_session_context
 from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
-from api.enums.options import OpenaiWebFileUploadStrategyOption
 from api.exceptions import InternalException, InvalidParamsException, OpenaiException
-from api.models.db import OpenaiWebConversation, User, BaseConversation
-from api.models.doc import OpenaiWebChatMessage, OpenaiApiChatMessage, OpenaiWebConversationHistoryDocument, \
-    OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, \
+from api.models.db import User, BaseConversation
+from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, \
     OpenaiApiAskLogMeta
 from api.routers.conv import _get_conversation_by_id
-from api.schemas import OpenaiWebConversationSchema, AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
+from api.schemas import AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
-from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager, OpenaiApiException
+from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager
 from api.users import websocket_auth, current_active_user, current_super_user
+from utils.common import desensitize
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -221,13 +220,6 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
             raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "uploading disabled")
 
 
-def check_message(msg: str):
-    # 检查消息中的敏感信息
-    url = Config().openai_web.chatgpt_base_url
-    if url and url in msg:
-        return msg.replace(url, "<chatgpt_base_url>")
-
-
 @router.websocket("/chat")
 async def chat(websocket: WebSocket):
     """
@@ -235,6 +227,8 @@ async def chat(websocket: WebSocket):
     """
 
     async def reply(response: AskResponse):
+        if response.error_detail:
+            response.error_detail = desensitize(response.error_detail)
         await websocket.send_json(jsonable_encoder(response))
 
     await websocket.accept()
@@ -393,13 +387,13 @@ async def chat(websocket: WebSocket):
         await reply(AskResponse(
             type=AskResponseType.error,
             tip=tip,
-            error_detail=check_message(str(e))
+            error_detail=str(e)
         ))
         websocket_code = 1001
         websocket_reason = "errors.openaiResponseUnknownError"
     except HTTPError as e:
         logger.error(str(e))
-        content = check_message(str(e))
+        content = str(e)
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.httpError",
@@ -412,7 +406,7 @@ async def chat(websocket: WebSocket):
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.unknownError",
-            error_detail=check_message(str(e))
+            error_detail=str(e)
         ))
         websocket_code = 1011
         websocket_reason = "errors.unknownError"
@@ -431,7 +425,7 @@ async def chat(websocket: WebSocket):
         ask_time = ask_stop_time - ask_start_time
         ask_time = round(ask_time, 3)
     else:
-        ask_time = None
+        ask_time = 0
     total_time = queueing_time + ask_time
 
     if is_completed:

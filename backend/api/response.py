@@ -13,6 +13,7 @@ from starlette.background import BackgroundTask
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from api.exceptions import SelfDefinedException
+from utils.common import desensitize
 
 T = TypeVar('T')
 
@@ -97,13 +98,13 @@ def handle_exception_response(e: Exception) -> CustomJSONResponse:
     if isinstance(e, ValidationError):
         return response(-1, f"errors.validationError", e.errors())
     elif isinstance(e, SelfDefinedException):
-        return response(e.code, e.reason, e.message)
+        return response(e.code, e.reason, desensitize(e.message))
     elif isinstance(e, StarletteHTTPException):
         if e.detail == ErrorCode.REGISTER_USER_ALREADY_EXISTS:
-            message = "errors.userAlreadyExists"
+            tip = "errors.userAlreadyExists"
         elif e.detail == ErrorCode.LOGIN_BAD_CREDENTIALS:
-            message = "errors.badCredentials"
+            tip = "errors.badCredentials"
         else:
-            message = get_http_message(e.status_code)
-        return response(e.status_code or -1, message or f"{e.status_code} {e.detail}")
-    return response(-1, str(e))
+            tip = get_http_message(e.status_code)
+        return response(e.status_code or -1, tip, desensitize(f"{e.status_code} {e.detail}"))
+    return response(-1, desensitize(str(e)))
