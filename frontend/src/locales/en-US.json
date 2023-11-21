@@ -182,7 +182,8 @@
     "myFileBrowser": "My File Browser",
     "content": "Content",
     "readFileResult": "Result",
-    "updateTime": "Update Time"
+    "updateTime": "Update Time",
+    "executeCode": "Execute Code"
   },
   "errors": {
     "403": "403 error: access denied",

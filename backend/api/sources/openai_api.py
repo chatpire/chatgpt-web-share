@@ -60,9 +60,9 @@ class OpenaiApiChatManager:
     def reset_session(self):
         self.session = make_session()
 
-    async def ask(self, text_content: str, conversation_id: uuid.UUID = None,
-                  parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
-                  context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
+    async def complete(self, text_content: str, conversation_id: uuid.UUID = None,
+                       parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
+                       context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
 
         assert config.openai_api.enabled, "openai_api is not enabled"
 
