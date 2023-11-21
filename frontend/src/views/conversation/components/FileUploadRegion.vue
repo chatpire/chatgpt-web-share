@@ -1,6 +1,7 @@
 <template>
   <div v-if="props.mode === 'legacy_code_interpreter'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
     <n-upload
+      ref="uploadLegacyRef"
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
       class="lt-sm:mb-4"
       multiple
@@ -30,7 +31,7 @@
         </n-button>
       </n-upload-trigger>
     </n-upload>
-    
+
     <n-upload
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
       abstract
@@ -68,7 +69,7 @@
       :accept="acceptedMimeTypes.join(',')"
       :on-before-upload="checkFileBeforeUpload"
       :max="10"
-    > 
+    >
       <n-upload-dragger class="lt-sm:hidden h-44">
         <div class="mb-2">
           <n-icon size="48" :depth="3">
@@ -85,6 +86,7 @@
     </n-upload>
 
     <n-upload
+      ref="uploadAllRef"
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
       abstract
       multiple
@@ -122,8 +124,8 @@
 <script setup lang="ts">
 import { UploadFileRound } from '@vicons/material';
 import { UploadCustomRequestOptions, UploadFileInfo } from 'naive-ui';
-import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
+import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import {
@@ -134,7 +136,7 @@ import {
   uploadFileToLocalApi,
 } from '@/api/files';
 import { useFileStore } from '@/store';
-import { OpenaiChatFileUploadUrlRequest, StartUploadRequestSchema, UploadedFileInfoSchema } from '@/types/schema';
+import { StartUploadRequestSchema, UploadedFileInfoSchema } from '@/types/schema';
 import { Message } from '@/utils/tips';
 
 import { acceptedMimeTypes, getImageDimensions, isImage, isSupportedImage } from '../utils/files';
@@ -147,9 +149,8 @@ const props = defineProps<{
   disabled: boolean;
 }>();
 
-const isUploading = computed(() => {
-  return fileStore.naiveUiUploadFileInfos.some((file) => file.status === 'uploading');
-});
+const uploadLegacyRef = ref();
+const uploadAllRef = ref();
 
 const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
   const rawFile = options.file.file as File;
@@ -165,6 +166,7 @@ const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: Upload
 };
 
 const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
+  console.log('customRequest', file);
   try {
     if (!file.file) {
       throw new Error('Failed to get the file.');
@@ -272,5 +274,31 @@ const removeFile = async (options: { file: UploadFileInfo; fileList: Array<Uploa
   return true;
 };
 
-defineExpose({ isUploading });
+function addFile(file: File) {
+  const fileId = uuidv4();
+  const newFileInfo = {
+    id: fileId,
+    name: file.name,
+    status: 'pending',
+    file,
+    type: file.type,
+  } as UploadFileInfo;
+  fileStore.naiveUiUploadFileInfos = [...fileStore.naiveUiUploadFileInfos, newFileInfo];
+  console.log('addFile', fileStore.naiveUiUploadFileInfos);
+  console.log(uploadAllRef.value);
+  nextTick(() => {
+    if (props.mode === 'legacy_code_interpreter') {
+      uploadLegacyRef.value?.submit();
+    } else {
+      uploadAllRef.value?.submit();
+    }
+    console.log('ok');
+  });
+}
+
+const isUploading = computed(() => {
+  return fileStore.naiveUiUploadFileInfos.some((file) => file.status === 'uploading');
+});
+
+defineExpose({ isUploading, addFile });
 </script>

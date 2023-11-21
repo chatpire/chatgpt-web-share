@@ -125,6 +125,7 @@
         :autosize="{ minRows: 1 }"
         :style="inputStyle"
         @keydown="shortcutSendMsg"
+        @paste="onPaste"
       >
         <template #suffix>
           <n-button
@@ -156,7 +157,6 @@
 </template>
 
 <script setup lang="ts">
-import { MdImages } from '@vicons/ionicons4';
 import { LogoMarkdown, Print, Send, Stop } from '@vicons/ionicons5';
 import {
   AttachFileFilled,
@@ -195,6 +195,24 @@ const props = defineProps<{
 const sendDisabled = computed(() => {
   return props.sendDisabled || fileUploadRegionRef?.value?.isUploading;
 });
+
+const onPaste = (e: ClipboardEvent) => {
+  if (props.uploadMode === null) return;
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].kind !== 'file')
+      continue;
+    const file = items[i].getAsFile();
+    console.log('file', file);
+    if (!file) {
+      console.error('Failed to get the file from clipboard.', items[i]);
+      continue;
+    }
+    fileUploadRegionRef?.value?.addFile(file);
+    e.preventDefault();
+  }
+};
 
 const autoScrolling = computed({
   get() {
