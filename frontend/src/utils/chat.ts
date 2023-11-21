@@ -278,9 +278,9 @@ export function replaceMathDelimiters(input: string) {
         const endMarker = isInline ? '\\)' : '\\]';
         const endPos = input.indexOf(endMarker, pos + 2);
         if (endPos >= 0) {
-          output += isInline ? '$' : '$$';
+          output += isInline ? '$' : '$$\n';
           output += input.substring(pos + 2, endPos).trim();
-          output += isInline ? '$' : '$$';
+          output += isInline ? '$' : '\n$$';
           pos = endPos + endMarker.length;
           continue;
         }
