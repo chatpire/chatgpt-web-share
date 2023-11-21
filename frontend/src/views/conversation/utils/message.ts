@@ -123,17 +123,22 @@ export function buildTemporaryMessage(
   openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
 ) {
   const random_strid = Math.random().toString(36).substring(2, 16);
+  const content = source === 'openai_api' ? {
+    content_type: 'text',
+    text: textContent,
+  } : {
+    content_type: 'text',
+    parts: [textContent],
+  };
   const result = {
     id: `temp_${random_strid}`,
     source,
-    content: {
-      content_type: 'text',
-      parts: [textContent],
-    },
+    content,
     role: role,
     parent, // 其实没有用到parent
     children: [],
     model,
+    create_time: new Date().toISOString(),
   } as BaseChatMessage;
   if (openaiWebAttachments) {
     const metadata = {
