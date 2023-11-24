@@ -197,7 +197,7 @@ const sendDisabled = computed(() => {
 });
 
 const onPaste = (e: ClipboardEvent) => {
-  if (props.uploadMode === null) return;
+  if (props.uploadMode === null || props.uploadDisabled) return;
   const items = e.clipboardData?.items;
   if (!items) return;
   for (let i = 0; i < items.length; i++) {
