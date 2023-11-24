@@ -4,7 +4,10 @@
       <template #title>
         <n-space :align="'center'">
           <div class="lt-sm:hidden">
-            <a href="/" style="text-decoration: none; color: inherit">{{ $t('commons.siteTitle') }}</a>
+            <a href="/" style="text-decoration: none; color: inherit">
+              <span class="lt-md:hidden">{{ $t('commons.siteTitleFull') }}</span>
+              <span class="md:hidden">{{ $t('commons.siteTitle') }}</span>
+            </a>
           </div>
           <div class="hidden sm:block">
             <a class="h-full inline-block flex" href="https://github.com/moeakwak/chatgpt-web-share" target="_blank">
@@ -17,7 +20,8 @@
         </n-space>
       </template>
       <template #avatar>
-        <ChatGPTAvatar color="green" icon-style="default" :size="32" />
+        <!-- <ChatGPTAvatar color="green" icon-style="default" :size="32" /> -->
+        <CWSIcon />
       </template>
       <template #extra>
         <n-space>
@@ -66,6 +70,7 @@ import { useRoute } from 'vue-router';
 
 import { updateUserMeApi } from '@/api/user';
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
+import CWSIcon from '@/components/icons/CWSIcon.vue';
 import router from '@/router';
 import { useAppStore, useUserStore } from '@/store';
 import { Preference } from '@/store/types';

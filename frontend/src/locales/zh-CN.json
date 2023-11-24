@@ -183,7 +183,8 @@
     "readFileResult": "阅读文件结果",
     "myFileBrowser": "使用文件浏览器",
     "content": "内容",
-    "executeCode": "执行代码"
+    "executeCode": "执行代码",
+    "siteTitleFull": "ChatGPT Web Share"
   },
   "errors": {
     "403": "403 错误：无访问权限",

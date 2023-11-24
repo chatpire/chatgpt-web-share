@@ -183,7 +183,8 @@
     "content": "Content",
     "readFileResult": "Result",
     "updateTime": "Update Time",
-    "executeCode": "Execute Code"
+    "executeCode": "Execute Code",
+    "siteTitleFull": "ChatGPT Web Share"
   },
   "errors": {
     "403": "403 error: access denied",
