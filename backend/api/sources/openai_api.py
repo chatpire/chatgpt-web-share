@@ -153,6 +153,9 @@ class OpenaiApiChatManager:
                     line = json.loads(line)
                     resp = OpenaiChatResponse(**line)
 
+                    if not resp.choices or len(resp.choices) == 0:
+                        continue
+
                     if resp.choices[0].message is not None:
                         text_content = resp.choices[0].message.get("content")
                     if resp.choices[0].delta is not None:
