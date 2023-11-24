@@ -1,0 +1,69 @@
+openai_web:
+  enabled: true
+  is_plus_account: true
+  chatgpt_base_url:
+  proxy:
+  common_timeout: 20
+  ask_timeout: 600
+  sync_conversations_on_startup: false
+  sync_conversations_schedule: false
+  sync_conversations_schedule_interval_hours: 12
+  enabled_models:
+  - gpt_3_5
+  - gpt_4
+  - gpt_4_plugins
+  model_code_mapping:
+    gpt_3_5: text-davinci-002-render-sha
+    gpt_3_5_mobile: text-davinci-002-render-sha-mobile
+    gpt_4: gpt-4
+    gpt_4_mobile: gpt-4-mobile
+    gpt_4_browsing: gpt-4-browsing
+    gpt_4_plugins: gpt-4-plugins
+    gpt_4_code_interpreter: gpt-4-code-interpreter
+    gpt_4_dalle: gpt-4-dalle
+  file_upload_strategy: browser_upload_only
+  disable_uploading: false
+openai_api:
+  enabled: true
+  openai_base_url: https://api.openai.com/v1/
+  proxy:
+  connect_timeout: 10
+  read_timeout: 20
+  enabled_models:
+  - gpt_3_5
+  - gpt_4
+  model_code_mapping:
+    gpt_3_5: gpt-3.5-turbo
+    gpt_4: gpt-4
+common:
+  print_sql: false
+  create_initial_admin_user: true
+  initial_admin_user_username: admin
+  initial_admin_user_password: password
+http:
+  host: 127.0.0.1
+  port: 8000
+  cors_allow_origins:
+  - http://localhost:8000
+  - http://localhost:5173
+  - http://127.0.0.1:8000
+  - http://127.0.0.1:5173
+data:
+  data_dir: ./data
+  database_url: sqlite+aiosqlite:///data/database.db
+  mongodb_url: mongodb://cws:password@mongo:27017
+  mongodb_db_name: cws
+  run_migration: false
+  max_file_upload_size: 104857600
+auth:
+  jwt_secret: MODIFY_THIS_TO_RANDOM_SECURE_STRING
+  jwt_lifetime_seconds: 259200
+  cookie_max_age: 259200
+  user_secret: MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING
+stats:
+  ask_stats_ttl: 7776000
+  request_stats_ttl: 2592000
+  request_stats_filter_keywords:
+  - /status
+log:
+  console_log_level: INFO

@@ -44,7 +44,7 @@ class HttpSetting(BaseModel):
 class DataSetting(BaseModel):
     data_dir: str = './data'
     database_url: str = 'sqlite+aiosqlite:///data/database.db'
-    mongodb_url: str = 'mongodb://cws:password@mongo:27017'  # 'mongodb://cws:password@localhost:27017'
+    mongodb_url: str = 'mongodb://cws:password@mongo:27017'
     mongodb_db_name: str = 'cws'
     run_migration: bool = False
     max_file_upload_size: int = Field(100 * 1024 * 1024, ge=0)
@@ -68,13 +68,12 @@ class OpenaiWebChatGPTSetting(BaseModel):
     is_plus_account: bool = True
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
-    common_timeout: int = Field(20, ge=1)  # connect, read, write
+    common_timeout: int = Field(20, ge=1, description="Increase this value if timeout error occurs.")  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
-    sync_conversations_on_startup: bool = True
+    sync_conversations_on_startup: bool = False
     sync_conversations_schedule: bool = False
     sync_conversations_schedule_interval_hours: int = Field(12, ge=1)
-    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins",
-                                                 "gpt_4_browsing"]
+    enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_plugins"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
     disable_uploading: bool = False

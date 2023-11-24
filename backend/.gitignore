@@ -1,8 +1,5 @@
 __pycache__
 .idea
-config
-config.yaml
-config.backup.yaml
 *.db
 .vscode
 files

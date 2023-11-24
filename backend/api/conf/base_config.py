@@ -23,6 +23,8 @@ class BaseConfig(Generic[T]):
         self._config_path = os.path.join(config_dir, config_filename)
         if load_config:
             self.load()
+        else:
+            self._model = self._model_type()
 
     def __getattr__(self, key):
         return getattr(self._model, key)
@@ -65,11 +67,3 @@ class BaseConfig(Generic[T]):
         with open(self._config_path, mode='w', encoding='utf-8') as sf:
             yaml = YAML()
             yaml.dump(config_dict, sf)
-
-    def create(self, target_dir_path):
-        config_path = os.path.join(target_dir_path, f'{self.__class__.__name__.lower()}.yaml')
-        if os.path.exists(config_path):
-            raise ConfigException(f"Config file already exists: {config_path}")
-        with open(config_path, mode='w', encoding='utf-8') as f:
-            yaml = YAML()
-            yaml.dump(jsonable_encoder(self._model_type().dict()), f)
