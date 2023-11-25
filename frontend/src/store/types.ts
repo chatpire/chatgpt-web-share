@@ -30,7 +30,7 @@ export type Preference = {
 
 interface AppState {
   theme: any;
-  language: Ref<'zh-CN' | 'en-US' | string>;
+  language: Ref<'zh-CN' | 'en-US' | 'ms-MY' | string>;
   preference: Ref<Preference>;
   lastSelectedSource: Ref<ChatSourceTypes | null>;
   lastSelectedModel: Ref<string | null>;
