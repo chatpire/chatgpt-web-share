@@ -6,57 +6,16 @@
 [![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/moeakwak/chatgpt-web-share/actions)
 [![License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)](https://github.com/moeakwak/chatgpt-web-share/blob/main/LICENSE)
 
-A web application that allows multiple users to share a ChatGPT account at the same time, developed using FastAPI and Vue3.
-
-Used for sharing one ChatGPT account among friends.
+A ChatGPT sharing solution suitable for individuals or teams. Share a single ChatGPT Plus account with multiple users, enjoying rich, controllable management and restriction features.
 
 </div>
 
-![screenshot](docs/screenshot.en.jpeg)
+## Document
 
-This readme was mainly translated by ChatGPT.
+https://cws-docs.pages.dev/en/
 
-## About the project
+English document is still under construction.
 
-ChatGPT Web Share (CWS for short) is designed to share a ChatGPT Plus account with multiple users. CWS:
-- is a front-end and back-end separated application
-- is used to share a ChatGPT account, not the official API
-- supports user and conversation managements
-- prioritizes support for ChatGPT Plus accounts
+## Statement
 
-## Features
-
-- A beautiful and concise web interface using [naive-ui](https://www.naiveui.com/)
-  - Supports English language
-  - Supports switching to dark mode
-  - Supports copying reply content or code content with one click
-  - Supports displaying images, tables, mathematical formulas, and code highlighting in replies
-  - Supports exporting conversations as beautiful Markdown or PDF files
-  - Replying content in typing animation
-  - Supports stopping generation
-- Multiple users can share the same ChatGPT account
-  - Different users' ChatGPT conversations are separated and do not affect each other
-  - When multiple users request at the same time, they will be queued for processing
-  - Administrators can set users' maximum number of conversations, conversation time limits, etc.
-  - Provides real-time updated service usage status to avoid usage peaks
-- Comprehensive management functions
-  - Modify user conversation restrictions
-  - Manage conversations/view member conversation records/assign conversations to specific users
-  - View logs in real-time
-  - Record request and conversation statistics
-
-## Deploy Guide
-
-Please see the WIKI: [English Guide](https://github.com/moeakwak/chatgpt-web-share/wiki/English-Guide)
-
-## Usage Statement
-
-### Information Collection and Privacy Statement
-
-<del>Starting from version v0.2.16, this project uses Sentry to collect error information. By using this project, you agree to the Sentry privacy policy. Any anonymous information collected through Sentry will only be used for development and debugging purposes. </del>We will never collect or store any of your private data, like username, password, access token, etc.
-
-From v0.3.5, Sentry is not used anymore.
-
-### Risk Statement
-
-This project is for learning and research purposes only, and commercial use is not encouraged. We are not responsible for any losses caused by using this project.
+This project is intended solely for learning and research purposes and is not recommended for commercial use. You should be aware that using this project may violate relevant user agreements and understand the associated risks. We are not responsible for any losses incurred as a result of using this project.
