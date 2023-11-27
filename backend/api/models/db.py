@@ -40,7 +40,8 @@ class User(Base):
     setting: Mapped["UserSetting"] = relationship("UserSetting", back_populates="user", lazy="joined",
                                                   cascade="save-update, merge, delete, delete-orphan")
     conversations: Mapped[List["BaseConversation"]] = relationship("BaseConversation", back_populates="user")
-    uploaded_files: Mapped[List["UploadedFileInfo"]] = relationship("UploadedFileInfo", back_populates="uploader")
+    uploaded_files: Mapped[List["UploadedFileInfo"]] = relationship("UploadedFileInfo", back_populates="uploader",
+                                                                    cascade="delete")  # TODO: 删除用户时，删除用户上传的文件
 
 
 class UserSetting(Base):
