@@ -245,16 +245,16 @@ class OpenaiWebChatManager:
 
         model = model or OpenaiWebChatModels.gpt_3_5
 
-        if conversation_id or parent_message_id:
-            assert parent_message_id and conversation_id, "parent_message_id must be set with conversation_id"
-        else:
-            parent_message_id = str(uuid.uuid4())
-
         if plugin_ids is not None and len(plugin_ids) > 0 and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
 
         if plugin_ids is not None and len(plugin_ids) > 0 and parent_message_id:
             raise InvalidParamsException("plugin_ids can only be set at new conversation")
+
+        if conversation_id or parent_message_id:
+            assert parent_message_id and conversation_id, "parent_message_id must be set with conversation_id"
+        else:
+            parent_message_id = str(uuid.uuid4())
 
         if text_content == ":continue":
             messages = None
