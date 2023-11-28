@@ -8,6 +8,7 @@ from typing import Optional, Any
 import httpx
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
+from fastapi_cache.decorator import cache
 from httpx import HTTPError
 from pydantic import ValidationError
 from sqlalchemy import select, func, and_
@@ -19,12 +20,13 @@ from api.database.sqlalchemy import get_async_session_context
 from api.enums import OpenaiWebChatStatus, ChatSourceTypes, OpenaiWebChatModels, OpenaiApiChatModels
 from api.exceptions import InternalException, InvalidParamsException, OpenaiException
 from api.models.db import User, BaseConversation
-from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, AskLogDocument, OpenaiWebAskLogMeta, \
+from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageTextContent, \
+    AskLogDocument, OpenaiWebAskLogMeta, \
     OpenaiApiAskLogMeta
 from api.routers.conv import _get_conversation_by_id
 from api.schemas import AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
-from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings
+from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatPluginListResponse
 from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager
 from api.users import websocket_auth, current_active_user, current_super_user
 from utils.common import desensitize
@@ -36,82 +38,77 @@ openai_web_manager = OpenaiWebChatManager()
 openai_api_manager = OpenaiApiChatManager()
 config = Config()
 
-PLUGINS_CACHE_FILE_PATH = os.path.join(config.data.data_dir, "plugin_manifests.json")
+INSTALLED_PLUGINS_CACHE_FILE_PATH = os.path.join(config.data.data_dir, "installed_plugin_manifests.json")
+INSTALLED_PLUGINS_CACHE_EXPIRE = 3600 * 24
 
-_plugins_manifests: list[OpenaiChatPlugin] | None = None
-_plugins_manifests_map: dict[str, OpenaiChatPlugin] | None = None
-_plugins_manifests_last_update_time = None
+_installed_plugins: OpenaiChatPluginListResponse | None = None
+_installed_plugins_map: dict[str, OpenaiChatPlugin] | None = None
+_installed_plugins_last_update_time = None
 
 
-def load_plugins_from_cache():
-    global _plugins_manifests, _plugins_manifests_map, _plugins_manifests_last_update_time
-    if os.path.exists(PLUGINS_CACHE_FILE_PATH):
-        with open(PLUGINS_CACHE_FILE_PATH, "r") as f:
+def _load_installed_plugins_from_cache():
+    global _installed_plugins, _installed_plugins_map, _installed_plugins_last_update_time
+    if os.path.exists(INSTALLED_PLUGINS_CACHE_FILE_PATH):
+        with open(INSTALLED_PLUGINS_CACHE_FILE_PATH, "r") as f:
             data = json.load(f)
-            _plugins_manifests = [OpenaiChatPlugin(**plugin) for plugin in data["plugins_manifests"]]
-            _plugins_manifests_map = {plugin.id: plugin for plugin in _plugins_manifests}
-            _plugins_manifests_last_update_time = data["plugins_manifests_last_update_time"]
+            _installed_plugins = OpenaiChatPluginListResponse(**data["installed_plugins"])
+            _installed_plugins_map = {plugin.id: plugin for plugin in _installed_plugins.items}
+            _installed_plugins_last_update_time = data["installed_plugins_last_update_time"]
 
 
-def save_plugins_to_cache(plugins_manifests, plugins_manifests_last_update_time):
-    with open(PLUGINS_CACHE_FILE_PATH, "w") as f:
+def _save_installed_plugins_to_cache(installed_plugins, installed_plugins_last_update_time):
+    with open(INSTALLED_PLUGINS_CACHE_FILE_PATH, "w") as f:
         json.dump(jsonable_encoder({
-            "plugins_manifests": plugins_manifests,
-            "plugins_manifests_last_update_time": plugins_manifests_last_update_time
+            "installed_plugins": installed_plugins,
+            "installed_plugins_last_update_time": installed_plugins_last_update_time
         }), f)
 
 
-load_plugins_from_cache()
+_load_installed_plugins_from_cache()
 
 
-async def _refresh_plugins():
-    # TODO refresh plugins on schedule
-    global _plugins_manifests, _plugins_manifests_map, _plugins_manifests_last_update_time
-    if _plugins_manifests is None or time.time() - _plugins_manifests_last_update_time > 3600 * 24:
-        _plugins_manifests = await openai_web_manager.get_plugin_manifests()
-        _plugins_manifests_map = {plugin.id: plugin for plugin in _plugins_manifests}
-        _plugins_manifests_last_update_time = time.time()
-        save_plugins_to_cache(_plugins_manifests, _plugins_manifests_last_update_time)
-    return _plugins_manifests
+async def _refresh_installed_plugins():
+    global _installed_plugins, _installed_plugins_map, _installed_plugins_last_update_time
+    if _installed_plugins is None or time.time() - _installed_plugins_last_update_time > INSTALLED_PLUGINS_CACHE_EXPIRE:
+        _installed_plugins = await openai_web_manager.get_installed_plugin_manifests()
+        _installed_plugins_map = {plugin.id: plugin for plugin in _installed_plugins.items}
+        _installed_plugins_last_update_time = time.time()
+        _save_installed_plugins_to_cache(_installed_plugins, _installed_plugins_last_update_time)
+    return _installed_plugins
 
 
-@router.get("/chat/openai-plugins/all", tags=["chat"], response_model=list[OpenaiChatPlugin])
-async def get_all_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
-    plugins = await _refresh_plugins()
+@router.get("/chat/openai-plugins", tags=["chat"], response_model=OpenaiChatPluginListResponse)
+@cache(expire=60 * 60 * 24)
+async def get_openai_web_chat_plugins(offset: int = 0, limit: int = 0, category: str = "", search: str = "",
+                                      _user: User = Depends(current_active_user)):
+    plugins = await openai_web_manager.get_plugin_manifests(offset, limit, category, search)
     return plugins
 
 
-@router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=list[OpenaiChatPlugin])
+@router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=OpenaiChatPluginListResponse)
 async def get_installed_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
-    plugins = await _refresh_plugins()
-    return [plugin for plugin in plugins if plugin.user_settings and plugin.user_settings.is_installed]
+    plugins = await _refresh_installed_plugins()
+    return plugins
 
 
-@router.get("/chat/openai-plugin/{plugin_id}", tags=["chat"], response_model=OpenaiChatPlugin)
-async def get_openai_web_plugin(plugin_id: str, _user: User = Depends(current_active_user)):
-    await _refresh_plugins()
-    global _plugins_manifests_map
-    if plugin_id in _plugins_manifests_map:
-        return _plugins_manifests_map[plugin_id]
+@router.get("/chat/openai-plugins/installed/{plugin_id}", tags=["chat"], response_model=OpenaiChatPlugin)
+async def get_installed_openai_web_plugin(plugin_id: str, _user: User = Depends(current_active_user)):
+    await _refresh_installed_plugins()
+    global _installed_plugins_map
+    if plugin_id in _installed_plugins_map:
+        return _installed_plugins_map[plugin_id]
     else:
         raise InvalidParamsException("errors.pluginNotFound")
 
 
-@router.patch("/chat/openai-plugin/{plugin_id}/user-settings", tags=["chat"], response_model=OpenaiChatPlugin)
+@router.patch("/chat/openai-plugins/{plugin_id}/user-settings", tags=["chat"], response_model=OpenaiChatPlugin)
 async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenaiChatPluginUserSettings,
                                            _user: User = Depends(current_super_user)):
     if settings.is_authenticated is not None:
         raise InvalidParamsException("can not set is_authenticated")
     result = await openai_web_manager.change_plugin_user_settings(plugin_id, settings)
     assert isinstance(result, OpenaiChatPlugin)
-
-    global _plugins_manifests, _plugins_manifests_last_update_time
-    if _plugins_manifests is not None:
-        for plugin in _plugins_manifests:
-            if plugin.id == plugin_id:
-                plugin.user_settings = result.user_settings
-                break
-        _plugins_manifests_last_update_time = time.time()
+    await _refresh_installed_plugins()
     return result
 
 

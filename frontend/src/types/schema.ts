@@ -56,6 +56,7 @@ export type OpenaiChatPluginCategory = components['schemas']['OpenaiChatPluginCa
 export type OpenaiChatPluginManifest = components['schemas']['OpenaiChatPluginManifest'];
 export type OpenaiChatPluginUserSettings = components['schemas']['OpenaiChatPluginUserSettings'];
 export type OpenaiChatPlugin = components['schemas']['OpenaiChatPlugin'];
+export type OpenaiChatPluginListResponse = components['schemas']['OpenaiChatPluginListResponse'];
 
 export type OpenaiChatFileUploadUrlRequest = components['schemas']['OpenaiChatFileUploadUrlRequest'];
 

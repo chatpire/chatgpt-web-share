@@ -1,8 +1,11 @@
 <template>
   <div class="flex flex-row lt-sm:flex-col lt-sm:space-y-2 justify-between items-center mb-3">
-    <n-radio-group v-model:value="filterOption" name="radiogroup">
+    <n-radio-group v-model:value="categoryOption" name="radiogroup">
       <n-space>
-        <n-radio :value="'all'">
+        <n-radio :value="'installed'">
+          {{ $t('commons.enabled') }}
+        </n-radio>
+        <n-radio :value="''">
           {{ $t('commons.all') }}
         </n-radio>
         <n-radio :value="'most_popular'">
@@ -11,24 +14,22 @@
         <n-radio :value="'newly_added'">
           {{ $t('commons.newly_added') }}
         </n-radio>
-        <n-radio :value="'installed'">
-          {{ $t('commons.enabled') }}
-        </n-radio>
       </n-space>
     </n-radio-group>
     <n-text>
       {{ $t('desc.openai_web_installed_plugins') }}
     </n-text>
-    <n-input v-model:value="searchOption" placeholder="Search" clearable class="w-full" style="width: 200px">
+    <!-- TODO: add search -->
+    <!-- <n-input v-model:value="searchOption" placeholder="Search" clearable class="w-full" style="width: 200px">
       <template #suffix>
         <n-icon> <SearchRound /> </n-icon>
       </template>
-    </n-input>
+    </n-input> -->
   </div>
   <n-layout class="p-3">
     <n-empty
       v-if="loading"
-      class="h-full flex justify-center"
+      class="h-full min-h-141 flex justify-center"
       :style="{ backgroundColor: themeVars.cardColor }"
       :description="$t('tips.loading')"
     >
@@ -36,10 +37,10 @@
         <n-spin size="medium" />
       </template>
     </n-empty>
-    <n-empty v-else-if="!fetchPluginsSuccess" :description="$t('commons.noPluginsAvailable')" />
+    <n-empty v-else-if="currentPlugins?.items.length == 0" class="min-h-144" :description="$t('commons.noPluginsAvailable')" />
     <div v-else>
       <div class="flex flex-wrap gap-3">
-        <n-card v-for="(plugin, i) of currentPagePlugins" :key="i" class="w-68 h-45">
+        <n-card v-for="(plugin, i) of currentPlugins?.items" :key="i" class="w-68 h-45">
           <div class="flex flex-col gap-4 rounded border">
             <div class="flex gap-4">
               <n-avatar :key="`${plugin.id}-logo`" :size="64" :src="plugin.manifest?.logo_url" />
@@ -84,7 +85,7 @@
       </div>
     </div>
     <div class="flex flex-col w-full items-center mt-4">
-      <n-pagination v-model:page="page" simple :page-count="pageCount" />
+      <n-pagination v-model:page="pageNumber" simple :page-count="pageCount" />
     </div>
   </n-layout>
 </template>
@@ -96,9 +97,13 @@ import { useThemeVars } from 'naive-ui';
 import { computed, h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getAllOpenaiChatPluginsApi, patchOpenaiChatPluginsUsersSettingsApi } from '@/api/chat';
+import {
+  getInstalledOpenaiChatPluginsApi,
+  getOpenaiChatPluginsApi,
+  patchOpenaiChatPluginsUsersSettingsApi,
+} from '@/api/chat';
 import OpenaiWebPluginDetailCard from '@/components/OpenaiWebPluginDetailCard.vue';
-import { OpenaiChatPlugin } from '@/types/schema';
+import { OpenaiChatPlugin, OpenaiChatPluginListResponse } from '@/types/schema';
 import { Dialog, Message } from '@/utils/tips';
 
 const { width } = useWindowSize();
@@ -106,12 +111,14 @@ const { width } = useWindowSize();
 const { t } = useI18n();
 const themeVars = useThemeVars();
 
-const allPlugins = ref<OpenaiChatPlugin[]>([]);
 const loading = ref(true);
 const requestingPatchId = ref<string | null>(null);
-const fetchPluginsSuccess = ref(false);
 
-const page = ref(1);
+const categoryOption = ref<string>('installed');
+
+const currentPlugins = ref<OpenaiChatPluginListResponse | null>(null);
+
+const pageNumber = ref(1);
 
 // pageSize 计算：根据屏幕宽度，计算出每行显示的个数，显示三行。每个 card 宽度为 280
 const pageSize = computed(() => {
@@ -121,44 +128,16 @@ const pageSize = computed(() => {
   return cardCount * 3;
 });
 
-const filterOption = ref('all');
+const pageCount = computed(() =>
+  currentPlugins.value?.count ? Math.ceil(currentPlugins.value.count / pageSize.value) : 0
+);
 
-const searchOption = ref('');
-
-const currentPlugins = computed(() => {
-  let result = allPlugins.value;
-  if (filterOption.value === 'newly_added') {
-    result = result.filter((plugin) => plugin.categories?.findIndex((category) => category.id === 'newly_added') != -1);
-  } else if (filterOption.value === 'most_popular') {
-    result = result.filter(
-      (plugin) => plugin.categories?.findIndex((category) => category.id === 'most_popular') != -1
-    );
-  } else if (filterOption.value === 'installed') {
-    result = result.filter((plugin) => plugin.user_settings?.is_installed);
-  }
-  if (searchOption.value.trim() !== '') {
-    result = result.filter(
-      (plugin) =>
-        plugin.manifest?.name_for_human?.toLowerCase().includes(searchOption.value.toLowerCase()) ||
-        plugin.manifest?.name_for_model?.toLowerCase().includes(searchOption.value.toLowerCase()) ||
-        plugin.manifest?.description_for_human?.toLowerCase().includes(searchOption.value.toLowerCase()) ||
-        plugin.manifest?.name_for_model?.toLowerCase().includes(searchOption.value.toLowerCase())
-    );
-  }
-  return result;
+watch(categoryOption, () => {
+  pageNumber.value = 1;
+  getPlugins(categoryOption.value);
 });
 
-const pageCount = computed(() => Math.ceil(currentPlugins.value.length / pageSize.value));
-
-const currentPagePlugins = computed(() => {
-  const start = (page.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return currentPlugins.value.slice(start, end);
-});
-
-watch(filterOption, () => {
-  page.value = 1;
-});
+watch(pageNumber, onPageUpdate);
 
 function changePluginSetting(pluginId: string | undefined, isInstalled: boolean) {
   if (!pluginId) {
@@ -170,25 +149,43 @@ function changePluginSetting(pluginId: string | undefined, isInstalled: boolean)
   })
     .then(() => {
       Message.success(isInstalled ? t('tips.enablePluginSuccess') : t('tips.disablePluginSuccess'));
-      fetchData();
+      getPlugins();
     })
     .finally(() => {
       requestingPatchId.value = null;
     });
 }
 
-function fetchData() {
-  getAllOpenaiChatPluginsApi()
-    .then((res) => {
-      allPlugins.value = res.data;
-      fetchPluginsSuccess.value = true;
-    })
-    .catch(() => {
-      fetchPluginsSuccess.value = false;
-    })
-    .finally(() => {
-      loading.value = false;
-    });
+function onPageUpdate(page: number) {
+  console.log('onPageUpdate', page);
+  getPlugins(categoryOption.value, (page - 1) * pageSize.value);
+}
+
+function getPlugins(category = 'installed', offset = 0, limit = pageSize.value, search = '') {
+  loading.value = true;
+  if (category === 'installed') {
+    getInstalledOpenaiChatPluginsApi()
+      .then((res) => {
+        currentPlugins.value = res.data;
+      })
+      .catch(() => {
+        currentPlugins.value = null;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  } else {
+    getOpenaiChatPluginsApi(offset, limit, category, search)
+      .then((res) => {
+        currentPlugins.value = res.data;
+      })
+      .catch(() => {
+        currentPlugins.value = null;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  }
 }
 
 function showPluginDetail(plugin: OpenaiChatPlugin) {
@@ -204,5 +201,5 @@ function showPluginDetail(plugin: OpenaiChatPlugin) {
   });
 }
 
-fetchData();
+getPlugins('installed');
 </script>

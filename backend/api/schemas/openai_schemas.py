@@ -27,15 +27,15 @@ class OpenaiChatPluginCategory(BaseModel):
 
 
 class OpenaiChatPluginManifest(BaseModel):
-    api: Optional[dict[str, Any]]  # type openapi, url
-    auth: Optional[dict[str, Any]]  # type none
-    logo_url: Optional[str]
-    contact_email: Optional[str]
     schema_version: Optional[str]
     name_for_model: Optional[str]
     name_for_human: Optional[str]
     description_for_model: Optional[str]
     description_for_human: Optional[str]
+    api: Optional[dict[str, Any]]  # type openapi, url
+    auth: Optional[dict[str, Any]]  # type none
+    logo_url: Optional[str]
+    contact_email: Optional[str]
     legal_info_url: Optional[str]
 
 
@@ -53,6 +53,11 @@ class OpenaiChatPlugin(BaseModel):
     status: Optional[Literal['approved'] | str]
     user_settings: Optional[OpenaiChatPluginUserSettings | dict[str, Any]]  # is_authenticated, is_installed
     oauth_client_id: Optional[str]
+
+
+class OpenaiChatPluginListResponse(BaseModel):
+    items: list[OpenaiChatPlugin]
+    count: Optional[int]
 
 
 class OpenaiChatInterpreterInfo(BaseModel):

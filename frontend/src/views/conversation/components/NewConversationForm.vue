@@ -69,7 +69,7 @@
 import { NAvatar, NTag, NTooltip, SelectOption, SelectRenderTag } from 'naive-ui';
 import { computed, h, ref, VNode, watch } from 'vue';
 
-import { getAllOpenaiChatPluginsApi, getInstalledOpenaiChatPluginsApi } from '@/api/chat';
+import { getInstalledOpenaiChatPluginsApi, getOpenaiChatPluginsApi } from '@/api/chat';
 import { i18n } from '@/i18n';
 import { useAppStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
@@ -254,7 +254,7 @@ watch(
       loadingPlugins.value = true;
       try {
         const res = await getInstalledOpenaiChatPluginsApi();
-        availablePlugins.value = res.data;
+        availablePlugins.value = res.data.items;
       } catch (err) {
         Message.error(t('tips.NewConversationForm.failedToGetPlugins'));
       }

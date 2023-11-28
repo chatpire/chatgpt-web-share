@@ -9,7 +9,7 @@ enum ApiUrl {
   UserList = '/user',
 
   ChatPlugin = '/chat/openai-plugin',
-  AllChatPlugins = '/chat/openai-plugins/all',
+  ChatPlugins = '/chat/openai-plugins',
   InstalledChatPlugins = '/chat/openai-plugins/installed',
 
   ServerStatus = '/status/common',

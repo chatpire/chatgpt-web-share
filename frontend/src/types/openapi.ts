@@ -93,17 +93,17 @@ export interface paths {
     /** Get Conversation Interpreter Download Url */
     get: operations["get_conversation_interpreter_download_url_conv__conversation_id__interpreter_download_url_get"];
   };
-  "/chat/openai-plugins/all": {
+  "/chat/openai-plugins": {
     /** Get All Openai Web Chat Plugins */
-    get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_all_get"];
+    get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_get"];
   };
   "/chat/openai-plugins/installed": {
     /** Get Installed Openai Web Chat Plugins */
     get: operations["get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get"];
   };
-  "/chat/openai-plugin/{plugin_id}": {
-    /** Get Openai Web Plugin */
-    get: operations["get_openai_web_plugin_chat_openai_plugin__plugin_id__get"];
+  "/chat/openai-plugin/installed/{plugin_id}": {
+    /** Get Installed Openai Web Plugin */
+    get: operations["get_installed_openai_web_plugin_chat_openai_plugin_installed__plugin_id__get"];
   };
   "/chat/openai-plugin/{plugin_id}/user-settings": {
     /** Update Chat Plugin User Settings */
@@ -492,15 +492,13 @@ export interface components {
        *   "is_plus_account": true,
        *   "common_timeout": 20,
        *   "ask_timeout": 600,
-       *   "sync_conversations_on_startup": true,
+       *   "sync_conversations_on_startup": false,
        *   "sync_conversations_schedule": false,
        *   "sync_conversations_schedule_interval_hours": 12,
        *   "enabled_models": [
        *     "gpt_3_5",
        *     "gpt_4",
-       *     "gpt_4_code_interpreter",
-       *     "gpt_4_plugins",
-       *     "gpt_4_browsing"
+       *     "gpt_4_plugins"
        *   ],
        *   "model_code_mapping": {
        *     "gpt_3_5": "text-davinci-002-render-sha",
@@ -991,16 +989,15 @@ export interface components {
       /** Title */
       title?: string;
     };
+    /** OpenaiChatPluginListResponse */
+    OpenaiChatPluginListResponse: {
+      /** Items */
+      items: (components["schemas"]["OpenaiChatPlugin"])[];
+      /** Count */
+      count?: number;
+    };
     /** OpenaiChatPluginManifest */
     OpenaiChatPluginManifest: {
-      /** Api */
-      api?: Record<string, never>;
-      /** Auth */
-      auth?: Record<string, never>;
-      /** Logo Url */
-      logo_url?: string;
-      /** Contact Email */
-      contact_email?: string;
       /** Schema Version */
       schema_version?: string;
       /** Name For Model */
@@ -1011,6 +1008,14 @@ export interface components {
       description_for_model?: string;
       /** Description For Human */
       description_for_human?: string;
+      /** Api */
+      api?: Record<string, never>;
+      /** Auth */
+      auth?: Record<string, never>;
+      /** Logo Url */
+      logo_url?: string;
+      /** Contact Email */
+      contact_email?: string;
       /** Legal Info Url */
       legal_info_url?: string;
     };
@@ -1055,6 +1060,7 @@ export interface components {
       proxy?: string;
       /**
        * Common Timeout 
+       * @description Increase this value if timeout error occurs. 
        * @default 20
        */
       common_timeout?: number;
@@ -1065,7 +1071,7 @@ export interface components {
       ask_timeout?: number;
       /**
        * Sync Conversations On Startup 
-       * @default true
+       * @default false
        */
       sync_conversations_on_startup?: boolean;
       /**
@@ -1082,9 +1088,7 @@ export interface components {
        * @default [
        *   "gpt_3_5",
        *   "gpt_4",
-       *   "gpt_4_code_interpreter",
-       *   "gpt_4_plugins",
-       *   "gpt_4_browsing"
+       *   "gpt_4_plugins"
        * ]
        */
       enabled_models?: (components["schemas"]["OpenaiWebChatModels"])[];
@@ -2316,13 +2320,27 @@ export interface operations {
       };
     };
   };
-  get_all_openai_web_chat_plugins_chat_openai_plugins_all_get: {
+  get_all_openai_web_chat_plugins_chat_openai_plugins_get: {
     /** Get All Openai Web Chat Plugins */
+    parameters?: {
+      query?: {
+        offset?: number;
+        limit?: number;
+        category?: string;
+        search?: string;
+      };
+    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -2338,8 +2356,8 @@ export interface operations {
       };
     };
   };
-  get_openai_web_plugin_chat_openai_plugin__plugin_id__get: {
-    /** Get Openai Web Plugin */
+  get_installed_openai_web_plugin_chat_openai_plugin_installed__plugin_id__get: {
+    /** Get Installed Openai Web Plugin */
     parameters: {
       path: {
         plugin_id: string;

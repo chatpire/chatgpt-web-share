@@ -75,7 +75,7 @@ import { useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getOpenaiChatPluginApi } from '@/api/chat';
+import { getInstalledOpenaiChatPluginApi } from '@/api/chat';
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import OpenaiWebPluginDetailCard from '@/components/OpenaiWebPluginDetailCard.vue';
 import { useConversationStore } from '@/store';
@@ -164,7 +164,7 @@ watch(
   () => convOpenaiWebPluginIds.value,
   async (pluginIds) => {
     if (!pluginIds) return;
-    const allRequests = pluginIds.map((pluginId) => getOpenaiChatPluginApi(pluginId));
+    const allRequests = pluginIds.map((pluginId) => getInstalledOpenaiChatPluginApi(pluginId));
     const results = await Promise.all(allRequests);
     console.log('convOpenaiWebPlugins', results);
     convOpenaiWebPlugins.value = results.map((result) => result.data);

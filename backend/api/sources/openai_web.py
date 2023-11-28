@@ -26,7 +26,7 @@ from api.models.json import UploadedFileOpenaiWebInfo
 from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadUrlRequest, \
     OpenaiChatFileUploadUrlResponse, OpenaiWebCompleteRequest, \
-    OpenaiWebCompleteRequestConversationMode
+    OpenaiWebCompleteRequestConversationMode, OpenaiChatPluginListResponse
 from utils.common import singleton_with_lock
 from utils.logger import get_logger
 
@@ -238,7 +238,8 @@ class OpenaiWebChatManager:
     async def complete(self, text_content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
                        model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
                        attachments: list[OpenaiWebChatMessageMetadataAttachment] = None,
-                       multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None, **_kwargs):
+                       multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None,
+                       **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
 
@@ -345,23 +346,44 @@ class OpenaiWebChatManager:
         else:
             raise OpenaiWebException(f"Failed to generate title: {result.get('message')}")
 
-    async def get_plugin_manifests(self, statuses="approved", is_installed=None, offset=0, limit=250):
-        if not config.openai_web.is_plus_account:
-            raise InvalidParamsException("errors.notPlusChatgptAccount")
+    async def get_installed_plugin_manifests(self, offset=0, limit=250) -> OpenaiChatPluginListResponse:
         params = {
-            "statuses": statuses,
             "offset": offset,
             "limit": limit,
+            "is_installed": True,
         }
-        if is_installed is not None:
-            params["is_installed"] = is_installed
         response = await self.session.get(
             url=f"{config.openai_web.chatgpt_base_url}aip/p",
             params=params,
-            timeout=config.openai_web.ask_timeout
+            timeout=config.openai_web.common_timeout
         )
         await _check_response(response)
-        return parse_obj_as(list[OpenaiChatPlugin], response.json().get("items"))
+        return OpenaiChatPluginListResponse(**response.json())
+
+    async def get_plugin_manifests(self, offset=0, limit=8, category="", search="") -> OpenaiChatPluginListResponse:
+        if not config.openai_web.is_plus_account:
+            raise InvalidParamsException("errors.notPlusChatgptAccount")
+        params = {
+            "offset": offset,
+            "limit": limit,
+            "category": category,
+            "search": search,
+        }
+        response = await self.session.get(
+            url=f"{config.openai_web.chatgpt_base_url}aip/p/approved",
+            params=params,
+            timeout=config.openai_web.common_timeout
+        )
+        await _check_response(response)
+        return OpenaiChatPluginListResponse(**response.json())
+
+    # async def get_plugin_manifest(self, plugin_id: str) -> OpenaiChatPluginListResponse:
+    #     response = await self.session.get(
+    #         url=f"{config.openai_web.chatgpt_base_url}public/plugins/by-id",
+    #         params={"ids": plugin_id},
+    #     )
+    #     await _check_response(response)
+    #     return OpenaiChatPluginListResponse.parse_obj(response.json())
 
     async def change_plugin_user_settings(self, plugin_id: str, setting: OpenaiChatPluginUserSettings):
         if not config.openai_web.is_plus_account:

@@ -3335,6 +3335,7 @@
                 "type": "integer",
                 "minimum": 1,
                 "title": "Common Timeout",
+                "description": "Increase this value if timeout error occurs.",
                 "default": 20
               },
               "ask_timeout": {
@@ -3346,7 +3347,7 @@
               "sync_conversations_on_startup": {
                 "type": "boolean",
                 "title": "Sync Conversations On Startup",
-                "default": true
+                "default": false
               },
               "sync_conversations_schedule": {
                 "type": "boolean",
@@ -3379,9 +3380,7 @@
                 "default": [
                   "gpt_3_5",
                   "gpt_4",
-                  "gpt_4_code_interpreter",
-                  "gpt_4_plugins",
-                  "gpt_4_browsing"
+                  "gpt_4_plugins"
                 ]
               },
               "model_code_mapping": {
@@ -3432,15 +3431,13 @@
           "is_plus_account": true,
           "common_timeout": 20,
           "ask_timeout": 600,
-          "sync_conversations_on_startup": true,
+          "sync_conversations_on_startup": false,
           "sync_conversations_schedule": false,
           "sync_conversations_schedule_interval_hours": 12,
           "enabled_models": [
             "gpt_3_5",
             "gpt_4",
-            "gpt_4_code_interpreter",
-            "gpt_4_plugins",
-            "gpt_4_browsing"
+            "gpt_4_plugins"
           ],
           "model_code_mapping": {
             "gpt_3_5": "text-davinci-002-render-sha",
@@ -5420,22 +5417,6 @@
       },
       "manifest": {
         "properties": {
-          "api": {
-            "type": "object",
-            "title": "Api"
-          },
-          "auth": {
-            "type": "object",
-            "title": "Auth"
-          },
-          "logo_url": {
-            "type": "string",
-            "title": "Logo Url"
-          },
-          "contact_email": {
-            "type": "string",
-            "title": "Contact Email"
-          },
           "schema_version": {
             "type": "string",
             "title": "Schema Version"
@@ -5455,6 +5436,22 @@
           "description_for_human": {
             "type": "string",
             "title": "Description For Human"
+          },
+          "api": {
+            "type": "object",
+            "title": "Api"
+          },
+          "auth": {
+            "type": "object",
+            "title": "Auth"
+          },
+          "logo_url": {
+            "type": "string",
+            "title": "Logo Url"
+          },
+          "contact_email": {
+            "type": "string",
+            "title": "Contact Email"
           },
           "legal_info_url": {
             "type": "string",
@@ -5544,24 +5541,147 @@
     "type": "object",
     "title": "OpenaiChatPluginCategory"
   },
+  "OpenaiChatPluginListResponse": {
+    "properties": {
+      "items": {
+        "items": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Id"
+            },
+            "namespace": {
+              "type": "string",
+              "title": "Namespace"
+            },
+            "manifest": {
+              "properties": {
+                "schema_version": {
+                  "type": "string",
+                  "title": "Schema Version"
+                },
+                "name_for_model": {
+                  "type": "string",
+                  "title": "Name For Model"
+                },
+                "name_for_human": {
+                  "type": "string",
+                  "title": "Name For Human"
+                },
+                "description_for_model": {
+                  "type": "string",
+                  "title": "Description For Model"
+                },
+                "description_for_human": {
+                  "type": "string",
+                  "title": "Description For Human"
+                },
+                "api": {
+                  "type": "object",
+                  "title": "Api"
+                },
+                "auth": {
+                  "type": "object",
+                  "title": "Auth"
+                },
+                "logo_url": {
+                  "type": "string",
+                  "title": "Logo Url"
+                },
+                "contact_email": {
+                  "type": "string",
+                  "title": "Contact Email"
+                },
+                "legal_info_url": {
+                  "type": "string",
+                  "title": "Legal Info Url"
+                }
+              },
+              "type": "object",
+              "title": "OpenaiChatPluginManifest"
+            },
+            "categories": {
+              "items": {
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Id"
+                  },
+                  "title": {
+                    "type": "string",
+                    "title": "Title"
+                  }
+                },
+                "type": "object",
+                "title": "OpenaiChatPluginCategory"
+              },
+              "type": "array",
+              "title": "Categories"
+            },
+            "domain": {
+              "type": "string",
+              "title": "Domain"
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "approved"
+                  ]
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "title": "Status"
+            },
+            "user_settings": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "is_authenticated": {
+                      "type": "boolean",
+                      "title": "Is Authenticated"
+                    },
+                    "is_installed": {
+                      "type": "boolean",
+                      "title": "Is Installed"
+                    }
+                  },
+                  "type": "object",
+                  "title": "OpenaiChatPluginUserSettings"
+                },
+                {
+                  "type": "object"
+                }
+              ],
+              "title": "User Settings"
+            },
+            "oauth_client_id": {
+              "type": "string",
+              "title": "Oauth Client Id"
+            }
+          },
+          "type": "object",
+          "title": "OpenaiChatPlugin"
+        },
+        "type": "array",
+        "title": "Items"
+      },
+      "count": {
+        "type": "integer",
+        "title": "Count"
+      }
+    },
+    "type": "object",
+    "required": [
+      "items"
+    ],
+    "title": "OpenaiChatPluginListResponse"
+  },
   "OpenaiChatPluginManifest": {
     "properties": {
-      "api": {
-        "type": "object",
-        "title": "Api"
-      },
-      "auth": {
-        "type": "object",
-        "title": "Auth"
-      },
-      "logo_url": {
-        "type": "string",
-        "title": "Logo Url"
-      },
-      "contact_email": {
-        "type": "string",
-        "title": "Contact Email"
-      },
       "schema_version": {
         "type": "string",
         "title": "Schema Version"
@@ -5581,6 +5701,22 @@
       "description_for_human": {
         "type": "string",
         "title": "Description For Human"
+      },
+      "api": {
+        "type": "object",
+        "title": "Api"
+      },
+      "auth": {
+        "type": "object",
+        "title": "Auth"
+      },
+      "logo_url": {
+        "type": "string",
+        "title": "Logo Url"
+      },
+      "contact_email": {
+        "type": "string",
+        "title": "Contact Email"
       },
       "legal_info_url": {
         "type": "string",
@@ -5674,6 +5810,7 @@
         "type": "integer",
         "minimum": 1,
         "title": "Common Timeout",
+        "description": "Increase this value if timeout error occurs.",
         "default": 20
       },
       "ask_timeout": {
@@ -5685,7 +5822,7 @@
       "sync_conversations_on_startup": {
         "type": "boolean",
         "title": "Sync Conversations On Startup",
-        "default": true
+        "default": false
       },
       "sync_conversations_schedule": {
         "type": "boolean",
@@ -5718,9 +5855,7 @@
         "default": [
           "gpt_3_5",
           "gpt_4",
-          "gpt_4_code_interpreter",
-          "gpt_4_plugins",
-          "gpt_4_browsing"
+          "gpt_4_plugins"
         ]
       },
       "model_code_mapping": {

@@ -11,15 +11,13 @@
         "proxy": null,
         "common_timeout": 20,
         "ask_timeout": 600,
-        "sync_conversations_on_startup": true,
+        "sync_conversations_on_startup": false,
         "sync_conversations_schedule": false,
         "sync_conversations_schedule_interval_hours": 12,
         "enabled_models": [
           "gpt_3_5",
           "gpt_4",
-          "gpt_4_code_interpreter",
-          "gpt_4_plugins",
-          "gpt_4_browsing"
+          "gpt_4_plugins"
         ],
         "model_code_mapping": {
           "gpt_3_5": "text-davinci-002-render-sha",
@@ -202,6 +200,7 @@
         },
         "common_timeout": {
           "title": "Common Timeout",
+          "description": "Increase this value if timeout error occurs.",
           "default": 20,
           "minimum": 1,
           "type": "integer"
@@ -214,7 +213,7 @@
         },
         "sync_conversations_on_startup": {
           "title": "Sync Conversations On Startup",
-          "default": true,
+          "default": false,
           "type": "boolean"
         },
         "sync_conversations_schedule": {
@@ -232,9 +231,7 @@
           "default": [
             "gpt_3_5",
             "gpt_4",
-            "gpt_4_code_interpreter",
-            "gpt_4_plugins",
-            "gpt_4_browsing"
+            "gpt_4_plugins"
           ],
           "type": "array",
           "items": {
