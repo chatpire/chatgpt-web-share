@@ -235,7 +235,7 @@ class OpenaiWebChatManager:
         response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
-    async def complete(self, text_content: str, conversation_id: uuid.UUID = None, parent_id: uuid.UUID = None,
+    async def complete(self, text_content: str, conversation_id: uuid.UUID = None, parent_message_id: uuid.UUID = None,
                        model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
                        attachments: list[OpenaiWebChatMessageMetadataAttachment] = None,
                        multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None,
@@ -245,13 +245,16 @@ class OpenaiWebChatManager:
 
         model = model or OpenaiWebChatModels.gpt_3_5
 
-        if conversation_id or parent_id:
-            assert parent_id and conversation_id, "parent_id must be set with conversation_id"
+        if conversation_id or parent_message_id:
+            assert parent_message_id and conversation_id, "parent_message_id must be set with conversation_id"
         else:
-            parent_id = str(uuid.uuid4())
+            parent_message_id = str(uuid.uuid4())
 
         if plugin_ids is not None and len(plugin_ids) > 0 and model != OpenaiWebChatModels.gpt_4_plugins:
             raise InvalidParamsException("plugin_ids can only be set when model is gpt-4-plugins")
+
+        if plugin_ids is not None and len(plugin_ids) > 0 and parent_message_id:
+            raise InvalidParamsException("plugin_ids can only be set at new conversation")
 
         if text_content == ":continue":
             messages = None
@@ -287,7 +290,7 @@ class OpenaiWebChatManager:
             conversation_mode=OpenaiWebCompleteRequestConversationMode(kind="primary_assistant"),
             conversation_id=str(conversation_id) if conversation_id else None,
             messages=messages,
-            parent_message_id=str(parent_id) if parent_id else None,
+            parent_message_id=str(parent_message_id) if parent_message_id else None,
             model=model.code(),
             plugin_ids=plugin_ids
         ).dict(exclude_none=True)
