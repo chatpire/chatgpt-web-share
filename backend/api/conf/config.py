@@ -1,6 +1,6 @@
 from typing import Optional, Literal
 
-from pydantic import BaseModel, validator, Field
+from pydantic import field_validator, ConfigDict, BaseModel, Field
 
 from api.conf.base_config import BaseConfig
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
@@ -27,7 +27,8 @@ class CommonSetting(BaseModel):
     initial_admin_user_username: str = 'admin'
     initial_admin_user_password: str = 'password'
 
-    @validator("initial_admin_user_password")
+    @field_validator("initial_admin_user_password")
+    @classmethod
     def validate_password(cls, v):
         if len(v) < 6:
             raise ValueError("Password too short")
@@ -49,7 +50,8 @@ class DataSetting(BaseModel):
     run_migration: bool = False
     max_file_upload_size: int = Field(100 * 1024 * 1024, ge=0)
 
-    @validator("database_url")
+    @field_validator("database_url")
+    @classmethod
     def validate_database_url(cls, v):
         if not v.startswith('sqlite+aiosqlite:///'):
             raise ValueError("Only support sqlite: 'sqlite+aiosqlite:///'")
@@ -68,7 +70,8 @@ class OpenaiWebChatGPTSetting(BaseModel):
     is_plus_account: bool = True
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
-    common_timeout: int = Field(20, ge=1, description="Increase this value if timeout error occurs.")  # connect, read, write
+    common_timeout: int = Field(20, ge=1,
+                                description="Increase this value if timeout error occurs.")  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
     sync_conversations_on_startup: bool = False
     sync_conversations_schedule: bool = False
@@ -78,13 +81,15 @@ class OpenaiWebChatGPTSetting(BaseModel):
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
     disable_uploading: bool = False
 
-    @validator("chatgpt_base_url")
+    @field_validator("chatgpt_base_url")
+    @classmethod
     def chatgpt_base_url_end_with_slash(cls, v):
         if v is not None and not v.endswith('/'):
             v += '/'
         return v
 
-    @validator("model_code_mapping")
+    @field_validator("model_code_mapping")
+    @classmethod
     def check_all_model_key_appears(cls, v):
         if not set(OpenaiWebChatModels) == set(v.keys()):
             # add missing keys
@@ -127,9 +132,6 @@ class ConfigModel(BaseModel):
     auth: AuthSetting = AuthSetting()
     stats: StatsSetting = StatsSetting()
     log: LogSetting = LogSetting()
-
-    class Config:
-        underscore_attrs_are_private = True
 
 
 @singleton_with_lock

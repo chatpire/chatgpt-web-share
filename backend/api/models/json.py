@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional, Generic, TypeVar, get_args, Literal
 
-from pydantic import BaseModel, Field, create_model, root_validator
+from pydantic import model_validator, BaseModel, Field, create_model, RootModel
 from pydantic.generics import GenericModel
 
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
@@ -9,35 +9,37 @@ from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 ModelT = TypeVar('ModelT', bound=OpenaiWebChatModels | OpenaiApiChatModels)
 
 
-class OpenaiWebPerModelAskCount(BaseModel):
-    __root__: dict[str, int] = {model: 0 for model in list(OpenaiWebChatModels)}
+class OpenaiWebPerModelAskCount(RootModel[dict[str, int]]):
+    root: dict[str, int] = {model: 0 for model in list(OpenaiWebChatModels)}
 
-    @root_validator(pre=True)
-    def check(cls, values):
+    @model_validator(mode="after")
+    @classmethod
+    def check(cls, m):
         # 如果某个值缺失，则默认设置为0
         for model in list(OpenaiWebChatModels):
-            if model not in values:
-                values[model] = 0
-        return values
+            if model not in m.root:
+                m.root[model] = 0
+        return m
 
     @staticmethod
     def unlimited():
-        return OpenaiWebPerModelAskCount(__root__={model: -1 for model in list(OpenaiWebChatModels)})
+        return OpenaiWebPerModelAskCount(root={model: -1 for model in list(OpenaiWebChatModels)})
 
 
-class OpenaiApiPerModelAskCount(BaseModel):
-    __root__: dict[str, int] = {model: 0 for model in list(OpenaiApiChatModels)}
+class OpenaiApiPerModelAskCount(RootModel[dict[str, int]]):
+    root: dict[str, int] = {model: 0 for model in list(OpenaiApiChatModels)}
 
-    @root_validator(pre=True)
-    def check(cls, values):
+    @model_validator(mode="after")
+    @classmethod
+    def check(cls, m):
         for model in list(OpenaiApiChatModels):
-            if model not in values:
-                values[model] = 0
-        return values
+            if model not in m.root:
+                m.root[model] = 0
+        return m
 
     @staticmethod
     def unlimited():
-        return OpenaiApiPerModelAskCount(__root__={model: -1 for model in list(OpenaiApiChatModels)})
+        return OpenaiApiPerModelAskCount(root={model: -1 for model in list(OpenaiApiChatModels)})
 
 
 class TimeWindowRateLimit(BaseModel):
@@ -51,17 +53,17 @@ class DailyTimeSlot(BaseModel):
 
 
 class CustomOpenaiApiSettings(BaseModel):
-    url: Optional[str]
-    key: Optional[str]
+    url: Optional[str] = None
+    key: Optional[str] = None
 
 
 class UploadedFileOpenaiWebInfo(BaseModel):
-    file_id: Optional[str]
-    use_case: Optional[Literal['my_files', 'multimodal'] | str]
-    upload_url: Optional[str] = Field(description="上传文件的url, 上传后应清空该字段")
-    download_url: Optional[str]
+    file_id: Optional[str] = None
+    use_case: Optional[Literal['my_files', 'multimodal'] | str] = None
+    upload_url: Optional[str] = Field(None, description="上传文件的url, 上传后应清空该字段")
+    download_url: Optional[str] = None
 
 
 class UploadedFileExtraInfo(BaseModel):
-    width: Optional[int]
-    height: Optional[int]
+    width: Optional[int] = None
+    height: Optional[int] = None

@@ -117,7 +117,7 @@ async def start_upload_to_openai(upload_request: StartUploadRequestSchema, user:
             )
         )
         async with get_async_session_context() as session:
-            session.add(UploadedFileInfo(**file_info.dict()))
+            session.add(UploadedFileInfo(**file_info.model_dump()))
             await session.commit()
 
     return StartUploadResponseSchema(

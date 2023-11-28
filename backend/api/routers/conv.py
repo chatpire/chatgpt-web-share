@@ -38,7 +38,7 @@ async def _get_conversation_by_id(conversation_id: str | uuid.UUID, user: User =
 
 @router.get("/conv", tags=["conversation"],
             response_model=List[
-                Union[BaseConversationSchema, OpenaiWebConversationSchema, OpenaiApiConversationSchema]])
+                BaseConversationSchema | OpenaiWebConversationSchema | OpenaiApiConversationSchema])
 async def get_my_conversations(user: User = Depends(current_active_user)):
     """
     返回自己的有效会话

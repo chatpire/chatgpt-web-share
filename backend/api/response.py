@@ -7,8 +7,7 @@ from fastapi import Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi_users.router import ErrorCode
-from pydantic import ValidationError
-from pydantic.generics import GenericModel
+from pydantic import BaseModel, ValidationError
 from starlette.background import BackgroundTask
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -18,7 +17,7 @@ from utils.common import desensitize
 T = TypeVar('T')
 
 
-class ResponseWrapper(GenericModel, Generic[T]):
+class ResponseWrapper(BaseModel, Generic[T]):
     """
     使用自定义的返回格式：
     - 统一状态码为 200

@@ -151,7 +151,7 @@ class OpenaiApiChatManager:
 
                 try:
                     line = json.loads(line)
-                    resp = OpenaiChatResponse(**line)
+                    resp = OpenaiChatResponse.model_validate(line)
 
                     if not resp.choices or len(resp.choices) == 0:
                         continue

@@ -58,4 +58,4 @@ class Pydantic(sqlalchemy.types.TypeDecorator):
         return jsonable_encoder(value) if value else None
 
     def process_result_value(self, value, dialect):
-        return parse_obj_as(self.pydantic_type, value) if value else None
+        return self.pydantic_type.model_validate(value) if value else None

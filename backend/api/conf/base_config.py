@@ -17,7 +17,7 @@ class BaseConfig(Generic[T]):
     _config_path = None
     _model_type = None
 
-    def __init__(self, model_type: Type, config_filename: str, load_config: bool = True):
+    def __init__(self, model_type: Type[BaseModel], config_filename: str, load_config: bool = True):
         self._model_type = model_type
         config_dir = os.environ.get('CWS_CONFIG_DIR', './data/config')
         self._config_path = os.path.join(config_dir, config_filename)
@@ -42,7 +42,7 @@ class BaseConfig(Generic[T]):
         return self._model.copy()
 
     def update(self, model: T):
-        self._model = self._model_type(**model.dict())
+        self._model = self._model_type.model_validate(model)
 
     def load(self):
         if not os.path.exists(self._config_path):
@@ -52,7 +52,7 @@ class BaseConfig(Generic[T]):
                 # 读取配置
                 yaml = YAML()
                 config_dict = yaml.load(f) or {}
-                self._model = self._model_type(**config_dict)
+                self._model = self._model_type.model_validate(config_dict)
         except Exception as e:
             raise ConfigException(f"Cannot read config ({self._config_path}), error: {str(e)}")
 

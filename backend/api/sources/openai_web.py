@@ -82,7 +82,7 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         )
     )
     if "metadata" in item["message"] and item["message"]["metadata"] != {}:
-        result.metadata = result.metadata.copy(
+        result.metadata = result.metadata.model_copy(
             update=item["message"]["metadata"]
         )
         model_code = item["message"]["metadata"].get("model_slug")
@@ -213,7 +213,7 @@ class OpenaiWebChatManager:
             current_model = get_latest_model_from_mapping(result["current_node"], mapping)
         doc = OpenaiWebConversationHistoryDocument(
             source="openai_web",
-            id=conversation_id,
+            _id=conversation_id,
             title=result.get("title"),
             create_time=result.get("create_time"),
             update_time=result.get("update_time"),
@@ -361,7 +361,7 @@ class OpenaiWebChatManager:
             timeout=config.openai_web.common_timeout
         )
         await _check_response(response)
-        return OpenaiChatPluginListResponse(**response.json())
+        return OpenaiChatPluginListResponse.model_validate(response.json())
 
     async def get_plugin_manifests(self, offset=0, limit=8, category="", search="") -> OpenaiChatPluginListResponse:
         if not config.openai_web.is_plus_account:
@@ -378,7 +378,7 @@ class OpenaiWebChatManager:
             timeout=config.openai_web.common_timeout
         )
         await _check_response(response)
-        return OpenaiChatPluginListResponse(**response.json())
+        return OpenaiChatPluginListResponse.model_validate(response.json())
 
     # async def get_plugin_manifest(self, plugin_id: str) -> OpenaiChatPluginListResponse:
     #     response = await self.session.get(
@@ -397,7 +397,7 @@ class OpenaiWebChatManager:
         )
         await _check_response(response)
         try:
-            result = OpenaiChatPlugin.parse_obj(response.json())
+            result = OpenaiChatPlugin.model_validate(response.json())
             return result
         except ValidationError as e:
             logger.warning(f"Failed to parse plugin: {e}")
@@ -444,7 +444,7 @@ class OpenaiWebChatManager:
             json=upload_info.dict()
         )
         await _check_response(response)
-        result = OpenaiChatFileUploadUrlResponse.parse_obj(response.json())
+        result = OpenaiChatFileUploadUrlResponse.model_validate(response.json())
         if result.status != "success":
             raise OpenaiWebException(
                 f"{upload_info.file_name} Failed to get upload url from OpenAI: {result.error_code}({result.error_message})")

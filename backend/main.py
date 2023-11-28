@@ -57,7 +57,7 @@ async def startup():
                         user = await user_manager.create(UserCreate(
                             username=config.common.initial_admin_user_username,
                             nickname="admin",
-                            email=EmailStr("admin@admin.com"),
+                            email="admin@admin.com",
                             password=config.common.initial_admin_user_password,
                             is_active=True,
                             is_verified=True,

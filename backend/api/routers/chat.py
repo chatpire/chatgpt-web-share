@@ -51,7 +51,7 @@ def _load_installed_plugins_from_cache():
     if os.path.exists(INSTALLED_PLUGINS_CACHE_FILE_PATH):
         with open(INSTALLED_PLUGINS_CACHE_FILE_PATH, "r") as f:
             data = json.load(f)
-            _installed_plugins = OpenaiChatPluginListResponse(**data["installed_plugins"])
+            _installed_plugins = OpenaiChatPluginListResponse.model_validate(data["installed_plugins"])
             _installed_plugins_map = {plugin.id: plugin for plugin in _installed_plugins.items}
             _installed_plugins_last_update_time = data["installed_plugins_last_update_time"]
 
@@ -180,7 +180,7 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
         raise WebsocketInvalidAskException("errors.modelNotEnabled")
 
     # 对话次数判断
-    model_ask_count = source_setting.per_model_ask_count.__root__.get(ask_request.model, 0)
+    model_ask_count = source_setting.per_model_ask_count.root.get(ask_request.model, 0)
     total_ask_count = source_setting.total_ask_count
     if total_ask_count != -1 and total_ask_count <= 0:
         # await websocket.close(1008, "errors.noAvailableTotalAskCount")
@@ -246,7 +246,7 @@ async def chat(websocket: WebSocket):
     params = await websocket.receive_json()
 
     try:
-        ask_request = AskRequest(**params)
+        ask_request = AskRequest.model_validate(params)
     except ValidationError as e:
         logger.warning(f"Invalid ask request: {e}")
         await reply(AskResponse(type=AskResponseType.error, error_detail=str(e)))
@@ -528,7 +528,7 @@ async def chat(websocket: WebSocket):
                     create_time=current_time,
                     update_time=current_time
                 )
-                conversation = BaseConversation(**new_conv.dict(exclude_unset=True))
+                conversation = BaseConversation(**new_conv.model_dump(exclude_unset=True))
                 session.add(conversation)
 
             else:
@@ -543,7 +543,7 @@ async def chat(websocket: WebSocket):
             source_setting = user.setting.openai_web if ask_request.source == ChatSourceTypes.openai_web else user.setting.openai_api
 
             total_ask_count = source_setting.total_ask_count
-            model_ask_count = source_setting.per_model_ask_count.__root__.get(ask_request.model, -1)
+            model_ask_count = source_setting.per_model_ask_count.root.get(ask_request.model, -1)
             assert model_ask_count, "model_ask_count is None"
             if total_ask_count != -1 or model_ask_count != -1:
 
@@ -552,7 +552,7 @@ async def chat(websocket: WebSocket):
                     source_setting.total_ask_count -= 1
                 if model_ask_count != -1:
                     assert model_ask_count > 0
-                    source_setting.per_model_ask_count.__root__[ask_request.model] = model_ask_count - 1
+                    source_setting.per_model_ask_count.root[ask_request.model] = model_ask_count - 1
 
                 user_db = await session.get(User, user.id)
                 setattr(user_db.setting, ask_request.source, source_setting)

@@ -4,33 +4,33 @@ from pydantic import BaseModel
 
 
 class OpenaiWebChatMessageMetadataAttachment(BaseModel):
-    name: Optional[str]
-    id: Optional[str]
-    size: Optional[int]
-    height: Optional[int]
-    width: Optional[int]
-    mimeType: Optional[str]
+    name: Optional[str] = None
+    id: Optional[str] = None
+    size: Optional[int] = None
+    height: Optional[int] = None
+    width: Optional[int] = None
+    mimeType: Optional[str] = None
 
 
 class OpenaiWebChatMessageMetadataAggregateResultMessage(BaseModel):
-    message_type: Optional[Literal['image', 'stream'] | str]
-    time: Optional[float]
-    sender: Optional[Literal['server'] | str]
+    message_type: Optional[Literal['image', 'stream'] | str] = None
+    time: Optional[float] = None
+    sender: Optional[Literal['server'] | str] = None
     # image
-    image_url: Optional[str]
+    image_url: Optional[str] = None
     # stream
-    stream_name: Optional[str]
-    text: Optional[str]
+    stream_name: Optional[str] = None
+    text: Optional[str] = None
 
 
 class OpenaiWebChatMessageMetadataAggregateResult(BaseModel):
-    status: Optional[Literal['failed_with_in_kernel_exception', 'success'] | str]
-    run_id: Optional[str]
-    start_time: Optional[float]
-    update_time: Optional[float]
-    end_time: Optional[float]
-    final_expression_output: Optional[Any]
-    code: Optional[str]
-    in_kernel_exception: Optional[dict[str, Any]]  # name, traceback [], args [], notes []
-    messages: Optional[list[OpenaiWebChatMessageMetadataAggregateResultMessage]]
-    jupyter_messages: Optional[list[Any]]
+    status: Optional[Literal['failed_with_in_kernel_exception', 'success'] | str] = None
+    run_id: Optional[str] = None
+    start_time: Optional[float] = None
+    update_time: Optional[float] = None
+    end_time: Optional[float] = None
+    final_expression_output: Optional[Any] = None
+    code: Optional[str] = None
+    in_kernel_exception: Optional[dict[str, Any]] = None  # name, traceback [], args [], notes []
+    messages: Optional[list[OpenaiWebChatMessageMetadataAggregateResultMessage]] = None
+    jupyter_messages: Optional[list[Any]] = None
