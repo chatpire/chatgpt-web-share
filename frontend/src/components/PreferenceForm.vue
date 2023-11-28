@@ -50,6 +50,7 @@ const sendKeyOptions = [
 const languageOptions = [
   { label: '简体中文', value: 'zh-CN' },
   { label: 'English', value: 'en-US' },
+  { label: 'Bahasa Melayu', value: 'ms-MY' },
 ];
 
 const emit = defineEmits(['update:value']);

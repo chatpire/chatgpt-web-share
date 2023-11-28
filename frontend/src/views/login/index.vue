@@ -164,6 +164,15 @@ const languageOptions = [
     },
   },
   {
+    label: 'Bahasa Melayu',
+    key: 'ms-MY',
+    props: {
+      onClick: () => {
+        appStore.setLanguage('ms-MY');
+      },
+    },
+  },
+  {
     label: 'English',
     key: 'en-US',
     props: {
