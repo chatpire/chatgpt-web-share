@@ -325,8 +325,8 @@ const sendMsg = async () => {
   }
 
   const askRequest: AskRequest = {
-    source: currentConversation.value!.source,
     new_conversation: isCurrentNewConversation.value,
+    source: currentConversation.value!.source,
     model: currentConversation.value!.current_model!,
     text_content: text,
     openai_web_plugin_ids:
