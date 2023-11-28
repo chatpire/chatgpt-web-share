@@ -278,9 +278,9 @@ export function replaceMathDelimiters(input: string) {
         const endMarker = isInline ? '\\)' : '\\]';
         const endPos = input.indexOf(endMarker, pos + 2);
         if (endPos >= 0) {
-          output += isInline ? '$' : '$$\n';
+          output += isInline ? '$' : '\n$$\n';
           output += input.substring(pos + 2, endPos).trim();
-          output += isInline ? '$' : '\n$$';
+          output += isInline ? '$' : '\n$$\n';
           pos = endPos + endMarker.length;
           continue;
         }
@@ -311,7 +311,7 @@ export function replaceMathDelimiters(input: string) {
     pos++;
   }
   // return output;
-  return output;
+  return output.replace(/\n\n\n+/g, '\n\n');
 }
 
 export function dompurifyRenderedHtml(html: string) {
