@@ -110,7 +110,7 @@ class OpenaiWebCompleteRequest(BaseModel):
     force_paragen: bool = False
     force_rate_limit: bool = False
     history_and_training_disabled: bool = False
-    messages: list[dict[str, Any]]
+    messages: list[dict[str, Any]] | None
     model: str
     parent_message_id: Optional[str]
     plugin_ids: Optional[list[str]]

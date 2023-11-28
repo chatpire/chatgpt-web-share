@@ -94,20 +94,20 @@ export interface paths {
     get: operations["get_conversation_interpreter_download_url_conv__conversation_id__interpreter_download_url_get"];
   };
   "/chat/openai-plugins": {
-    /** Get All Openai Web Chat Plugins */
-    get: operations["get_all_openai_web_chat_plugins_chat_openai_plugins_get"];
+    /** Get Openai Web Chat Plugins */
+    get: operations["get_openai_web_chat_plugins_chat_openai_plugins_get"];
   };
   "/chat/openai-plugins/installed": {
     /** Get Installed Openai Web Chat Plugins */
     get: operations["get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get"];
   };
-  "/chat/openai-plugin/installed/{plugin_id}": {
+  "/chat/openai-plugins/installed/{plugin_id}": {
     /** Get Installed Openai Web Plugin */
-    get: operations["get_installed_openai_web_plugin_chat_openai_plugin_installed__plugin_id__get"];
+    get: operations["get_installed_openai_web_plugin_chat_openai_plugins_installed__plugin_id__get"];
   };
-  "/chat/openai-plugin/{plugin_id}/user-settings": {
+  "/chat/openai-plugins/{plugin_id}/user-settings": {
     /** Update Chat Plugin User Settings */
-    patch: operations["update_chat_plugin_user_settings_chat_openai_plugin__plugin_id__user_settings_patch"];
+    patch: operations["update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch"];
   };
   "/chat/__schema_types": {
     /**
@@ -2320,8 +2320,8 @@ export interface operations {
       };
     };
   };
-  get_all_openai_web_chat_plugins_chat_openai_plugins_get: {
-    /** Get All Openai Web Chat Plugins */
+  get_openai_web_chat_plugins_chat_openai_plugins_get: {
+    /** Get Openai Web Chat Plugins */
     parameters?: {
       query?: {
         offset?: number;
@@ -2356,7 +2356,7 @@ export interface operations {
       };
     };
   };
-  get_installed_openai_web_plugin_chat_openai_plugin_installed__plugin_id__get: {
+  get_installed_openai_web_plugin_chat_openai_plugins_installed__plugin_id__get: {
     /** Get Installed Openai Web Plugin */
     parameters: {
       path: {
@@ -2378,7 +2378,7 @@ export interface operations {
       };
     };
   };
-  update_chat_plugin_user_settings_chat_openai_plugin__plugin_id__user_settings_patch: {
+  update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch: {
     /** Update Chat Plugin User Settings */
     parameters: {
       path: {
