@@ -325,7 +325,7 @@ async def chat(websocket: WebSocket):
         # stream 传输
         async for data in manager.complete(text_content=ask_request.text_content,
                                            conversation_id=ask_request.conversation_id,
-                                           parent_message_id=ask_request.parent,
+                                           parent_id=ask_request.parent,
                                            model=model,
                                            plugin_ids=ask_request.openai_web_plugin_ids if ask_request.new_conversation else None,
                                            attachments=ask_request.openai_web_attachments,
