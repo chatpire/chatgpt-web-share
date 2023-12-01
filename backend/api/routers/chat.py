@@ -27,7 +27,7 @@ from api.routers.conv import _get_conversation_by_id
 from api.schemas import AskRequest, AskResponse, AskResponseType, UserReadAdmin, \
     BaseConversationSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatPluginListResponse
-from api.sources import OpenaiWebChatManager, convert_revchatgpt_message, OpenaiApiChatManager
+from api.sources import OpenaiWebChatManager, convert_openai_web_message, OpenaiApiChatManager
 from api.users import websocket_auth, current_active_user, current_super_user
 from utils.common import desensitize
 from utils.logger import get_logger
@@ -335,7 +335,7 @@ async def chat(websocket: WebSocket):
 
             try:
                 if ask_request.source == ChatSourceTypes.openai_web:
-                    message = convert_revchatgpt_message(data)
+                    message = convert_openai_web_message(data)
                     if conversation_id is None:
                         conversation_id = data["conversation_id"]
                 else:

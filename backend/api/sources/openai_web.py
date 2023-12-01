@@ -35,7 +35,7 @@ credentials = Credentials()
 logger = get_logger(__name__)
 
 
-def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebChatMessage | None:
+def convert_openai_web_message(item: dict, message_id: str = None) -> OpenaiWebChatMessage | None:
     if not item.get("message"):
         return None
     if not item["message"].get("author"):
@@ -71,22 +71,24 @@ def convert_revchatgpt_message(item: dict, message_id: str = None) -> OpenaiWebC
         create_time=item["message"].get("create_time"),
         parent=item.get("parent"),
         children=item.get("children", []),
-        content=content,
-        metadata=OpenaiWebChatMessageMetadata(
-            source="openai_web",
-            weight=item["message"].get("weight"),
-            end_turn=item["message"].get("end_turn"),
-            recipient=item["message"].get("recipient"),
-            message_status=item["message"].get("status"),
-            fallback_content=fallback_content,
-        )
+        content=content
     )
+    metadata_dict = OpenaiWebChatMessageMetadata(
+        source="openai_web",
+        weight=item["message"].get("weight"),
+        end_turn=item["message"].get("end_turn"),
+        recipient=item["message"].get("recipient"),
+        message_status=item["message"].get("status"),
+        fallback_content=fallback_content,
+    ).model_dump(exclude_unset=True, exclude_none=True)
     if "metadata" in item["message"] and item["message"]["metadata"] != {}:
-        result.metadata = result.metadata.model_copy(
-            update=item["message"]["metadata"]
-        )
+        metadata_dict.update(item["message"]["metadata"])
+        metadata = OpenaiWebChatMessageMetadata.model_validate(metadata_dict)
+        result.metadata = metadata
         model_code = item["message"]["metadata"].get("model_slug")
         result.model = OpenaiWebChatModels.from_code(model_code) or model_code
+    else:
+        result.metadata = OpenaiWebChatMessageMetadata.model_validate(metadata_dict)
     return result
 
 
@@ -95,7 +97,7 @@ def convert_mapping(mapping: dict[uuid.UUID, dict]) -> dict[str, OpenaiWebChatMe
     if not mapping:
         return result
     for key, item in mapping.items():
-        message = convert_revchatgpt_message(item, str(key))
+        message = convert_openai_web_message(item, str(key))
         if message:
             result[key] = message
     return {str(key): value for key, value in result.items()}
