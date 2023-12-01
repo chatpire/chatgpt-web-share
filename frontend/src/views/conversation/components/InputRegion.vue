@@ -210,6 +210,7 @@ const onPaste = (e: ClipboardEvent) => {
       continue;
     }
     fileUploadRegionRef?.value?.addFile(file);
+    showFileUpload.value = true;
     e.preventDefault();
   }
 };
