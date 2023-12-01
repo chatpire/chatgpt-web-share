@@ -17,10 +17,13 @@ logger = get_logger(__name__)
 def _validate_model(_source: ChatSourceTypes, model: str | None):
     if model is None:
         return
+    ignored_models = ["gpt-3.5-mobile", "gpt-4-mobile", "gpt-4-gizmo"]
+    if model in ignored_models:
+        return
     if _source == ChatSourceTypes.openai_web and model not in list(OpenaiWebChatModels):
-        raise ValueError(f"model {model} not in openai_web models: {'|'.join(list(OpenaiWebChatModels))}")
+        logger.warning(f"model {model} not in openai_web models: {'|'.join(list(OpenaiWebChatModels))}")
     elif _source == ChatSourceTypes.openai_api and model not in list(OpenaiApiChatModels):
-        raise ValueError(f"model {model} not in openai_api models: {'|'.join(list(OpenaiApiChatModels))}")
+        logger.warning(f"model {model} not in openai_api models: {'|'.join(list(OpenaiApiChatModels))}")
 
 
 MAX_CONTEXT_MESSAGE_COUNT = 1000
