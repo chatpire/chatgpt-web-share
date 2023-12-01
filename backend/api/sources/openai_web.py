@@ -8,7 +8,7 @@ import aiofiles
 import httpx
 from fastapi.encoders import jsonable_encoder
 import aiohttp
-from pydantic import parse_obj_as, ValidationError
+from pydantic import ValidationError
 
 from api.conf import Config, Credentials
 from api.enums import OpenaiWebChatModels, ChatSourceTypes
@@ -18,7 +18,6 @@ from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHi
     OpenaiWebConversationHistoryMeta, OpenaiWebChatMessage, OpenaiWebChatMessageTextContent, \
     OpenaiWebChatMessageCodeContent, \
     OpenaiWebChatMessageTetherBrowsingDisplayContent, OpenaiWebChatMessageTetherQuoteContent, \
-    OpenaiWebChatMessageContent, \
     OpenaiWebChatMessageSystemErrorContent, OpenaiWebChatMessageStderrContent, \
     OpenaiWebChatMessageExecutionOutputContent, OpenaiWebChatMessageMultimodalTextContent, \
     OpenaiWebChatMessageMultimodalTextContentImagePart, OpenaiWebChatMessageMetadataAttachment

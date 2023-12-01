@@ -46,8 +46,13 @@ class RequestLogAggregation(BaseModel):
 
 class AskLogAggregationID(BaseModel):
     start_time: datetime
-    # meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
     meta: Optional[Annotated[Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta], Field(discriminator='source')]] = None
+
+    @field_serializer("start_time")
+    def serialize_dt(self, start_time: Optional[datetime], _info):
+        if start_time:
+            return start_time.replace(tzinfo=timezone.utc)
+        return None
 
 
 class AskLogAggregation(BaseModel):
