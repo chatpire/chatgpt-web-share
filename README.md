@@ -18,9 +18,11 @@
 - 快速部署指南：http://localhost:8080/zh/guide/quick-start.html
 - 演示截图：http://localhost:8080/zh/demo/screenshots.html
 
-> （广告）如果你只是自己需要使用 ChatGPT，可以考虑 [**赛博小铺的拼车服务**](https://cws-docs.pages.dev/zh/support/ads.html#%E8%B5%9B%E5%8D%9A%E5%B0%8F%E9%93%BA-chatgpt-plus-%E6%8B%BC%E8%BD%A6%E6%9C%8D%E5%8A%A1)
+> （广告）如果你没有 ChatGPT Plus 账号，并且想省点心，可以考虑 [**赛博小铺的拼车服务**](https://cws-docs.pages.dev/zh/support/ads.html#%E8%B5%9B%E5%8D%9A%E5%B0%8F%E9%93%BA-chatgpt-plus-%E6%8B%BC%E8%BD%A6%E6%9C%8D%E5%8A%A1)
 > 
 > *正价Plus | 6人1车 | 会话隔离 | 支持 gpts | 网页功能齐全 | 并发提问 | 直连优化*
+
+> 部署 CWS 需要一台 1C1G 以上的服务器。项目文档里的这个页面推荐了一些高性价比的服务器，低至 $15/年：[VPS推荐](https://cws-docs.pages.dev/zh/support/vps.html)
 
 ## 声明
 
