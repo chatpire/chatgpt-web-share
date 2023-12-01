@@ -23,7 +23,7 @@ import ServerLogContent from '../components/ServerLogContent.vue';
 const { t } = useI18n();
 
 const refresh_duration = ref(5);
-const tab = ref<string>('server');
+const tab = ref<string>('completions');
 const logsContent = ref<Array<string>>();
 const enableAutoScroll = ref(true);
 const maxLineCount = ref(100);
