@@ -265,7 +265,7 @@ export function processSandboxLinks(contentDiv: HTMLDivElement, conversationId: 
   });
 }
 
-export async function getImageDownloadUrlFromFileServiceSchemaUrl(url: string | undefined) {
+export async function getImageDownloadUrlFromFileServiceSchemaUrl(url: string | undefined | null) {
   if (!url || !url.startsWith('file-service://')) return null;
   try {
     const response = await getFileDownloadUrlApi(url.split('file-service://')[1]);

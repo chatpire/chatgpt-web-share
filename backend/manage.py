@@ -49,7 +49,7 @@ def create_config(args):
                 return
         with open(output_path, mode='w', encoding='utf-8') as f:
             yaml = YAML()
-            yaml.dump(jsonable_encoder(base_config.model().dict()), f)
+            yaml.dump(jsonable_encoder(base_config.model().model_dump()), f)
             print(f"Config file saved to {output_path}.")
 
     save_config(config, 'config.yaml')
@@ -58,12 +58,12 @@ def create_config(args):
 
 def get_config_schema(args):
     from api.conf.config import ConfigModel
-    print(ConfigModel.schema_json(indent=2))
+    print(json.dumps(ConfigModel.model_json_schema(), indent=2))
 
 
 def get_credentials_schema(args):
     from api.conf.credentials import CredentialsModel
-    print(CredentialsModel.schema_json(indent=2))
+    print(json.dumps(CredentialsModel.model_json_schema(), indent=2))
 
 
 def get_model_definitions(args):

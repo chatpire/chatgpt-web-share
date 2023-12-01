@@ -32,21 +32,13 @@ const useConversationStore = defineStore('conversation', {
         return this.conversationHistoryMap[conversation_id];
       }
       const result = (await getConversationHistoryApi(conversation_id)).data;
-      this.$patch({
-        conversationHistoryMap: {
-          [conversation_id]: result,
-        },
-      });
+      this.conversationHistoryMap[conversation_id] = result;
     },
 
     async fetchConversationHistoryFromCache(conversation_id: string, fallback_refresh = true) {
       try {
         const result = (await getConversationHistoryFromCacheApi(conversation_id)).data;
-        this.$patch({
-          conversationHistoryMap: {
-            [conversation_id]: result,
-          },
-        });
+        this.conversationHistoryMap[conversation_id] = result;
       } catch (e) {
         if (fallback_refresh) {
           return this.fetchConversationHistory(conversation_id);
@@ -68,7 +60,9 @@ const useConversationStore = defineStore('conversation', {
       console.log(info);
       const currentTime = new Date().toISOString();
       this.newConversation = {
+        id: -1,
         source: info.source,
+        is_valid: true,
         conversation_id: newConversationId,
         title: info.title || '',
         current_model: info.model,
@@ -80,6 +74,7 @@ const useConversationStore = defineStore('conversation', {
         source: info.source,
         title: info.title || '',
         current_model: info.model,
+        current_node: '',
         create_time: currentTime,
         update_time: currentTime,
         mapping: {},

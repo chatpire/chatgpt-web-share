@@ -50,7 +50,7 @@ import { useI18n } from 'vue-i18n';
 import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
 import { jsonConfigModelSchema, jsonCredentialsModelSchema } from '@/types/json_schema';
 import { ConfigModel, CredentialsModel } from '@/types/schema';
-import { setUniqueItemsForEnumProperties } from '@/utils/json_schema';
+import { fixModelSchema } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { Dialog, Message } from '@/utils/tips';
 
@@ -61,7 +61,7 @@ const { t } = useI18n();
 const configModel = ref<ConfigModel | null>(null);
 const credentialsModel = ref<CredentialsModel | null>(null);
 
-setUniqueItemsForEnumProperties(jsonConfigModelSchema);
+fixModelSchema(jsonConfigModelSchema);
 
 const gtsm = screenWidthGreaterThan('sm');
 

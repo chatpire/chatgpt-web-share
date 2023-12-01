@@ -40,7 +40,7 @@ class RequestLogAggregationID(BaseModel):
 class RequestLogAggregation(BaseModel):
     id: RequestLogAggregationID = Field(alias="_id")  # 起始时间
     count: int  # 时间间隔内的请求数量
-    user_ids: list[Optional[int]] = None  # 用户ID列表
+    user_ids: list[Optional[int]] = []  # 用户ID列表
     avg_elapsed_ms: Optional[float] = None
 
 

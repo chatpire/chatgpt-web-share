@@ -113,7 +113,7 @@ export function getMessageListFromHistory(
 ): BaseChatMessage[] {
   const result: BaseChatMessage[] = [];
   if (!convHistory) return result;
-  let x = lastNode || convHistory.current_node || undefined;
+  let x = lastNode || convHistory.current_node || undefined as any;
   while (x != undefined) {
     const message = convHistory.mapping[x];
     if (message && message.content != undefined) {

@@ -15,7 +15,7 @@ export interface paths {
   };
   "/auth/register": {
     /**
-     * Register 
+     * Register
      * @description 注册时不能指定setting，使用默认setting
      */
     post: operations["register_auth_register_post"];
@@ -44,7 +44,7 @@ export interface paths {
   };
   "/conv": {
     /**
-     * Get My Conversations 
+     * Get My Conversations
      * @description 返回自己的有效会话
      */
     get: operations["get_my_conversations_conv_get"];
@@ -59,7 +59,7 @@ export interface paths {
     /** Get Conversation History */
     get: operations["get_conversation_history_conv__conversation_id__get"];
     /**
-     * Delete Conversation 
+     * Delete Conversation
      * @description 软删除：标记为 invalid 并且从 chatgpt 账号中删除会话，但不会删除 mongodb 中的历史记录
      */
     delete: operations["delete_conversation_conv__conversation_id__delete"];
@@ -72,7 +72,7 @@ export interface paths {
   };
   "/conv/{conversation_id}/vanish": {
     /**
-     * Vanish Conversation 
+     * Vanish Conversation
      * @description 硬删除：删除数据库和账号中的对话和历史记录
      */
     delete: operations["vanish_conversation_conv__conversation_id__vanish_delete"];
@@ -111,7 +111,7 @@ export interface paths {
   };
   "/chat/__schema_types": {
     /**
-     * Predict Schema Types 
+     * Predict Schema Types
      * @description 只用来让 openapi 自动生成 schema，并不实际调用
      */
     get: operations["_predict_schema_types_chat___schema_types_get"];
@@ -150,21 +150,21 @@ export interface paths {
   };
   "/status/common": {
     /**
-     * Get Server Status 
+     * Get Server Status
      * @description 普通用户获取服务器状态
      */
     get: operations["get_server_status_status_common_get"];
   };
   "/files/{file_id}/download-url": {
     /**
-     * Get File Download Url 
+     * Get File Download Url
      * @description file_id: OpenAI 分配的 id，以 file- 开头
      */
     get: operations["get_file_download_url_files__file_id__download_url_get"];
   };
   "/files/local/upload": {
     /**
-     * Upload File To Local 
+     * Upload File To Local
      * @description 上传文件到服务器。文件将被保存在服务器上，返回文件信息。
      * 仅当需要在服务器留存上传的文件时才使用.
      */
@@ -176,7 +176,7 @@ export interface paths {
   };
   "/files/openai-web/upload-start": {
     /**
-     * Start Upload To Openai 
+     * Start Upload To Openai
      * @description 要上传文件到 OpenAI Web，前端需要先调用此接口.
      * 1. 若最终上传方法是前端直接上传 (Browser -> Azure Blob)，则获取上传地址并记录文件信息，响应中 upload_file_info 不为空
      * 2. 否则的话就是服务端中转上传（Browser -> Local -> Azure Blob，此时响应中 upload_file_info 为空，前端应当:
@@ -195,7 +195,7 @@ export interface paths {
   };
   "/files/local/upload-to-openai-web/{file_id}": {
     /**
-     * Upload Local File To Openai Web 
+     * Upload Local File To Openai Web
      * @description 将服务器上已有的文件上传到 OpenAI Web（Azure blob）
      */
     post: operations["upload_local_file_to_openai_web_files_local_upload_to_openai_web__file_id__post"];
@@ -208,25 +208,25 @@ export interface components {
   schemas: {
     /** AskLogAggregation */
     AskLogAggregation: {
-      _id?: components["schemas"]["AskLogAggregationID"];
+      _id?: components["schemas"]["AskLogAggregationID"] | null;
       /** Count */
       count: number;
       /** User Ids */
-      user_ids?: (number)[];
+      user_ids?: (number | null)[];
       /** Total Queueing Time */
-      total_queueing_time?: number;
+      total_queueing_time?: number | null;
       /** Total Ask Time */
-      total_ask_time?: number;
+      total_ask_time?: number | null;
     };
     /** AskLogAggregationID */
     AskLogAggregationID: {
       /**
-       * Start Time 
+       * Start Time
        * Format: date-time
        */
       start_time: string;
       /** Meta */
-      meta?: components["schemas"]["OpenaiWebAskLogMeta"] | components["schemas"]["OpenaiApiAskLogMeta"];
+      meta?: (components["schemas"]["OpenaiWebAskLogMeta"] | components["schemas"]["OpenaiApiAskLogMeta"]) | null;
     };
     /** AskRequest */
     AskRequest: {
@@ -236,30 +236,21 @@ export interface components {
       /** New Conversation */
       new_conversation: boolean;
       /** New Title */
-      new_title?: string;
-      /**
-       * Conversation Id 
-       * Format: uuid
-       */
-      conversation_id?: string;
-      /**
-       * Parent 
-       * Format: uuid
-       */
-      parent?: string;
-      /**
-       * Api Context Message Count 
-       * @default -1
-       */
-      api_context_message_count?: number;
+      new_title?: string | null;
+      /** Conversation Id */
+      conversation_id?: string | null;
+      /** Parent */
+      parent?: string | null;
+      /** Api Context Message Count */
+      api_context_message_count?: number | null;
       /** Text Content */
       text_content: string;
       /** Openai Web Plugin Ids */
-      openai_web_plugin_ids?: (string)[];
+      openai_web_plugin_ids?: string[] | null;
       /** Openai Web Attachments */
-      openai_web_attachments?: (components["schemas"]["OpenaiWebChatMessageMetadataAttachment"])[];
+      openai_web_attachments?: components["schemas"]["OpenaiWebChatMessageMetadataAttachment"][] | null;
       /** Openai Web Multimodal Image Parts */
-      openai_web_multimodal_image_parts?: (components["schemas"]["OpenaiWebChatMessageMultimodalTextContentImagePart"])[];
+      openai_web_multimodal_image_parts?: components["schemas"]["OpenaiWebChatMessageMultimodalTextContentImagePart-Input"][] | null;
     };
     /** AskResponse */
     AskResponse: {
@@ -267,206 +258,189 @@ export interface components {
       /** Tip */
       tip?: string;
       /**
-       * Conversation Id 
+       * Conversation Id
        * Format: uuid
        */
       conversation_id?: string;
       /** Message */
-      message?: components["schemas"]["OpenaiWebChatMessage"] | components["schemas"]["OpenaiApiChatMessage"];
+      message?: (components["schemas"]["OpenaiWebChatMessage"] | components["schemas"]["OpenaiApiChatMessage"]) | null;
       /** Error Detail */
-      error_detail?: string;
+      error_detail?: string | null;
     };
     /**
-     * AskResponseType 
-     * @description An enumeration. 
+     * AskResponseType
      * @enum {string}
      */
     AskResponseType: "waiting" | "queueing" | "message" | "error";
     /** AuthSetting */
     AuthSetting: {
       /**
-       * Jwt Secret 
+       * Jwt Secret
        * @default MODIFY_THIS_TO_RANDOM_SECURE_STRING
        */
-      jwt_secret?: string;
+      jwt_secret: string;
       /**
-       * Jwt Lifetime Seconds 
+       * Jwt Lifetime Seconds
        * @default 259200
        */
-      jwt_lifetime_seconds?: number;
+      jwt_lifetime_seconds: number;
       /**
-       * Cookie Max Age 
+       * Cookie Max Age
        * @default 259200
        */
-      cookie_max_age?: number;
+      cookie_max_age: number;
       /**
-       * User Secret 
+       * User Secret
        * @default MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING
        */
-      user_secret?: string;
+      user_secret: string;
     };
     /** BaseChatMessage */
     BaseChatMessage: {
       /**
-       * Id 
+       * Id
        * Format: uuid
        */
       id: string;
       /**
-       * Source 
+       * Source
        * @enum {string}
        */
       source: "openai_web" | "openai_api";
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: ("browser" | "python") | string;
+      author_name?: ("browser" | "python") | string | null;
       /** Model */
-      model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Parent 
-       * Format: uuid
-       */
-      parent?: string;
+      model?: string | null;
+      /** Create Time */
+      create_time?: string | null;
+      /** Parent */
+      parent?: string | null;
       /** Children */
-      children: (string)[];
+      children: string[];
       /** Content */
-      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"];
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | null;
       /** Metadata */
-      metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
+      metadata?: (components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"]) | null;
     };
     /** BaseConversationHistory */
     BaseConversationHistory: {
       /**
-       * Id 
+       * Id
        * Format: uuid
        */
       _id?: string;
       /**
-       * Source 
+       * Source
        * @enum {string}
        */
       source: "openai_web" | "openai_api";
       /** Title */
       title: string;
       /**
-       * Create Time 
+       * Create Time
        * Format: date-time
        */
       create_time: string;
       /**
-       * Update Time 
+       * Update Time
        * Format: date-time
        */
       update_time: string;
       /** Mapping */
       mapping: {
-        [key: string]: components["schemas"]["BaseChatMessage"] | undefined;
+        [key: string]: components["schemas"]["BaseChatMessage"];
       };
       /**
-       * Current Node 
+       * Current Node
        * Format: uuid
        */
-      current_node?: string;
+      current_node: string;
       /** Current Model */
-      current_model?: string;
+      current_model?: string | null;
       /** Metadata */
-      metadata?: components["schemas"]["OpenaiWebConversationHistoryMeta"] | components["schemas"]["OpenaiApiConversationHistoryMeta"];
+      metadata?: (components["schemas"]["OpenaiWebConversationHistoryMeta"] | components["schemas"]["OpenaiApiConversationHistoryMeta"]) | null;
     };
     /** BaseConversationSchema */
     BaseConversationSchema: {
       /**
-       * Id 
+       * Id
        * @default -1
        */
-      id?: number;
+      id: number;
       source: components["schemas"]["ChatSourceTypes"];
-      /**
-       * Conversation Id 
-       * Format: uuid
-       */
-      conversation_id?: string;
+      /** Conversation Id */
+      conversation_id?: string | null;
       /** Title */
-      title?: string;
+      title?: string | null;
       /** User Id */
-      user_id?: number;
+      user_id?: number | null;
       /**
-       * Is Valid 
+       * Is Valid
        * @default true
        */
-      is_valid?: boolean;
+      is_valid: boolean;
       /** Current Model */
-      current_model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Update Time 
-       * Format: date-time
-       */
-      update_time?: string;
+      current_model?: string | null;
+      /** Create Time */
+      create_time?: string | null;
+      /** Update Time */
+      update_time?: string | null;
     };
     /** Body_auth_jwt_login_auth_login_post */
     Body_auth_jwt_login_auth_login_post: {
       /** Grant Type */
-      grant_type?: string;
+      grant_type?: string | null;
       /** Username */
       username: string;
       /** Password */
       password: string;
       /**
-       * Scope 
+       * Scope
        * @default
        */
-      scope?: string;
+      scope: string;
       /** Client Id */
-      client_id?: string;
+      client_id?: string | null;
       /** Client Secret */
-      client_secret?: string;
+      client_secret?: string | null;
     };
     /** Body_upload_file_to_local_files_local_upload_post */
     Body_upload_file_to_local_files_local_upload_post: {
       /**
-       * File 
+       * File
        * Format: binary
        */
       file: string;
     };
     /**
-     * ChatSourceTypes 
-     * @description An enumeration. 
+     * ChatSourceTypes
      * @enum {string}
      */
     ChatSourceTypes: "openai_web" | "openai_api";
     /** CommonSetting */
     CommonSetting: {
       /**
-       * Print Sql 
+       * Print Sql
        * @default false
        */
-      print_sql?: boolean;
+      print_sql: boolean;
       /**
-       * Create Initial Admin User 
+       * Create Initial Admin User
        * @default true
        */
-      create_initial_admin_user?: boolean;
+      create_initial_admin_user: boolean;
       /**
-       * Initial Admin User Username 
+       * Initial Admin User Username
        * @default admin
        */
-      initial_admin_user_username?: string;
+      initial_admin_user_username: string;
       /**
-       * Initial Admin User Password 
+       * Initial Admin User Password
        * @default password
        */
-      initial_admin_user_password?: string;
+      initial_admin_user_password: string;
     };
     /** CommonStatusSchema */
     CommonStatusSchema: {
@@ -484,9 +458,8 @@ export interface components {
       gpt4_count_in_3_hours?: number;
     };
     /** ConfigModel */
-    ConfigModel: {
+    "ConfigModel-Input": {
       /**
-       * Openai Web 
        * @default {
        *   "enabled": true,
        *   "is_plus_account": true,
@@ -504,19 +477,18 @@ export interface components {
        *     "gpt_3_5": "text-davinci-002-render-sha",
        *     "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
        *     "gpt_4": "gpt-4",
-       *     "gpt_4_mobile": "gpt-4-mobile",
        *     "gpt_4_browsing": "gpt-4-browsing",
-       *     "gpt_4_plugins": "gpt-4-plugins",
        *     "gpt_4_code_interpreter": "gpt-4-code-interpreter",
-       *     "gpt_4_dalle": "gpt-4-dalle"
+       *     "gpt_4_dalle": "gpt-4-dalle",
+       *     "gpt_4_mobile": "gpt-4-mobile",
+       *     "gpt_4_plugins": "gpt-4-plugins"
        *   },
        *   "file_upload_strategy": "browser_upload_only",
        *   "disable_uploading": false
        * }
        */
-      openai_web?: components["schemas"]["OpenaiWebChatGPTSetting"];
+      openai_web: components["schemas"]["OpenaiWebChatGPTSetting"];
       /**
-       * Openai Api 
        * @default {
        *   "enabled": true,
        *   "openai_base_url": "https://api.openai.com/v1/",
@@ -532,9 +504,8 @@ export interface components {
        *   }
        * }
        */
-      openai_api?: components["schemas"]["OpenaiApiSetting"];
+      openai_api: components["schemas"]["OpenaiApiSetting"];
       /**
-       * Common 
        * @default {
        *   "print_sql": false,
        *   "create_initial_admin_user": true,
@@ -542,9 +513,8 @@ export interface components {
        *   "initial_admin_user_password": "password"
        * }
        */
-      common?: components["schemas"]["CommonSetting"];
+      common: components["schemas"]["CommonSetting"];
       /**
-       * Http 
        * @default {
        *   "host": "127.0.0.1",
        *   "port": 8000,
@@ -556,9 +526,8 @@ export interface components {
        *   ]
        * }
        */
-      http?: components["schemas"]["HttpSetting"];
+      http: components["schemas"]["HttpSetting"];
       /**
-       * Data 
        * @default {
        *   "data_dir": "./data",
        *   "database_url": "sqlite+aiosqlite:///data/database.db",
@@ -568,9 +537,8 @@ export interface components {
        *   "max_file_upload_size": 104857600
        * }
        */
-      data?: components["schemas"]["DataSetting"];
+      data: components["schemas"]["DataSetting"];
       /**
-       * Auth 
        * @default {
        *   "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECURE_STRING",
        *   "jwt_lifetime_seconds": 259200,
@@ -578,9 +546,8 @@ export interface components {
        *   "user_secret": "MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING"
        * }
        */
-      auth?: components["schemas"]["AuthSetting"];
+      auth: components["schemas"]["AuthSetting"];
       /**
-       * Stats 
        * @default {
        *   "ask_stats_ttl": 7776000,
        *   "request_stats_ttl": 2592000,
@@ -589,40 +556,146 @@ export interface components {
        *   ]
        * }
        */
-      stats?: components["schemas"]["StatsSetting"];
+      stats: components["schemas"]["StatsSetting"];
       /**
-       * Log 
        * @default {
        *   "console_log_level": "INFO"
        * }
        */
-      log?: components["schemas"]["LogSetting"];
+      log: components["schemas"]["LogSetting"];
+    };
+    /** ConfigModel */
+    "ConfigModel-Output": {
+      /**
+       * @default {
+       *   "enabled": true,
+       *   "is_plus_account": true,
+       *   "common_timeout": 20,
+       *   "ask_timeout": 600,
+       *   "sync_conversations_on_startup": false,
+       *   "sync_conversations_schedule": false,
+       *   "sync_conversations_schedule_interval_hours": 12,
+       *   "enabled_models": [
+       *     "gpt_3_5",
+       *     "gpt_4",
+       *     "gpt_4_plugins"
+       *   ],
+       *   "model_code_mapping": {
+       *     "gpt_3_5": "text-davinci-002-render-sha",
+       *     "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
+       *     "gpt_4": "gpt-4",
+       *     "gpt_4_browsing": "gpt-4-browsing",
+       *     "gpt_4_code_interpreter": "gpt-4-code-interpreter",
+       *     "gpt_4_dalle": "gpt-4-dalle",
+       *     "gpt_4_mobile": "gpt-4-mobile",
+       *     "gpt_4_plugins": "gpt-4-plugins"
+       *   },
+       *   "file_upload_strategy": "browser_upload_only",
+       *   "disable_uploading": false
+       * }
+       */
+      openai_web: components["schemas"]["OpenaiWebChatGPTSetting"];
+      /**
+       * @default {
+       *   "enabled": true,
+       *   "openai_base_url": "https://api.openai.com/v1/",
+       *   "connect_timeout": 10,
+       *   "read_timeout": 20,
+       *   "enabled_models": [
+       *     "gpt_3_5",
+       *     "gpt_4"
+       *   ],
+       *   "model_code_mapping": {
+       *     "gpt_3_5": "gpt-3.5-turbo",
+       *     "gpt_4": "gpt-4"
+       *   }
+       * }
+       */
+      openai_api: components["schemas"]["OpenaiApiSetting"];
+      /**
+       * @default {
+       *   "print_sql": false,
+       *   "create_initial_admin_user": true,
+       *   "initial_admin_user_username": "admin",
+       *   "initial_admin_user_password": "password"
+       * }
+       */
+      common: components["schemas"]["CommonSetting"];
+      /**
+       * @default {
+       *   "host": "127.0.0.1",
+       *   "port": 8000,
+       *   "cors_allow_origins": [
+       *     "http://localhost:8000",
+       *     "http://localhost:5173",
+       *     "http://127.0.0.1:8000",
+       *     "http://127.0.0.1:5173"
+       *   ]
+       * }
+       */
+      http: components["schemas"]["HttpSetting"];
+      /**
+       * @default {
+       *   "data_dir": "./data",
+       *   "database_url": "sqlite+aiosqlite:///data/database.db",
+       *   "mongodb_url": "mongodb://cws:password@mongo:27017",
+       *   "mongodb_db_name": "cws",
+       *   "run_migration": false,
+       *   "max_file_upload_size": 104857600
+       * }
+       */
+      data: components["schemas"]["DataSetting"];
+      /**
+       * @default {
+       *   "jwt_secret": "MODIFY_THIS_TO_RANDOM_SECURE_STRING",
+       *   "jwt_lifetime_seconds": 259200,
+       *   "cookie_max_age": 259200,
+       *   "user_secret": "MODIFY_THIS_TO_ANOTHER_RANDOM_SECURE_STRING"
+       * }
+       */
+      auth: components["schemas"]["AuthSetting"];
+      /**
+       * @default {
+       *   "ask_stats_ttl": 7776000,
+       *   "request_stats_ttl": 2592000,
+       *   "request_stats_filter_keywords": [
+       *     "/status"
+       *   ]
+       * }
+       */
+      stats: components["schemas"]["StatsSetting"];
+      /**
+       * @default {
+       *   "console_log_level": "INFO"
+       * }
+       */
+      log: components["schemas"]["LogSetting"];
     };
     /** CredentialsModel */
     CredentialsModel: {
       /** Openai Web Access Token */
-      openai_web_access_token?: string;
+      openai_web_access_token?: string | null;
       /** Openai Api Key */
-      openai_api_key?: string;
+      openai_api_key?: string | null;
     };
     /** CustomOpenaiApiSettings */
     CustomOpenaiApiSettings: {
       /** Url */
-      url?: string;
+      url?: string | null;
       /** Key */
-      key?: string;
+      key?: string | null;
     };
     /** DailyTimeSlot */
     DailyTimeSlot: {
       /**
-       * Start Time 
-       * Format: time 
+       * Start Time
+       * Format: time
        * @description 每天可使用的开始时间
        */
       start_time: string;
       /**
-       * End Time 
-       * Format: time 
+       * End Time
+       * Format: time
        * @description 每天可使用的结束时间
        */
       end_time: string;
@@ -630,55 +703,55 @@ export interface components {
     /** DataSetting */
     DataSetting: {
       /**
-       * Data Dir 
+       * Data Dir
        * @default ./data
        */
-      data_dir?: string;
+      data_dir: string;
       /**
-       * Database Url 
+       * Database Url
        * @default sqlite+aiosqlite:///data/database.db
        */
-      database_url?: string;
+      database_url: string;
       /**
-       * Mongodb Url 
+       * Mongodb Url
        * @default mongodb://cws:password@mongo:27017
        */
-      mongodb_url?: string;
+      mongodb_url: string;
       /**
-       * Mongodb Db Name 
+       * Mongodb Db Name
        * @default cws
        */
-      mongodb_db_name?: string;
+      mongodb_db_name: string;
       /**
-       * Run Migration 
+       * Run Migration
        * @default false
        */
-      run_migration?: boolean;
+      run_migration: boolean;
       /**
-       * Max File Upload Size 
+       * Max File Upload Size
        * @default 104857600
        */
-      max_file_upload_size?: number;
+      max_file_upload_size: number;
     };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
-      detail?: (components["schemas"]["ValidationError"])[];
+      detail?: components["schemas"]["ValidationError"][];
     };
     /** HttpSetting */
     HttpSetting: {
       /**
-       * Host 
+       * Host
        * @default 127.0.0.1
        */
-      host?: string;
+      host: string;
       /**
-       * Port 
+       * Port
        * @default 8000
        */
-      port?: number;
+      port: number;
       /**
-       * Cors Allow Origins 
+       * Cors Allow Origins
        * @default [
        *   "http://localhost:8000",
        *   "http://localhost:5173",
@@ -686,32 +759,32 @@ export interface components {
        *   "http://127.0.0.1:5173"
        * ]
        */
-      cors_allow_origins?: (string)[];
+      cors_allow_origins: string[];
     };
     /** LogFilterOptions */
     LogFilterOptions: {
       /**
-       * Max Lines 
+       * Max Lines
        * @default 100
        */
-      max_lines?: number;
+      max_lines: number;
       /** Exclude Keywords */
-      exclude_keywords?: (string)[];
+      exclude_keywords?: string[];
     };
     /** LogSetting */
     LogSetting: {
       /**
-       * Console Log Level 
-       * @default INFO 
+       * Console Log Level
+       * @default INFO
        * @enum {string}
        */
-      console_log_level?: "INFO" | "DEBUG" | "WARNING";
+      console_log_level: "INFO" | "DEBUG" | "WARNING";
     };
     /** OpenaiApiAskLogMeta */
     OpenaiApiAskLogMeta: {
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_api";
       model: components["schemas"]["OpenaiApiChatModels"];
@@ -719,227 +792,202 @@ export interface components {
     /** OpenaiApiChatMessage */
     OpenaiApiChatMessage: {
       /**
-       * Id 
+       * Id
        * Format: uuid
        */
       id: string;
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_api";
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: ("browser" | "python") | string;
+      author_name?: ("browser" | "python") | string | null;
       /** Model */
-      model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Parent 
-       * Format: uuid
-       */
-      parent?: string;
+      model?: string | null;
+      /** Create Time */
+      create_time?: string | null;
+      /** Parent */
+      parent?: string | null;
       /** Children */
-      children: (string)[];
-      content?: components["schemas"]["OpenaiApiChatMessageTextContent"];
+      children: string[];
+      content?: components["schemas"]["OpenaiApiChatMessageTextContent"] | null;
       /** Metadata */
-      metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
+      metadata?: (components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"]) | null;
     };
     /** OpenaiApiChatMessageMetadata */
     OpenaiApiChatMessageMetadata: {
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_api";
-      usage?: components["schemas"]["OpenaiChatResponseUsage"];
+      usage?: components["schemas"]["OpenaiChatResponseUsage"] | null;
       /** Finish Reason */
-      finish_reason?: string;
+      finish_reason?: string | null;
     };
     /** OpenaiApiChatMessageTextContent */
     OpenaiApiChatMessageTextContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "text";
       /** Text */
       text: string;
     };
     /**
-     * OpenaiApiChatModels 
-     * @description An enumeration. 
+     * OpenaiApiChatModels
      * @enum {string}
      */
     OpenaiApiChatModels: "gpt_3_5" | "gpt_4";
-    /**
-     * OpenaiApiConversationHistoryDocument 
-     * @description Document Mapping class.
-     * 
-     * Fields:
-     * 
-     * - `id` - MongoDB document ObjectID "_id" field.
-     * Mapped to the PydanticObjectId class
-     */
+    /** OpenaiApiConversationHistoryDocument */
     OpenaiApiConversationHistoryDocument: {
       /**
-       * Id 
+       * Id
        * Format: uuid
        */
       _id?: string;
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_api";
       /** Title */
       title: string;
       /**
-       * Create Time 
+       * Create Time
        * Format: date-time
        */
       create_time: string;
       /**
-       * Update Time 
+       * Update Time
        * Format: date-time
        */
       update_time: string;
       /** Mapping */
       mapping: {
-        [key: string]: components["schemas"]["OpenaiApiChatMessage"] | undefined;
+        [key: string]: components["schemas"]["OpenaiApiChatMessage"];
       };
       /**
-       * Current Node 
+       * Current Node
        * Format: uuid
        */
-      current_node?: string;
+      current_node: string;
       /** Current Model */
-      current_model?: string;
+      current_model?: string | null;
       /** Metadata */
-      metadata?: components["schemas"]["OpenaiWebConversationHistoryMeta"] | components["schemas"]["OpenaiApiConversationHistoryMeta"];
+      metadata?: (components["schemas"]["OpenaiWebConversationHistoryMeta"] | components["schemas"]["OpenaiApiConversationHistoryMeta"]) | null;
     };
     /** OpenaiApiConversationHistoryMeta */
     OpenaiApiConversationHistoryMeta: {
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_api";
     };
     /** OpenaiApiConversationSchema */
     OpenaiApiConversationSchema: {
       /**
-       * Id 
+       * Id
        * @default -1
        */
-      id?: number;
+      id: number;
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_api";
-      /**
-       * Conversation Id 
-       * Format: uuid
-       */
-      conversation_id?: string;
+      /** Conversation Id */
+      conversation_id?: string | null;
       /** Title */
-      title?: string;
+      title?: string | null;
       /** User Id */
-      user_id?: number;
+      user_id?: number | null;
       /**
-       * Is Valid 
+       * Is Valid
        * @default true
        */
-      is_valid?: boolean;
+      is_valid: boolean;
       /** Current Model */
-      current_model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Update Time 
-       * Format: date-time
-       */
-      update_time?: string;
+      current_model?: string | null;
+      /** Create Time */
+      create_time?: string | null;
+      /** Update Time */
+      update_time?: string | null;
     };
     /**
-     * OpenaiApiPerModelAskCount 
+     * OpenaiApiPerModelAskCount
      * @default {
      *   "gpt_3_5": 0,
      *   "gpt_4": 0
      * }
      */
     OpenaiApiPerModelAskCount: {
-      [key: string]: number | undefined;
+      [key: string]: number;
     };
     /** OpenaiApiSetting */
     OpenaiApiSetting: {
       /**
-       * Enabled 
+       * Enabled
        * @default true
        */
-      enabled?: boolean;
+      enabled: boolean;
       /**
-       * Openai Base Url 
+       * Openai Base Url
        * @default https://api.openai.com/v1/
        */
-      openai_base_url?: string;
+      openai_base_url: string;
       /** Proxy */
-      proxy?: string;
+      proxy?: string | null;
       /**
-       * Connect Timeout 
+       * Connect Timeout
        * @default 10
        */
-      connect_timeout?: number;
+      connect_timeout: number;
       /**
-       * Read Timeout 
+       * Read Timeout
        * @default 20
        */
-      read_timeout?: number;
+      read_timeout: number;
       /**
+       * Enabled Models
        * @default [
        *   "gpt_3_5",
        *   "gpt_4"
        * ]
        */
-      enabled_models?: (components["schemas"]["OpenaiApiChatModels"])[];
+      enabled_models: components["schemas"]["OpenaiApiChatModels"][];
       /**
-       * Model Code Mapping 
+       * Model Code Mapping
        * @default {
        *   "gpt_3_5": "gpt-3.5-turbo",
        *   "gpt_4": "gpt-4"
        * }
        */
-      model_code_mapping?: {
-        [key: string]: string | undefined;
+      model_code_mapping: {
+        [key: string]: string;
       };
     };
     /** OpenaiApiSourceSettingSchema */
     OpenaiApiSourceSettingSchema: {
       /** Allow To Use */
       allow_to_use: boolean;
-      /**
-       * Valid Until 
-       * Format: date-time
-       */
-      valid_until?: string;
+      /** Valid Until */
+      valid_until?: string | null;
       /** Max Conv Count */
       max_conv_count: number;
       /** Total Ask Count */
       total_ask_count: number;
       /** Rate Limits */
-      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      rate_limits: components["schemas"]["TimeWindowRateLimit"][];
       /** Daily Available Time Slots */
-      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      available_models: (components["schemas"]["OpenaiApiChatModels"])[];
+      daily_available_time_slots: components["schemas"]["DailyTimeSlot"][];
+      /** Available Models */
+      available_models: components["schemas"]["OpenaiApiChatModels"][];
       per_model_ask_count: components["schemas"]["OpenaiApiPerModelAskCount"];
       /** Allow Custom Openai Api */
       allow_custom_openai_api: boolean;
@@ -952,7 +1000,7 @@ export interface components {
       /** File Size */
       file_size: number;
       /**
-       * Use Case 
+       * Use Case
        * @enum {string}
        */
       use_case: "my_files" | "multimodal";
@@ -960,84 +1008,84 @@ export interface components {
     /** OpenaiChatInterpreterInfo */
     OpenaiChatInterpreterInfo: {
       /** Kernel Started */
-      kernel_started?: boolean;
+      kernel_started?: boolean | null;
       /** Time Remaining Ms */
-      time_remaining_ms?: number;
+      time_remaining_ms?: number | null;
     };
     /** OpenaiChatPlugin */
     OpenaiChatPlugin: {
       /** Id */
-      id?: string;
+      id?: string | null;
       /** Namespace */
-      namespace?: string;
-      manifest?: components["schemas"]["OpenaiChatPluginManifest"];
+      namespace?: string | null;
+      manifest?: components["schemas"]["OpenaiChatPluginManifest"] | null;
       /** Categories */
-      categories?: (components["schemas"]["OpenaiChatPluginCategory"])[];
+      categories?: components["schemas"]["OpenaiChatPluginCategory"][] | null;
       /** Domain */
-      domain?: string;
+      domain?: string | null;
       /** Status */
-      status?: "approved" | string;
+      status?: "approved" | string | null;
       /** User Settings */
-      user_settings?: components["schemas"]["OpenaiChatPluginUserSettings"] | Record<string, never>;
+      user_settings?: components["schemas"]["OpenaiChatPluginUserSettings"] | Record<string, never> | null;
       /** Oauth Client Id */
-      oauth_client_id?: string;
+      oauth_client_id?: string | null;
     };
     /** OpenaiChatPluginCategory */
     OpenaiChatPluginCategory: {
       /** Id */
-      id?: string;
+      id?: string | null;
       /** Title */
-      title?: string;
+      title?: string | null;
     };
     /** OpenaiChatPluginListResponse */
     OpenaiChatPluginListResponse: {
       /** Items */
-      items: (components["schemas"]["OpenaiChatPlugin"])[];
+      items: components["schemas"]["OpenaiChatPlugin"][];
       /** Count */
-      count?: number;
+      count?: number | null;
     };
     /** OpenaiChatPluginManifest */
     OpenaiChatPluginManifest: {
       /** Schema Version */
-      schema_version?: string;
+      schema_version?: string | null;
       /** Name For Model */
-      name_for_model?: string;
+      name_for_model?: string | null;
       /** Name For Human */
-      name_for_human?: string;
+      name_for_human?: string | null;
       /** Description For Model */
-      description_for_model?: string;
+      description_for_model?: string | null;
       /** Description For Human */
-      description_for_human?: string;
+      description_for_human?: string | null;
       /** Api */
-      api?: Record<string, never>;
+      api?: Record<string, never> | null;
       /** Auth */
-      auth?: Record<string, never>;
+      auth?: Record<string, never> | null;
       /** Logo Url */
-      logo_url?: string;
+      logo_url?: string | null;
       /** Contact Email */
-      contact_email?: string;
+      contact_email?: string | null;
       /** Legal Info Url */
-      legal_info_url?: string;
+      legal_info_url?: string | null;
     };
     /** OpenaiChatPluginUserSettings */
     OpenaiChatPluginUserSettings: {
       /** Is Authenticated */
-      is_authenticated?: boolean;
+      is_authenticated?: boolean | null;
       /** Is Installed */
-      is_installed?: boolean;
+      is_installed?: boolean | null;
     };
     /** OpenaiChatResponseUsage */
     OpenaiChatResponseUsage: {
       /** Prompt Tokens */
-      prompt_tokens?: number;
+      prompt_tokens?: number | null;
       /** Completion Tokens */
-      completion_tokens?: number;
+      completion_tokens?: number | null;
     };
     /** OpenaiWebAskLogMeta */
     OpenaiWebAskLogMeta: {
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_web";
       model: components["schemas"]["OpenaiWebChatModels"];
@@ -1045,55 +1093,56 @@ export interface components {
     /** OpenaiWebChatGPTSetting */
     OpenaiWebChatGPTSetting: {
       /**
-       * Enabled 
+       * Enabled
        * @default true
        */
-      enabled?: boolean;
+      enabled: boolean;
       /**
-       * Is Plus Account 
+       * Is Plus Account
        * @default true
        */
-      is_plus_account?: boolean;
+      is_plus_account: boolean;
       /** Chatgpt Base Url */
-      chatgpt_base_url?: string;
+      chatgpt_base_url?: string | null;
       /** Proxy */
-      proxy?: string;
+      proxy?: string | null;
       /**
-       * Common Timeout 
-       * @description Increase this value if timeout error occurs. 
+       * Common Timeout
+       * @description Increase this value if timeout error occurs.
        * @default 20
        */
-      common_timeout?: number;
+      common_timeout: number;
       /**
-       * Ask Timeout 
+       * Ask Timeout
        * @default 600
        */
-      ask_timeout?: number;
+      ask_timeout: number;
       /**
-       * Sync Conversations On Startup 
+       * Sync Conversations On Startup
        * @default false
        */
-      sync_conversations_on_startup?: boolean;
+      sync_conversations_on_startup: boolean;
       /**
-       * Sync Conversations Schedule 
+       * Sync Conversations Schedule
        * @default false
        */
-      sync_conversations_schedule?: boolean;
+      sync_conversations_schedule: boolean;
       /**
-       * Sync Conversations Schedule Interval Hours 
+       * Sync Conversations Schedule Interval Hours
        * @default 12
        */
-      sync_conversations_schedule_interval_hours?: number;
+      sync_conversations_schedule_interval_hours: number;
       /**
+       * Enabled Models
        * @default [
        *   "gpt_3_5",
        *   "gpt_4",
        *   "gpt_4_plugins"
        * ]
        */
-      enabled_models?: (components["schemas"]["OpenaiWebChatModels"])[];
+      enabled_models: components["schemas"]["OpenaiWebChatModels"][];
       /**
-       * Model Code Mapping 
+       * Model Code Mapping
        * @default {
        *   "gpt_3_5": "text-davinci-002-render-sha",
        *   "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
@@ -1105,408 +1154,394 @@ export interface components {
        *   "gpt_4_dalle": "gpt-4-dalle"
        * }
        */
-      model_code_mapping?: {
-        [key: string]: string | undefined;
+      model_code_mapping: {
+        [key: string]: string;
       };
       /** @default browser_upload_only */
-      file_upload_strategy?: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
+      file_upload_strategy: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
       /**
-       * Disable Uploading 
+       * Disable Uploading
        * @default false
        */
-      disable_uploading?: boolean;
+      disable_uploading: boolean;
     };
     /** OpenaiWebChatMessage */
     OpenaiWebChatMessage: {
       /**
-       * Id 
+       * Id
        * Format: uuid
        */
       id: string;
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_web";
       /** Role */
       role: ("system" | "user" | "assistant" | "tool") | string;
       /** Author Name */
-      author_name?: ("browser" | "python") | string;
+      author_name?: ("browser" | "python") | string | null;
       /** Model */
-      model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Parent 
-       * Format: uuid
-       */
-      parent?: string;
+      model?: string | null;
+      /** Create Time */
+      create_time?: string | null;
+      /** Parent */
+      parent?: string | null;
       /** Children */
-      children: (string)[];
+      children: string[];
       /** Content */
-      content?: components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"];
+      content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | null;
       /** Metadata */
-      metadata?: components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"];
+      metadata?: (components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"]) | null;
     };
     /** OpenaiWebChatMessageCodeContent */
     OpenaiWebChatMessageCodeContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "code";
       /** Language */
-      language?: string;
+      language?: string | null;
       /** Text */
-      text?: string;
+      text?: string | null;
     };
     /** OpenaiWebChatMessageExecutionOutputContent */
     OpenaiWebChatMessageExecutionOutputContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "execution_output";
       /** Text */
-      text?: string;
+      text?: string | null;
     };
     /** OpenaiWebChatMessageMetadata */
     OpenaiWebChatMessageMetadata: {
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_web";
       /** Finish Details */
-      finish_details?: Record<string, never>;
+      finish_details?: Record<string, never> | null;
       /** Weight */
-      weight?: number;
+      weight?: number | null;
       /** End Turn */
-      end_turn?: boolean;
+      end_turn?: boolean | null;
       /** Message Status */
-      message_status?: string;
+      message_status?: string | null;
       /** Recipient */
-      recipient?: ("all" | "browser" | "python") | string;
+      recipient?: ("all" | "browser" | "python") | string | null;
       /** Fallback Content */
-      fallback_content?: Record<string, never>;
-      invoked_plugin?: components["schemas"]["OpenaiWebChatMessageMetadataPlugin"];
+      fallback_content?: unknown;
+      invoked_plugin?: components["schemas"]["OpenaiWebChatMessageMetadataPlugin"] | null;
       /** Command */
-      command?: "search" | string;
+      command?: "search" | string | null;
       /** Args */
-      args?: (string)[];
-      _cite_metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCite"];
+      args?: unknown[] | null;
+      _cite_metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCite"] | null;
       /** Citations */
-      citations?: (components["schemas"]["OpenaiWebChatMessageMetadataCitation"])[];
+      citations?: components["schemas"]["OpenaiWebChatMessageMetadataCitation"][] | null;
       /** Attachments */
-      attachments?: (components["schemas"]["OpenaiWebChatMessageMetadataAttachment"])[];
+      attachments?: components["schemas"]["OpenaiWebChatMessageMetadataAttachment"][] | null;
       /** Status */
-      status?: "finished_successfully" | string;
+      status?: "finished_successfully" | string | null;
       /** Is Complete */
-      is_complete?: boolean;
-      aggregate_result?: components["schemas"]["OpenaiWebChatMessageMetadataAggregateResult"];
+      is_complete?: boolean | null;
+      aggregate_result?: components["schemas"]["OpenaiWebChatMessageMetadataAggregateResult"] | null;
       /** Timestamp */
-      timestamp_?: string | string;
+      timestamp_?: string | null;
     };
     /** OpenaiWebChatMessageMetadataAggregateResult */
     OpenaiWebChatMessageMetadataAggregateResult: {
       /** Status */
-      status?: ("failed_with_in_kernel_exception" | "success") | string;
+      status?: ("failed_with_in_kernel_exception" | "success") | string | null;
       /** Run Id */
-      run_id?: string;
+      run_id?: string | null;
       /** Start Time */
-      start_time?: number;
+      start_time?: number | null;
       /** Update Time */
-      update_time?: number;
+      update_time?: number | null;
       /** End Time */
-      end_time?: number;
+      end_time?: number | null;
       /** Final Expression Output */
-      final_expression_output?: Record<string, never>;
+      final_expression_output?: unknown;
       /** Code */
-      code?: string;
+      code?: string | null;
       /** In Kernel Exception */
-      in_kernel_exception?: Record<string, never>;
+      in_kernel_exception?: Record<string, never> | null;
       /** Messages */
-      messages?: (components["schemas"]["OpenaiWebChatMessageMetadataAggregateResultMessage"])[];
+      messages?: components["schemas"]["OpenaiWebChatMessageMetadataAggregateResultMessage"][] | null;
       /** Jupyter Messages */
-      jupyter_messages?: (Record<string, never>)[];
+      jupyter_messages?: unknown[] | null;
     };
     /** OpenaiWebChatMessageMetadataAggregateResultMessage */
     OpenaiWebChatMessageMetadataAggregateResultMessage: {
       /** Message Type */
-      message_type?: ("image" | "stream") | string;
+      message_type?: ("image" | "stream") | string | null;
       /** Time */
-      time?: number;
+      time?: number | null;
       /** Sender */
-      sender?: "server" | string;
+      sender?: "server" | string | null;
       /** Image Url */
-      image_url?: string;
+      image_url?: string | null;
       /** Stream Name */
-      stream_name?: string;
+      stream_name?: string | null;
       /** Text */
-      text?: string;
+      text?: string | null;
     };
     /** OpenaiWebChatMessageMetadataAttachment */
     OpenaiWebChatMessageMetadataAttachment: {
       /** Name */
-      name?: string;
+      name?: string | null;
       /** Id */
-      id?: string;
+      id?: string | null;
       /** Size */
-      size?: number;
+      size?: number | null;
       /** Height */
-      height?: number;
+      height?: number | null;
       /** Width */
-      width?: number;
+      width?: number | null;
       /** Mimetype */
-      mimeType?: string;
+      mimeType?: string | null;
     };
     /** OpenaiWebChatMessageMetadataCitation */
     OpenaiWebChatMessageMetadataCitation: {
       /** Start Ix */
-      start_ix?: number;
+      start_ix?: number | null;
       /** End Ix */
-      end_ix?: number;
-      metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCiteData"];
+      end_ix?: number | null;
+      metadata?: components["schemas"]["OpenaiWebChatMessageMetadataCiteData"] | null;
     };
     /** OpenaiWebChatMessageMetadataCite */
     OpenaiWebChatMessageMetadataCite: {
       /** Citation Format */
-      citation_format?: Record<string, never>;
+      citation_format?: Record<string, never> | null;
       /** Metadata List */
-      metadata_list?: (components["schemas"]["OpenaiWebChatMessageMetadataCiteData"])[];
+      metadata_list?: components["schemas"]["OpenaiWebChatMessageMetadataCiteData"][] | null;
     };
     /** OpenaiWebChatMessageMetadataCiteData */
     OpenaiWebChatMessageMetadataCiteData: {
       /** Title */
-      title?: string;
+      title?: string | null;
       /** Url */
-      url?: string;
+      url?: string | null;
       /** Text */
-      text?: string;
+      text?: string | null;
     };
     /** OpenaiWebChatMessageMetadataPlugin */
     OpenaiWebChatMessageMetadataPlugin: {
       /** Http Response Status */
-      http_response_status?: number;
+      http_response_status?: number | null;
       /** Namespace */
-      namespace?: string;
+      namespace?: string | null;
       /** Plugin Id */
-      plugin_id?: string;
+      plugin_id?: string | null;
       /** Type */
-      type?: string;
+      type?: string | null;
     };
     /** OpenaiWebChatMessageMultimodalTextContent */
     OpenaiWebChatMessageMultimodalTextContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "multimodal_text";
       /** Parts */
-      parts?: (string | components["schemas"]["OpenaiWebChatMessageMultimodalTextContentImagePart"] | Record<string, never>)[];
+      parts?: unknown[] | null;
     };
     /** OpenaiWebChatMessageMultimodalTextContentImagePart */
-    OpenaiWebChatMessageMultimodalTextContentImagePart: {
+    "OpenaiWebChatMessageMultimodalTextContentImagePart-Input": {
       /** Asset Pointer */
-      asset_pointer?: string;
+      asset_pointer?: string | null;
       /** Size Bytes */
-      size_bytes?: number;
+      size_bytes?: number | null;
       /** Width */
-      width?: number;
+      width?: number | null;
       /** Height */
-      height?: number;
-      metadata?: components["schemas"]["OpenaiWebChatMessageMultimodalTextMetadata"];
+      height?: number | null;
+      metadata?: components["schemas"]["OpenaiWebChatMessageMultimodalTextMetadata"] | null;
+    };
+    /** OpenaiWebChatMessageMultimodalTextContentImagePart */
+    "OpenaiWebChatMessageMultimodalTextContentImagePart-Output": {
+      /** Asset Pointer */
+      asset_pointer?: string | null;
+      /** Size Bytes */
+      size_bytes?: number | null;
+      /** Width */
+      width?: number | null;
+      /** Height */
+      height?: number | null;
+      metadata?: components["schemas"]["OpenaiWebChatMessageMultimodalTextMetadata"] | null;
     };
     /** OpenaiWebChatMessageMultimodalTextMetadata */
     OpenaiWebChatMessageMultimodalTextMetadata: {
-      dalle?: components["schemas"]["OpenaiWebChatMessageMultimodalTextMetadataDalle"];
+      dalle?: components["schemas"]["OpenaiWebChatMessageMultimodalTextMetadataDalle"] | null;
     };
     /** OpenaiWebChatMessageMultimodalTextMetadataDalle */
     OpenaiWebChatMessageMultimodalTextMetadataDalle: {
       /** Prompt */
-      prompt?: string;
+      prompt?: string | null;
       /** Seed */
-      seed?: number;
+      seed?: number | null;
       /** Serialization Title */
-      serialization_title?: string;
+      serialization_title?: string | null;
     };
     /** OpenaiWebChatMessageStderrContent */
     OpenaiWebChatMessageStderrContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "stderr";
       /** Text */
-      text?: string;
+      text?: string | null;
     };
     /** OpenaiWebChatMessageSystemErrorContent */
     OpenaiWebChatMessageSystemErrorContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "system_error";
       /** Name */
-      name?: "tool_error" | string;
+      name?: "tool_error" | string | null;
       /** Text */
-      text?: string;
+      text?: string | null;
     };
     /** OpenaiWebChatMessageTetherBrowsingDisplayContent */
     OpenaiWebChatMessageTetherBrowsingDisplayContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "tether_browsing_display";
       /** Result */
-      result?: string;
+      result?: string | null;
     };
     /** OpenaiWebChatMessageTetherQuoteContent */
     OpenaiWebChatMessageTetherQuoteContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "tether_quote";
       /** Url */
-      url?: string;
+      url?: string | null;
       /** Domain */
-      domain?: string;
+      domain?: string | null;
       /** Text */
-      text?: string;
+      text?: string | null;
       /** Title */
-      title?: string;
+      title?: string | null;
     };
     /** OpenaiWebChatMessageTextContent */
     OpenaiWebChatMessageTextContent: {
       /**
-       * Content Type 
-       * @enum {string}
+       * Content Type
+       * @constant
        */
       content_type: "text";
       /** Parts */
-      parts?: (string)[];
+      parts?: string[] | null;
     };
     /**
-     * OpenaiWebChatModels 
-     * @description An enumeration. 
+     * OpenaiWebChatModels
      * @enum {string}
      */
     OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_code_interpreter" | "gpt_4_plugins" | "gpt_4_dalle";
     /**
-     * OpenaiWebChatStatus 
-     * @description An enumeration. 
+     * OpenaiWebChatStatus
      * @enum {string}
      */
     OpenaiWebChatStatus: "asking" | "queueing" | "idling";
-    /**
-     * OpenaiWebConversationHistoryDocument 
-     * @description Document Mapping class.
-     * 
-     * Fields:
-     * 
-     * - `id` - MongoDB document ObjectID "_id" field.
-     * Mapped to the PydanticObjectId class
-     */
+    /** OpenaiWebConversationHistoryDocument */
     OpenaiWebConversationHistoryDocument: {
       /**
-       * Id 
+       * Id
        * Format: uuid
        */
       _id?: string;
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_web";
       /** Title */
       title: string;
       /**
-       * Create Time 
+       * Create Time
        * Format: date-time
        */
       create_time: string;
       /**
-       * Update Time 
+       * Update Time
        * Format: date-time
        */
       update_time: string;
       /** Mapping */
       mapping: {
-        [key: string]: components["schemas"]["OpenaiWebChatMessage"] | undefined;
+        [key: string]: components["schemas"]["OpenaiWebChatMessage"];
       };
       /**
-       * Current Node 
+       * Current Node
        * Format: uuid
        */
-      current_node?: string;
+      current_node: string;
       /** Current Model */
-      current_model?: string;
-      metadata?: components["schemas"]["OpenaiWebConversationHistoryMeta"];
+      current_model?: string | null;
+      metadata?: components["schemas"]["OpenaiWebConversationHistoryMeta"] | null;
     };
     /** OpenaiWebConversationHistoryMeta */
     OpenaiWebConversationHistoryMeta: {
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_web";
       /** Moderation Results */
-      moderation_results?: (Record<string, never>)[];
+      moderation_results?: unknown[] | null;
       /** Plugin Ids */
-      plugin_ids?: (string)[];
+      plugin_ids?: string[] | null;
     };
     /** OpenaiWebConversationSchema */
     OpenaiWebConversationSchema: {
       /**
-       * Id 
+       * Id
        * @default -1
        */
-      id?: number;
+      id: number;
       /**
-       * Source 
-       * @enum {string}
+       * Source
+       * @constant
        */
       source: "openai_web";
-      /**
-       * Conversation Id 
-       * Format: uuid
-       */
-      conversation_id?: string;
+      /** Conversation Id */
+      conversation_id?: string | null;
       /** Title */
-      title?: string;
+      title?: string | null;
       /** User Id */
-      user_id?: number;
+      user_id?: number | null;
       /**
-       * Is Valid 
+       * Is Valid
        * @default true
        */
-      is_valid?: boolean;
+      is_valid: boolean;
       /** Current Model */
-      current_model?: string;
-      /**
-       * Create Time 
-       * Format: date-time
-       */
-      create_time?: string;
-      /**
-       * Update Time 
-       * Format: date-time
-       */
-      update_time?: string;
+      current_model?: string | null;
+      /** Create Time */
+      create_time?: string | null;
+      /** Update Time */
+      update_time?: string | null;
     };
     /**
-     * OpenaiWebFileUploadStrategyOption 
-     * @description An enumeration. 
+     * OpenaiWebFileUploadStrategyOption
      * @enum {string}
      */
     OpenaiWebFileUploadStrategyOption: "server_upload_only" | "browser_upload_only" | "browser_upload_when_file_size_exceed";
     /**
-     * OpenaiWebPerModelAskCount 
+     * OpenaiWebPerModelAskCount
      * @default {
      *   "gpt_3_5": 0,
      *   "gpt_3_5_mobile": 0,
@@ -1519,26 +1554,24 @@ export interface components {
      * }
      */
     OpenaiWebPerModelAskCount: {
-      [key: string]: number | undefined;
+      [key: string]: number;
     };
     /** OpenaiWebSourceSettingSchema */
     OpenaiWebSourceSettingSchema: {
       /** Allow To Use */
       allow_to_use: boolean;
-      /**
-       * Valid Until 
-       * Format: date-time
-       */
-      valid_until?: string;
+      /** Valid Until */
+      valid_until?: string | null;
       /** Max Conv Count */
       max_conv_count: number;
       /** Total Ask Count */
       total_ask_count: number;
       /** Rate Limits */
-      rate_limits: (components["schemas"]["TimeWindowRateLimit"])[];
+      rate_limits: components["schemas"]["TimeWindowRateLimit"][];
       /** Daily Available Time Slots */
-      daily_available_time_slots: (components["schemas"]["DailyTimeSlot"])[];
-      available_models: (components["schemas"]["OpenaiWebChatModels"])[];
+      daily_available_time_slots: components["schemas"]["DailyTimeSlot"][];
+      /** Available Models */
+      available_models: components["schemas"]["OpenaiWebChatModels"][];
       per_model_ask_count: components["schemas"]["OpenaiWebPerModelAskCount"];
       /** Disable Uploading */
       disable_uploading: boolean;
@@ -1548,22 +1581,22 @@ export interface components {
       _id: components["schemas"]["RequestLogAggregationID"];
       /** Count */
       count: number;
-      /** User Ids */
-      user_ids?: (number)[];
+      /**
+       * User Ids
+       * @default []
+       */
+      user_ids: (number | null)[];
       /** Avg Elapsed Ms */
-      avg_elapsed_ms?: number;
+      avg_elapsed_ms?: number | null;
     };
     /** RequestLogAggregationID */
     RequestLogAggregationID: {
-      /**
-       * Start Time 
-       * Format: date-time
-       */
-      start_time?: string;
+      /** Start Time */
+      start_time?: string | null;
       /** Route Path */
-      route_path?: string;
+      route_path?: string | null;
       /** Method */
-      method?: string;
+      method?: string | null;
     };
     /** StartUploadRequestSchema */
     StartUploadRequestSchema: {
@@ -1572,13 +1605,13 @@ export interface components {
       /** File Size */
       file_size: number;
       /** Width */
-      width?: number;
+      width?: number | null;
       /** Height */
-      height?: number;
+      height?: number | null;
       /** Mime Type */
-      mime_type?: string;
+      mime_type?: string | null;
       /**
-       * Use Case 
+       * Use Case
        * @enum {string}
        */
       use_case: "my_files" | "multimodal";
@@ -1588,27 +1621,27 @@ export interface components {
       strategy: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
       /** File Max Size */
       file_max_size: number;
-      upload_file_info?: components["schemas"]["UploadedFileInfoSchema"];
+      upload_file_info?: components["schemas"]["UploadedFileInfoSchema"] | null;
     };
     /** StatsSetting */
     StatsSetting: {
       /**
-       * Ask Stats Ttl 
+       * Ask Stats Ttl
        * @default 7776000
        */
-      ask_stats_ttl?: number;
+      ask_stats_ttl: number;
       /**
-       * Request Stats Ttl 
+       * Request Stats Ttl
        * @default 2592000
        */
-      request_stats_ttl?: number;
+      request_stats_ttl: number;
       /**
-       * Request Stats Filter Keywords 
+       * Request Stats Filter Keywords
        * @default [
        *   "/status"
        * ]
        */
-      request_stats_filter_keywords?: (string)[];
+      request_stats_filter_keywords: string[];
     };
     /** SystemInfo */
     SystemInfo: {
@@ -1624,12 +1657,12 @@ export interface components {
     /** TimeWindowRateLimit */
     TimeWindowRateLimit: {
       /**
-       * Window Seconds 
+       * Window Seconds
        * @description 时间窗口大小，单位为秒
        */
       window_seconds: number;
       /**
-       * Max Requests 
+       * Max Requests
        * @description 在给定时间窗口内最多的请求次数
        */
       max_requests: number;
@@ -1637,14 +1670,14 @@ export interface components {
     /** UploadedFileExtraInfo */
     UploadedFileExtraInfo: {
       /** Width */
-      width?: number;
+      width?: number | null;
       /** Height */
-      height?: number;
+      height?: number | null;
     };
     /** UploadedFileInfoSchema */
     UploadedFileInfoSchema: {
       /**
-       * Id 
+       * Id
        * Format: uuid
        */
       id: string;
@@ -1653,75 +1686,72 @@ export interface components {
       /** Size */
       size: number;
       /** Storage Path */
-      storage_path?: string;
+      storage_path?: string | null;
       /** Content Type */
-      content_type?: string;
+      content_type?: string | null;
       /**
-       * Upload Time 
+       * Upload Time
        * Format: date-time
        */
       upload_time: string;
       /** Uploader Id */
       uploader_id: number;
-      openai_web_info?: components["schemas"]["UploadedFileOpenaiWebInfo"];
-      extra_info?: components["schemas"]["UploadedFileExtraInfo"];
+      openai_web_info?: components["schemas"]["UploadedFileOpenaiWebInfo"] | null;
+      extra_info?: components["schemas"]["UploadedFileExtraInfo"] | null;
     };
     /** UploadedFileOpenaiWebInfo */
     UploadedFileOpenaiWebInfo: {
       /** File Id */
-      file_id?: string;
+      file_id?: string | null;
       /** Use Case */
-      use_case?: ("my_files" | "multimodal") | string;
+      use_case?: ("my_files" | "multimodal") | string | null;
       /**
-       * Upload Url 
+       * Upload Url
        * @description 上传文件的url, 上传后应清空该字段
        */
-      upload_url?: string;
+      upload_url?: string | null;
       /** Download Url */
-      download_url?: string;
+      download_url?: string | null;
     };
     /** UserCreate */
     UserCreate: {
       /**
-       * Email 
+       * Email
        * Format: email
        */
       email: string;
       /** Password */
       password: string;
       /**
-       * Is Active 
+       * Is Active
        * @default true
        */
-      is_active?: boolean;
+      is_active: boolean | null;
       /**
-       * Is Superuser 
+       * Is Superuser
        * @default false
        */
-      is_superuser?: boolean;
+      is_superuser: boolean | null;
       /**
-       * Is Verified 
+       * Is Verified
        * @default false
        */
-      is_verified?: boolean;
+      is_verified: boolean | null;
       /** Username */
       username: string;
       /** Nickname */
       nickname: string;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Remark */
-      remark?: string;
+      remark?: string | null;
     };
-    /**
-     * UserRead 
-     * @description Base User model.
-     */
+    /** UserRead */
     UserRead: {
       /** Id */
       id: number;
       /**
-       * Email 
+       * Email
        * Format: email
        */
       email: string;
@@ -1735,29 +1765,23 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
+      /** Last Active Time */
+      last_active_time: string | null;
       /**
-       * Last Active Time 
-       * Format: date-time
-       */
-      last_active_time?: string;
-      /**
-       * Create Time 
+       * Create Time
        * Format: date-time
        */
       create_time: string;
       /** Avatar */
-      avatar?: string;
-      setting: components["schemas"]["UserSettingSchema"];
+      avatar?: string | null;
+      setting: components["schemas"]["UserSettingSchema-Output"];
     };
-    /**
-     * UserReadAdmin 
-     * @description Base User model.
-     */
+    /** UserReadAdmin */
     UserReadAdmin: {
       /** Id */
       id: number;
       /**
-       * Email 
+       * Email
        * Format: email
        */
       email: string;
@@ -1771,28 +1795,37 @@ export interface components {
       username: string;
       /** Nickname */
       nickname: string;
+      /** Last Active Time */
+      last_active_time: string | null;
       /**
-       * Last Active Time 
-       * Format: date-time
-       */
-      last_active_time?: string;
-      /**
-       * Create Time 
+       * Create Time
        * Format: date-time
        */
       create_time: string;
       /** Avatar */
-      avatar?: string;
-      setting: components["schemas"]["UserSettingSchema"];
+      avatar?: string | null;
+      setting: components["schemas"]["UserSettingSchema-Output"];
       /** Remark */
-      remark?: string;
+      remark?: string | null;
     };
     /** UserSettingSchema */
-    UserSettingSchema: {
+    "UserSettingSchema-Input": {
       /** Id */
-      id?: number;
+      id?: number | null;
       /** User Id */
-      user_id?: number;
+      user_id?: number | null;
+      /** Credits */
+      credits: number;
+      openai_web_chat_status: components["schemas"]["OpenaiWebChatStatus"];
+      openai_web: components["schemas"]["OpenaiWebSourceSettingSchema"];
+      openai_api: components["schemas"]["OpenaiApiSourceSettingSchema"];
+    };
+    /** UserSettingSchema */
+    "UserSettingSchema-Output": {
+      /** Id */
+      id?: number | null;
+      /** User Id */
+      user_id?: number | null;
       /** Credits */
       credits: number;
       openai_web_chat_status: components["schemas"]["OpenaiWebChatStatus"];
@@ -1802,40 +1835,40 @@ export interface components {
     /** UserUpdate */
     UserUpdate: {
       /** Password */
-      password?: string;
+      password?: string | null;
       /** Email */
-      email?: string;
+      email?: string | null;
       /** Is Active */
-      is_active?: boolean;
+      is_active?: boolean | null;
       /** Is Superuser */
-      is_superuser?: boolean;
+      is_superuser?: boolean | null;
       /** Is Verified */
-      is_verified?: boolean;
+      is_verified?: boolean | null;
       /** Nickname */
-      nickname?: string;
+      nickname?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
     };
     /** UserUpdateAdmin */
     UserUpdateAdmin: {
       /** Password */
-      password?: string;
+      password?: string | null;
       /** Email */
-      email?: string;
+      email?: string | null;
       /** Is Active */
-      is_active?: boolean;
+      is_active?: boolean | null;
       /** Is Superuser */
-      is_superuser?: boolean;
+      is_superuser?: boolean | null;
       /** Is Verified */
-      is_verified?: boolean;
+      is_verified?: boolean | null;
       /** Nickname */
-      nickname?: string;
+      nickname?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Username */
-      username?: string;
+      username?: string | null;
       /** Remark */
-      remark?: string;
+      remark?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -1854,12 +1887,14 @@ export interface components {
   pathItems: never;
 }
 
+export type $defs = Record<string, never>;
+
 export type external = Record<string, never>;
 
 export interface operations {
 
+  /** Auth:Jwt.Login */
   auth_jwt_login_auth_login_post: {
-    /** Auth:Jwt.Login */
     requestBody: {
       content: {
         "application/x-www-form-urlencoded": components["schemas"]["Body_auth_jwt_login_auth_login_post"];
@@ -1880,8 +1915,8 @@ export interface operations {
       };
     };
   };
+  /** Auth:Jwt.Logout */
   auth_jwt_logout_auth_logout_post: {
-    /** Auth:Jwt.Logout */
     responses: {
       /** @description Successful Response */
       200: {
@@ -1891,11 +1926,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Register
+   * @description 注册时不能指定setting，使用默认setting
+   */
   register_auth_register_post: {
-    /**
-     * Register 
-     * @description 注册时不能指定setting，使用默认setting
-     */
     requestBody: {
       content: {
         "application/json": components["schemas"]["UserCreate"];
@@ -1916,8 +1951,8 @@ export interface operations {
       };
     };
   };
+  /** Get All Users */
   get_all_users_user_get: {
-    /** Get All Users */
     responses: {
       /** @description Successful Response */
       200: {
@@ -1927,8 +1962,8 @@ export interface operations {
       };
     };
   };
+  /** Get Me */
   get_me_user_me_get: {
-    /** Get Me */
     responses: {
       /** @description Successful Response */
       200: {
@@ -1938,8 +1973,8 @@ export interface operations {
       };
     };
   };
+  /** Update Me */
   update_me_user_me_patch: {
-    /** Update Me */
     requestBody: {
       content: {
         "application/json": components["schemas"]["UserUpdate"];
@@ -1960,8 +1995,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Get User */
   admin_get_user_user__user_id__get: {
-    /** Admin Get User */
     parameters: {
       path: {
         user_id: number;
@@ -1982,8 +2017,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Delete User */
   admin_delete_user_user__user_id__delete: {
-    /** Admin Delete User */
     parameters: {
       path: {
         user_id: number;
@@ -2004,8 +2039,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Update User */
   admin_update_user_user__user_id__patch: {
-    /** Admin Update User */
     parameters: {
       path: {
         user_id: number;
@@ -2031,8 +2066,8 @@ export interface operations {
       };
     };
   };
+  /** Admin Update User Setting */
   admin_update_user_setting_user__user_id__setting_patch: {
-    /** Admin Update User Setting */
     parameters: {
       path: {
         user_id: number;
@@ -2040,7 +2075,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserSettingSchema"];
+        "application/json": components["schemas"]["UserSettingSchema-Input"];
       };
     };
     responses: {
@@ -2058,11 +2093,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get My Conversations
+   * @description 返回自己的有效会话
+   */
   get_my_conversations_conv_get: {
-    /**
-     * Get My Conversations 
-     * @description 返回自己的有效会话
-     */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2072,8 +2107,8 @@ export interface operations {
       };
     };
   };
+  /** Delete All Conversation */
   delete_all_conversation_conv_delete: {
-    /** Delete All Conversation */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2083,9 +2118,9 @@ export interface operations {
       };
     };
   };
+  /** Get All Conversations */
   get_all_conversations_conv_all_get: {
-    /** Get All Conversations */
-    parameters?: {
+    parameters: {
       query?: {
         valid_only?: boolean;
       };
@@ -2105,175 +2140,8 @@ export interface operations {
       };
     };
   };
+  /** Get Conversation History */
   get_conversation_history_conv__conversation_id__get: {
-    /** Get Conversation History */
-    parameters: {
-      path: {
-        conversation_id: string | string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  delete_conversation_conv__conversation_id__delete: {
-    /**
-     * Delete Conversation 
-     * @description 软删除：标记为 invalid 并且从 chatgpt 账号中删除会话，但不会删除 mongodb 中的历史记录
-     */
-    parameters: {
-      path: {
-        conversation_id: string | string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  update_conversation_title_conv__conversation_id__patch: {
-    /** Update Conversation Title */
-    parameters: {
-      query: {
-        title: string;
-      };
-      path: {
-        conversation_id: string | string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  get_conversation_history_from_cache_conv__conversation_id__cache_get: {
-    /** Get Conversation History From Cache */
-    parameters: {
-      path: {
-        conversation_id: Record<string, never>;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  vanish_conversation_conv__conversation_id__vanish_delete: {
-    /**
-     * Vanish Conversation 
-     * @description 硬删除：删除数据库和账号中的对话和历史记录
-     */
-    parameters: {
-      path: {
-        conversation_id: string | string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  assign_conversation_conv__conversation_id__assign__username__patch: {
-    /** Assign Conversation */
-    parameters: {
-      path: {
-        username: string;
-        conversation_id: string | string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  generate_conversation_title_conv__conversation_id__gen_title_patch: {
-    /** Generate Conversation Title */
-    parameters: {
-      query: {
-        message_id: string;
-      };
-      path: {
-        conversation_id: string | string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  get_conversation_interpreter_info_conv__conversation_id__interpreter_get: {
-    /** Get Conversation Interpreter Info */
     parameters: {
       path: {
         conversation_id: string;
@@ -2294,8 +2162,175 @@ export interface operations {
       };
     };
   };
+  /**
+   * Delete Conversation
+   * @description 软删除：标记为 invalid 并且从 chatgpt 账号中删除会话，但不会删除 mongodb 中的历史记录
+   */
+  delete_conversation_conv__conversation_id__delete: {
+    parameters: {
+      path: {
+        conversation_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Conversation Title */
+  update_conversation_title_conv__conversation_id__patch: {
+    parameters: {
+      query: {
+        title: string;
+      };
+      path: {
+        conversation_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Conversation History From Cache */
+  get_conversation_history_from_cache_conv__conversation_id__cache_get: {
+    parameters: {
+      path: {
+        conversation_id: unknown;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Vanish Conversation
+   * @description 硬删除：删除数据库和账号中的对话和历史记录
+   */
+  vanish_conversation_conv__conversation_id__vanish_delete: {
+    parameters: {
+      path: {
+        conversation_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Assign Conversation */
+  assign_conversation_conv__conversation_id__assign__username__patch: {
+    parameters: {
+      path: {
+        username: string;
+        conversation_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Generate Conversation Title */
+  generate_conversation_title_conv__conversation_id__gen_title_patch: {
+    parameters: {
+      query: {
+        message_id: string;
+      };
+      path: {
+        conversation_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Conversation Interpreter Info */
+  get_conversation_interpreter_info_conv__conversation_id__interpreter_get: {
+    parameters: {
+      path: {
+        conversation_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Conversation Interpreter Download Url */
   get_conversation_interpreter_download_url_conv__conversation_id__interpreter_download_url_get: {
-    /** Get Conversation Interpreter Download Url */
     parameters: {
       query: {
         message_id: string;
@@ -2320,9 +2355,9 @@ export interface operations {
       };
     };
   };
+  /** Get Openai Web Chat Plugins */
   get_openai_web_chat_plugins_chat_openai_plugins_get: {
-    /** Get Openai Web Chat Plugins */
-    parameters?: {
+    parameters: {
       query?: {
         offset?: number;
         limit?: number;
@@ -2345,8 +2380,8 @@ export interface operations {
       };
     };
   };
+  /** Get Installed Openai Web Chat Plugins */
   get_installed_openai_web_chat_plugins_chat_openai_plugins_installed_get: {
-    /** Get Installed Openai Web Chat Plugins */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2356,8 +2391,8 @@ export interface operations {
       };
     };
   };
+  /** Get Installed Openai Web Plugin */
   get_installed_openai_web_plugin_chat_openai_plugins_installed__plugin_id__get: {
-    /** Get Installed Openai Web Plugin */
     parameters: {
       path: {
         plugin_id: string;
@@ -2378,8 +2413,8 @@ export interface operations {
       };
     };
   };
+  /** Update Chat Plugin User Settings */
   update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch: {
-    /** Update Chat Plugin User Settings */
     parameters: {
       path: {
         plugin_id: string;
@@ -2405,11 +2440,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Predict Schema Types
+   * @description 只用来让 openapi 自动生成 schema，并不实际调用
+   */
   _predict_schema_types_chat___schema_types_get: {
-    /**
-     * Predict Schema Types 
-     * @description 只用来让 openapi 自动生成 schema，并不实际调用
-     */
     requestBody: {
       content: {
         "application/json": components["schemas"]["AskRequest"];
@@ -2430,8 +2465,8 @@ export interface operations {
       };
     };
   };
+  /** Get System Info */
   get_system_info_system_info_get: {
-    /** Get System Info */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2441,9 +2476,9 @@ export interface operations {
       };
     };
   };
+  /** Get Request Statistics */
   get_request_statistics_system_stats_request_get: {
-    /** Get Request Statistics */
-    parameters?: {
+    parameters: {
       query?: {
         granularity?: number;
       };
@@ -2463,9 +2498,9 @@ export interface operations {
       };
     };
   };
+  /** Get Ask Statistics */
   get_ask_statistics_system_stats_ask_get: {
-    /** Get Ask Statistics */
-    parameters?: {
+    parameters: {
       query?: {
         granularity?: number;
       };
@@ -2485,8 +2520,8 @@ export interface operations {
       };
     };
   };
+  /** Get Server Logs */
   get_server_logs_system_logs_server_post: {
-    /** Get Server Logs */
     requestBody?: {
       content: {
         "application/json": components["schemas"]["LogFilterOptions"];
@@ -2507,8 +2542,8 @@ export interface operations {
       };
     };
   };
+  /** Get Config */
   get_config_system_config_get: {
-    /** Get Config */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2518,11 +2553,11 @@ export interface operations {
       };
     };
   };
+  /** Update Config */
   update_config_system_config_put: {
-    /** Update Config */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ConfigModel"];
+        "application/json": components["schemas"]["ConfigModel-Input"];
       };
     };
     responses: {
@@ -2540,8 +2575,8 @@ export interface operations {
       };
     };
   };
+  /** Get Credentials */
   get_credentials_system_credentials_get: {
-    /** Get Credentials */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2551,8 +2586,8 @@ export interface operations {
       };
     };
   };
+  /** Update Credentials */
   update_credentials_system_credentials_put: {
-    /** Update Credentials */
     requestBody: {
       content: {
         "application/json": components["schemas"]["CredentialsModel"];
@@ -2573,8 +2608,8 @@ export interface operations {
       };
     };
   };
+  /** Sync Openai Web Conversations */
   sync_openai_web_conversations_system_action_sync_openai_web_conv_post: {
-    /** Sync Openai Web Conversations */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2584,11 +2619,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get Server Status
+   * @description 普通用户获取服务器状态
+   */
   get_server_status_status_common_get: {
-    /**
-     * Get Server Status 
-     * @description 普通用户获取服务器状态
-     */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2598,11 +2633,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get File Download Url
+   * @description file_id: OpenAI 分配的 id，以 file- 开头
+   */
   get_file_download_url_files__file_id__download_url_get: {
-    /**
-     * Get File Download Url 
-     * @description file_id: OpenAI 分配的 id，以 file- 开头
-     */
     parameters: {
       path: {
         file_id: string;
@@ -2623,12 +2658,12 @@ export interface operations {
       };
     };
   };
+  /**
+   * Upload File To Local
+   * @description 上传文件到服务器。文件将被保存在服务器上，返回文件信息。
+   * 仅当需要在服务器留存上传的文件时才使用.
+   */
   upload_file_to_local_files_local_upload_post: {
-    /**
-     * Upload File To Local 
-     * @description 上传文件到服务器。文件将被保存在服务器上，返回文件信息。
-     * 仅当需要在服务器留存上传的文件时才使用.
-     */
     requestBody: {
       content: {
         "multipart/form-data": components["schemas"]["Body_upload_file_to_local_files_local_upload_post"];
@@ -2649,8 +2684,8 @@ export interface operations {
       };
     };
   };
+  /** Download File From Local */
   download_file_from_local_files_local_download__file_id__get: {
-    /** Download File From Local */
     parameters: {
       path: {
         file_id: string;
@@ -2671,15 +2706,15 @@ export interface operations {
       };
     };
   };
+  /**
+   * Start Upload To Openai
+   * @description 要上传文件到 OpenAI Web，前端需要先调用此接口.
+   * 1. 若最终上传方法是前端直接上传 (Browser -> Azure Blob)，则获取上传地址并记录文件信息，响应中 upload_file_info 不为空
+   * 2. 否则的话就是服务端中转上传（Browser -> Local -> Azure Blob，此时响应中 upload_file_info 为空，前端应当:
+   *     a. 先调用 upload_file_to_local 接口上传文件到服务器，拿到文件的 uuid
+   *     b. 再调用 upload_local_file_to_openai_web 接口，通知服务器上传文件到 OpenAI Web
+   */
   start_upload_to_openai_files_openai_web_upload_start_post: {
-    /**
-     * Start Upload To Openai 
-     * @description 要上传文件到 OpenAI Web，前端需要先调用此接口.
-     * 1. 若最终上传方法是前端直接上传 (Browser -> Azure Blob)，则获取上传地址并记录文件信息，响应中 upload_file_info 不为空
-     * 2. 否则的话就是服务端中转上传（Browser -> Local -> Azure Blob，此时响应中 upload_file_info 为空，前端应当:
-     *     a. 先调用 upload_file_to_local 接口上传文件到服务器，拿到文件的 uuid
-     *     b. 再调用 upload_local_file_to_openai_web 接口，通知服务器上传文件到 OpenAI Web
-     */
     requestBody: {
       content: {
         "application/json": components["schemas"]["StartUploadRequestSchema"];
@@ -2700,8 +2735,8 @@ export interface operations {
       };
     };
   };
+  /** Browser Upload Schema */
   __browser_upload_schema___files_openai_web___browser_upload_schema___options: {
-    /** Browser Upload Schema */
     responses: {
       /** @description Successful Response */
       200: {
@@ -2711,8 +2746,8 @@ export interface operations {
       };
     };
   };
+  /** Complete Upload To Openai */
   complete_upload_to_openai_files_openai_web_upload_complete__file_id__post: {
-    /** Complete Upload To Openai */
     parameters: {
       path: {
         file_id: string;
@@ -2733,11 +2768,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Upload Local File To Openai Web
+   * @description 将服务器上已有的文件上传到 OpenAI Web（Azure blob）
+   */
   upload_local_file_to_openai_web_files_local_upload_to_openai_web__file_id__post: {
-    /**
-     * Upload Local File To Openai Web 
-     * @description 将服务器上已有的文件上传到 OpenAI Web（Azure blob）
-     */
     parameters: {
       path: {
         file_id: string;

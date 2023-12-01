@@ -105,7 +105,7 @@ import { getChatModelColor, getChatModelIconStyle } from '@/utils/chat';
 import ChatGPTIcon from './ChatGPTIcon.vue';
 
 const props = defineProps<{
-  model?: string;
+  model?: string | null;
   iconStyle?: 'default' | 'plugins' | 'browsing' | 'code-interpreter' | 'dalle';
   color?: string;
   alpha?: number;

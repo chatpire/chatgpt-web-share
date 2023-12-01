@@ -102,7 +102,7 @@ const menuOptions = computed<MenuOption[]>(() => {
       : t('commons.newConversation');
     results.unshift({
       label: () => displayTitle,
-      key: conversationStore.newConversation.conversation_id,
+      key: conversationStore.newConversation.conversation_id || undefined,
       disabled: props.loading == true,
     });
   }

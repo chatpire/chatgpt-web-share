@@ -23,6 +23,9 @@ def _validate_model(_source: ChatSourceTypes, model: str | None):
         raise ValueError(f"model {model} not in openai_api models: {'|'.join(list(OpenaiApiChatModels))}")
 
 
+MAX_CONTEXT_MESSAGE_COUNT = 1000
+
+
 class AskRequest(BaseModel):
     source: ChatSourceTypes
     model: str
@@ -30,7 +33,7 @@ class AskRequest(BaseModel):
     new_title: Optional[str] = None  # 为空则生成标题
     conversation_id: Optional[uuid.UUID] = None
     parent: Optional[uuid.UUID] = None
-    api_context_message_count: int = Field(-1, ge=-1)
+    api_context_message_count: Optional[int] = Field(None, ge=0, le=MAX_CONTEXT_MESSAGE_COUNT)
     text_content: str
     openai_web_plugin_ids: Optional[list[str]] = None
     openai_web_attachments: Optional[list[OpenaiWebChatMessageMetadataAttachment]] = None
@@ -63,7 +66,7 @@ class AskResponse(BaseModel):
     conversation_id: uuid.UUID = None
     message: Optional[
         Annotated[Union[OpenaiWebChatMessage, OpenaiApiChatMessage], Field(discriminator='source')]] = None
-    error_detail: str = None
+    error_detail: str | None = None
 
 
 class BaseConversationSchema(BaseModel):

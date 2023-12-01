@@ -76,7 +76,7 @@ const datasetSource = computed(() => {
       if (!cur._id?.start_time) return acc;
       const timestamp = new Date(cur._id.start_time).getTime();
       const count = cur.count;
-      const userIds = cur.user_ids;
+      const userIds = cur.user_ids.filter((id) => id !== null) as number[];
       const key = timestamp.toString();
       if (acc[key]) {
         acc[key].count += count;

@@ -468,11 +468,12 @@ const sendMsg = async () => {
             mapping: {},
             current_node: '',
           } as BaseConversationHistory;
-          conversationStore.$patch({
-            conversationHistoryMap: {
-              [respConversationId!]: newConvHistory,
-            },
-          });
+          // conversationStore.$patch({
+          //   conversationHistoryMap: {
+          //     [respConversationId!]: newConvHistory,
+          //   },
+          // });
+          conversationStore.conversationHistoryMap[respConversationId!] = newConvHistory;
         }
         conversationStore.addMessagesToConversation(respConversationId!, allNewMessages);
         currentSendMessage.value = null;

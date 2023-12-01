@@ -89,17 +89,18 @@ function makeDatasets(askRecords: AskLogAggregation[]) {
         return v._id !== null;
       })
       .map((v) => {
+        const userIds = v.user_ids?.filter((id) => id !== null) as number[];
         return {
           timestamp: new Date(v._id!.start_time).getTime(),
           count: v.count,
           // userIds: v.user_ids || [],
           // findUsername 生成 string，超过5人则省略；格式：'user1, user2, user3, ... 等 x 人'
-          users: v.user_ids
-            ? v.user_ids.length > 5
-              ? `${findUsername(v.user_ids[0])}, ${findUsername(v.user_ids[1])}, ${findUsername(
-                v.user_ids[2]
-              )}, ... and ${v.user_ids.length - 3} more`
-              : v.user_ids.map((id) => findUsername(id)).join(', ')
+          users: userIds
+            ? userIds.length > 5
+              ? `${findUsername(userIds[0])}, ${findUsername(userIds[1])}, ${findUsername(
+                userIds[2]
+              )}, ... and ${userIds.length - 3} more`
+              : userIds.map((id) => findUsername(id)).join(', ')
             : '',
           totalAskTime: v.total_ask_time?.toFixed(2) || 0,
           totalQueueingTime: v.total_queueing_time?.toFixed(2) || 0,

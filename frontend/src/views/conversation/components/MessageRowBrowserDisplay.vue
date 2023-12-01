@@ -27,7 +27,7 @@
             {{ $t('commons.click') }}:
             <div class="rounded border border-black/10 bg-white px-2 py-1">
               <a
-                :href="getCiteUrl(action.clickIndex, action.citeMetadata)"
+                :href="getCiteUrl(action.clickIndex, action.citeMetadata) || '#'"
                 target="_blank"
                 rel="noreferrer"
                 class="text-xs !no-underline text-black"

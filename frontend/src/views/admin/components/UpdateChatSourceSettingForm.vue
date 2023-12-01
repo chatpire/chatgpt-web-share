@@ -40,7 +40,7 @@ import {
   UserReadAdmin,
   UserSettingSchema,
 } from '@/types/schema';
-import { setUniqueItemsForEnumProperties } from '@/utils/json_schema';
+import { fixModelSchema } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 
 import CountNumberInput from './inputs/CountNumberInput.vue';
@@ -74,8 +74,8 @@ const PerModelAskCountField = defineComponent({
   },
 });
 
-setUniqueItemsForEnumProperties(jsonOpenaiWebSourceSettingSchema);
-setUniqueItemsForEnumProperties(jsonOpenaiApiSourceSettingSchema);
+fixModelSchema(jsonOpenaiWebSourceSettingSchema);
+fixModelSchema(jsonOpenaiApiSourceSettingSchema);
 
 const chatSourceSettingGroup = [
   { type: 'openai_web', model: openaiWebChatSourceSettingModel, schema: jsonOpenaiWebSourceSettingSchema },

@@ -139,7 +139,7 @@ watch(categoryOption, () => {
 
 watch(pageNumber, onPageUpdate);
 
-function changePluginSetting(pluginId: string | undefined, isInstalled: boolean) {
+function changePluginSetting(pluginId: string | undefined | null, isInstalled: boolean) {
   if (!pluginId) {
     return;
   }
@@ -190,7 +190,7 @@ function getPlugins(category = 'installed', offset = 0, limit = pageSize.value, 
 
 function showPluginDetail(plugin: OpenaiChatPlugin) {
   Dialog.info({
-    title: plugin.manifest?.name_for_human,
+    title: plugin.manifest?.name_for_human || 'unknown',
     style: {
       width: '630px',
     },

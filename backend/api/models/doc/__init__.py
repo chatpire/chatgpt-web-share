@@ -217,7 +217,7 @@ class BaseConversationHistory(BaseModel):
     create_time: datetime.datetime
     update_time: datetime.datetime
     mapping: dict[str, BaseChatMessage]
-    current_node: Optional[uuid.UUID] = None
+    current_node: uuid.UUID
     current_model: Optional[str] = None
     metadata: Optional[Annotated[
         Union[OpenaiWebConversationHistoryMeta, OpenaiApiConversationHistoryMeta], Field(

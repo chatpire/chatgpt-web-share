@@ -24,14 +24,14 @@ export const dropdownRenderer = (
           label: t('commons.delete'),
           key: 'delete',
           props: {
-            onClick: () => handleDeleteConversation(conversation.conversation_id),
+            onClick: () => handleDeleteConversation(conversation.conversation_id || undefined),
           },
         },
         {
           label: t('commons.rename'),
           key: 'rename',
           props: {
-            onClick: () => handleChangeConversationTitle(conversation.conversation_id),
+            onClick: () => handleChangeConversationTitle(conversation.conversation_id || undefined),
           },
         },
       ],

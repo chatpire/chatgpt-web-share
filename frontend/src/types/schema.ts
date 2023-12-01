@@ -8,7 +8,7 @@ export type UserCreate = components['schemas']['UserCreate'];
 export type UserUpdate = components['schemas']['UserUpdate'];
 export type UserUpdateAdmin = components['schemas']['UserUpdateAdmin'];
 
-export type UserSettingSchema = components['schemas']['UserSettingSchema'];
+export type UserSettingSchema = components['schemas']['UserSettingSchema-Input'];
 export type OpenaiWebSourceSettingSchema = components['schemas']['OpenaiWebSourceSettingSchema'];
 export type OpenaiApiSourceSettingSchema = components['schemas']['OpenaiApiSourceSettingSchema'];
 export type TimeWindowRateLimit = components['schemas']['TimeWindowRateLimit'];
@@ -37,7 +37,7 @@ export type OpenaiWebChatMessageTetherQuoteContent = components['schemas']['Open
 export type OpenaiWebChatMessageSystemErrorContent = components['schemas']['OpenaiWebChatMessageSystemErrorContent'];
 export type OpenaiApiChatMessageTextContent = components['schemas']['OpenaiApiChatMessageTextContent'];
 export type OpenaiWebChatMessageMultimodalTextContentImagePart =
-  components['schemas']['OpenaiWebChatMessageMultimodalTextContentImagePart'];
+  components['schemas']['OpenaiWebChatMessageMultimodalTextContentImagePart-Input'];
 
 export type BaseChatMessage = components['schemas']['BaseChatMessage'];
 export type OpenaiApiChatMessage = components['schemas']['OpenaiApiChatMessage'];
@@ -69,7 +69,7 @@ export type AskLogAggregation = components['schemas']['AskLogAggregation'];
 
 export type LogFilterOptions = components['schemas']['LogFilterOptions'];
 
-export type ConfigModel = components['schemas']['ConfigModel'];
+export type ConfigModel = components['schemas']['ConfigModel-Input'];
 export type CredentialsModel = components['schemas']['CredentialsModel'];
 
 export type UploadedFileInfoSchema = components['schemas']['UploadedFileInfoSchema'];
