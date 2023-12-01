@@ -23,7 +23,7 @@ from api.exceptions import SelfDefinedException, UserAlreadyExists
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from api.models.db import User
 from api.response import CustomJSONResponse, handle_exception_response
-from api.routers import users, conv, chat, system, status, files
+from api.routers import users, conv, chat, system, status, files, logs
 from api.schemas import UserCreate, UserSettingSchema
 from api.sources import OpenaiWebChatManager
 from api.users import get_user_manager_context
@@ -121,6 +121,7 @@ app.include_router(users.router)
 app.include_router(conv.router)
 app.include_router(chat.router)
 app.include_router(system.router)
+app.include_router(logs.router)
 app.include_router(status.router)
 app.include_router(files.router)
 

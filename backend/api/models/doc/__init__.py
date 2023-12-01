@@ -281,6 +281,7 @@ class AskLogDocument(Document):
     time: datetime.datetime = Field(default_factory=lambda: datetime.datetime.utcnow())
     meta: Union[OpenaiWebAskLogMeta, OpenaiApiAskLogMeta] = Field(discriminator='source')
     user_id: int
+    conversation_id: Optional[uuid.UUID] = None
     queueing_time: Optional[float]
     ask_time: Optional[float]
 

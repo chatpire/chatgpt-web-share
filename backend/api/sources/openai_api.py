@@ -61,7 +61,7 @@ class OpenaiApiChatManager:
         self.session = make_session()
 
     async def complete(self, text_content: str, conversation_id: uuid.UUID = None,
-                       parent_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
+                       parent_message_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
                        context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
 
         assert config.openai_api.enabled, "openai_api is not enabled"
@@ -73,7 +73,7 @@ class OpenaiApiChatManager:
             id=message_id,
             role="user",
             create_time=now_time,
-            parent=parent_id,
+            parent=parent_message_id,
             children=[],
             content=OpenaiApiChatMessageTextContent(content_type="text", text=text_content),
             metadata=OpenaiApiChatMessageMetadata(
@@ -84,7 +84,7 @@ class OpenaiApiChatManager:
         messages = []
 
         if not conversation_id:
-            assert parent_id is None, "parent_id must be None when conversation_id is None"
+            assert parent_message_id is None, "parent_id must be None when conversation_id is None"
             messages = [new_message]
         else:
             conv_history = await OpenaiApiConversationHistoryDocument.get(conversation_id)
@@ -92,8 +92,8 @@ class OpenaiApiChatManager:
                 raise ValueError("conversation_id not found")
             if conv_history.source != ChatSourceTypes.openai_api:
                 raise ValueError(f"{conversation_id} is not api conversation")
-            if not conv_history.mapping.get(str(parent_id)):
-                raise ValueError(f"{parent_id} is not a valid parent of {conversation_id}")
+            if not conv_history.mapping.get(str(parent_message_id)):
+                raise ValueError(f"{parent_message_id} is not a valid parent of {conversation_id}")
 
             # 从 current_node 开始往前找 context_message_count 个 message
             if not conv_history.current_node:

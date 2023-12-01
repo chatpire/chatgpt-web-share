@@ -91,7 +91,6 @@
 </template>
 
 <script setup lang="ts">
-import { SearchRound } from '@vicons/material';
 import { useWindowSize } from '@vueuse/core';
 import { useThemeVars } from 'naive-ui';
 import { computed, h, ref, watch } from 'vue';

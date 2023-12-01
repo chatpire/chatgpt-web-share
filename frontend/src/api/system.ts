@@ -27,10 +27,6 @@ export function getAskStatisticsApi(granularity: number) {
   });
 }
 
-export function getServerLogsApi(options: LogFilterOptions | null) {
-  return axios.post(ApiUrl.ServerLogs, options);
-}
-
 export function getSystemConfig() {
   return axios.get<ConfigModel>(ApiUrl.SystemConfig);
 }

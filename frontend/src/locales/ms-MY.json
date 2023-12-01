@@ -183,7 +183,8 @@
     "readFileResult": "Baca hasil fail",
     "myFileBrowser": "Gunakan pelayar fail",
     "content": "Kandungan",
-    "executeCode": "Jalankan kod"
+    "executeCode": "Jalankan kod",
+    "completionLogs": "Log perbualan"
   },
   "errors": {
     "403": "Ralat 403: Tiada kebenaran akses",

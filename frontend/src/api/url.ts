@@ -17,8 +17,10 @@ enum ApiUrl {
   SystemInfo = '/system/info',
   SystemRequestStatistics = '/system/stats/request',
   SystemAskStatistics = '/system/stats/ask',
-  ServerLogs = '/system/logs/server',
   SystemActionSyncOpenaiWebConversations = '/system/action/sync-openai-web-conv',
+
+  ServerLogs = '/logs/server',
+  CompletionLogs = '/logs/completions',
 
   SystemConfig = '/system/config',
   SystemCredentials = '/system/credentials',

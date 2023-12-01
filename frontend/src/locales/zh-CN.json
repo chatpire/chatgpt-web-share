@@ -184,7 +184,12 @@
     "myFileBrowser": "使用文件浏览器",
     "content": "内容",
     "executeCode": "执行代码",
-    "siteTitleFull": "ChatGPT Web Share"
+    "siteTitleFull": "ChatGPT Web Share",
+    "completionLogs": "对话日志",
+    "user": "用户",
+    "time": "时间",
+    "timeRange": "时间范围",
+    "limit": "限制"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -343,7 +348,10 @@
       "enabled_models": "启用的模型",
       "model_code_mapping": "模型代码映射",
       "file_upload_strategy": "文件上传策略"
-    }
+    },
+    "conversation_id": "对话ID",
+    "queueing_time": "排队时长",
+    "ask_time": "对话时长"
   },
   "models": {
     "gpt_3_5": "GPT-3.5",

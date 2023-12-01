@@ -184,7 +184,9 @@
     "readFileResult": "Result",
     "updateTime": "Update Time",
     "executeCode": "Execute Code",
-    "siteTitleFull": "ChatGPT Web Share"
+    "siteTitleFull": "ChatGPT Web Share",
+    "completionLogs": "Completion Logs",
+    "time": "Time"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -343,7 +345,8 @@
       "enabled_models": "Enabled Models",
       "model_code_mapping": "Model Code Mapping",
       "file_upload_strategy": "File Upload Strategy"
-    }
+    },
+    "conversation_id": "Conversatin ID"
   },
   "models": {
     "gpt_3_5": "GPT-3.5",

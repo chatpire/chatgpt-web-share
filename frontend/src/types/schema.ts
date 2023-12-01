@@ -66,6 +66,7 @@ export type AskResponse = components['schemas']['AskResponse'];
 export type SystemInfo = components['schemas']['SystemInfo'];
 export type RequestLogAggregation = components['schemas']['RequestLogAggregation'];
 export type AskLogAggregation = components['schemas']['AskLogAggregation'];
+export type AskLogDocument = components['schemas']['AskLogDocument'];
 
 export type LogFilterOptions = components['schemas']['LogFilterOptions'];
 

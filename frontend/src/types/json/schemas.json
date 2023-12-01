@@ -221,6 +221,136 @@
     ],
     "title": "AskLogAggregationID"
   },
+  "AskLogDocument": {
+    "properties": {
+      "_id": {
+        "anyOf": [
+          {
+            "type": "string",
+            "example": "5eb7cf5a86d9755df3a6c593"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": " Id",
+        "description": "MongoDB document ObjectID"
+      },
+      "time": {
+        "type": "string",
+        "format": "date-time",
+        "title": "Time"
+      },
+      "meta": {
+        "oneOf": [
+          {
+            "properties": {
+              "source": {
+                "const": "openai_web",
+                "title": "Source"
+              },
+              "model": {
+                "type": "string",
+                "enum": [
+                  "gpt_3_5",
+                  "gpt_3_5_mobile",
+                  "gpt_4",
+                  "gpt_4_mobile",
+                  "gpt_4_browsing",
+                  "gpt_4_code_interpreter",
+                  "gpt_4_plugins",
+                  "gpt_4_dalle"
+                ],
+                "title": "OpenaiWebChatModels"
+              }
+            },
+            "type": "object",
+            "required": [
+              "source",
+              "model"
+            ],
+            "title": "OpenaiWebAskLogMeta"
+          },
+          {
+            "properties": {
+              "source": {
+                "const": "openai_api",
+                "title": "Source"
+              },
+              "model": {
+                "type": "string",
+                "enum": [
+                  "gpt_3_5",
+                  "gpt_4"
+                ],
+                "title": "OpenaiApiChatModels"
+              }
+            },
+            "type": "object",
+            "required": [
+              "source",
+              "model"
+            ],
+            "title": "OpenaiApiAskLogMeta"
+          }
+        ],
+        "title": "Meta",
+        "discriminator": {
+          "propertyName": "source",
+          "mapping": {
+            "openai_api": "#/components/schemas/OpenaiApiAskLogMeta",
+            "openai_web": "#/components/schemas/OpenaiWebAskLogMeta"
+          }
+        }
+      },
+      "user_id": {
+        "type": "integer",
+        "title": "User Id"
+      },
+      "conversation_id": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Conversation Id"
+      },
+      "queueing_time": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Queueing Time"
+      },
+      "ask_time": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Ask Time"
+      }
+    },
+    "type": "object",
+    "required": [
+      "meta",
+      "user_id",
+      "queueing_time",
+      "ask_time"
+    ],
+    "title": "AskLogDocument"
+  },
   "AskRequest": {
     "properties": {
       "source": {
@@ -14860,7 +14990,14 @@
       },
       "user_ids": {
         "items": {
-          "type": "integer"
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "type": "array",
         "title": "User Ids",

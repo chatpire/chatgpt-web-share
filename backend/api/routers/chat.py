@@ -325,7 +325,7 @@ async def chat(websocket: WebSocket):
         # stream 传输
         async for data in manager.complete(text_content=ask_request.text_content,
                                            conversation_id=ask_request.conversation_id,
-                                           parent_id=ask_request.parent,
+                                           parent_message_id=ask_request.parent,
                                            model=model,
                                            plugin_ids=ask_request.openai_web_plugin_ids if ask_request.new_conversation else None,
                                            attachments=ask_request.openai_web_attachments,
@@ -476,7 +476,7 @@ async def chat(websocket: WebSocket):
                         str(ask_message.id): ask_message,
                         str(message.id): message
                     },
-                    current_node=str(message.id),
+                    current_node=message.id,
                     current_model=message.model
                 )
 
@@ -572,6 +572,7 @@ async def chat(websocket: WebSocket):
                 user_id=user.id,
                 queueing_time=queueing_time,
                 ask_time=ask_time,
+                conversation_id=conversation_id,
             ).create()
 
     websocket.scope["ask_websocket_close_code"] = websocket_code

@@ -128,10 +128,6 @@ export interface paths {
     /** Get Ask Statistics */
     get: operations["get_ask_statistics_system_stats_ask_get"];
   };
-  "/system/logs/server": {
-    /** Get Server Logs */
-    post: operations["get_server_logs_system_logs_server_post"];
-  };
   "/system/config": {
     /** Get Config */
     get: operations["get_config_system_config_get"];
@@ -147,6 +143,14 @@ export interface paths {
   "/system/action/sync-openai-web-conv": {
     /** Sync Openai Web Conversations */
     post: operations["sync_openai_web_conversations_system_action_sync_openai_web_conv_post"];
+  };
+  "/logs/server": {
+    /** Get Server Logs */
+    post: operations["get_server_logs_logs_server_post"];
+  };
+  "/logs/completions": {
+    /** Get Completion Logs */
+    get: operations["get_completion_logs_logs_completions_get"];
   };
   "/status/common": {
     /**
@@ -227,6 +231,29 @@ export interface components {
       start_time: string;
       /** Meta */
       meta?: (components["schemas"]["OpenaiWebAskLogMeta"] | components["schemas"]["OpenaiApiAskLogMeta"]) | null;
+    };
+    /** AskLogDocument */
+    AskLogDocument: {
+      /**
+       * Id
+       * @description MongoDB document ObjectID
+       */
+      _id?: string | null;
+      /**
+       * Time
+       * Format: date-time
+       */
+      time?: string;
+      /** Meta */
+      meta: components["schemas"]["OpenaiWebAskLogMeta"] | components["schemas"]["OpenaiApiAskLogMeta"];
+      /** User Id */
+      user_id: number;
+      /** Conversation Id */
+      conversation_id?: string | null;
+      /** Queueing Time */
+      queueing_time: number | null;
+      /** Ask Time */
+      ask_time: number | null;
     };
     /** AskRequest */
     AskRequest: {
@@ -2520,28 +2547,6 @@ export interface operations {
       };
     };
   };
-  /** Get Server Logs */
-  get_server_logs_system_logs_server_post: {
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["LogFilterOptions"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   /** Get Config */
   get_config_system_config_get: {
     responses: {
@@ -2615,6 +2620,52 @@ export interface operations {
       200: {
         content: {
           "application/json": string;
+        };
+      };
+    };
+  };
+  /** Get Server Logs */
+  get_server_logs_logs_server_post: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["LogFilterOptions"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Completion Logs */
+  get_completion_logs_logs_completions_get: {
+    parameters: {
+      query?: {
+        start_time?: string;
+        end_time?: string;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

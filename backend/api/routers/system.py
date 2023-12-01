@@ -1,10 +1,7 @@
-import csv
 import random
 from datetime import datetime, timedelta, timezone
-from typing import Optional
-
 import httpx
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends
 from fastapi_cache.decorator import cache
 from sqlalchemy import select
 
@@ -75,36 +72,6 @@ async def get_system_info(_user: User = Depends(current_super_user)):
         total_conversation_count=len(conversations),
         valid_conversation_count=len([c for c in conversations if c.is_valid]),
     )
-    return result
-
-
-FAKE_REQ_START_TIMESTAMP = 1672502400  # 2023-01-01 00:00:00
-
-
-def make_fake_requests_count(total=100, max=500):
-    result = {}
-    start_stage = FAKE_REQ_START_TIMESTAMP // config.stats.request_counts_interval
-    for i in range(total):
-        result[start_stage + i] = [random.randint(0, max), [1]]
-    return result
-
-
-def make_fake_ask_records(total=100, days=2):
-    result = []
-    model_names = list(api.enums.models.OpenaiWebChatModels)
-    for i in range(total):
-        ask_time = random.random() * 60 + 1
-        total_time = ask_time + random.random() * 30
-        result.append([
-            [
-                # random.randint(1, 10),  # user_id
-                1,
-                model_names[random.randint(0, len(model_names) - 1)],  # model_name
-                ask_time,
-                total_time
-            ],
-            FAKE_REQ_START_TIMESTAMP + random.random() * 60 * 60 * 24 * days,  # ask_time
-        ])
     return result
 
 
@@ -208,34 +175,6 @@ async def get_ask_statistics(
     return result
 
 
-def read_last_n_lines(file_path, n, exclude_key_words=None):
-    if exclude_key_words is None:
-        exclude_key_words = []
-    try:
-        with open(file_path, "r") as f:
-            lines = f.readlines()[::-1]
-    except FileNotFoundError:
-        return [f"File not found: {file_path}"]
-    last_n_lines = []
-    for line in lines:
-        if len(last_n_lines) >= n:
-            break
-        if any([line.find(key_word) != -1 for key_word in exclude_key_words]):
-            continue
-        last_n_lines.append(line)
-    return last_n_lines[::-1]
-
-
-@router.post("/system/logs/server", tags=["system"])
-async def get_server_logs(_user: User = Depends(current_super_user), options: LogFilterOptions = LogFilterOptions()):
-    lines = read_last_n_lines(
-        g.server_log_filename,
-        options.max_lines,
-        options.exclude_keywords
-    )
-    return lines
-
-
 @router.get("/system/config", tags=["system"], response_model=ConfigModel)
 async def get_config(_user: User = Depends(current_super_user)):
     return config.model()
@@ -276,54 +215,3 @@ async def sync_openai_web_conversations(_user: User = Depends(current_super_user
         else:
             raise exception
     return None
-
-
-# @router.post("/system/import-users", tags=["system"])
-async def import_users(file: UploadFile = File(...), _user: User = Depends(current_super_user)):
-    """
-    解析csv文件，导入用户
-    csv字段：
-    """
-    raise NotImplementedError()
-
-    headers = ["id", "username", "nickname", "email", "active_time", "chat_status", "can_use_paid", "max_conv_count",
-               "available_ask_count", "is_superuser", "is_active", "is_verified", "hashed_password", "can_use_gpt4",
-               "available_gpt4_ask_count"]
-    content = await file.read()
-    content = content.decode("utf-8")
-    reader = csv.DictReader(content.splitlines())
-    # check headers
-    for field in headers:
-        if field not in reader.fieldnames:
-            raise InvalidParamsException(f"Invalid csv file, missing field: {field}")
-    async with get_async_session_context() as session:
-        async with get_user_db_context(session) as user_db:
-            async with get_user_manager_context(user_db) as user_manager:
-                for row in reader:
-                    user_create = UserCreate(
-                        username=row["username"],
-                        nickname=row["nickname"],
-                        email=f"{row['username']}@example.com",
-                        password="12345678",
-                        remark=row["email"]
-                    )
-                    await user_manager._check_username_unique(user_create.username)
-                    user_dict = user_create.dict()
-
-                    del user_dict["password"]
-                    user_dict["hashed_password"] = row["hashed_password"]
-
-                    user_setting = UserSettingSchema(
-                        credits=0,
-                        openai_web=OpenaiWebSourceSettingSchema.default(),
-                        openai_api=OpenaiApiSourceSettingSchema.default(),
-                    )
-                    user_setting.openai_web.available_models = ["gpt_3_5", "gpt_4"]
-                    if not row["can_use_gpt4"]:
-                        user_setting.openai_web.available_models = ["gpt_3_5"]
-                    user_setting.openai_web.per_model_ask_count.gpt_3_5 = max(
-                        int(row["available_ask_count"]) - int(row["available_gpt4_ask_count"]), 0)
-                    user_setting.openai_web.per_model_ask_count.gpt_4 = int(row["available_gpt4_ask_count"])
-                    user_setting.openai_web.max_conv_count = int(row["max_conv_count"])
-
-                    await user_manager.create_with_user_dict(user_dict, user_setting)
