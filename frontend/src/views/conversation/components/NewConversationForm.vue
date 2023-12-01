@@ -26,11 +26,11 @@
               <div class="mb-2 text-xs">
                 <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span>
                 {{
-                  t(
+                  (currentHoveringModel || newConversationInfo.model) ? t(
                     `modelDescriptions.${newConversationInfo.source}.${
                       currentHoveringModel || newConversationInfo.model
                     }`
-                  )
+                  ) : ''
                 }}
               </div>
               <div class="text-xs text-right">
