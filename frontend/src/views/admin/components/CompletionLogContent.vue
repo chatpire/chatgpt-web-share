@@ -132,6 +132,7 @@ const columns = computed<DataTableColumns<AskLogDocument>>(() => [
     title: t('labels.conversation_id'),
     key: 'conversation_id',
     width: 80,
+    ellipsis: true,
     render: (row) => {
       if (!row.conversation_id) return t('commons.empty');
       return h(
