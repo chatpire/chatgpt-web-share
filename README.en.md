@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/moeakwak/chatgpt-web-share?label=container&logo=docker)](https://github.com/moeakwak/chatgpt-web-share/pkgs/container/chatgpt-web-share)
-[![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/moeakwak/chatgpt-web-share/actions)
-[![License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)](https://github.com/moeakwak/chatgpt-web-share/blob/main/LICENSE)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/chatpire/chatgpt-web-share?label=container&logo=docker)](https://github.com/chatpire/chatgpt-web-share/pkgs/container/chatgpt-web-share)
+[![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/chatpire/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/chatpire/chatgpt-web-share/actions)
+[![License](https://img.shields.io/github/license/chatpire/chatgpt-web-share)](https://github.com/chatpire/chatgpt-web-share/blob/main/LICENSE)
 
 A ChatGPT sharing solution suitable for individuals or teams. Share a single ChatGPT Plus account with multiple users, enjoying rich, controllable management and restriction features.
 

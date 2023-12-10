@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/moeakwak/chatgpt-web-share?label=container&logo=docker)](https://github.com/moeakwak/chatgpt-web-share/pkgs/container/chatgpt-web-share)
-[![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/moeakwak/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/moeakwak/chatgpt-web-share/actions)
-[![License](https://img.shields.io/github/license/moeakwak/chatgpt-web-share)](https://github.com/moeakwak/chatgpt-web-share/blob/main/LICENSE)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/chatpire/chatgpt-web-share?label=container&logo=docker)](https://github.com/chatpire/chatgpt-web-share/pkgs/container/chatgpt-web-share)
+[![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/chatpire/chatgpt-web-share/docker-image.yml?label=build)](https://github.com/chatpire/chatgpt-web-share/actions)
+[![License](https://img.shields.io/github/license/chatpire/chatgpt-web-share)](https://github.com/chatpire/chatgpt-web-share/blob/main/LICENSE)
 
 适用于个人、组织或团队的 ChatGPT 共享方案。共享一个 ChatGPT Plus 账号给多人使用，提供完善的管理和限制功能。
 

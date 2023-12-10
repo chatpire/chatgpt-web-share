@@ -10,7 +10,7 @@
             </a>
           </div>
           <div class="hidden sm:block">
-            <a class="h-full inline-block flex" href="https://github.com/moeakwak/chatgpt-web-share" target="_blank">
+            <a class="h-full inline-block flex" href="https://github.com/chatpire/chatgpt-web-share" target="_blank">
               <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
             </a>
           </div>
