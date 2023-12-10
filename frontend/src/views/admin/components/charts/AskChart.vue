@@ -1,6 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-100" :option="option" :loading="props.loading" />
+    <v-chart ref="chartRef" class="h-100" :option="option" :loading="props.loading" />
   </div>
 </template>
 
@@ -19,7 +19,7 @@ import {
 } from 'echarts/components';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
 
@@ -42,6 +42,8 @@ use([
   ToolboxComponent,
   BrushComponent,
 ]);
+
+const chartRef = ref<InstanceType<typeof VChart>>();
 
 const props = defineProps<{
   loading: boolean;
@@ -343,12 +345,7 @@ const option = computed<EChartsOption>(() => {
   } as EChartsOption;
 });
 
-// watchEffect(() => {
-console.log('props', props.askStats);
-// console.log('xAxis', xAxis.value);
-// console.log('totalRequestsCountData', totalRequestsCountData.value);
-// console.log('datasetSource', datasetSource.value);
-// console.log('users', props.users)
-//   console.log('option', option.value);
-// });
+onMounted(() => {
+  chartRef.value?.resize();
+});
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="pr-4">
-    <v-chart class="h-35" :option="option" :loading="props.loading" />
+    <v-chart ref="chartRef" class="h-35" :option="option" :loading="props.loading" />
   </div>
 </template>
 
@@ -20,7 +20,7 @@ import {
 } from 'echarts/components';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { computed, ref, watchEffect } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
 
@@ -54,6 +54,8 @@ const props = defineProps<{
   requestStatsGranularity: number;
   users?: UserRead[];
 }>();
+
+const chartRef = ref<InstanceType<typeof VChart>>();
 
 const findUsername = (user_id: number) => {
   const user = props.users?.find((u) => u.id === user_id);
@@ -277,5 +279,9 @@ watchEffect(() => {
   // console.log('datasetSource', datasetSource.value);
   // console.log('users', props.users)
   console.log('option', option.value);
+});
+
+onMounted(() => {
+  chartRef.value?.resize();
 });
 </script>
