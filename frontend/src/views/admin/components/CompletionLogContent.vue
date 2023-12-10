@@ -33,9 +33,8 @@
         :data="data"
         :bordered="true"
         :pagination="{
-          pageSize: 15,
           showSizePicker: true,
-          pageSizes: [15, 30, 50, 100],
+          pageSizes: [10, 20, 40, 100],
         }"
         :row-key="rowKey"
       />
@@ -184,17 +183,6 @@ const columns = computed<DataTableColumns<AskLogDocument>>(() => [
     },
   },
   {
-    title: t('labels.queueing_time'),
-    key: 'queueing_time',
-    width: 50,
-    render(row) {
-      return `${row.queueing_time}s`;
-    },
-    sorter: (a, b) => {
-      return (a.queueing_time || 0) - (b.queueing_time || 0);
-    },
-  },
-  {
     title: t('labels.ask_time'),
     key: 'ask_time',
     width: 50,
@@ -203,6 +191,17 @@ const columns = computed<DataTableColumns<AskLogDocument>>(() => [
     },
     sorter: (a, b) => {
       return (a.ask_time || 0) - (b.ask_time || 0);
+    },
+  },
+  {
+    title: t('labels.queueing_time'),
+    key: 'queueing_time',
+    width: 50,
+    render(row) {
+      return `${row.queueing_time}s`;
+    },
+    sorter: (a, b) => {
+      return (a.queueing_time || 0) - (b.queueing_time || 0);
     },
   },
 ]);
@@ -219,7 +218,6 @@ watch(range, () => {
 });
 
 watch(limit, () => {
-  if (!startTime.value || !endTime.value) return;
   refreshData();
 });
 </script>
