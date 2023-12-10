@@ -101,8 +101,8 @@
       :on-before-upload="checkFileBeforeUpload"
       :max="10"
     >
-      <n-upload-trigger abstract>
-        <n-button class="sm:hidden mb-3">
+      <n-upload-trigger>
+        <n-button style="width: 100%;" class="sm:hidden mb-3">
           {{ $t('commons.selectFile') }}
         </n-button>
       </n-upload-trigger>
