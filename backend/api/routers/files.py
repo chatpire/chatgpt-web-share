@@ -49,7 +49,7 @@ async def upload_file_to_local(file: UploadFile = File(...), user: User = Depend
     async with get_async_session_context() as session:
         file_info = await file_provider.save_file(file, user.id, session)
 
-    return UploadedFileInfoSchema.from_orm(file_info)
+    return UploadedFileInfoSchema.model_validate(file_info)
 
 
 @router.get("/files/local/download/{file_id}", tags=["files"])
@@ -81,7 +81,7 @@ async def start_upload_to_openai(upload_request: StartUploadRequestSchema, user:
     file_size_exceed = upload_request.file_size > config.data.max_file_upload_size
     if config.openai_web.file_upload_strategy == OpenaiWebFileUploadStrategyOption.server_upload_only and file_size_exceed:
         raise InvalidRequestException(f"File is too large! Max size: {config.data.max_file_upload_size}")
-    user_info = UserRead.from_orm(user)
+    user_info = UserRead.model_validate(user)
     if user_info.setting.openai_web.disable_uploading or config.openai_web.disable_uploading:
         raise InvalidRequestException(f"Uploading disabled")
 
@@ -148,7 +148,7 @@ async def complete_upload_to_openai(file_id: uuid.UUID, user: User = Depends(cur
         if file_info.storage_path is not None:
             raise InvalidRequestException(f"File {file_id} already uploaded to server")
 
-        file_info_schema = UploadedFileInfoSchema.from_orm(file_info)
+        file_info_schema = UploadedFileInfoSchema.model_validate(file_info)
         openai_web_info = file_info_schema.openai_web_info
         download_url = await openai_web_manager.check_file_uploaded(file_info.openai_web_info.file_id)
         openai_web_info.download_url = download_url
@@ -158,7 +158,7 @@ async def complete_upload_to_openai(file_id: uuid.UUID, user: User = Depends(cur
         session.add(file_info)
         await session.commit()
 
-        return UploadedFileInfoSchema.from_orm(file_info)
+        return UploadedFileInfoSchema.model_validate(file_info)
 
 
 @router.post("/files/local/upload-to-openai-web/{file_id}", tags=["files"], response_model=UploadedFileInfoSchema)
@@ -179,4 +179,4 @@ async def upload_local_file_to_openai_web(file_id: uuid.UUID, user: User = Depen
         file_info.openai_web_info = openai_web_file_info
         await session.commit()
 
-        return UploadedFileInfoSchema.from_orm(file_info)
+        return UploadedFileInfoSchema.model_validate(file_info)

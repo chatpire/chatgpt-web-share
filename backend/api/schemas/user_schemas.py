@@ -159,6 +159,8 @@ class UserRead(schemas.BaseUser[int]):
     is_verified: bool
     setting: UserSettingSchema
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class UserReadAdmin(UserRead):
     remark: str | None = None

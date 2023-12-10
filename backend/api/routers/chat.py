@@ -237,7 +237,7 @@ async def chat(websocket: WebSocket):
     logger.info(f"{user_db.username} connected to websocket")
     websocket.scope["auth_user"] = user_db
 
-    user = UserReadAdmin.from_orm(user_db)
+    user = UserReadAdmin.model_validate(user_db)
 
     if user.setting.openai_web_chat_status != OpenaiWebChatStatus.idling:
         await websocket.close(1008, "errors.cannotConnectMoreThanOneClient")
