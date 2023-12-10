@@ -57,11 +57,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to Dockerhub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Log in to Dockerhub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -74,7 +74,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  create-release-and-upload-zip:
+  create-release:
     runs-on: ubuntu-latest
     needs: build-and-push-x64-image
     steps:
