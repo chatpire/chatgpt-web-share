@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { BarSeriesOption } from 'echarts';
+import { BarSeriesOption, EChartsOption } from 'echarts';
 import { BarChart } from 'echarts/charts';
 import {
   BrushComponent,
@@ -71,16 +71,19 @@ function makeDatasets(askRecords: AskLogAggregation[]) {
   const datasets = [] as AskDataset[];
 
   // 对askRecords按照_id.meta.type和_id.meta.model进行聚合
-  const askRecordsGroupByTypeAndModel = askRecords.reduce((acc, cur) => {
-    if (!cur._id?.meta) return acc;
-    const key = `${cur._id.meta.source}|${cur._id.meta.model}`;
-    if (acc[key]) {
-      acc[key].push(cur);
-    } else {
-      acc[key] = [cur];
-    }
-    return acc;
-  }, {} as Record<string, AskLogAggregation[]>);
+  const askRecordsGroupByTypeAndModel = askRecords.reduce(
+    (acc, cur) => {
+      if (!cur._id?.meta) return acc;
+      const key = `${cur._id.meta.source}|${cur._id.meta.model}`;
+      if (acc[key]) {
+        acc[key].push(cur);
+      } else {
+        acc[key] = [cur];
+      }
+      return acc;
+    },
+    {} as Record<string, AskLogAggregation[]>
+  );
 
   Object.entries(askRecordsGroupByTypeAndModel).forEach(([key, value], idx) => {
     const [type, model] = key.split('|');
@@ -97,9 +100,9 @@ function makeDatasets(askRecords: AskLogAggregation[]) {
           // findUsername 生成 string，超过5人则省略；格式：'user1, user2, user3, ... 等 x 人'
           users: userIds
             ? userIds.length > 5
-              ? `${findUsername(userIds[0])}, ${findUsername(userIds[1])}, ${findUsername(
-                userIds[2]
-              )}, ... and ${userIds.length - 3} more`
+              ? `${findUsername(userIds[0])}, ${findUsername(userIds[1])}, ${findUsername(userIds[2])}, ... and ${
+                userIds.length - 3
+              } more`
               : userIds.map((id) => findUsername(id)).join(', ')
             : '',
           totalAskTime: v.total_ask_time?.toFixed(2) || 0,
@@ -231,7 +234,7 @@ const gridBottom = computed(() => {
   return showDataZoom.value ? '25%' : '5%';
 });
 
-const option = computed(() => {
+const option = computed<EChartsOption>(() => {
   return {
     title: {
       text: t('commons.askRequestsCount'),
@@ -337,7 +340,7 @@ const option = computed(() => {
       },
     },
     dataZoom: dataZoomOption.value,
-  };
+  } as EChartsOption;
 });
 
 // watchEffect(() => {

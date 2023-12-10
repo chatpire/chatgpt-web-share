@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { LineSeriesOption } from 'echarts';
+import { EChartsOption, LineSeriesOption } from 'echarts';
 import { LineChart } from 'echarts/charts';
 import {
   BrushComponent,
@@ -149,7 +149,7 @@ const gridBottom = computed(() => {
   return showDataZoom.value ? '35%' : '5%';
 });
 
-const option = computed(() => {
+const option = computed<EChartsOption>(() => {
   return {
     title: {
       text: t('commons.totalRequestsCount'),
@@ -229,9 +229,9 @@ const option = computed(() => {
         const data = el.data as any;
         return `<div>
                   <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(
-  new Date(data.timestamp).getTime() + props.requestStatsGranularity! * 1000,
-  true
-)}</span>
+          new Date(data.timestamp).getTime() + props.requestStatsGranularity! * 1000,
+          true
+        )}</span>
                   <br />
                   <span>${el.seriesName}: ${data.count}</span> <br />
                   <span>${t('commons.requestUsers')}: ${data.userIds.map((id: number) => findUsername(id))}</span>
@@ -267,7 +267,7 @@ const option = computed(() => {
     //     colorAlpha: 0.1
     //   },
     // },
-  };
+  } as EChartsOption;
 });
 
 watchEffect(() => {
