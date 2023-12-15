@@ -53,6 +53,16 @@
               <div>{{ serverStatus.chatbot_waiting_count }}</div>
             </div>
           </n-list-item>
+          <n-list-item>
+            <div class="flex flex-row justify-between content-center">
+              <div>
+                <n-icon class="mr-1">
+                  <DataUsageRound />
+                </n-icon>{{ $t('labels.gpt4_count_in_3_hours') }}
+              </div>
+              <div>{{ serverStatus.gpt4_count_in_3_hours }}</div>
+            </div>
+          </n-list-item>
         </n-list>
       </n-collapse-item>
     </n-collapse>
@@ -61,7 +71,7 @@
 
 <script setup lang="ts">
 import { MdPeople } from '@vicons/ionicons4';
-import { EventBusyFilled, QueueFilled } from '@vicons/material';
+import { EventBusyFilled, QueueFilled, DataUsageRound } from '@vicons/material';
 import { ref } from 'vue';
 
 import { getServerStatusApi } from '@/api/status';
