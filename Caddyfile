@@ -1,4 +1,11 @@
 :80 {
+	encode gzip
+
+	@cache {
+		path *.ico *.css *.js *.gif *.webp *.avif *.jpg *.jpeg *.png *.svg *.woff *.woff2 *.html *.ttf *.eot
+	}
+	header @cache Cache-Control "public, max-age=604800, must-revalidate"
+
 	handle_path /api/* {
 		reverse_proxy localhost:8000
 	}
