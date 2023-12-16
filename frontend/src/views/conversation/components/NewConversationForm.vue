@@ -23,11 +23,11 @@
               <div class="mb-2 text-xs">
                 <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span>
                 {{
-                  t(
+                  (currentHoveringModel || newConversationInfo.model) ? t(
                     `modelDescriptions.${newConversationInfo.source}.${
                       currentHoveringModel || newConversationInfo.model
                     }`
-                  )
+                  ) : ''
                 }}
               </div>
               <div class="text-xs text-right">
@@ -144,8 +144,8 @@ const pluginOptions = computed<SelectOption[]>(() => {
     return [];
   }
   return availablePlugins.value.map((plugin) => ({
-    label: plugin.manifest?.name_for_human,
-    value: plugin.id,
+    label: plugin.manifest?.name_for_human || plugin.id!,
+    value: plugin.id!,
   }));
 });
 
@@ -204,7 +204,7 @@ const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
           { class: 'flex flex-row' },
           {
             default: () => [
-              h(NAvatar, { size: 'small', src: plugin?.manifest?.logo_url }),
+              h(NAvatar, { size: 'small', src: plugin?.manifest?.logo_url || undefined }),
               h('div', { class: 'ml-2' }, { default: () => plugin?.manifest?.name_for_human }),
             ],
           }
@@ -214,8 +214,29 @@ const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
 };
 
 function setDefaultValues() {
-      newConversationInfo.value.source = 'openai_web';
-      newConversationInfo.value.model = 'gpt_3_5';
+  //   const defaultSource = computed(() => {
+  if (appStore.lastSelectedSource) {
+    if (availableChatSourceTypes.value.find((source) => source.value === appStore.lastSelectedSource)) {
+      newConversationInfo.value.source = appStore.lastSelectedSource;
+    }
+  } else {
+    newConversationInfo.value.source =
+      availableChatSourceTypes.value.length > 0 ? (availableChatSourceTypes.value[0].value as ChatSourceTypes) : null;
+  }
+
+  if (appStore.lastSelectedModel) {
+    if (
+      newConversationInfo.value.source === 'openai_web' &&
+      availableModels.value.find((model) => model.value === appStore.lastSelectedModel)
+    ) {
+      newConversationInfo.value.model = appStore.lastSelectedModel;
+    } else if (
+      newConversationInfo.value.source === 'openai_api' &&
+      availableModels.value.find((model) => model.value === appStore.lastSelectedModel)
+    ) {
+      newConversationInfo.value.model = appStore.lastSelectedModel;
+    }
+  }
 }
 
 setDefaultValues();
