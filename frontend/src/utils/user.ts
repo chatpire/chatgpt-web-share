@@ -46,7 +46,6 @@ type ListAttr<T> = {
 // 用于 UserProfile，复用了一部分 user_manager 代码
 export function getUserAttrColumns(): ListAttr<UserRead>[] {
   return [
-    { title: '#', key: 'id' },
     { title: t('commons.username'), key: 'username' },
     { title: t('commons.email'), key: 'email' },
     { title: t('commons.nickname'), key: 'nickname' },

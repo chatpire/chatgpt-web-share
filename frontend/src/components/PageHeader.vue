@@ -4,24 +4,12 @@
       <template #title>
         <n-space :align="'center'">
           <div class="lt-sm:hidden">
-            <a href="/" style="text-decoration: none; color: inherit">
-              <span class="lt-md:hidden">{{ $t('commons.siteTitleFull') }}</span>
-              <span class="md:hidden">{{ $t('commons.siteTitle') }}</span>
-            </a>
+            <a href="/" style="text-decoration: none; color: inherit">{{ $t('commons.siteTitle') }}</a>
           </div>
-          <div class="hidden sm:block">
-            <a class="h-full inline-block flex" href="https://github.com/chatpire/chatgpt-web-share" target="_blank">
-              <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
-            </a>
-          </div>
-          <n-tag :bordered="false" type="success" size="small" class="hidden sm:inline-flex">
-            {{ version }}
-          </n-tag>
-        </n-space>
+    </n-space>
       </template>
       <template #avatar>
-        <!-- <ChatGPTAvatar color="green" icon-style="default" :size="32" /> -->
-        <CWSIcon />
+        <ChatGPTAvatar color="green" icon-style="default" :size="32" />
       </template>
       <template #extra>
         <n-space>
@@ -70,7 +58,6 @@ import { useRoute } from 'vue-router';
 
 import { updateUserMeApi } from '@/api/user';
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
-import CWSIcon from '@/components/icons/CWSIcon.vue';
 import router from '@/router';
 import { useAppStore, useUserStore } from '@/store';
 import { Preference } from '@/store/types';
