@@ -15,8 +15,8 @@
 ## 文档
 
 - 项目特点：https://cws-docs.pages.dev/zh/
-- 快速部署指南：http://localhost:8080/zh/guide/quick-start.html
-- 演示截图：http://localhost:8080/zh/demo/screenshots.html
+- 快速部署指南：http://cws-docs.pages.dev/zh/guide/quick-start.html
+- 演示截图：http://cws-docs.pages.dev/zh/demo/screenshots.html
 
 > （广告）如果你没有 ChatGPT Plus 账号，并且想省点心，可以考虑 [**赛博小铺的拼车服务**](https://cws-docs.pages.dev/zh/support/ads.html#%E8%B5%9B%E5%8D%9A%E5%B0%8F%E9%93%BA-chatgpt-plus-%E6%8B%BC%E8%BD%A6%E6%9C%8D%E5%8A%A1)
 > 
