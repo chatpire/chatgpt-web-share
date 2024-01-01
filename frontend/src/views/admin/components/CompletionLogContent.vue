@@ -12,6 +12,14 @@
         <div class="option-item">
           <n-text>{{ t('commons.timeRange') }}</n-text>
           <n-date-picker v-model:value="range" size="small" class="w-80" type="daterange" clearable />
+          <n-button-group size="small" round>
+            <n-button @click="range = [Date.now() - 7 * 24 * 60 * 60 * 1000, Date.now()]">
+              7d
+            </n-button>
+            <n-button @click="range = [Date.now() - 30 * 24 * 60 * 60 * 1000, Date.now()]">
+              30d
+            </n-button>
+          </n-button-group>
         </div>
         <div class="option-item">
           <n-text>{{ t('commons.limit') }}</n-text>
@@ -19,13 +27,16 @@
             v-model:value="limit"
             size="small"
             class="w-27"
-            :min="10"
-            :max="2000"
-            :step="50"
+            :min="100"
+            :max="100000"
+            :step="100"
           />
         </div>
       </div>
     </div>
+    <n-card class="my-4" :content-style="{ padding: '0px' }" :header-style="{ paddingBottom: 0 }">
+      <UserUsageChart class="my-4" :loading="loading" :ask-logs="data" :users="userInfo" />
+    </n-card>
     <div>
       <n-data-table
         size="small"
@@ -55,15 +66,20 @@ import { getAllUserApi } from '@/api/user';
 import { AskLogDocument, UserReadAdmin } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getDateStringSorter } from '@/utils/table';
+import { parseTimeString } from '@/utils/time';
 import { Message } from '@/utils/tips';
+
+import UserUsageChart from './charts/UserUsageChart.vue';
 
 const { t } = useI18n();
 const router = useRouter();
 const data = ref<AskLogDocument[]>([]);
-const userInfo = ref<UserReadAdmin[] | null>(null);
+const loading = ref(true);
+
+const userInfo = ref<UserReadAdmin[] | undefined>(undefined);
 const rowKey = (row: AskLogDocument) => row._id;
 
-const range = ref<[number, number] | null>(null);
+const range = ref<[number, number] | null>();
 const startTime = computed<string | undefined>(() => {
   if (!range.value) return undefined;
   return new Date(range.value[0]).toISOString();
@@ -73,13 +89,18 @@ const endTime = computed<string | undefined>(() => {
   return new Date(range.value[1] + 24 * 60 * 60 * 1000).toISOString();
 });
 
-const limit = ref(100);
+const limit = ref(1000);
 
 const refreshData = (showTip = true) => {
-  getCompletionLogsApi(startTime.value, endTime.value, limit.value).then((res) => {
-    data.value = res.data;
-    if (showTip) Message.success(t('tips.refreshed'));
-  });
+  loading.value = true;
+  getCompletionLogsApi(startTime.value, endTime.value, limit.value)
+    .then((res) => {
+      data.value = res.data;
+      if (showTip) Message.success(t('tips.refreshed'));
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 };
 
 const userIdFilterOptions = computed(() => {
@@ -104,7 +125,7 @@ const columns = computed<DataTableColumns<AskLogDocument>>(() => [
         NTooltip,
         { trigger: 'hover' },
         {
-          trigger: () => new Date(row.time!).toLocaleString(),
+          trigger: () => parseTimeString(row.time!),
           default: () => row.time,
         }
       );
@@ -213,7 +234,7 @@ getAllUserApi().then((res) => {
 refreshData(false);
 
 watch(range, () => {
-  if (!startTime.value || !endTime.value) return;
+  // if (!startTime.value || !endTime.value) return;
   refreshData();
 });
 

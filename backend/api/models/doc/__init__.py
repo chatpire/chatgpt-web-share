@@ -3,7 +3,7 @@ import uuid
 from typing import Optional, Any, Literal, Union, Annotated, Dict
 
 from beanie import Document, TimeSeriesConfig, Granularity
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 from api.models.doc.openai_web_code_interpreter import OpenaiWebChatMessageMetadataAggregateResult, \
@@ -284,6 +284,12 @@ class AskLogDocument(Document):
     conversation_id: Optional[uuid.UUID] = None
     queueing_time: Optional[float]
     ask_time: Optional[float]
+
+    @field_serializer("time")
+    def serialize_dt(self, time: Optional[datetime.datetime], _info):
+        if time:
+            return time.replace(tzinfo=datetime.timezone.utc)
+        return None
 
     class Settings:
         name = "ask_logs"

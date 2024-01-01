@@ -62,6 +62,7 @@ const configModel = ref<ConfigModel | null>(null);
 const credentialsModel = ref<CredentialsModel | null>(null);
 
 fixModelSchema(jsonConfigModelSchema);
+fixModelSchema(jsonCredentialsModelSchema);
 
 const gtsm = screenWidthGreaterThan('sm');
 
@@ -187,7 +188,7 @@ const tabInfos = computed<TabInfo[]>(() => [
 
 getSystemConfig().then((res) => {
   configModel.value = res.data;
-  console.log(configModel.value);
+  // console.log(configModel.value);
 });
 
 getSystemCredentials().then((res) => {

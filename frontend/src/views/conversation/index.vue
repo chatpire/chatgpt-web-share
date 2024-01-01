@@ -459,7 +459,7 @@ const sendMsg = async () => {
 
           const newConvHistory = {
             _id: respConversationId!,
-            source: 'openai_web',
+            source: askRequest.source,
             title: currentConvHistory.value!.title,
             current_model: currentConvHistory.value!.current_model,
             create_time: currentConvHistory.value!.create_time,

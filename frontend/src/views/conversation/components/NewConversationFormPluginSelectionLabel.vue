@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from 'vue';
+// import { watchEffect } from 'vue';
 
 import { OpenaiChatPlugin } from '@/types/schema';
 
@@ -23,9 +23,9 @@ const props = defineProps<{
   plugin?: OpenaiChatPlugin;
 }>();
 
-watchEffect(() => {
-  console.log(props.plugin);
-});
+// watchEffect(() => {
+//   console.log(props.plugin);
+// });
 </script>
 
 <style scoped>

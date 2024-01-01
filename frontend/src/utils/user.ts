@@ -11,7 +11,7 @@ import { getCountTrans } from '@/utils/chat';
 const t = i18n.global.t as any;
 
 export const renderUserPerModelCounts = (setting: UserSettingSchema, availableOnly = false) => {
-  console.log('renderUserPerModelCounts', setting);
+  // console.log('renderUserPerModelCounts', setting);
   const openaiWebCounts = {} as Record<string, string>;
   const openaiApiCounts = {} as Record<string, string>;
   openaiWebChatModelNames.forEach((model) => {

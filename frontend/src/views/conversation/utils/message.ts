@@ -204,7 +204,7 @@ function findMessageIdOfSandboxFile(sandboxPath: string, messages: BaseChatMessa
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
     const content = getTextMessageContent([message]);
-    console.log(`search ${sandboxPath} in ${content}`);
+    // console.log(`search ${sandboxPath} in ${content}`);
     if (content.includes(sandboxPath)) {
       return message.id;
     }
