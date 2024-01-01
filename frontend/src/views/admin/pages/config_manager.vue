@@ -62,6 +62,7 @@ const configModel = ref<ConfigModel | null>(null);
 const credentialsModel = ref<CredentialsModel | null>(null);
 
 fixModelSchema(jsonConfigModelSchema);
+fixModelSchema(jsonCredentialsModelSchema);
 
 const gtsm = screenWidthGreaterThan('sm');
 
