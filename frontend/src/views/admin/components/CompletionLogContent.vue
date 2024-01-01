@@ -66,6 +66,7 @@ import { getAllUserApi } from '@/api/user';
 import { AskLogDocument, UserReadAdmin } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getDateStringSorter } from '@/utils/table';
+import { parseTimeString } from '@/utils/time';
 import { Message } from '@/utils/tips';
 
 import UserUsageChart from './charts/UserUsageChart.vue';
@@ -124,7 +125,7 @@ const columns = computed<DataTableColumns<AskLogDocument>>(() => [
         NTooltip,
         { trigger: 'hover' },
         {
-          trigger: () => new Date(row.time!).toLocaleString(),
+          trigger: () => parseTimeString(row.time!),
           default: () => row.time,
         }
       );

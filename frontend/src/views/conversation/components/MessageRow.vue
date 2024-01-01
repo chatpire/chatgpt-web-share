@@ -131,6 +131,7 @@ import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
 import { useAppStore } from '@/store';
 import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
+import { parseTimeString, parseTimeToRelative } from '@/utils/time';
 import { Message } from '@/utils/tips';
 
 import { determineMessageType, DisplayItem } from '../utils/message';
@@ -173,47 +174,16 @@ const lastMessage = computed<BaseChatMessage | null>(() => {
   else return props.messages[props.messages.length - 1];
 });
 
-const shouldFixUTC = (create_time: string) => !create_time.endsWith('Z') && !/[+-]\d\d:?\d\d/.test(create_time);
-
 const timeString = computed<string>(() => {
   if (!lastMessage.value || !lastMessage.value.create_time) return '';
   let create_time = lastMessage.value.create_time;
-  // 如果不以Z结尾，按照UTC时区处理；按Z结尾，或者是+时区的，则不处理
-  if (shouldFixUTC(create_time)) {
-    create_time += 'Z';
-  }
-  // 根据当前语言是 zhCN 还是 enUS 设置时区
-  const lang = appStore.language;
-  // return new Date(create_time).toLocaleString();
-  return new Date(create_time).toLocaleString(lang == 'zh-CN' ? 'zh-CN' : 'en-US', {
-    hour12: false,
-    timeZone: lang == 'zh-CN' ? 'Asia/Shanghai' : 'America/New_York',
-  });
+  return parseTimeString(create_time);
 });
 
 const relativeTimeString = computed<string>(() => {
   if (!lastMessage.value || !lastMessage.value.create_time) return '';
   let create_time = lastMessage.value.create_time;
-  // 如果不以Z结尾，按照UTC时区处理；按Z结尾，或者是+时区的，则不处理
-  if (shouldFixUTC(create_time)) {
-    create_time += 'Z';
-  }
-
-  const diff = (new Date().getTime() - new Date(create_time).getTime()) / 1000;
-
-  if (diff < 60) {
-    return t('commons.justNow');
-  } else if (diff < 24 * 60 * 60) {
-    const minutes = Math.floor(diff / 60);
-    const hours = Math.floor(minutes / 60);
-    if (hours > 0) {
-      return t('commons.hoursMinutesAgo', [hours, minutes % 60]);
-    } else {
-      return t('commons.minutesAgo', [minutes]);
-    }
-  } else {
-    return timeString.value;
-  }
+  return parseTimeToRelative(create_time);
 });
 
 const messageGroups = computed<BaseChatMessage[][]>(() => {
