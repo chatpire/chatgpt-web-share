@@ -73,7 +73,7 @@ function groupByModel(askLogs: AskLogDocument[]) {
 
 const series = computed(() => {
   const groupedData = groupByModel(props.askLogs);
-  console.log(groupedData);
+  // console.log(groupedData);
   const modelTotals = modelPrefixes.reduce(
     (acc, prefix) => {
       acc[prefix] = 0;

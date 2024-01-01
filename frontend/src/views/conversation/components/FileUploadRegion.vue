@@ -285,14 +285,14 @@ function addFile(file: File) {
   } as UploadFileInfo;
   fileStore.naiveUiUploadFileInfos = [...fileStore.naiveUiUploadFileInfos, newFileInfo];
   console.log('addFile', fileStore.naiveUiUploadFileInfos);
-  console.log(uploadAllRef.value);
+  // console.log(uploadAllRef.value);
   nextTick(() => {
     if (props.mode === 'legacy_code_interpreter') {
       uploadLegacyRef.value?.submit();
     } else {
       uploadAllRef.value?.submit();
     }
-    console.log('ok');
+    // console.log('ok');
   });
 }
 

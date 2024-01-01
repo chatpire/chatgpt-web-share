@@ -45,7 +45,7 @@ interface FieldProps {
 const props = defineProps<FieldProps>();
 
 const title = computed<string>(() => {
-  console.log(props.schema);
+  // console.log(props.schema);
   return (props.uiSchema as any)['ui:title'] || (props.schema as any).title || '';
 });
 

@@ -44,7 +44,7 @@ export const saveAsMarkdown = (convHistory: BaseConversationHistory, addTitle = 
   let index = 0;
 
   const sections = mergeContinuousMessages(messageList);
-  console.log(sections, sections);
+  // console.log(sections, sections);
 
   for (const section of sections) {
     let title: string | null = null;

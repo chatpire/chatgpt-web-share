@@ -204,7 +204,6 @@ const onPaste = (e: ClipboardEvent) => {
     if (items[i].kind !== 'file')
       continue;
     const file = items[i].getAsFile();
-    console.log('file', file);
     if (!file) {
       console.error('Failed to get the file from clipboard.', items[i]);
       continue;

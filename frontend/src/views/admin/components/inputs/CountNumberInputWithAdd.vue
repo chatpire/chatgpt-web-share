@@ -30,7 +30,7 @@ const modelValue = computed({
 });
 
 function addCount(count: number) {
-  console.log(modelValue.value);
+  // console.log(modelValue.value);
   if (modelValue.value == -1) {
     modelValue.value += count + 1;
   } else {
