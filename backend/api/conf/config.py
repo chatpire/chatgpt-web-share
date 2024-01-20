@@ -5,7 +5,7 @@ from pydantic import field_validator, ConfigDict, BaseModel, Field
 from api.conf.base_config import BaseConfig
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 from api.enums.options import OpenaiWebFileUploadStrategyOption
-from utils.common import singleton_with_lock
+from utils.common import SingletonMeta
 
 _TYPE_CHECKING = False
 
@@ -134,8 +134,7 @@ class ConfigModel(BaseModel):
     log: LogSetting = LogSetting()
 
 
-@singleton_with_lock
-class Config(BaseConfig[ConfigModel]):
+class Config(BaseConfig[ConfigModel], metaclass=SingletonMeta):
     if _TYPE_CHECKING:
         openai_web: OpenaiWebChatGPTSetting = OpenaiWebChatGPTSetting()
         openai_api: OpenaiApiSetting = OpenaiApiSetting()

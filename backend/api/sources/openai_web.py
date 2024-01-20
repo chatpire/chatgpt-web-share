@@ -26,7 +26,7 @@ from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadUrlRequest, \
     OpenaiChatFileUploadUrlResponse, OpenaiWebCompleteRequest, \
     OpenaiWebCompleteRequestConversationMode, OpenaiChatPluginListResponse
-from utils.common import singleton_with_lock
+from utils.common import SingletonMeta
 from utils.logger import get_logger
 
 config = Config()
@@ -163,8 +163,7 @@ def make_session() -> httpx.AsyncClient:
     return session
 
 
-@singleton_with_lock
-class OpenaiWebChatManager:
+class OpenaiWebChatManager(metaclass=SingletonMeta):
     """
     TODO: 解除 revChatGPT 依赖
     """

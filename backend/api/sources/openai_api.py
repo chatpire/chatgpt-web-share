@@ -12,7 +12,7 @@ from api.exceptions import OpenaiApiException
 from api.models.doc import OpenaiApiChatMessage, OpenaiApiConversationHistoryDocument, OpenaiApiChatMessageMetadata, \
     OpenaiApiChatMessageTextContent
 from api.schemas.openai_schemas import OpenaiChatResponse
-from utils.common import singleton_with_lock
+from utils.common import SingletonMeta
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -48,8 +48,7 @@ def make_session() -> httpx.AsyncClient:
     return session
 
 
-@singleton_with_lock
-class OpenaiApiChatManager:
+class OpenaiApiChatManager(metaclass=SingletonMeta):
     """
     OpenAI API Manager
     """
