@@ -32,12 +32,6 @@ class ResponseWrapper(BaseModel, Generic[T]):
     message: str = ""
     result: Optional[T | Any] = None
 
-    def to_dict(self):
-        return jsonable_encoder(self)
-
-    def to_json(self):
-        return json.dumps(self.to_dict(), ensure_ascii=False)
-
 
 class CustomJSONResponse(Response):
     media_type = "application/json"
@@ -55,7 +49,8 @@ class CustomJSONResponse(Response):
     def render(self, content: typing.Any) -> bytes:
         if not isinstance(content, ResponseWrapper):
             content = ResponseWrapper(code=self.status_code, message=get_http_message(self.status_code), result=content)
-        return content.to_json().encode("utf-8")
+        result = json.dumps(jsonable_encoder(content), ensure_ascii=False)
+        return result.encode("utf-8")
 
 
 class PrettyJSONResponse(Response):

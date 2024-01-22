@@ -274,13 +274,13 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                 {
                     "id": str(uuid.uuid4()),
                     "author": {"role": "user"},
-                    "content": content.dict(),
+                    "content": content.model_dump(),
                     "metadata": {}
                 }
             ]
 
             if attachments and len(attachments) > 0:
-                messages[0]["metadata"]["attachments"] = [attachment.dict() for attachment in attachments]
+                messages[0]["metadata"]["attachments"] = [attachment.model_dump() for attachment in attachments]
 
         timeout = httpx.Timeout(Config().openai_web.common_timeout, read=Config().openai_web.ask_timeout)
 
@@ -441,7 +441,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         """
         response = await self.session.post(
             url=f"{config.openai_web.chatgpt_base_url}files",
-            json=upload_info.dict()
+            json=upload_info.model_dump()
         )
         await _check_response(response)
         result = OpenaiChatFileUploadUrlResponse.model_validate(response.json())

@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from api.conf.base_config import BaseConfig
-from utils.common import singleton_with_lock, SingletonMeta
+from utils.common import SingletonMeta
 
 _TYPE_CHECKING = False
 
