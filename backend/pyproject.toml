@@ -8,10 +8,11 @@ packages = []
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.104.1"
-uvicorn = "^0.23.2"
+fastapi = "^0.109.0"
+uvicorn = "^0.26.0"
 aiosqlite = "^0.19.0"
 sqlalchemy = "^2.0.21"
+fastapi-users = "^12.1.2"
 fastapi-users-db-sqlalchemy = "^6.0.1"
 #revchatgpt = "5.0.0"
 greenlet = "^3.0.1"
@@ -25,13 +26,15 @@ asgiref = "^3.6.0"
 aiocron = "^1.8"
 ruamel-yaml = "^0.18.5"
 beanie = "^1.22.6"
-httpx = "^0.25.0"
+httpx = "^0.26.0"
 strenum = "^0.4.15"
 pydantic = "^2.5.2"
 aiofiles = "^23.2.1"
 aiohttp = "^3.8.5"
 fastapi-cache2 = "^0.2.1"
 pillow = "^10.1.0"
+cython = "^3.0.8"
+bcrypt = "^4.0.1"
 
 
 [build-system]

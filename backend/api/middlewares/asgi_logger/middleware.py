@@ -115,9 +115,9 @@ class AccessLogAtoms(dict):
                 "b": self.get("{Content-Length}o", "-"),
                 "f": self["{Referer}i"],
                 "a": self["{User-Agent}i"],
-                "T": int(request_time),
-                "M": int(request_time * 1_000),
-                "D": int(request_time * 1_000_000),
+                "T": str(round(request_time)),
+                "M": str(round(request_time * 1_000)),
+                "D": str(round(request_time * 1_000_000)),
                 "L": f"{request_time:.6f}",
                 "p": f"<{os.getpid()}>",
             }

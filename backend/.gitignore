@@ -8,3 +8,5 @@ logs
 ChatGPT-Proxy-V4
 *.json
 data
+build
+dist
