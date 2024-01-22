@@ -67,10 +67,10 @@ def _save_installed_plugins_to_cache(installed_plugins, installed_plugins_last_u
 _load_installed_plugins_from_cache()
 
 
-async def _refresh_installed_plugins():
+async def _refresh_installed_plugins(user):
     global _installed_plugins, _installed_plugins_map, _installed_plugins_last_update_time
     if _installed_plugins is None or time.time() - _installed_plugins_last_update_time > INSTALLED_PLUGINS_CACHE_EXPIRE:
-        _installed_plugins = await openai_web_manager.get_installed_plugin_manifests()
+        _installed_plugins = await openai_web_manager.get_installed_plugin_manifests(user.is_team_user)
         _installed_plugins_map = {plugin.id: plugin for plugin in _installed_plugins.items}
         _installed_plugins_last_update_time = time.time()
         _save_installed_plugins_to_cache(_installed_plugins, _installed_plugins_last_update_time)
@@ -80,20 +80,20 @@ async def _refresh_installed_plugins():
 @router.get("/chat/openai-plugins", tags=["chat"], response_model=OpenaiChatPluginListResponse)
 @cache(expire=60 * 60 * 24)
 async def get_openai_web_chat_plugins(offset: int = 0, limit: int = 0, category: str = "", search: str = "",
-                                      _user: User = Depends(current_active_user)):
-    plugins = await openai_web_manager.get_plugin_manifests(offset, limit, category, search)
+                                      user: User = Depends(current_active_user)):
+    plugins = await openai_web_manager.get_plugin_manifests(offset, limit, category, search, user.is_team_user)
     return plugins
 
 
 @router.get("/chat/openai-plugins/installed", tags=["chat"], response_model=OpenaiChatPluginListResponse)
-async def get_installed_openai_web_chat_plugins(_user: User = Depends(current_active_user)):
-    plugins = await _refresh_installed_plugins()
+async def get_installed_openai_web_chat_plugins(user: User = Depends(current_active_user)):
+    plugins = await _refresh_installed_plugins(user)
     return plugins
 
 
 @router.get("/chat/openai-plugins/installed/{plugin_id}", tags=["chat"], response_model=OpenaiChatPlugin)
-async def get_installed_openai_web_plugin(plugin_id: str, _user: User = Depends(current_active_user)):
-    await _refresh_installed_plugins()
+async def get_installed_openai_web_plugin(plugin_id: str, user: User = Depends(current_active_user)):
+    await _refresh_installed_plugins(user)
     global _installed_plugins_map
     if plugin_id in _installed_plugins_map:
         return _installed_plugins_map[plugin_id]
@@ -103,12 +103,12 @@ async def get_installed_openai_web_plugin(plugin_id: str, _user: User = Depends(
 
 @router.patch("/chat/openai-plugins/{plugin_id}/user-settings", tags=["chat"], response_model=OpenaiChatPlugin)
 async def update_chat_plugin_user_settings(plugin_id: str, settings: OpenaiChatPluginUserSettings,
-                                           _user: User = Depends(current_super_user)):
+                                           user: User = Depends(current_super_user)):
     if settings.is_authenticated is not None:
         raise InvalidParamsException("can not set is_authenticated")
-    result = await openai_web_manager.change_plugin_user_settings(plugin_id, settings)
+    result = await openai_web_manager.change_plugin_user_settings(plugin_id, settings, user.is_team_user)
     assert isinstance(result, OpenaiChatPlugin)
-    await _refresh_installed_plugins()
+    await _refresh_installed_plugins(user)
     return result
 
 
@@ -324,6 +324,7 @@ async def chat(websocket: WebSocket):
 
         # stream 传输
         async for data in manager.complete(text_content=ask_request.text_content,
+                                           is_team_user=user_db.is_team_user,
                                            conversation_id=ask_request.conversation_id,
                                            parent_message_id=ask_request.parent,
                                            model=model,
@@ -513,7 +514,7 @@ async def chat(websocket: WebSocket):
                 if ask_request.source == ChatSourceTypes.openai_web and ask_request.new_title is not None and \
                         ask_request.new_title.strip() != "":
                     try:
-                        await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title)
+                        await openai_web_manager.set_conversation_title(str(conversation_id), ask_request.new_title, user_db.is_team_user)
                     except Exception as e:
                         logger.warning(f"set_conversation_title error {e.__class__.__name__}: {str(e)}")
 

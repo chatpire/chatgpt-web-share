@@ -27,11 +27,11 @@ openai_web_manager = OpenaiWebChatManager()
 
 @router.get("/files/{file_id}/download-url", tags=["conversation"], response_model=str)
 @cache(expire=10 * 60)
-async def get_file_download_url(file_id: str):
+async def get_file_download_url(file_id: str, user: User = Depends(current_active_user)):
     """
     file_id: OpenAI 分配的 id，以 file- 开头
     """
-    url = await openai_web_manager.get_file_download_url(file_id)
+    url = await openai_web_manager.get_file_download_url(file_id, user.is_team_user)
     return url
 
 
@@ -97,7 +97,7 @@ async def start_upload_to_openai(upload_request: StartUploadRequestSchema, user:
             file_size=upload_request.file_size,
             use_case=upload_request.use_case
         )
-        response = await openai_web_manager.get_file_upload_url(upload_info)
+        response = await openai_web_manager.get_file_upload_url(upload_info, user.is_team_user)
         file_info = UploadedFileInfoSchema(
             id=uuid.uuid4(),
             original_filename=upload_request.file_name,
@@ -150,7 +150,7 @@ async def complete_upload_to_openai(file_id: uuid.UUID, user: User = Depends(cur
 
         file_info_schema = UploadedFileInfoSchema.model_validate(file_info)
         openai_web_info = file_info_schema.openai_web_info
-        download_url = await openai_web_manager.check_file_uploaded(file_info.openai_web_info.file_id)
+        download_url = await openai_web_manager.check_file_uploaded(file_info.openai_web_info.file_id, user.is_team_user)
         openai_web_info.download_url = download_url
         openai_web_info.upload_url = None
         file_info.openai_web_info = openai_web_info
@@ -175,7 +175,7 @@ async def upload_local_file_to_openai_web(file_id: uuid.UUID, user: User = Depen
         if not user.is_superuser and file_info.uploader_id != user.id:
             raise AuthorityDenyException(f"File {file_id} not uploaded by you")
 
-        openai_web_file_info = await openai_web_manager.upload_file_in_server(file_info)
+        openai_web_file_info = await openai_web_manager.upload_file_in_server(file_info, user.is_team_user)
         file_info.openai_web_info = openai_web_file_info
         await session.commit()
 

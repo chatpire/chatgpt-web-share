@@ -47,6 +47,7 @@ const user = ref<UserCreate>({
   is_active: true,
   is_verified: false,
   is_superuser: false,
+  is_team_user: false,
 });
 
 const rules = {

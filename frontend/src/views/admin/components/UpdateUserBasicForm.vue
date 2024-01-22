@@ -23,6 +23,9 @@
     <n-form-item :label="t('commons.remark')" path="remark">
       <n-input v-model:value="userUpdate.remark" placeholder="" />
     </n-form-item>
+    <n-form-item :label="t('commons.isTeamUser')" path="is_team_user">
+      <n-checkbox v-model:checked="userUpdate.is_team_user" />
+    </n-form-item>
   </n-form>
   <n-button type="primary" @click="handleSave">
     {{ t('commons.submit') }}

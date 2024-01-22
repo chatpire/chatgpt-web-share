@@ -1,4 +1,4 @@
-wget http://127.0.0.1:8000/openapi.json -O src/types/json/openapi.json;
+#wget http://127.0.0.1:8000/openapi.json -O src/types/json/openapi.json;
 pnpm dlx openapi-typescript src/types/json/openapi.json --default-non-nullable --output src/types/openapi.ts;
 
 cd ../backend;

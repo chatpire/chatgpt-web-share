@@ -143,6 +143,7 @@ class UserCreate(schemas.BaseUserCreate):
     email: EmailStr
     avatar: Optional[str] = None
     remark: Optional[str] = None
+    is_team_user: bool
     # setting: UserSettingSchema = UserSettingSchema.default()
 
 
@@ -158,6 +159,7 @@ class UserRead(schemas.BaseUser[int]):
     is_active: bool
     is_verified: bool
     setting: UserSettingSchema
+    is_team_user: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -175,3 +177,4 @@ class UserUpdate(schemas.BaseUserUpdate):
 class UserUpdateAdmin(UserUpdate):
     username: str | None = None
     remark: str | None = None
+    is_team_user: bool
