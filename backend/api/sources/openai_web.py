@@ -400,7 +400,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         else:
             raise OpenaiWebException(f"Failed to generate title: {result.get('message')}")
 
-    async def get_installed_plugin_manifests(self, offset=0, limit=250, is_team_user: bool = False) -> OpenaiChatPluginListResponse:
+    async def get_installed_plugin_manifests(self, offset=0, limit=250, is_team_user: bool=False) -> OpenaiChatPluginListResponse:
         params = {
             "offset": offset,
             "limit": limit,
@@ -414,7 +414,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         await _check_response(response)
         return OpenaiChatPluginListResponse.model_validate(response.json())
 
-    async def get_plugin_manifests(self, offset=0, limit=8, category="", search="", is_team_user: bool) -> OpenaiChatPluginListResponse:
+    async def get_plugin_manifests(self, offset=0, limit=8, category="", search="", is_team_user: bool=False) -> OpenaiChatPluginListResponse:
         if not config.openai_web.is_plus_account:
             raise InvalidParamsException("errors.notPlusChatgptAccount")
         params = {

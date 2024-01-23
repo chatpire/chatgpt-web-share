@@ -62,7 +62,6 @@ async def startup():
                             is_active=True,
                             is_verified=True,
                             is_superuser=True,
-                            is_team_user=False,
                         ), user_setting=UserSettingSchema.unlimited(), safe=False)
             print(user)
         except UserAlreadyExists:

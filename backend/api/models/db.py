@@ -42,9 +42,8 @@ class User(Base):
     conversations: Mapped[List["BaseConversation"]] = relationship("BaseConversation", back_populates="user")
     uploaded_files: Mapped[List["UploadedFileInfo"]] = relationship("UploadedFileInfo", back_populates="uploader",
                                                                     cascade="delete")  # TODO: 删除用户时，删除用户上传的文件
-    # If set to True, the user conversation will be sent to the team account. If this changed, the old conversations will be lost.
-    is_team_user: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否是 Team 账号用户")
-
+    def is_team_user(self):
+        return self.setting.openai_web.is_team_user
 
 class UserSetting(Base):
     __tablename__ = "user_setting"

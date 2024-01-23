@@ -70,7 +70,7 @@ async def get_all_conversations(_user: User = Depends(current_super_user), valid
 async def get_conversation_history(conversation: BaseConversation = Depends(_get_conversation_by_id), user: User = Depends(current_active_user)):
     if conversation.source == ChatSourceTypes.openai_web:
         try:
-            result = await openai_web_manager.get_conversation_history(conversation.conversation_id, user.is_team_user)
+            result = await openai_web_manager.get_conversation_history(conversation.conversation_id, user.is_team_user())
             if result.current_model != conversation.current_model or not conversation.is_valid:
                 async with get_async_session_context() as session:
                     conversation = await session.get(BaseConversation, conversation.id)
@@ -123,7 +123,7 @@ async def delete_conversation(conversation: BaseConversation = Depends(_get_conv
         raise InvalidParamsException("errors.conversationAlreadyDeleted")
     if conversation.source == ChatSourceTypes.openai_web:
         try:
-            await openai_web_manager.delete_conversation(conversation.conversation_id, user.is_team_user)
+            await openai_web_manager.delete_conversation(conversation.conversation_id, user.is_team_user())
         except OpenaiWebException as e:
             logger.warning(f"delete conversation {conversation.conversation_id} failed: {e.code} {e.message}")
         except httpx.HTTPStatusError as e:
@@ -143,7 +143,7 @@ async def vanish_conversation(conversation: BaseConversation = Depends(_get_conv
     硬删除：删除数据库和账号中的对话和历史记录
     """
     if conversation.is_valid:
-        await delete_conversation(conversation, user.is_team_user)
+        await delete_conversation(conversation, user.is_team_user())
     if conversation.source == ChatSourceTypes.openai_web:
         doc = await OpenaiWebConversationHistoryDocument.get(conversation.conversation_id)
     else:  # api
@@ -158,11 +158,11 @@ async def vanish_conversation(conversation: BaseConversation = Depends(_get_conv
 
 
 @router.patch("/conv/{conversation_id}", tags=["conversation"], response_model=BaseConversationSchema)
-async def update_conversation_title(title: str, conversation: BaseConversation = Depends(_get_conversation_by_id)
+async def update_conversation_title(title: str, conversation: BaseConversation = Depends(_get_conversation_by_id),
                                     user: User = Depends(current_active_user)):
     if conversation.source == ChatSourceTypes.openai_web:
         await openai_web_manager.set_conversation_title(conversation.conversation_id,
-                                                        title, user.is_team_user)
+                                                        title, user.is_team_user())
     else:  # api
         doc = await OpenaiApiConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:
@@ -206,7 +206,7 @@ async def generate_conversation_title(message_id: str,
                                       conversation: OpenaiWebConversation = Depends(_get_conversation_by_id),
                                       user: User = Depends(current_active_user)):
     async with get_async_session_context() as session:
-        title = await openai_web_manager.generate_conversation_title(conversation.conversation_id, message_id, user.is_team_user)
+        title = await openai_web_manager.generate_conversation_title(conversation.conversation_id, message_id, user.is_team_user())
         if title:
             conversation.title = title
             session.add(conversation)
@@ -219,7 +219,7 @@ async def generate_conversation_title(message_id: str,
 
 @router.get("/conv/{conversation_id}/interpreter", tags=["conversation"], response_model=OpenaiChatInterpreterInfo)
 async def get_conversation_interpreter_info(conversation_id: str, user: User = Depends(current_active_user)):
-    url = await openai_web_manager.get_interpreter_info(conversation_id, user.is_team_user)
+    url = await openai_web_manager.get_interpreter_info(conversation_id, user.is_team_user())
     return response(200, result=url)
 
 
@@ -228,5 +228,5 @@ async def get_conversation_interpreter_download_url(conversation_id: str, messag
                                                     user: User = Depends(current_active_user)):
     if message_id is None or sandbox_path is None:
         raise InvalidParamsException("message_id and sandbox_path are required")
-    url = await openai_web_manager.get_interpreter_file_download_url(conversation_id, message_id, sandbox_path, user.is_team_user)
+    url = await openai_web_manager.get_interpreter_file_download_url(conversation_id, message_id, sandbox_path, user.is_team_user())
     return response(200, result=url)

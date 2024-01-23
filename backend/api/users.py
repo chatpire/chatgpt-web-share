@@ -90,7 +90,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
             user_dict["is_active"] = True
             user_dict["is_superuser"] = False
             user_dict["is_verified"] = False
-            user_dict["is_team_user"] = False
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self.password_helper.hash(password)
 
@@ -122,7 +121,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
                 update_dict.pop("is_active")
                 update_dict.pop("is_superuser")
                 update_dict.pop("is_verified")
-                update_dict.pop("is_team_user")
             except KeyError:
                 pass
 
