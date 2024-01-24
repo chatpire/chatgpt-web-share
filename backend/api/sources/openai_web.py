@@ -26,7 +26,7 @@ from api.schemas.file_schemas import UploadedFileInfoSchema
 from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSettings, OpenaiChatFileUploadUrlRequest, \
     OpenaiChatFileUploadUrlResponse, OpenaiWebCompleteRequest, \
     OpenaiWebCompleteRequestConversationMode, OpenaiChatPluginListResponse
-from utils.common import singleton_with_lock
+from utils.common import SingletonMeta
 from utils.logger import get_logger
 
 config = Config()
@@ -163,8 +163,7 @@ def make_session() -> httpx.AsyncClient:
     return session
 
 
-@singleton_with_lock
-class OpenaiWebChatManager:
+class OpenaiWebChatManager(metaclass=SingletonMeta):
     """
     TODO: 解除 revChatGPT 依赖
     """
@@ -275,13 +274,13 @@ class OpenaiWebChatManager:
                 {
                     "id": str(uuid.uuid4()),
                     "author": {"role": "user"},
-                    "content": content.dict(),
+                    "content": content.model_dump(),
                     "metadata": {}
                 }
             ]
 
             if attachments and len(attachments) > 0:
-                messages[0]["metadata"]["attachments"] = [attachment.dict() for attachment in attachments]
+                messages[0]["metadata"]["attachments"] = [attachment.model_dump() for attachment in attachments]
 
         timeout = httpx.Timeout(Config().openai_web.common_timeout, read=Config().openai_web.ask_timeout)
 
@@ -442,7 +441,7 @@ class OpenaiWebChatManager:
         """
         response = await self.session.post(
             url=f"{config.openai_web.chatgpt_base_url}files",
-            json=upload_info.dict()
+            json=upload_info.model_dump()
         )
         await _check_response(response)
         result = OpenaiChatFileUploadUrlResponse.model_validate(response.json())

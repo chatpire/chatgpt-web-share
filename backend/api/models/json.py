@@ -2,7 +2,6 @@ import datetime
 from typing import Optional, Generic, TypeVar, get_args, Literal
 
 from pydantic import model_validator, BaseModel, Field, create_model, RootModel
-from pydantic.generics import GenericModel
 
 from api.enums import OpenaiWebChatModels, OpenaiApiChatModels
 

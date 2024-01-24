@@ -7,17 +7,16 @@ from typing import Type, TypeVar
 T = TypeVar("T")
 
 
-def singleton_with_lock(cls: Type[T]):
-    instances = {}
-    lock = Lock()
+class SingletonMeta(type):
+    _instances = {}
+    _lock = Lock()
 
-    def get_instance(*args, **kwargs) -> T:
-        with lock:
-            if cls not in instances:
-                instances[cls] = cls(*args, **kwargs)
-            return instances[cls]
-
-    return get_instance
+    def __call__(cls, *args, **kwargs):
+        with cls._lock:
+            if cls not in cls._instances:
+                instance = super().__call__(*args, **kwargs)
+                cls._instances[cls] = instance
+            return cls._instances[cls]
 
 
 def async_wrap_iter(it):

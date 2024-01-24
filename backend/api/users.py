@@ -84,7 +84,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, Integer]):
         await self._check_username_unique(username=user_create.username)
         await self.validate_password(user_create.password, user_create)
 
-        user_dict = user_create.dict()
+        user_dict = user_create.model_dump()
 
         if safe:
             user_dict["is_active"] = True

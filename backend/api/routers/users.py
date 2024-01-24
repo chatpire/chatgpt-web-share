@@ -42,22 +42,24 @@ async def login(
     #         detail=ErrorCode.LOGIN_USER_NOT_VERIFIED,
     #     )
     resp = await auth_backend.login(strategy, user)
-    return response(200, headers=resp.headers)
+    return response(200, headers=dict(resp.headers))
 
 
 get_current_user_token = fastapi_users.authenticator.current_user_token(
-    active=True, verified=False
+    optional=False,
+    active=True,
+    verified=False,
 )
 
 
 @router.post("/auth/logout", name=f"auth:{auth_backend.name}.logout")
 async def logout(
-        user_token: Tuple[User, str] = Depends(get_current_user_token),
+        user_token=Depends(get_current_user_token),
         strategy: Strategy[User, int] = Depends(auth_backend.get_strategy),
 ):
     user, token = user_token
     resp = await auth_backend.logout(strategy, user, token)
-    return response(200, headers=resp.headers)
+    return response(200, headers=dict(resp.headers))
 
 
 @router.post("/auth/register", response_model=UserReadAdmin, tags=["auth"])

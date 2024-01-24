@@ -57,7 +57,7 @@ class BaseConfig(Generic[T]):
             raise ConfigException(f"Cannot read config ({self._config_path}), error: {str(e)}")
 
     def save(self):
-        config_dict = jsonable_encoder(self._model.dict())
+        config_dict = jsonable_encoder(self._model.model_dump())
         # 复制 self._config_path 备份一份
         config_dir = os.path.dirname(self._config_path)
         if not os.path.exists(config_dir):

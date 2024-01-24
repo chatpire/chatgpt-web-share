@@ -92,7 +92,7 @@ class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
         return OpenaiApiSourceSettingSchema(
             available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
             per_model_ask_count=OpenaiApiPerModelAskCount(),
-            **BaseSourceSettingSchema.default().dict(),
+            **BaseSourceSettingSchema.default().model_dump(),
             allow_custom_openai_api=False,
             custom_openai_api_settings=CustomOpenaiApiSettings()
         )
@@ -102,7 +102,7 @@ class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
         return OpenaiApiSourceSettingSchema(
             available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
             per_model_ask_count=OpenaiApiPerModelAskCount.unlimited(),
-            **BaseSourceSettingSchema.unlimited().dict(),
+            **BaseSourceSettingSchema.unlimited().model_dump(),
             allow_custom_openai_api=True,
             custom_openai_api_settings=CustomOpenaiApiSettings()
         )

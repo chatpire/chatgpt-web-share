@@ -3,7 +3,7 @@ from typing import Type, Any, Optional
 
 import sqlalchemy
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel
 from sqlalchemy import Dialect
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.type_api import _T

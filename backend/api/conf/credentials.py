@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from api.conf.base_config import BaseConfig
-from utils.common import singleton_with_lock
+from utils.common import SingletonMeta
 
 _TYPE_CHECKING = False
 
@@ -15,8 +15,7 @@ class CredentialsModel(BaseModel):
     openai_api_key: Optional[str] = None
 
 
-@singleton_with_lock
-class Credentials(BaseConfig[CredentialsModel]):
+class Credentials(BaseConfig[CredentialsModel], metaclass=SingletonMeta):
     if _TYPE_CHECKING:
         openai_web_access_token: Optional[str]
         # chatgpt_account_username: Optional[str]

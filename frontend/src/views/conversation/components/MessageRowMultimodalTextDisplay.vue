@@ -24,7 +24,7 @@
 
     <!-- 多张图片 -->
     <n-image-group v-else>
-      <div class="max-w-sm sm:max-w-md lg:max-w-lg grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <div v-if="imageInfos.length > 0" class="max-w-sm sm:max-w-md lg:max-w-lg grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <n-image
           v-for="image in imageInfos"
           :key="image.url"
