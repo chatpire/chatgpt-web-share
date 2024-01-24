@@ -49,6 +49,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     available_models: list[OpenaiWebChatModels]
     per_model_ask_count: OpenaiWebPerModelAskCount
     disable_uploading: bool
+    is_team_user: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -59,6 +60,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
                               ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]],
             per_model_ask_count=OpenaiWebPerModelAskCount(),
             disable_uploading=False,
+            is_team_user=False,
             **BaseSourceSettingSchema.default().model_dump()
         )
 
@@ -68,6 +70,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
             available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
             per_model_ask_count=OpenaiWebPerModelAskCount.unlimited(),
             disable_uploading=False,
+            is_team_user=False,
             **BaseSourceSettingSchema.unlimited().model_dump()
         )
 
@@ -76,6 +79,8 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     def check(cls, values):
         if "disable_uploading" not in values:
             values["disable_uploading"] = config.openai_web.disable_uploading
+        if "is_team_user" not in values:
+            values["is_team_user"] = False
         return values
 
 
