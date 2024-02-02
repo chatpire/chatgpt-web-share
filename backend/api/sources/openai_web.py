@@ -4,6 +4,9 @@ import uuid
 from mimetypes import guess_type
 from typing import AsyncGenerator
 
+import websockets
+import base64
+
 import aiofiles
 import httpx
 from fastapi.encoders import jsonable_encoder
@@ -235,6 +238,30 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         response = await self.session.patch(url, json={"is_visible": False})
         await _check_response(response)
 
+    async def receive_messages(self, wss_url):
+        async with websockets.connect(wss_url) as websocket:
+            while True:
+                message = await websocket.recv()
+                message = json.loads(message)
+                data = base64.b64decode(message['body']).decode('utf-8')
+                if not data or data is None:
+                    continue
+                if "data: " in data:
+                    data = data[6:]
+                if "[DONE]" in data:
+                    break
+                try:
+                    data = json.loads(data)
+                except json.decoder.JSONDecodeError:
+                    continue
+                if not _check_fields(data):
+                    if "error" in data:
+                        raise OpenaiWebException(data["error"])
+                    else:
+                        logger.warning(f"Field missing. Details: {str(data)}")
+                        continue
+                yield data
+
     async def complete(self, text_content: str, conversation_id: uuid.UUID = None, parent_message_id: uuid.UUID = None,
                        model: OpenaiWebChatModels = None, plugin_ids: list[str] = None,
                        attachments: list[OpenaiWebChatMessageMetadataAttachment] = None,
@@ -314,6 +341,10 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
 
                 try:
                     line = json.loads(line)
+                    wss_url = line["wss_url"]
+                    # connect to wss_url and receive messages
+                    async for line in self.receive_messages(wss_url):
+                        yield line
                 except json.decoder.JSONDecodeError:
                     continue
                 if not _check_fields(line):
