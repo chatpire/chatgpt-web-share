@@ -1,6 +1,7 @@
 openai_web:
   enabled: true
   is_plus_account: true
+  team_account_id:
   chatgpt_base_url:
   proxy:
   common_timeout: 20
