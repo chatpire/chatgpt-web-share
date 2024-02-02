@@ -220,6 +220,18 @@
           "title": "Is Plus Account",
           "type": "boolean"
         },
+        "team_account_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Team Account Id"
+        },
         "chatgpt_base_url": {
           "anyOf": [
             {
@@ -379,6 +391,7 @@
       "default": {
         "enabled": true,
         "is_plus_account": true,
+        "team_account_id": null,
         "chatgpt_base_url": null,
         "proxy": null,
         "common_timeout": 20,

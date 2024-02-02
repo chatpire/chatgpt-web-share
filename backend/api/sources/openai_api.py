@@ -59,7 +59,7 @@ class OpenaiApiChatManager(metaclass=SingletonMeta):
     def reset_session(self):
         self.session = make_session()
 
-    async def complete(self, text_content: str, conversation_id: uuid.UUID = None,
+    async def complete(self, is_team_user: bool, text_content: str, conversation_id: uuid.UUID = None,
                        parent_message_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
                        context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
 

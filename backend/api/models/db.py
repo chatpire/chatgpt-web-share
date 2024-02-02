@@ -42,7 +42,8 @@ class User(Base):
     conversations: Mapped[List["BaseConversation"]] = relationship("BaseConversation", back_populates="user")
     uploaded_files: Mapped[List["UploadedFileInfo"]] = relationship("UploadedFileInfo", back_populates="uploader",
                                                                     cascade="delete")  # TODO: 删除用户时，删除用户上传的文件
-
+    def is_team_user(self):
+        return self.setting.openai_web.is_team_user
 
 class UserSetting(Base):
     __tablename__ = "user_setting"
