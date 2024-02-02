@@ -290,16 +290,22 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         await _check_response(response)
 
     async def receive_messages(self, wss_url):
-        async with websockets.connect(wss_url) as websocket:
+        recv_msg_count = 0
+        async with websockets.connect(wss_url, subprotocols=["json.reliable.webpubsub.azure.v1"]) as websocket:
             while True:
                 message = await websocket.recv()
                 message = json.loads(message)
-                data = base64.b64decode(message['body']).decode('utf-8')
+                if "data" not in message:
+                    continue
+                sequence_id = message["sequenceId"]
+                data = base64.b64decode(message['data']['body']).decode('utf-8')
                 if not data or data is None:
                     continue
                 if "data: " in data:
                     data = data[6:]
                 if "[DONE]" in data:
+                    # send ack to server
+                    await websocket.send(json.dumps({"type": "sequenceAck", "sequenceId": sequence_id}))
                     break
                 try:
                     data = json.loads(data)
@@ -311,6 +317,11 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                     else:
                         logger.warning(f"Field missing. Details: {str(data)}")
                         continue
+                recv_msg_count += 1
+                # batch ack to server every 10 messages
+                if recv_msg_count > 10:
+                    await websocket.send(json.dumps({"type": "sequenceAck", "sequenceId": sequence_id}))
+                    recv_msg_count = 0
                 yield data
 
     async def complete(self, is_team_user: bool, text_content: str, conversation_id: uuid.UUID = None, parent_message_id: uuid.UUID = None,
