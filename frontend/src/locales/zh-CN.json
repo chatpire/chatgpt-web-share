@@ -311,7 +311,7 @@
     "imageUploadRequirements": "最多能够上传4张图片",
     "dragFileOrImageHere": "点击或拖拽任何文件到此处以上传",
     "gpt4UploadingRequirements": "不超过10份文件或图片，每份文件不超过512MB；请确保文件不含敏感信息",
-    "check_chatgpt_accounts": "请在更新到最新 Access Token 后使用此功能。如果您开通了 Team 订阅，将会自动填写 Team Account ID。",
+    "check_chatgpt_accounts": "请在保存配置并更新到最新 Access Token 后使用此功能。如果您开通了 Team 订阅，将会自动填写 Team Account ID。",
     "autoFillTeamAccountIdSuccess": "已自动填写 Team Account ID",
     "checkChatgptAccountsFailed": "请求失败"
   },

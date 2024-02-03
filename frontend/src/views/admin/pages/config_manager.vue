@@ -17,7 +17,9 @@
         <n-tooltip placement="bottom" trigger="hover">
           <template #trigger>
             <n-button
+              v-show="tab.name === 'config'"
               type="success"
+              class="mb-2"
               :loading="checkLoading"
               :disabled="checkResponse !== null"
               @click="checkChatgptAccount()"
