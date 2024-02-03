@@ -4,7 +4,9 @@
       <n-card class="mb-4">
         <template #header>
           <div class="flex flex-row justify-between">
-            <span>{{ tab.title }}</span>
+            <div class="space-x-4">
+              <span>{{ tab.title }}</span>
+            </div>
             <div class="space-x-2">
               <n-button secondary size="small" @click="handleExport(tab.name)">
                 {{ $t('commons.export') }}
@@ -12,6 +14,24 @@
             </div>
           </div>
         </template>
+        <n-tooltip placement="bottom" trigger="hover">
+          <template #trigger>
+            <n-button
+              type="success"
+              :loading="checkLoading"
+              :disabled="checkResponse !== null"
+              @click="checkChatgptAccount()"
+            >
+              <template #icon>
+                <n-icon v-if="checkResponse !== null">
+                  <CheckCircleOutlineRound />
+                </n-icon>
+              </template>
+              {{ $t('commons.check_chatgpt_accounts') }}
+            </n-button>
+          </template>
+          <span> {{ $t('tips.check_chatgpt_accounts') }} </span>
+        </n-tooltip>
         <n-space vertical>
           <vue-form
             v-model="tab.model.value"
@@ -43,13 +63,20 @@
 
 <script setup lang="ts">
 import VueForm, { modelValueComponent } from '@lljj/vue3-form-naive';
+import { CheckCircleOutlineRound } from '@vicons/material';
 import { NDynamicTags } from 'naive-ui';
-import { computed, ref } from 'vue';
+import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getSystemConfig, getSystemCredentials, updateSystemConfig, updateSystemCredentials } from '@/api/system';
+import {
+  getSystemConfig,
+  getSystemCredentials,
+  SystemCheckOpenaiWebAccount,
+  updateSystemConfig,
+  updateSystemCredentials,
+} from '@/api/system';
 import { jsonConfigModelSchema, jsonCredentialsModelSchema } from '@/types/json_schema';
-import { ConfigModel, CredentialsModel } from '@/types/schema';
+import { ConfigModel, CredentialsModel, OpenaiWebAccountsCheckResponse } from '@/types/schema';
 import { fixModelSchema } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { Dialog, Message } from '@/utils/tips';
@@ -64,9 +91,14 @@ const credentialsModel = ref<CredentialsModel | null>(null);
 fixModelSchema(jsonConfigModelSchema);
 fixModelSchema(jsonCredentialsModelSchema);
 
+console.log(jsonConfigModelSchema);
+
 const gtsm = screenWidthGreaterThan('sm');
 
 const DynamicTags = modelValueComponent(NDynamicTags, { model: 'value' });
+
+const checkLoading = ref(false);
+const checkResponse = ref<OpenaiWebAccountsCheckResponse | null>(null);
 
 const configUiSchema = {
   'ui:title': '',
@@ -156,6 +188,65 @@ const handleExport = (tabName: string) => {
   a.download = 'config.json';
   a.click();
   URL.revokeObjectURL(url);
+};
+
+function formatAccountCheckInfo(checkResponse: OpenaiWebAccountsCheckResponse) {
+  let content = [];
+  for (const account_id of checkResponse.account_ordering) {
+    if (checkResponse.accounts[account_id]) {
+      const account = checkResponse.accounts[account_id];
+      console.log(account);
+      content.push(
+        `${account_id}: Plan Type=${account.account.plan_type}; Subscription Type=${account.entitlement.subscription_plan}; Name=${account.account.name}; Expire Date=${account.entitlement.expires_at}`
+      );
+    }
+  }
+  return content;
+}
+
+function fill_team_account_id(checkResponse: OpenaiWebAccountsCheckResponse) {
+  for (const account_id of checkResponse.account_ordering) {
+    if (checkResponse.accounts[account_id]) {
+      const account = checkResponse.accounts[account_id];
+      if (
+        account.account.is_deactivated === false &&
+        account.entitlement.has_active_subscription === true &&
+        account.account.plan_type === 'team'
+      ) {
+        configModel.value!.openai_web.team_account_id = account_id;
+        Message.success(t('tips.autoFillTeamAccountIdSuccess'));
+        break;
+      }
+    }
+  }
+}
+
+const checkChatgptAccount = () => {
+  checkLoading.value = true;
+  SystemCheckOpenaiWebAccount()
+    .then((res) => {
+      if (res.data) {
+        checkResponse.value = res.data;
+        console.log(checkResponse.value);
+        const formattedContent = formatAccountCheckInfo(checkResponse.value);
+        fill_team_account_id(checkResponse.value);
+        Dialog.success({
+          title: t('tips.success'),
+          content: () =>
+            h('div', null, {
+              default: () => formattedContent.map((line) => h('p', null, line)),
+            }),
+        });
+      } else {
+        Message.error(t('tips.checkChatgptAccountsFailed'));
+      }
+    })
+    .catch((err) => {
+      Message.error(err.message);
+    })
+    .finally(() => {
+      checkLoading.value = false;
+    });
 };
 
 type TabInfo = {

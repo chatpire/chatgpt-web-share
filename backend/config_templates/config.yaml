@@ -1,6 +1,7 @@
 openai_web:
   enabled: true
   is_plus_account: true
+  enable_team_subscription: false
   team_account_id:
   chatgpt_base_url:
   proxy:

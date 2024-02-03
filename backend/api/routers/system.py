@@ -17,6 +17,7 @@ from api.models.db import User, OpenaiWebConversation
 from api.models.doc import RequestLogDocument, AskLogDocument
 from api.schemas import LogFilterOptions, SystemInfo, UserCreate, UserSettingSchema, OpenaiWebSourceSettingSchema, \
     OpenaiApiSourceSettingSchema, RequestLogAggregation, AskLogAggregation
+from api.schemas.openai_schemas import OpenaiWebAccountsCheckResponse
 from api.sources import OpenaiWebChatManager, OpenaiApiChatManager
 from api.users import current_super_user, get_user_manager_context
 from utils.admin import sync_conversations
@@ -215,3 +216,10 @@ async def sync_openai_web_conversations(_user: User = Depends(current_super_user
         else:
             raise exception
     return None
+
+
+@router.get("/system/check-openai-web-account", tags=["system"], response_model=OpenaiWebAccountsCheckResponse)
+async def check_openai_web_account(_user: User = Depends(current_super_user)):
+    openai_web_manager = OpenaiWebChatManager()
+    response = await openai_web_manager.check_accounts()
+    return response

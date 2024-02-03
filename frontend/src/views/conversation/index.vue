@@ -492,10 +492,9 @@ const sendMsg = async () => {
       let content = '';
       if (wsErrorMessage != null) {
         if (wsErrorMessage.tip) {
-          content = t(wsErrorMessage.tip);
-        } else {
-          content = wsErrorMessage.error_detail || t('errors.unknown');
+          content = t(wsErrorMessage.tip) + ' ';
         }
+        content += wsErrorMessage.error_detail || t('errors.unknown');
       } else {
         content = `WebSocket ${event.code}: ${t(event.reason || 'errors.unknown')}`;
       }

@@ -85,7 +85,7 @@ import {
 } from '@/api/conv';
 import { runActionSyncOpenaiWebConversations } from '@/api/system';
 import { getAllUserApi } from '@/api/user';
-import { BaseConversationSchema, UserRead, UserReadAdmin } from '@/types/schema';
+import { BaseConversationSchema, OpenaiWebConversationSchema, UserReadAdmin } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
@@ -218,7 +218,7 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
               result += ` (${user.remark})`;
             }
             return result;
-          }
+          },
         }
       );
     },
@@ -229,6 +229,26 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
     defaultFilterOptionValues: userInfo.value?.map((user) => user.id),
     filter: (value, row) => {
       return row.user_id === value;
+    },
+  },
+  {
+    title: 'Source ID',
+    key: 'source_id',
+    width: 80,
+    render: (row) => {
+      let result = 'N/A';
+      if (row.source === 'openai_web') {
+        const conv = row as OpenaiWebConversationSchema;
+        result = conv.source_id || t('commons.empty');
+      }
+      return h(
+        NTooltip,
+        { trigger: 'hover' },
+        {
+          trigger: () => result?.substring(0, 4),
+          default: () => result,
+        }
+      );
     },
   },
   {

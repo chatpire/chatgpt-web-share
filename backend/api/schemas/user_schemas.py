@@ -49,18 +49,19 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     available_models: list[OpenaiWebChatModels]
     per_model_ask_count: OpenaiWebPerModelAskCount
     disable_uploading: bool
-    is_team_user: bool
+    use_team: bool
 
     model_config = ConfigDict(from_attributes=True)
 
     @staticmethod
     def default():
+        default_models = [OpenaiWebChatModels(m) for m in
+                          ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]]
         return OpenaiWebSourceSettingSchema(
-            available_models=[OpenaiWebChatModels(m) for m in
-                              ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]],
+            available_models=[m for m in default_models if m in config.openai_web.available_models],
             per_model_ask_count=OpenaiWebPerModelAskCount(),
             disable_uploading=False,
-            is_team_user=False,
+            use_team=config.openai_web.enable_team_subscription,
             **BaseSourceSettingSchema.default().model_dump()
         )
 
@@ -70,7 +71,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
             available_models=[OpenaiWebChatModels(m) for m in OpenaiWebChatModels],
             per_model_ask_count=OpenaiWebPerModelAskCount.unlimited(),
             disable_uploading=False,
-            is_team_user=False,
+            use_team=False,
             **BaseSourceSettingSchema.unlimited().model_dump()
         )
 
@@ -79,8 +80,8 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
     def check(cls, values):
         if "disable_uploading" not in values:
             values["disable_uploading"] = config.openai_web.disable_uploading
-        if "is_team_user" not in values:
-            values["is_team_user"] = False
+        if "use_team" not in values:
+            values["use_team"] = config.openai_web.enable_team_subscription
         return values
 
 
@@ -94,8 +95,9 @@ class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
 
     @staticmethod
     def default():
+        default_models = [OpenaiApiChatModels(m) for m in ["gpt_3_5", "gpt_4"]]
         return OpenaiApiSourceSettingSchema(
-            available_models=[OpenaiApiChatModels(m) for m in OpenaiApiChatModels],
+            available_models=[m for m in default_models if m in config.openai_api.available_models],
             per_model_ask_count=OpenaiApiPerModelAskCount(),
             **BaseSourceSettingSchema.default().model_dump(),
             allow_custom_openai_api=False,

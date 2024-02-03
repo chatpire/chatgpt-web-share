@@ -220,6 +220,11 @@
           "title": "Is Plus Account",
           "type": "boolean"
         },
+        "enable_team_subscription": {
+          "default": false,
+          "title": "Enable Team Subscription",
+          "type": "boolean"
+        },
         "team_account_id": {
           "anyOf": [
             {
@@ -391,6 +396,7 @@
       "default": {
         "enabled": true,
         "is_plus_account": true,
+        "enable_team_subscription": false,
         "team_account_id": null,
         "chatgpt_base_url": null,
         "proxy": null,
