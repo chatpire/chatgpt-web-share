@@ -7,9 +7,10 @@ readme = "README.md"
 packages = []
 
 [tool.poetry.dependencies]
+bcrypt = "4.0.1"
 python = "^3.10"
 fastapi = "^0.109.0"
-uvicorn = "^0.26.0"
+uvicorn = "^0.27.0.post1"
 aiosqlite = "^0.19.0"
 sqlalchemy = "^2.0.21"
 fastapi-users = "^12.1.2"
@@ -33,7 +34,7 @@ aiofiles = "^23.2.1"
 aiohttp = "^3.8.5"
 fastapi-cache2 = "^0.2.1"
 pillow = "^10.1.0"
-bcrypt = "^4.0.1"
+
 
 
 [build-system]
