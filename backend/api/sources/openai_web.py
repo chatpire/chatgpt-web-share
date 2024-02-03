@@ -188,41 +188,45 @@ def make_session() -> httpx.AsyncClient:
     return session
 
 
-async def _receive_from_websocket(wss_url):
+async def _receive_from_websocket(wss_url, timeout):
     recv_msg_count = 0
-    async with websockets.connect(wss_url, subprotocols=["json.reliable.webpubsub.azure.v1"]) as websocket:
+    async with websockets.connect(wss_url, subprotocols=["json.reliable.webpubsub.azure.v1"], open_timeout=timeout) as websocket:
         logger.debug(f"Connected to Websocket {wss_url[:65]}...{wss_url[-10:]}")
         while True:
-            message = await websocket.recv()
-            message = json.loads(message)
-            if "data" not in message:
-                continue
-            sequence_id = message["sequenceId"]
-            data = base64.b64decode(message['data']['body']).decode('utf-8')
-            if not data or data is None:
-                continue
-            if "data: " in data:
-                data = data[6:]
-            if "[DONE]" in data:
-                # send ack to server
-                await websocket.send(json.dumps({"type": "sequenceAck", "sequenceId": sequence_id}))
-                break
             try:
-                data = json.loads(data)
-            except json.decoder.JSONDecodeError:
-                continue
-            if not _check_fields(data):
-                if "error" in data:
-                    raise OpenaiWebException(data["error"])
-                else:
-                    logger.warning(f"Field missing. Details: {str(data)}")
+                message = await asyncio.wait_for(websocket.recv(), timeout)
+                message = json.loads(message)
+                if "data" not in message:
                     continue
-            recv_msg_count += 1
-            # batch ack to server every 10 messages
-            if recv_msg_count > 10:
-                await websocket.send(json.dumps({"type": "sequenceAck", "sequenceId": sequence_id}))
-                recv_msg_count = 0
-            yield data
+                sequence_id = message["sequenceId"]
+                data = base64.b64decode(message['data']['body']).decode('utf-8')
+                if not data or data is None:
+                    continue
+                if "data: " in data:
+                    data = data[6:]
+                if "[DONE]" in data:
+                    # send ack to server
+                    await websocket.send(json.dumps({"type": "sequenceAck", "sequenceId": sequence_id}))
+                    break
+                try:
+                    data = json.loads(data)
+                except json.decoder.JSONDecodeError:
+                    continue
+                if not _check_fields(data):
+                    if "error" in data:
+                        raise OpenaiWebException(data["error"])
+                    else:
+                        logger.warning(f"Field missing. Details: {str(data)}")
+                        continue
+                recv_msg_count += 1
+                # batch ack to server every 10 messages
+                if recv_msg_count > 10:
+                    await websocket.send(json.dumps({"type": "sequenceAck", "sequenceId": sequence_id}))
+                    recv_msg_count = 0
+                yield data
+            except asyncio.TimeoutError:
+                logger.error("Timeout when receiving messages from wss")
+                break
     logger.debug("Connection closed.")
 
 
@@ -389,7 +393,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                     wss_url = line.get("wss_url")
                     # connect to wss_url and receive messages
                     if wss_url:
-                        async for l in _receive_from_websocket(wss_url):
+                        async for l in _receive_from_websocket(wss_url, Config().openai_web.common_timeout):
                             yield l
                         break
                 except json.decoder.JSONDecodeError:
