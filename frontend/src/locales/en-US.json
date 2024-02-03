@@ -398,7 +398,8 @@
     "openai_web_installed_plugins": "Note: Only the plugins enabled here can be selected when using GPT-4 Plugin!",
     "config": {
       "enabled_models": "Set which models are enabled globally. Models that are not enabled here will not be available for all accounts.",
-      "file_upload_strategy": "Determined how to upload files when using the code interpreter model. See the documentation for details"
+      "file_upload_strategy": "Determined how to upload files when using the code interpreter model. See the documentation for details",
+      "max_completion_concurrency": "Decide the concurrency of conversation. \nIf set to a large value, it is equivalent to disabling the queued conversation feature."
     }
   },
   "dialog": {

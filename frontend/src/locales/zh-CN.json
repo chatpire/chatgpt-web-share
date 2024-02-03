@@ -356,7 +356,8 @@
     "config": {
       "enabled_models": "启用的模型",
       "model_code_mapping": "模型代码映射",
-      "file_upload_strategy": "文件上传策略"
+      "file_upload_strategy": "文件上传策略",
+      "max_completion_concurrency": "最大并行对话数量"
     },
     "conversation_id": "对话ID",
     "queueing_time": "排队时长",
@@ -402,7 +403,8 @@
     "openai_web_installed_plugins": "注意：只有在此处启用或在官网安装的插件，在使用GPT-4 Plugin时才能选择！",
     "config": {
       "enabled_models": "设置全局启用哪些模型，在此处不启用的模型所有账号都无法使用",
-      "file_upload_strategy": "配置使用 code interpreter 模型时文件如何上传，详见文档"
+      "file_upload_strategy": "配置使用 code interpreter 模型时文件如何上传，详见文档",
+      "max_completion_concurrency": "决定同时能有多少用户进行对话。如果设置为一个很大的值，相当于禁用排队对话功能。"
     }
   },
   "dialog": {
