@@ -313,7 +313,6 @@ async def chat(websocket: WebSocket):
     queueing_end_time = None
 
     # 排队
-    # TODO 可选的排队
     if ask_request.source == ChatSourceTypes.openai_web:
         if openai_web_manager.is_busy():
             await reply(AskResponse(
@@ -335,7 +334,6 @@ async def chat(websocket: WebSocket):
     message = None
 
     try:
-        # rev: 更改状态为 asking
         if ask_request.source == ChatSourceTypes.openai_web:
             await change_user_chat_status(user.id, OpenaiWebChatStatus.asking)
 

@@ -232,7 +232,7 @@ async def _receive_from_websocket(wss_url, timeout):
 
 class OpenaiWebChatManager(metaclass=SingletonMeta):
     def __init__(self):
-        self.semaphore = asyncio.Semaphore(1)
+        self.semaphore = asyncio.Semaphore(config.openai_web.max_completion_concurrency)
         self.session: AsyncClient | None = None
         self.reset_session()
 

@@ -5894,6 +5894,12 @@
                 ],
                 "default": "browser_upload_only"
               },
+              "max_completion_concurrency": {
+                "type": "integer",
+                "minimum": 1,
+                "title": "Max Completion Concurrency",
+                "default": 1
+              },
               "disable_uploading": {
                 "type": "boolean",
                 "title": "Disable Uploading",
@@ -5929,6 +5935,7 @@
             "gpt_4_plugins": "gpt-4-plugins"
           },
           "file_upload_strategy": "browser_upload_only",
+          "max_completion_concurrency": 1,
           "disable_uploading": false
         }
       },
@@ -6124,7 +6131,7 @@
               "run_migration": {
                 "type": "boolean",
                 "title": "Run Migration",
-                "default": false
+                "default": true
               },
               "max_file_upload_size": {
                 "type": "integer",
@@ -6142,7 +6149,7 @@
           "database_url": "sqlite+aiosqlite:///data/database.db",
           "mongodb_url": "mongodb://cws:password@mongo:27017",
           "mongodb_db_name": "cws",
-          "run_migration": false,
+          "run_migration": true,
           "max_file_upload_size": 104857600
         }
       },
@@ -6385,6 +6392,12 @@
                 ],
                 "default": "browser_upload_only"
               },
+              "max_completion_concurrency": {
+                "type": "integer",
+                "minimum": 1,
+                "title": "Max Completion Concurrency",
+                "default": 1
+              },
               "disable_uploading": {
                 "type": "boolean",
                 "title": "Disable Uploading",
@@ -6420,6 +6433,7 @@
             "gpt_4_plugins": "gpt-4-plugins"
           },
           "file_upload_strategy": "browser_upload_only",
+          "max_completion_concurrency": 1,
           "disable_uploading": false
         }
       },
@@ -6615,7 +6629,7 @@
               "run_migration": {
                 "type": "boolean",
                 "title": "Run Migration",
-                "default": false
+                "default": true
               },
               "max_file_upload_size": {
                 "type": "integer",
@@ -6633,7 +6647,7 @@
           "database_url": "sqlite+aiosqlite:///data/database.db",
           "mongodb_url": "mongodb://cws:password@mongo:27017",
           "mongodb_db_name": "cws",
-          "run_migration": false,
+          "run_migration": true,
           "max_file_upload_size": 104857600
         }
       },
@@ -6842,7 +6856,7 @@
       "run_migration": {
         "type": "boolean",
         "title": "Run Migration",
-        "default": false
+        "default": true
       },
       "max_file_upload_size": {
         "type": "integer",
@@ -10941,6 +10955,12 @@
           }
         ],
         "default": "browser_upload_only"
+      },
+      "max_completion_concurrency": {
+        "type": "integer",
+        "minimum": 1,
+        "title": "Max Completion Concurrency",
+        "default": 1
       },
       "disable_uploading": {
         "type": "boolean",

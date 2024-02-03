@@ -81,6 +81,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_plugins"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
+    max_completion_concurrency: int = Field(1, ge=1)
     disable_uploading: bool = False
 
     @field_validator("chatgpt_base_url")

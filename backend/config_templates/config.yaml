@@ -24,6 +24,7 @@ openai_web:
     gpt_4_code_interpreter: gpt-4-code-interpreter
     gpt_4_dalle: gpt-4-dalle
   file_upload_strategy: browser_upload_only
+  max_completion_concurrency: 1
   disable_uploading: false
 openai_api:
   enabled: true
@@ -55,7 +56,7 @@ data:
   database_url: sqlite+aiosqlite:///data/database.db
   mongodb_url: mongodb://cws:password@mongo:27017
   mongodb_db_name: cws
-  run_migration: false
+  run_migration: true
   max_file_upload_size: 104857600
 auth:
   jwt_secret: MODIFY_THIS_TO_RANDOM_SECURE_STRING

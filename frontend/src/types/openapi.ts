@@ -518,6 +518,7 @@ export interface components {
        *     "gpt_4_plugins": "gpt-4-plugins"
        *   },
        *   "file_upload_strategy": "browser_upload_only",
+       *   "max_completion_concurrency": 1,
        *   "disable_uploading": false
        * }
        */
@@ -567,7 +568,7 @@ export interface components {
        *   "database_url": "sqlite+aiosqlite:///data/database.db",
        *   "mongodb_url": "mongodb://cws:password@mongo:27017",
        *   "mongodb_db_name": "cws",
-       *   "run_migration": false,
+       *   "run_migration": true,
        *   "max_file_upload_size": 104857600
        * }
        */
@@ -626,6 +627,7 @@ export interface components {
        *     "gpt_4_plugins": "gpt-4-plugins"
        *   },
        *   "file_upload_strategy": "browser_upload_only",
+       *   "max_completion_concurrency": 1,
        *   "disable_uploading": false
        * }
        */
@@ -675,7 +677,7 @@ export interface components {
        *   "database_url": "sqlite+aiosqlite:///data/database.db",
        *   "mongodb_url": "mongodb://cws:password@mongo:27017",
        *   "mongodb_db_name": "cws",
-       *   "run_migration": false,
+       *   "run_migration": true,
        *   "max_file_upload_size": 104857600
        * }
        */
@@ -759,7 +761,7 @@ export interface components {
       mongodb_db_name: string;
       /**
        * Run Migration
-       * @default false
+       * @default true
        */
       run_migration: boolean;
       /**
@@ -1267,6 +1269,11 @@ export interface components {
       };
       /** @default browser_upload_only */
       file_upload_strategy: components["schemas"]["OpenaiWebFileUploadStrategyOption"];
+      /**
+       * Max Completion Concurrency
+       * @default 1
+       */
+      max_completion_concurrency: number;
       /**
        * Disable Uploading
        * @default false
