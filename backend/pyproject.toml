@@ -33,7 +33,6 @@ aiofiles = "^23.2.1"
 aiohttp = "^3.8.5"
 fastapi-cache2 = "^0.2.1"
 pillow = "^10.1.0"
-cython = "^3.0.8"
 bcrypt = "^4.0.1"
 
 

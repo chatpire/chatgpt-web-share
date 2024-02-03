@@ -68,6 +68,7 @@ class AuthSetting(BaseModel):
 class OpenaiWebChatGPTSetting(BaseModel):
     enabled: bool = True
     is_plus_account: bool = True
+    enable_team_subscription: bool = False
     team_account_id: Optional[str] = None
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None

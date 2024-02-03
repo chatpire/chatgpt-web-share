@@ -144,6 +144,10 @@ export interface paths {
     /** Sync Openai Web Conversations */
     post: operations["sync_openai_web_conversations_system_action_sync_openai_web_conv_post"];
   };
+  "/system/check-openai-web-account": {
+    /** Check Openai Web Account */
+    get: operations["check_openai_web_account_system_check_openai_web_account_get"];
+  };
   "/logs/server": {
     /** Get Server Logs */
     post: operations["get_server_logs_logs_server_post"];
@@ -399,6 +403,8 @@ export interface components {
       source: components["schemas"]["ChatSourceTypes"];
       /** Conversation Id */
       conversation_id?: string | null;
+      /** Source Id */
+      source_id?: string | null;
       /** Title */
       title?: string | null;
       /** User Id */
@@ -490,6 +496,7 @@ export interface components {
        * @default {
        *   "enabled": true,
        *   "is_plus_account": true,
+       *   "enable_team_subscription": false,
        *   "common_timeout": 20,
        *   "ask_timeout": 600,
        *   "sync_conversations_on_startup": false,
@@ -597,6 +604,7 @@ export interface components {
        * @default {
        *   "enabled": true,
        *   "is_plus_account": true,
+       *   "enable_team_subscription": false,
        *   "common_timeout": 20,
        *   "ask_timeout": 600,
        *   "sync_conversations_on_startup": false,
@@ -930,6 +938,8 @@ export interface components {
       source: "openai_api";
       /** Conversation Id */
       conversation_id?: string | null;
+      /** Source Id */
+      source_id?: string | null;
       /** Title */
       title?: string | null;
       /** User Id */
@@ -1108,6 +1118,70 @@ export interface components {
       /** Completion Tokens */
       completion_tokens?: number | null;
     };
+    /** OpenaiWebAccountsCheckAccount */
+    OpenaiWebAccountsCheckAccount: {
+      account: components["schemas"]["OpenaiWebAccountsCheckAccountDetail"];
+      /** Features */
+      features: string[];
+      entitlement: components["schemas"]["OpenaiWebAccountsCheckEntitlement"];
+      /** Last Active Subscription */
+      last_active_subscription?: Record<string, never> | null;
+      /** Is Eligible For Yearly Plus Subscription */
+      is_eligible_for_yearly_plus_subscription: boolean;
+    };
+    /** OpenaiWebAccountsCheckAccountDetail */
+    OpenaiWebAccountsCheckAccountDetail: {
+      /** Account User Role */
+      account_user_role: "account-owner" | string;
+      /** Account User Id */
+      account_user_id: string;
+      /** Processor */
+      processor: Record<string, never>;
+      /** Account Id */
+      account_id: string;
+      /** Organization Id */
+      organization_id?: string | null;
+      /** Is Most Recent Expired Subscription Gratis */
+      is_most_recent_expired_subscription_gratis: boolean;
+      /** Has Previously Paid Subscription */
+      has_previously_paid_subscription: boolean;
+      /** Name */
+      name?: string | null;
+      /** Profile Picture Id */
+      profile_picture_id?: string | null;
+      /** Profile Picture Url */
+      profile_picture_url?: string | null;
+      /** Structure */
+      structure: ("workspace" | "personal") | string;
+      /** Plan Type */
+      plan_type: ("team" | "free") | string;
+      /** Is Deactivated */
+      is_deactivated: boolean;
+      /** Promo Data */
+      promo_data: Record<string, never>;
+    };
+    /** OpenaiWebAccountsCheckEntitlement */
+    OpenaiWebAccountsCheckEntitlement: {
+      /** Subscription Id */
+      subscription_id?: string | null;
+      /** Has Active Subscription */
+      has_active_subscription?: boolean;
+      /** Subscription Plan */
+      subscription_plan?: ("chatgptteamplan" | "chatgptplusplan") | string | null;
+      /** Expires At */
+      expires_at?: string | null;
+      /** Billing Period */
+      billing_period?: "monthly" | string | null;
+    };
+    /** OpenaiWebAccountsCheckResponse */
+    OpenaiWebAccountsCheckResponse: {
+      /** Accounts */
+      accounts: {
+        [key: string]: components["schemas"]["OpenaiWebAccountsCheckAccount"];
+      };
+      /** Account Ordering */
+      account_ordering: string[];
+    };
     /** OpenaiWebAskLogMeta */
     OpenaiWebAskLogMeta: {
       /**
@@ -1129,6 +1203,13 @@ export interface components {
        * @default true
        */
       is_plus_account: boolean;
+      /**
+       * Enable Team Subscription
+       * @default false
+       */
+      enable_team_subscription: boolean;
+      /** Team Account Id */
+      team_account_id?: string | null;
       /** Chatgpt Base Url */
       chatgpt_base_url?: string | null;
       /** Proxy */
@@ -1531,6 +1612,12 @@ export interface components {
       moderation_results?: unknown[] | null;
       /** Plugin Ids */
       plugin_ids?: string[] | null;
+      /** Gizmo Id */
+      gizmo_id?: string | null;
+      /** Is Archived */
+      is_archived?: boolean | null;
+      /** Conversation Template Id */
+      conversation_template_id?: string | null;
     };
     /** OpenaiWebConversationSchema */
     OpenaiWebConversationSchema: {
@@ -1546,6 +1633,8 @@ export interface components {
       source: "openai_web";
       /** Conversation Id */
       conversation_id?: string | null;
+      /** Source Id */
+      source_id?: string | null;
       /** Title */
       title?: string | null;
       /** User Id */
@@ -1602,6 +1691,8 @@ export interface components {
       per_model_ask_count: components["schemas"]["OpenaiWebPerModelAskCount"];
       /** Disable Uploading */
       disable_uploading: boolean;
+      /** Use Team */
+      use_team: boolean;
     };
     /** RequestLogAggregation */
     RequestLogAggregation: {
@@ -2443,6 +2534,9 @@ export interface operations {
   /** Update Chat Plugin User Settings */
   update_chat_plugin_user_settings_chat_openai_plugins__plugin_id__user_settings_patch: {
     parameters: {
+      query?: {
+        use_team?: boolean | null;
+      };
       path: {
         plugin_id: string;
       };
@@ -2624,6 +2718,17 @@ export interface operations {
       };
     };
   };
+  /** Check Openai Web Account */
+  check_openai_web_account_system_check_openai_web_account_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+    };
+  };
   /** Get Server Logs */
   get_server_logs_logs_server_post: {
     requestBody?: {
@@ -2652,7 +2757,7 @@ export interface operations {
       query?: {
         start_time?: string;
         end_time?: string;
-        limit?: number;
+        max_results?: number;
       };
     };
     responses: {

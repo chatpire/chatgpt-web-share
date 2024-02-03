@@ -5,6 +5,7 @@ import {
   ConfigModel,
   CredentialsModel,
   LogFilterOptions,
+  OpenaiWebAccountsCheckResponse,
   RequestLogAggregation,
   SystemInfo,
 } from '@/types/schema';
@@ -45,4 +46,8 @@ export function updateSystemCredentials(credentials: CredentialsModel) {
 
 export function runActionSyncOpenaiWebConversations() {
   return axios.post(ApiUrl.SystemActionSyncOpenaiWebConversations);
+}
+
+export function SystemCheckOpenaiWebAccount() {
+  return axios.get<OpenaiWebAccountsCheckResponse>(ApiUrl.SystemCheckOpenaiWebAccount);
 }

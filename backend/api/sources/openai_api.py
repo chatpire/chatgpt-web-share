@@ -59,8 +59,8 @@ class OpenaiApiChatManager(metaclass=SingletonMeta):
     def reset_session(self):
         self.session = make_session()
 
-    async def complete(self, is_team_user: bool, text_content: str, conversation_id: uuid.UUID = None,
-                       parent_message_id: uuid.UUID = None, model: OpenaiApiChatModels = None,
+    async def complete(self, model: OpenaiApiChatModels, text_content: str, conversation_id: uuid.UUID = None,
+                       parent_message_id: uuid.UUID = None,
                        context_message_count: int = -1, extra_args: Optional[dict] = None, **_kwargs):
 
         assert config.openai_api.enabled, "openai_api is not enabled"
@@ -132,13 +132,12 @@ class OpenaiApiChatManager(metaclass=SingletonMeta):
 
         timeout = httpx.Timeout(config.openai_api.read_timeout, connect=config.openai_api.connect_timeout)
 
-        async with self.session.stream(
-                method="POST",
-                url=f"{base_url}chat/completions",
-                json=data,
-                headers={"Authorization": f"Bearer {credentials.openai_api_key}"},
-                timeout=timeout
-        ) as response:
+        async with self.session.stream(method="POST",
+                                       url=f"{base_url}chat/completions",
+                                       json=data,
+                                       headers={"Authorization": f"Bearer {credentials.openai_api_key}"},
+                                       timeout=timeout
+                                       ) as response:
             await _check_response(response)
             async for line in response.aiter_lines():
                 if not line or line is None:
