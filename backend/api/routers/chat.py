@@ -566,6 +566,8 @@ async def chat(websocket: WebSocket):
                     create_time=current_time,
                     update_time=current_time
                 )
+                if use_team:
+                    new_conv.source_id = config.openai_web.team_account_id
                 conversation = BaseConversation(**new_conv.model_dump(exclude_unset=True))
                 session.add(conversation)
 

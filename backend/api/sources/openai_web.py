@@ -2,7 +2,6 @@ import asyncio
 import json
 import uuid
 from mimetypes import guess_type
-from typing import AsyncGenerator
 
 import websockets
 import base64
@@ -11,10 +10,11 @@ import aiofiles
 import httpx
 from fastapi.encoders import jsonable_encoder
 import aiohttp
+from httpx import AsyncClient
 from pydantic import ValidationError
 
 from api.conf import Config, Credentials
-from api.enums import OpenaiWebChatModels, ChatSourceTypes
+from api.enums import OpenaiWebChatModels
 from api.exceptions import InvalidParamsException, OpenaiWebException, ResourceNotFoundException
 from api.file_provider import FileProvider
 from api.models.doc import OpenaiWebChatMessageMetadata, OpenaiWebConversationHistoryDocument, \
@@ -229,7 +229,7 @@ async def _receive_from_websocket(wss_url):
 class OpenaiWebChatManager(metaclass=SingletonMeta):
     def __init__(self):
         self.semaphore = asyncio.Semaphore(1)
-        self.session = None
+        self.session: AsyncClient | None = None
         self.reset_session()
 
     def is_busy(self):
@@ -306,7 +306,8 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         response = await self.session.patch(url, json={"is_visible": False}, headers=req_headers(use_team))
         await _check_response(response)
 
-    async def complete(self, model: OpenaiWebChatModels, text_content: str, use_team: bool, conversation_id: uuid.UUID = None,
+    async def complete(self, model: OpenaiWebChatModels, text_content: str, use_team: bool,
+                       conversation_id: uuid.UUID = None,
                        parent_message_id: uuid.UUID = None,
                        plugin_ids: list[str] = None,
                        attachments: list[OpenaiWebChatMessageMetadataAttachment] = None,
@@ -369,15 +370,12 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         completion_request["arkose_token"] = None
         data_json = json.dumps(jsonable_encoder(completion_request))
 
-        async with self.session.stream(
-                method="POST",
-                url=f"{config.openai_web.chatgpt_base_url}conversation",
-                data=data_json,
-                timeout=timeout,
-                headers=req_headers(use_team) | {
-                    "referer": "https://chat.openai.com/" + (f"c/{conversation_id}" if conversation_id else "")
-                }
-        ) as response:
+        async with self.session.stream(method="POST", url=f"{config.openai_web.chatgpt_base_url}conversation",
+                                       data=data_json, timeout=timeout,
+                                       headers=req_headers(use_team) | {
+                                           "referer": "https://chat.openai.com/" + (
+                                                   f"c/{conversation_id}" if conversation_id else "")
+                                       }) as response:
             await _check_response(response)
 
             async for line in response.aiter_lines():
@@ -428,7 +426,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
         response = await self.session.post(
             url,
             json={"message_id": message_id},
-            hearders=req_headers(use_team)
+            headers=req_headers(use_team)
         )
         await _check_response(response)
         result = response.json()
