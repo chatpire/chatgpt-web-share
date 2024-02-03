@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from fastapi_users import schemas
-from pydantic import model_validator, ConfigDict, BaseModel, EmailStr, validator
+from pydantic import model_validator, ConfigDict, BaseModel, EmailStr
 
 from api.conf import Config
 from api.enums import OpenaiWebChatStatus, OpenaiWebChatModels, OpenaiApiChatModels
@@ -58,7 +58,7 @@ class OpenaiWebSourceSettingSchema(BaseSourceSettingSchema):
         default_models = [OpenaiWebChatModels(m) for m in
                           ["gpt_3_5", "gpt_4", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_browsing"]]
         return OpenaiWebSourceSettingSchema(
-            available_models=[m for m in default_models if m in config.openai_web.available_models],
+            available_models=[m for m in default_models if m in config.openai_web.enabled_models],
             per_model_ask_count=OpenaiWebPerModelAskCount(),
             disable_uploading=False,
             use_team=config.openai_web.enable_team_subscription,
@@ -97,7 +97,7 @@ class OpenaiApiSourceSettingSchema(BaseSourceSettingSchema):
     def default():
         default_models = [OpenaiApiChatModels(m) for m in ["gpt_3_5", "gpt_4"]]
         return OpenaiApiSourceSettingSchema(
-            available_models=[m for m in default_models if m in config.openai_api.available_models],
+            available_models=[m for m in default_models if m in config.openai_api.enabled_models],
             per_model_ask_count=OpenaiApiPerModelAskCount(),
             **BaseSourceSettingSchema.default().model_dump(),
             allow_custom_openai_api=False,
