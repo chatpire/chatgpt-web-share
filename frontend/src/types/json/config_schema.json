@@ -35,6 +35,11 @@
           "title": "Print Sql",
           "type": "boolean"
         },
+        "print_traceback": {
+          "default": true,
+          "title": "Print Traceback",
+          "type": "boolean"
+        },
         "create_initial_admin_user": {
           "default": true,
           "title": "Create Initial Admin User",
@@ -472,6 +477,7 @@
       ],
       "default": {
         "print_sql": false,
+        "print_traceback": true,
         "create_initial_admin_user": true,
         "initial_admin_user_username": "admin",
         "initial_admin_user_password": "password"

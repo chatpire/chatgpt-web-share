@@ -23,6 +23,7 @@ default_openai_web_model_code_mapping = {
 
 class CommonSetting(BaseModel):
     print_sql: bool = False
+    print_traceback: bool = True
     create_initial_admin_user: bool = True
     initial_admin_user_username: str = 'admin'
     initial_admin_user_password: str = 'password'

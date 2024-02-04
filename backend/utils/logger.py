@@ -2,7 +2,7 @@ import logging
 import logging.config
 import os
 from datetime import datetime
-
+import traceback
 import yaml
 
 from api.conf import Config
@@ -27,3 +27,17 @@ def setup_logger():
 
 def get_logger(name):
     return logging.getLogger(f"cws.{name}")
+
+
+def with_traceback(e: Exception):
+    if Config().common.print_traceback:
+        tb = traceback.extract_tb(e.__traceback__)
+        last_frames = tb[-10:]
+        formatted_traceback = ["traceback:"]
+        for frame in last_frames:
+            frame_info = f"{frame.filename}:{frame.lineno} in {frame.name}"
+            formatted_traceback.append(frame_info)
+        formatted_traceback = "\n".join(formatted_traceback)
+        return f"<{e.__class__.__name__}> {str(e)}\n{formatted_traceback}"
+    else:
+        return str(e)

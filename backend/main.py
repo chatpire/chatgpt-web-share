@@ -37,6 +37,11 @@ setup_logger()
 
 logger = get_logger(__name__)
 
+if config.log.console_log_level != "DEBUG":
+    import warnings
+
+    warnings.filterwarnings("ignore")
+
 
 async def startup():
     await initialize_db()
