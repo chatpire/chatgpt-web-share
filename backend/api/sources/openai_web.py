@@ -180,9 +180,9 @@ def make_session() -> httpx.AsyncClient:
             "http://": config.openai_web.proxy,
             "https://": config.openai_web.proxy,
         }
-        session = httpx.AsyncClient(proxies=proxies)
+        session = httpx.AsyncClient(proxies=proxies, timeout=config.openai_web.common_timeout)
     else:
-        session = httpx.AsyncClient()
+        session = httpx.AsyncClient(timeout=config.openai_web.common_timeout)
     session.headers.clear()
     session.headers.update(default_header())
     return session
