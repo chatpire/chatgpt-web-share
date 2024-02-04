@@ -7,26 +7,6 @@
             <div class="flex flex-row justify-between content-center">
               <div>
                 <n-icon class="mr-1">
-                  <md-people />
-                </n-icon>{{ $t('Active Users') }}
-              </div>
-              <div>{{ serverStatus.active_user_in_5m }}</div>
-            </div>
-          </n-list-item>
-          <n-list-item>
-            <div class="flex flex-row justify-between content-center">
-              <div>
-                <n-icon class="mr-1">
-                  <md-people />
-                </n-icon>{{ $t('GPT4 3h usage') }}
-              </div>
-              <div>{{serverStatus.gpt4_count_in_3_hours}}/50</div>
-            </div>
-          </n-list-item>
-          <n-list-item>
-            <div class="flex flex-row justify-between content-center">
-              <div>
-                <n-icon class="mr-1">
                   <EventBusyFilled />
                 </n-icon>{{ $t('commons.isChatbotBusy') }}
               </div>
@@ -38,7 +18,7 @@
               <div>
                 <n-icon class="mr-1">
                   <QueueFilled />
-                </n-icon>{{ $t('Users waiting') }}
+                </n-icon>{{ $t('commons.chatbotWaitingCount') }}
               </div>
               <div>{{ serverStatus.chatbot_waiting_count }}</div>
             </div>
