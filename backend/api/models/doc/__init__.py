@@ -204,6 +204,9 @@ class OpenaiWebConversationHistoryMeta(BaseModel):
     source: Literal["openai_web"]
     moderation_results: Optional[list[Any]] = None
     plugin_ids: Optional[list[str]] = None
+    gizmo_id: Optional[str] = None
+    is_archived: Optional[bool] = None
+    conversation_template_id: Optional[str] = None
 
 
 class OpenaiApiConversationHistoryMeta(BaseModel):

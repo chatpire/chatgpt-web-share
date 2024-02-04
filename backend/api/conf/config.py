@@ -47,7 +47,7 @@ class DataSetting(BaseModel):
     database_url: str = 'sqlite+aiosqlite:///data/database.db'
     mongodb_url: str = 'mongodb://cws:password@mongo:27017'
     mongodb_db_name: str = 'cws'
-    run_migration: bool = False
+    run_migration: bool = True
     max_file_upload_size: int = Field(100 * 1024 * 1024, ge=0)
 
     @field_validator("database_url")
@@ -68,6 +68,7 @@ class AuthSetting(BaseModel):
 class OpenaiWebChatGPTSetting(BaseModel):
     enabled: bool = True
     is_plus_account: bool = True
+    enable_team_subscription: bool = False
     team_account_id: Optional[str] = None
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
@@ -80,6 +81,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     enabled_models: list[OpenaiWebChatModels] = ["gpt_3_5", "gpt_4", "gpt_4_plugins"]
     model_code_mapping: dict[OpenaiWebChatModels, str] = default_openai_web_model_code_mapping
     file_upload_strategy: OpenaiWebFileUploadStrategyOption = OpenaiWebFileUploadStrategyOption.browser_upload_only
+    max_completion_concurrency: int = Field(1, ge=1)
     disable_uploading: bool = False
 
     @field_validator("chatgpt_base_url")

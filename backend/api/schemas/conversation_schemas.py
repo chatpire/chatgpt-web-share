@@ -76,6 +76,7 @@ class BaseConversationSchema(BaseModel):
     id: int = -1
     source: ChatSourceTypes
     conversation_id: uuid.UUID | None = None
+    source_id: Optional[str] = None  # TODO: hide this field for users
     title: str | None = None
     user_id: int | None = None
     is_valid: bool = True

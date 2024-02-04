@@ -5434,6 +5434,39 @@
                       }
                     ],
                     "title": "Plugin Ids"
+                  },
+                  "gizmo_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Gizmo Id"
+                  },
+                  "is_archived": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Is Archived"
+                  },
+                  "conversation_template_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Conversation Template Id"
                   }
                 },
                 "type": "object",
@@ -5508,6 +5541,17 @@
           }
         ],
         "title": "Conversation Id"
+      },
+      "source_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Source Id"
       },
       "title": {
         "anyOf": [
@@ -5729,6 +5773,22 @@
                 "title": "Is Plus Account",
                 "default": true
               },
+              "enable_team_subscription": {
+                "type": "boolean",
+                "title": "Enable Team Subscription",
+                "default": false
+              },
+              "team_account_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Team Account Id"
+              },
               "chatgpt_base_url": {
                 "anyOf": [
                   {
@@ -5834,6 +5894,12 @@
                 ],
                 "default": "browser_upload_only"
               },
+              "max_completion_concurrency": {
+                "type": "integer",
+                "minimum": 1,
+                "title": "Max Completion Concurrency",
+                "default": 1
+              },
               "disable_uploading": {
                 "type": "boolean",
                 "title": "Disable Uploading",
@@ -5847,6 +5913,7 @@
         "default": {
           "enabled": true,
           "is_plus_account": true,
+          "enable_team_subscription": false,
           "common_timeout": 20,
           "ask_timeout": 600,
           "sync_conversations_on_startup": false,
@@ -5868,6 +5935,7 @@
             "gpt_4_plugins": "gpt-4-plugins"
           },
           "file_upload_strategy": "browser_upload_only",
+          "max_completion_concurrency": 1,
           "disable_uploading": false
         }
       },
@@ -6063,7 +6131,7 @@
               "run_migration": {
                 "type": "boolean",
                 "title": "Run Migration",
-                "default": false
+                "default": true
               },
               "max_file_upload_size": {
                 "type": "integer",
@@ -6081,7 +6149,7 @@
           "database_url": "sqlite+aiosqlite:///data/database.db",
           "mongodb_url": "mongodb://cws:password@mongo:27017",
           "mongodb_db_name": "cws",
-          "run_migration": false,
+          "run_migration": true,
           "max_file_upload_size": 104857600
         }
       },
@@ -6203,6 +6271,22 @@
                 "title": "Is Plus Account",
                 "default": true
               },
+              "enable_team_subscription": {
+                "type": "boolean",
+                "title": "Enable Team Subscription",
+                "default": false
+              },
+              "team_account_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Team Account Id"
+              },
               "chatgpt_base_url": {
                 "anyOf": [
                   {
@@ -6308,6 +6392,12 @@
                 ],
                 "default": "browser_upload_only"
               },
+              "max_completion_concurrency": {
+                "type": "integer",
+                "minimum": 1,
+                "title": "Max Completion Concurrency",
+                "default": 1
+              },
               "disable_uploading": {
                 "type": "boolean",
                 "title": "Disable Uploading",
@@ -6321,6 +6411,7 @@
         "default": {
           "enabled": true,
           "is_plus_account": true,
+          "enable_team_subscription": false,
           "common_timeout": 20,
           "ask_timeout": 600,
           "sync_conversations_on_startup": false,
@@ -6342,6 +6433,7 @@
             "gpt_4_plugins": "gpt-4-plugins"
           },
           "file_upload_strategy": "browser_upload_only",
+          "max_completion_concurrency": 1,
           "disable_uploading": false
         }
       },
@@ -6537,7 +6629,7 @@
               "run_migration": {
                 "type": "boolean",
                 "title": "Run Migration",
-                "default": false
+                "default": true
               },
               "max_file_upload_size": {
                 "type": "integer",
@@ -6555,7 +6647,7 @@
           "database_url": "sqlite+aiosqlite:///data/database.db",
           "mongodb_url": "mongodb://cws:password@mongo:27017",
           "mongodb_db_name": "cws",
-          "run_migration": false,
+          "run_migration": true,
           "max_file_upload_size": 104857600
         }
       },
@@ -6764,7 +6856,7 @@
       "run_migration": {
         "type": "boolean",
         "title": "Run Migration",
-        "default": false
+        "default": true
       },
       "max_file_upload_size": {
         "type": "integer",
@@ -8797,6 +8889,39 @@
                       }
                     ],
                     "title": "Plugin Ids"
+                  },
+                  "gizmo_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Gizmo Id"
+                  },
+                  "is_archived": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Is Archived"
+                  },
+                  "conversation_template_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Conversation Template Id"
                   }
                 },
                 "type": "object",
@@ -8880,6 +9005,17 @@
           }
         ],
         "title": "Conversation Id"
+      },
+      "source_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Source Id"
       },
       "title": {
         "anyOf": [
@@ -9982,6 +10118,683 @@
     "type": "object",
     "title": "OpenaiChatResponseUsage"
   },
+  "OpenaiWebAccountsCheckAccount": {
+    "properties": {
+      "account": {
+        "properties": {
+          "account_user_role": {
+            "anyOf": [
+              {
+                "const": "account-owner"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Account User Role"
+          },
+          "account_user_id": {
+            "type": "string",
+            "title": "Account User Id"
+          },
+          "processor": {
+            "type": "object",
+            "title": "Processor"
+          },
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization Id"
+          },
+          "is_most_recent_expired_subscription_gratis": {
+            "type": "boolean",
+            "title": "Is Most Recent Expired Subscription Gratis"
+          },
+          "has_previously_paid_subscription": {
+            "type": "boolean",
+            "title": "Has Previously Paid Subscription"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "profile_picture_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Picture Id"
+          },
+          "profile_picture_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Picture Url"
+          },
+          "structure": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "workspace",
+                  "personal"
+                ]
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Structure"
+          },
+          "plan_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "team",
+                  "free"
+                ]
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Plan Type"
+          },
+          "is_deactivated": {
+            "type": "boolean",
+            "title": "Is Deactivated"
+          },
+          "promo_data": {
+            "type": "object",
+            "title": "Promo Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_user_role",
+          "account_user_id",
+          "processor",
+          "account_id",
+          "is_most_recent_expired_subscription_gratis",
+          "has_previously_paid_subscription",
+          "structure",
+          "plan_type",
+          "is_deactivated",
+          "promo_data"
+        ],
+        "title": "OpenaiWebAccountsCheckAccountDetail"
+      },
+      "features": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array",
+        "title": "Features"
+      },
+      "entitlement": {
+        "properties": {
+          "subscription_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscription Id"
+          },
+          "has_active_subscription": {
+            "type": "boolean",
+            "title": "Has Active Subscription"
+          },
+          "subscription_plan": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "chatgptteamplan",
+                  "chatgptplusplan"
+                ]
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscription Plan"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "billing_period": {
+            "anyOf": [
+              {
+                "const": "monthly"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Billing Period"
+          }
+        },
+        "type": "object",
+        "title": "OpenaiWebAccountsCheckEntitlement"
+      },
+      "last_active_subscription": {
+        "anyOf": [
+          {
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Last Active Subscription"
+      },
+      "is_eligible_for_yearly_plus_subscription": {
+        "type": "boolean",
+        "title": "Is Eligible For Yearly Plus Subscription"
+      }
+    },
+    "type": "object",
+    "required": [
+      "account",
+      "features",
+      "entitlement",
+      "is_eligible_for_yearly_plus_subscription"
+    ],
+    "title": "OpenaiWebAccountsCheckAccount"
+  },
+  "OpenaiWebAccountsCheckAccountDetail": {
+    "properties": {
+      "account_user_role": {
+        "anyOf": [
+          {
+            "const": "account-owner"
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Account User Role"
+      },
+      "account_user_id": {
+        "type": "string",
+        "title": "Account User Id"
+      },
+      "processor": {
+        "type": "object",
+        "title": "Processor"
+      },
+      "account_id": {
+        "type": "string",
+        "title": "Account Id"
+      },
+      "organization_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Organization Id"
+      },
+      "is_most_recent_expired_subscription_gratis": {
+        "type": "boolean",
+        "title": "Is Most Recent Expired Subscription Gratis"
+      },
+      "has_previously_paid_subscription": {
+        "type": "boolean",
+        "title": "Has Previously Paid Subscription"
+      },
+      "name": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Name"
+      },
+      "profile_picture_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Profile Picture Id"
+      },
+      "profile_picture_url": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Profile Picture Url"
+      },
+      "structure": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "workspace",
+              "personal"
+            ]
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Structure"
+      },
+      "plan_type": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "team",
+              "free"
+            ]
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Plan Type"
+      },
+      "is_deactivated": {
+        "type": "boolean",
+        "title": "Is Deactivated"
+      },
+      "promo_data": {
+        "type": "object",
+        "title": "Promo Data"
+      }
+    },
+    "type": "object",
+    "required": [
+      "account_user_role",
+      "account_user_id",
+      "processor",
+      "account_id",
+      "is_most_recent_expired_subscription_gratis",
+      "has_previously_paid_subscription",
+      "structure",
+      "plan_type",
+      "is_deactivated",
+      "promo_data"
+    ],
+    "title": "OpenaiWebAccountsCheckAccountDetail"
+  },
+  "OpenaiWebAccountsCheckEntitlement": {
+    "properties": {
+      "subscription_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Subscription Id"
+      },
+      "has_active_subscription": {
+        "type": "boolean",
+        "title": "Has Active Subscription"
+      },
+      "subscription_plan": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "chatgptteamplan",
+              "chatgptplusplan"
+            ]
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Subscription Plan"
+      },
+      "expires_at": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Expires At"
+      },
+      "billing_period": {
+        "anyOf": [
+          {
+            "const": "monthly"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Billing Period"
+      }
+    },
+    "type": "object",
+    "title": "OpenaiWebAccountsCheckEntitlement"
+  },
+  "OpenaiWebAccountsCheckResponse": {
+    "properties": {
+      "accounts": {
+        "additionalProperties": {
+          "properties": {
+            "account": {
+              "properties": {
+                "account_user_role": {
+                  "anyOf": [
+                    {
+                      "const": "account-owner"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "title": "Account User Role"
+                },
+                "account_user_id": {
+                  "type": "string",
+                  "title": "Account User Id"
+                },
+                "processor": {
+                  "type": "object",
+                  "title": "Processor"
+                },
+                "account_id": {
+                  "type": "string",
+                  "title": "Account Id"
+                },
+                "organization_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Organization Id"
+                },
+                "is_most_recent_expired_subscription_gratis": {
+                  "type": "boolean",
+                  "title": "Is Most Recent Expired Subscription Gratis"
+                },
+                "has_previously_paid_subscription": {
+                  "type": "boolean",
+                  "title": "Has Previously Paid Subscription"
+                },
+                "name": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Name"
+                },
+                "profile_picture_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Profile Picture Id"
+                },
+                "profile_picture_url": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Profile Picture Url"
+                },
+                "structure": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "workspace",
+                        "personal"
+                      ]
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "title": "Structure"
+                },
+                "plan_type": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "team",
+                        "free"
+                      ]
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "title": "Plan Type"
+                },
+                "is_deactivated": {
+                  "type": "boolean",
+                  "title": "Is Deactivated"
+                },
+                "promo_data": {
+                  "type": "object",
+                  "title": "Promo Data"
+                }
+              },
+              "type": "object",
+              "required": [
+                "account_user_role",
+                "account_user_id",
+                "processor",
+                "account_id",
+                "is_most_recent_expired_subscription_gratis",
+                "has_previously_paid_subscription",
+                "structure",
+                "plan_type",
+                "is_deactivated",
+                "promo_data"
+              ],
+              "title": "OpenaiWebAccountsCheckAccountDetail"
+            },
+            "features": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "title": "Features"
+            },
+            "entitlement": {
+              "properties": {
+                "subscription_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Subscription Id"
+                },
+                "has_active_subscription": {
+                  "type": "boolean",
+                  "title": "Has Active Subscription"
+                },
+                "subscription_plan": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "chatgptteamplan",
+                        "chatgptplusplan"
+                      ]
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Subscription Plan"
+                },
+                "expires_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Expires At"
+                },
+                "billing_period": {
+                  "anyOf": [
+                    {
+                      "const": "monthly"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Billing Period"
+                }
+              },
+              "type": "object",
+              "title": "OpenaiWebAccountsCheckEntitlement"
+            },
+            "last_active_subscription": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last Active Subscription"
+            },
+            "is_eligible_for_yearly_plus_subscription": {
+              "type": "boolean",
+              "title": "Is Eligible For Yearly Plus Subscription"
+            }
+          },
+          "type": "object",
+          "required": [
+            "account",
+            "features",
+            "entitlement",
+            "is_eligible_for_yearly_plus_subscription"
+          ],
+          "title": "OpenaiWebAccountsCheckAccount"
+        },
+        "type": "object",
+        "title": "Accounts"
+      },
+      "account_ordering": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array",
+        "title": "Account Ordering"
+      }
+    },
+    "type": "object",
+    "required": [
+      "accounts",
+      "account_ordering"
+    ],
+    "title": "OpenaiWebAccountsCheckResponse"
+  },
   "OpenaiWebAskLogMeta": {
     "properties": {
       "source": {
@@ -10021,6 +10834,22 @@
         "type": "boolean",
         "title": "Is Plus Account",
         "default": true
+      },
+      "enable_team_subscription": {
+        "type": "boolean",
+        "title": "Enable Team Subscription",
+        "default": false
+      },
+      "team_account_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Team Account Id"
       },
       "chatgpt_base_url": {
         "anyOf": [
@@ -10126,6 +10955,12 @@
           }
         ],
         "default": "browser_upload_only"
+      },
+      "max_completion_concurrency": {
+        "type": "integer",
+        "minimum": 1,
+        "title": "Max Completion Concurrency",
+        "default": 1
       },
       "disable_uploading": {
         "type": "boolean",
@@ -14631,6 +15466,39 @@
                   }
                 ],
                 "title": "Plugin Ids"
+              },
+              "gizmo_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Gizmo Id"
+              },
+              "is_archived": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Is Archived"
+              },
+              "conversation_template_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Conversation Template Id"
               }
             },
             "type": "object",
@@ -14687,6 +15555,39 @@
           }
         ],
         "title": "Plugin Ids"
+      },
+      "gizmo_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Gizmo Id"
+      },
+      "is_archived": {
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Is Archived"
+      },
+      "conversation_template_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Conversation Template Id"
       }
     },
     "type": "object",
@@ -14717,6 +15618,17 @@
           }
         ],
         "title": "Conversation Id"
+      },
+      "source_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Source Id"
       },
       "title": {
         "anyOf": [
@@ -14927,6 +15839,10 @@
       "disable_uploading": {
         "type": "boolean",
         "title": "Disable Uploading"
+      },
+      "use_team": {
+        "type": "boolean",
+        "title": "Use Team"
       }
     },
     "type": "object",
@@ -14938,7 +15854,8 @@
       "daily_available_time_slots",
       "available_models",
       "per_model_ask_count",
-      "disable_uploading"
+      "disable_uploading",
+      "use_team"
     ],
     "title": "OpenaiWebSourceSettingSchema"
   },
@@ -15923,6 +16840,10 @@
               "disable_uploading": {
                 "type": "boolean",
                 "title": "Disable Uploading"
+              },
+              "use_team": {
+                "type": "boolean",
+                "title": "Use Team"
               }
             },
             "type": "object",
@@ -15934,7 +16855,8 @@
               "daily_available_time_slots",
               "available_models",
               "per_model_ask_count",
-              "disable_uploading"
+              "disable_uploading",
+              "use_team"
             ],
             "title": "OpenaiWebSourceSettingSchema"
           },
@@ -16320,6 +17242,10 @@
               "disable_uploading": {
                 "type": "boolean",
                 "title": "Disable Uploading"
+              },
+              "use_team": {
+                "type": "boolean",
+                "title": "Use Team"
               }
             },
             "type": "object",
@@ -16331,7 +17257,8 @@
               "daily_available_time_slots",
               "available_models",
               "per_model_ask_count",
-              "disable_uploading"
+              "disable_uploading",
+              "use_team"
             ],
             "title": "OpenaiWebSourceSettingSchema"
           },
@@ -16669,6 +17596,10 @@
           "disable_uploading": {
             "type": "boolean",
             "title": "Disable Uploading"
+          },
+          "use_team": {
+            "type": "boolean",
+            "title": "Use Team"
           }
         },
         "type": "object",
@@ -16680,7 +17611,8 @@
           "daily_available_time_slots",
           "available_models",
           "per_model_ask_count",
-          "disable_uploading"
+          "disable_uploading",
+          "use_team"
         ],
         "title": "OpenaiWebSourceSettingSchema"
       },
@@ -16991,6 +17923,10 @@
           "disable_uploading": {
             "type": "boolean",
             "title": "Disable Uploading"
+          },
+          "use_team": {
+            "type": "boolean",
+            "title": "Use Team"
           }
         },
         "type": "object",
@@ -17002,7 +17938,8 @@
           "daily_available_time_slots",
           "available_models",
           "per_model_ask_count",
-          "disable_uploading"
+          "disable_uploading",
+          "use_team"
         ],
         "title": "OpenaiWebSourceSettingSchema"
       },

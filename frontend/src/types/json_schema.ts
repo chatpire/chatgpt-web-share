@@ -5,7 +5,7 @@ import { OpenaiApiChatModels, OpenaiWebChatModels } from './schema';
 export const jsonRevSourceSettingSchema = jsonSchemas.OpenaiWebSourceSettingSchema;
 export const jsonApiSourceSettingSchema = jsonSchemas.OpenaiApiSourceSettingSchema;
 
-export const jsonConfigModelSchema = jsonSchemas['ConfigModel-Input'];
+export const jsonConfigModelSchema = jsonSchemas['ConfigModel-Output'];
 export const jsonCredentialsModelSchema = jsonSchemas.CredentialsModel;
 
 export const openaiWebChatModelNames = modelDefinitions.openai_web as OpenaiWebChatModels[];

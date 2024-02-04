@@ -190,7 +190,8 @@
     "user": "用户",
     "time": "时间",
     "timeRange": "时间范围",
-    "limit": "限制"
+    "limit": "限制",
+    "check_chatgpt_accounts": "检查 ChatGPT 账户可用性"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -225,13 +226,16 @@
     "noAvailableModelAskCount": "该模型剩余对话次数为0，请联系管理员增加使用次数",
     "userChatTypeExpired": "该对话类型有效期已到期，请联系管理员增加时长",
     "userNotAllowToAskAtThisTime": "当前时间段不允许提问",
+    "teamConversationNotAllowed": "您当前不允许使用该对话，请联系管理员开通 Team 订阅使用权限",
     "openai": {
+      "400": "OpenAI 请求错误 (400 错误)，请联系管理员处理",
       "401": "OpenAI 授权失败 (401 错误)，请联系管理员处理",
       "403": "OpenAI 授权失败 (403 错误)，请联系管理员处理",
       "404": "OpenAI 接口不存在 (404 错误)，请联系管理员处理",
       "429": "OpenAI 接口请求过于频繁 (429 错误)，可能是超过模型使用限制，请稍后再试",
       "500": "OpenAI 服务器错误 (500 错误)，可能是 OpenAI 服务故障或者模型接口发生变更，请告知管理员",
-      "unkown": "OpenAI 未知错误，请联系管理员处理"
+      "unkown": "OpenAI 未知错误，请联系管理员处理",
+      "unknown": "未知 OpenAI 错误"
     },
     "unknown": "未知错误",
     "invalidRequest": "非法请求"
@@ -306,7 +310,10 @@
     "dragImageHere": "拖拽图片到此处以上传",
     "imageUploadRequirements": "最多能够上传4张图片",
     "dragFileOrImageHere": "点击或拖拽任何文件到此处以上传",
-    "gpt4UploadingRequirements": "不超过10份文件或图片，每份文件不超过512MB；请确保文件不含敏感信息"
+    "gpt4UploadingRequirements": "不超过10份文件或图片，每份文件不超过512MB；请确保文件不含敏感信息",
+    "check_chatgpt_accounts": "请在保存配置并更新到最新 Access Token 后使用此功能。如果您开通了 Team 订阅，将会自动填写 Team Account ID。",
+    "autoFillTeamAccountIdSuccess": "已自动填写 Team Account ID",
+    "checkChatgptAccountsFailed": "请求失败"
   },
   "labels": {
     "nickname": "昵称",
@@ -349,7 +356,8 @@
     "config": {
       "enabled_models": "启用的模型",
       "model_code_mapping": "模型代码映射",
-      "file_upload_strategy": "文件上传策略"
+      "file_upload_strategy": "文件上传策略",
+      "max_completion_concurrency": "最大并行对话数量"
     },
     "conversation_id": "对话ID",
     "queueing_time": "排队时长",
@@ -395,7 +403,8 @@
     "openai_web_installed_plugins": "注意：只有在此处启用或在官网安装的插件，在使用GPT-4 Plugin时才能选择！",
     "config": {
       "enabled_models": "设置全局启用哪些模型，在此处不启用的模型所有账号都无法使用",
-      "file_upload_strategy": "配置使用 code interpreter 模型时文件如何上传，详见文档"
+      "file_upload_strategy": "配置使用 code interpreter 模型时文件如何上传，详见文档",
+      "max_completion_concurrency": "决定同时能有多少用户进行对话。如果设置为一个很大的值，相当于禁用排队对话功能。"
     }
   },
   "dialog": {

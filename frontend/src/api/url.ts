@@ -18,12 +18,14 @@ enum ApiUrl {
   SystemRequestStatistics = '/system/stats/request',
   SystemAskStatistics = '/system/stats/ask',
   SystemActionSyncOpenaiWebConversations = '/system/action/sync-openai-web-conv',
+  SystemCheckOpenaiWebAccount = '/system/check-openai-web-account',
 
   ServerLogs = '/logs/server',
   CompletionLogs = '/logs/completions',
 
   SystemConfig = '/system/config',
   SystemCredentials = '/system/credentials',
+
 
   FilesLocalUpload = '/files/local/upload',
   FilesLocalDownload = '/files/local/download',

@@ -45,12 +45,13 @@ export type OpenaiWebChatMessage = components['schemas']['OpenaiWebChatMessage']
 export type OpenaiChatInterpreterInfo = components['schemas']['OpenaiChatInterpreterInfo'];
 
 export type BaseConversationSchema = components['schemas']['BaseConversationSchema'];
-// export source OpenaiWebConversationSchema = components['schemas']['OpenaiWebConversationSchema'];
-// export source OpenaiApiConversationSchema = components['schemas']['OpenaiApiConversationSchema'];
+export type OpenaiWebConversationSchema = components['schemas']['OpenaiWebConversationSchema'];
+export type OpenaiApiConversationSchema = components['schemas']['OpenaiApiConversationSchema'];
 
 export type BaseConversationHistory = components['schemas']['BaseConversationHistory'];
 export type OpenaiApiConversationHistoryDocument = components['schemas']['OpenaiApiConversationHistoryDocument'];
 export type OpenaiWebConversationHistoryDocument = components['schemas']['OpenaiWebConversationHistoryDocument'];
+export type OpenaiWebAccountsCheckResponse = components['schemas']['OpenaiWebAccountsCheckResponse'];
 
 export type OpenaiChatPluginCategory = components['schemas']['OpenaiChatPluginCategory'];
 export type OpenaiChatPluginManifest = components['schemas']['OpenaiChatPluginManifest'];
@@ -70,7 +71,7 @@ export type AskLogDocument = components['schemas']['AskLogDocument'];
 
 export type LogFilterOptions = components['schemas']['LogFilterOptions'];
 
-export type ConfigModel = components['schemas']['ConfigModel-Input'];
+export type ConfigModel = components['schemas']['ConfigModel-Output'];
 export type CredentialsModel = components['schemas']['CredentialsModel'];
 
 export type UploadedFileInfoSchema = components['schemas']['UploadedFileInfoSchema'];

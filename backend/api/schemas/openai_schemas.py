@@ -116,3 +116,41 @@ class OpenaiWebCompleteRequest(BaseModel):
     plugin_ids: Optional[list[str]] = None
     suggestions: list[str] = []
     timezone_offset_min: Optional[int] = None
+
+
+class OpenaiWebAccountsCheckAccountDetail(BaseModel):
+    account_user_role: Literal['account-owner'] | str
+    account_user_id: str
+    processor: dict[str, Any]
+    account_id: str
+    organization_id: Optional[str] = None
+    is_most_recent_expired_subscription_gratis: bool
+    has_previously_paid_subscription: bool
+    name: Optional[str] = None  # only for team
+    profile_picture_id: Optional[str] = None
+    profile_picture_url: Optional[str] = None
+    structure: Literal['workspace', 'personal'] | str
+    plan_type: Literal['team', 'free'] | str
+    is_deactivated: bool
+    promo_data: dict[str, Any]
+
+
+class OpenaiWebAccountsCheckEntitlement(BaseModel):
+    subscription_id: Optional[str] = None
+    has_active_subscription: bool = None
+    subscription_plan: Optional[Literal['chatgptteamplan', 'chatgptplusplan'] | str] = None
+    expires_at: Optional[datetime.datetime] = None
+    billing_period: Optional[Literal['monthly'] | str] = None
+
+
+class OpenaiWebAccountsCheckAccount(BaseModel):
+    account: OpenaiWebAccountsCheckAccountDetail
+    features: list[str]
+    entitlement: OpenaiWebAccountsCheckEntitlement
+    last_active_subscription: Optional[dict[str, Any]] = None
+    is_eligible_for_yearly_plus_subscription: bool
+
+
+class OpenaiWebAccountsCheckResponse(BaseModel):  # accounts/check/v4-2023-04-27
+    accounts: dict[str, OpenaiWebAccountsCheckAccount]
+    account_ordering: list[str]

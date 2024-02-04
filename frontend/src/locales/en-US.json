@@ -187,7 +187,11 @@
     "executeCode": "Execute Code",
     "siteTitleFull": "ChatGPT Web Share",
     "completionLogs": "Completion Logs",
-    "time": "Time"
+    "time": "Time",
+    "check_chatgpt_accounts": "Check ChatGPT Account Availability",
+    "limit": "limit",
+    "timeRange": "Time Range",
+    "user": "user"
   },
   "errors": {
     "403": "403 error: access denied",
@@ -221,17 +225,20 @@
     "userChatTypeExpired": "The validity period of this conversation type has expired, please contact the administrator to increase the duration",
     "userNotAllowToAskAtThisTime": "Questions are not allowed in the current time period",
     "openai": {
+      "400": "OpenAI request error (400 error), please contact the administrator",
       "401": "OpenAI authorization failed (401 error), please contact the administrator",
       "403": "OpenAI authorization failed (403 error), please contact the administrator",
       "404": "OpenAI reports a 404 error, please contact the administrator",
       "429": "OpenAI reports a 429 error, it may be that the model usage limit has been exceeded, please try again later",
       "500": "OpenAI server error (500 error), it may be that the OpenAI service fails or the model API has changed, please inform the administrator",
-      "unkown": "OpenAI unknown error, please contact the administrator"
+      "unkown": "OpenAI unknown error, please contact the administrator",
+      "unknown": "Unknown OpenAI error"
     },
     "unknown": "unknown error",
     "invalidRequest": "Invalid Request",
     "noAvailableModelAskCount": "The remaining number of available ask count for this model is 0. Please contact the administrator to increase the number of times of use.",
-    "noAvailableTotalAskCount": "The total number of conversations is 0. Please contact the administrator to increase the number of conversations."
+    "noAvailableTotalAskCount": "The total number of conversations is 0. Please contact the administrator to increase the number of conversations.",
+    "teamConversationNotAllowed": "You are currently not allowed to use this conversation, please contact the administrator to activate Team subscription permissions."
   },
   "tips": {
     "loginExpired": "Login expired. Do you want to go to the login page?",
@@ -303,7 +310,8 @@
     "sandboxFileDownloadError": "File download error",
     "sandboxFileNotFound": "File {0} not found, either because the sandbox path is wrong or because the interpreter is expired.",
     "dragFileOrImageHere": "Click or drag any file here to upload",
-    "gpt4UploadingRequirements": "No more than 10 files or images, each file no larger than 512MB. Please ensure the files do not contain sensitive information."
+    "gpt4UploadingRequirements": "No more than 10 files or images, each file no larger than 512MB. Please ensure the files do not contain sensitive information.",
+    "check_chatgpt_accounts": "Please use this feature after saving the configuration and updating to the latest access token. If you have a Team subscription, the Team Account ID will be filled in automatically."
   },
   "labels": {
     "nickname": "Nickname",
@@ -390,7 +398,8 @@
     "openai_web_installed_plugins": "Note: Only the plugins enabled here can be selected when using GPT-4 Plugin!",
     "config": {
       "enabled_models": "Set which models are enabled globally. Models that are not enabled here will not be available for all accounts.",
-      "file_upload_strategy": "Determined how to upload files when using the code interpreter model. See the documentation for details"
+      "file_upload_strategy": "Determined how to upload files when using the code interpreter model. See the documentation for details",
+      "max_completion_concurrency": "Decide the concurrency of conversation. \nIf set to a large value, it is equivalent to disabling the queued conversation feature."
     }
   },
   "dialog": {
