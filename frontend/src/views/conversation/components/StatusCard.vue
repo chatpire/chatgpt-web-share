@@ -7,6 +7,16 @@
             <div class="flex flex-row justify-between content-center">
               <div>
                 <n-icon class="mr-1">
+                  <md-people />
+                </n-icon>{{ $t('commons.activeUserIn5m') }}
+              </div>
+              <div>{{ serverStatus.active_user_in_5m }}</div>
+            </div>
+          </n-list-item>
+          <n-list-item>
+            <div class="flex flex-row justify-between content-center">
+              <div>
+                <n-icon class="mr-1">
                   <EventBusyFilled />
                 </n-icon>{{ $t('commons.isChatbotBusy') }}
               </div>
