@@ -72,6 +72,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     team_account_id: Optional[str] = None
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
+    wss_proxy: Optional[str] = None
     common_timeout: int = Field(20, ge=1,
                                 description="Increase this value if timeout error occurs.")  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
