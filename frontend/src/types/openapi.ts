@@ -1216,6 +1216,8 @@ export interface components {
       chatgpt_base_url?: string | null;
       /** Proxy */
       proxy?: string | null;
+
+      wss_proxy?: string | null;
       /**
        * Common Timeout
        * @description Increase this value if timeout error occurs.

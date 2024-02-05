@@ -5811,6 +5811,17 @@
                 ],
                 "title": "Proxy"
               },
+              "wss_proxy": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "wss_Proxy"
+              },
               "common_timeout": {
                 "type": "integer",
                 "minimum": 1,
@@ -6308,6 +6319,17 @@
                   }
                 ],
                 "title": "Proxy"
+              },
+              "wss_proxy": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "wss_Proxy"
               },
               "common_timeout": {
                 "type": "integer",
@@ -10872,6 +10894,17 @@
           }
         ],
         "title": "Proxy"
+      },
+      "wss_proxy": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "wss_Proxy"
       },
       "common_timeout": {
         "type": "integer",

@@ -261,6 +261,17 @@
           "default": null,
           "title": "Proxy"
         },
+        "wss_proxy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "wss_Proxy"
+        },
         "common_timeout": {
           "default": 20,
           "description": "Increase this value if timeout error occurs.",

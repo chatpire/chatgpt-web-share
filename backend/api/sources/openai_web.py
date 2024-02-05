@@ -187,6 +187,48 @@ def make_session() -> httpx.AsyncClient:
     session.headers.update(default_header())
     return session
 
+async def _receive_from_websocket2(wss_url, timeout, wss_proxy):
+    recv_msg_count = 0
+    timeout_settings = aiohttp.ClientTimeout(total=None, connect=timeout, sock_read=timeout)
+    
+    async with aiohttp.ClientSession(timeout=timeout_settings) as session:
+        async with session.ws_connect(wss_url, protocols=["json.reliable.webpubsub.azure.v1"], proxy=wss_proxy) as ws:
+            logger.debug(f"Connected to Websocket {wss_url[:65]}...{wss_url[-10:]}")
+            async for msg in ws:
+                if msg.type == aiohttp.WSMsgType.TEXT:
+                    message = json.loads(msg.data)
+                    if "data" not in message:
+                        continue
+                    sequence_id = message["sequenceId"]
+                    data = base64.b64decode(message['data']['body']).decode('utf-8')
+                    if not data or data is None:
+                        continue
+                    if "data: " in data:
+                        data = data[6:]
+                    if "[DONE]" in data:
+                        # send ack to server
+                        await ws.send_json({"type": "sequenceAck", "sequenceId": sequence_id})
+                        break
+                    try:
+                        data = json.loads(data)
+                    except json.decoder.JSONDecodeError:
+                        continue
+                    if not _check_fields(data):
+                        if "error" in data:
+                            raise OpenaiWebException(data["error"])
+                        else:
+                            logger.warning(f"Field missing. Details: {str(data)}")
+                            continue
+                    recv_msg_count += 1
+                    # batch ack to server every 10 messages
+                    if recv_msg_count > 10:
+                        await ws.send_json({"type": "sequenceAck", "sequenceId": sequence_id})
+                        recv_msg_count = 0
+                    yield data
+                elif msg.type == aiohttp.WSMsgType.ERROR:
+                    logger.error("WebSocket connection closed with exception %s" % ws.exception())
+                    break
+    logger.debug("Connection closed.")
 
 async def _receive_from_websocket(wss_url, timeout):
     recv_msg_count = 0
@@ -393,7 +435,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                     wss_url = line.get("wss_url")
                     # connect to wss_url and receive messages
                     if wss_url:
-                        async for l in _receive_from_websocket(wss_url, Config().openai_web.common_timeout):
+                        async for l in _receive_from_websocket2(wss_url, Config().openai_web.common_timeout,Config().openai_web.wss_proxy):
                             yield l
                         break
                 except json.decoder.JSONDecodeError:
