@@ -18,17 +18,16 @@ class StatisticsMiddleware:
     """
     统计请求的中间件
     """
+
     def __init__(
-            self,
-            app: ASGI3Application,
-            filter_keywords: Optional[list[str]] = None,
+        self,
+        app: ASGI3Application,
+        filter_keywords: Optional[list[str]] = None,
     ) -> None:
         self.app = app
         self.filter_keywords = filter_keywords
 
-    async def __call__(
-            self, scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable
-    ) -> None:
+    async def __call__(self, scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
         if scope["type"] != "http" and scope["type"] != "websocket":
             return await self.app(scope, receive, send)
 
@@ -53,41 +52,39 @@ class StatisticsMiddleware:
             await send(message)
 
         start_time = time.time()
-        try:
-            await self.app(scope, receive, send_with_inspecting_body)
-        except Exception as exc:
-            raise exc
-        finally:
-            end_time = time.time()
 
-            route: APIRoute | None = scope.get("route", None)
-            if route is None:
-                return
+        await self.app(scope, receive, send_with_inspecting_body)
 
-            if self.filter_keywords:
-                for keyword in self.filter_keywords:
-                    if route.path.find(keyword) != -1:
-                        return
+        end_time = time.time()
 
-            user_id = None
-            if "auth_user" in scope:
-                user = scope["auth_user"]
-                user_id = user.id
+        route: APIRoute | None = scope.get("route", None)
+        if route is None:
+            return
 
-            if scope.get("method"):
-                method = scope["method"]
-            elif scope["type"] == "websocket":
-                method = "WEBSOCKET"
-            else:
-                logger.debug(f"Unknown method for scope type: {scope['type']}")
-                return
+        if self.filter_keywords:
+            for keyword in self.filter_keywords:
+                if route.path.find(keyword) != -1:
+                    return
 
-            elapsed_ms = end_time - start_time
-            elapsed_ms = round(elapsed_ms * 1000, 2)
+        user_id = None
+        if "auth_user" in scope:
+            user = scope["auth_user"]
+            user_id = user.id
 
-            await RequestLogDocument(
-                meta=RequestLogMeta(route_path=route.path, method=method),
-                user_id=user_id,
-                elapsed_ms=elapsed_ms,
-                status=body_code or raw_status_code or scope.get("ask_websocket_close_code", None)
-            ).create()
+        if scope.get("method"):
+            method = scope["method"]
+        elif scope["type"] == "websocket":
+            method = "WEBSOCKET"
+        else:
+            logger.debug(f"Unknown method for scope type: {scope['type']}")
+            return
+
+        elapsed_ms = end_time - start_time
+        elapsed_ms = round(elapsed_ms * 1000, 2)
+
+        await RequestLogDocument(
+            meta=RequestLogMeta(route_path=route.path, method=method),
+            user_id=user_id,
+            elapsed_ms=elapsed_ms,
+            status=body_code or raw_status_code or scope.get("ask_websocket_close_code", None),
+        ).create()

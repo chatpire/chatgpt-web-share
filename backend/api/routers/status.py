@@ -19,11 +19,7 @@ logger = get_logger(__name__)
 @router.get("/status/common", tags=["status"], response_model=CommonStatusSchema)
 @cache(expire=60)
 async def get_server_status(_user: User = Depends(current_active_user)):
-    """普通用户获取服务器状态"""
-    if _user.is_superuser:
-        result = await count_active_users()
-    else:
-        result = await count_active_users_cached()
+    result = await count_active_users()
     active_user_in_5m, active_user_in_1h, active_user_in_1d, queueing_count, _ = result
     pipeline = [
         {
@@ -54,7 +50,7 @@ async def get_server_status(_user: User = Depends(current_active_user)):
         }
     ]
     aggregate_result = await AskLogDocument.aggregate(pipeline).to_list(length=1)
-    gpt4_count_in_3_hours = aggregate_result[0].get('total')
+    gpt4_count_in_3_hours = aggregate_result[0].get('total', 0)
 
     result = CommonStatusSchema(
         active_user_in_5m=active_user_in_5m,
