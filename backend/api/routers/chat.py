@@ -376,7 +376,7 @@ async def chat(websocket: WebSocket):
                         assert ask_request.new_conversation
                         conversation_id = uuid.uuid4()
             except Exception as e:
-                logger.warning(f"convert message error: {e}")
+                logger.warning(f"convert message error: {with_traceback((e))}")
                 continue
 
             await reply(AskResponse(
