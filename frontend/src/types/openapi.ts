@@ -1223,7 +1223,7 @@ export interface components {
       chatgpt_base_url?: string | null;
       /** Proxy */
       proxy?: string | null;
-
+      /** Wss Proxy */
       wss_proxy?: string | null;
       /**
        * Common Timeout

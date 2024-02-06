@@ -5825,7 +5825,7 @@
                     "type": "null"
                   }
                 ],
-                "title": "wss_Proxy"
+                "title": "Wss Proxy"
               },
               "common_timeout": {
                 "type": "integer",
@@ -6340,7 +6340,7 @@
                     "type": "null"
                   }
                 ],
-                "title": "wss_Proxy"
+                "title": "Wss Proxy"
               },
               "common_timeout": {
                 "type": "integer",
@@ -10921,7 +10921,7 @@
             "type": "null"
           }
         ],
-        "title": "wss_Proxy"
+        "title": "Wss Proxy"
       },
       "common_timeout": {
         "type": "integer",

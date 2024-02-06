@@ -275,7 +275,8 @@
               "type": "null"
             }
           ],
-          "title": "wss_Proxy"
+          "default": null,
+          "title": "Wss Proxy"
         },
         "common_timeout": {
           "default": 20,
@@ -422,6 +423,7 @@
         "team_account_id": null,
         "chatgpt_base_url": null,
         "proxy": null,
+        "wss_proxy": null,
         "common_timeout": 20,
         "ask_timeout": 600,
         "sync_conversations_on_startup": false,
