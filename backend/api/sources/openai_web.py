@@ -408,7 +408,10 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                 if "[DONE]" in line:
                     break
                 try:
-                    data = json.loads(line)
+                    if not isinstance(line, dict):
+                        data = json.loads(line)
+                    else:
+                        data = line
                     if not _check_fields(data):
                         if "error" in data:
                             logger.warning(f"error in message stream: {line}")
