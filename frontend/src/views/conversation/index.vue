@@ -366,6 +366,7 @@ const sendMsg = async () => {
         title: t('errors.arkoseError'),
         content: t('errors.arkoseTokenError'),
       });
+      return;
     }
   }
 
