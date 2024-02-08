@@ -138,7 +138,7 @@ export function getArkoseToken(arkoseUrl: string): Promise<string | null> {
     setupEnforcement(
       arkoseUrl,
       config,
-      'arkose-token=fetcher',
+      'arkose-token-fetcher',
       () => {
         console.log('Arkose API is loaded');
       },
