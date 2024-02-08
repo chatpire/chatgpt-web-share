@@ -59,8 +59,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
           context: .
           platforms: linux/amd64
           push: true
@@ -81,6 +79,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           tag_name: ${{ env.VERSION }}
           prerelease: ${{ contains(env.VERSION, 'alpha') || contains(env.VERSION, 'beta') }}
           generate_release_notes: true
