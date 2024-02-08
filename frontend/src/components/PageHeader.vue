@@ -2,14 +2,10 @@
   <n-layout-header bordered style="height: var(--header-height)" class="px-3 flex flex-col justify-center">
     <n-page-header>
       <template #title>
-        <n-space :align="'center'">
-          <div class="lt-sm:hidden">
-            <a href="/" style="text-decoration: none; color: inherit">{{ $t('commons.siteTitle') }}</a>
-          </div>
-    </n-space>
       </template>
       <template #avatar>
-        <ChatGPTAvatar color="green" icon-style="default" :size="32" />
+        <!-- <ChatGPTAvatar color="green" icon-style="default" :size="32" /> -->
+        <CWSIcon />
       </template>
       <template #extra>
         <n-space>
@@ -58,6 +54,7 @@ import { useRoute } from 'vue-router';
 
 import { updateUserMeApi } from '@/api/user';
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
+import CWSIcon from '@/components/icons/CWSIcon.vue';
 import router from '@/router';
 import { useAppStore, useUserStore } from '@/store';
 import { Preference } from '@/store/types';
