@@ -7,6 +7,6 @@ logs
 *.log
 ChatGPT-Proxy-V4
 *.json
-data
+data*
 build
 dist

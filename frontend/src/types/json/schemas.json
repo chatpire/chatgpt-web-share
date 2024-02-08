@@ -5708,6 +5708,11 @@
         "title": "Print Sql",
         "default": false
       },
+      "print_traceback": {
+        "type": "boolean",
+        "title": "Print Traceback",
+        "default": true
+      },
       "create_initial_admin_user": {
         "type": "boolean",
         "title": "Create Initial Admin User",
@@ -5810,6 +5815,17 @@
                   }
                 ],
                 "title": "Proxy"
+              },
+              "wss_proxy": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Wss Proxy"
               },
               "common_timeout": {
                 "type": "integer",
@@ -6032,6 +6048,11 @@
                 "title": "Print Sql",
                 "default": false
               },
+              "print_traceback": {
+                "type": "boolean",
+                "title": "Print Traceback",
+                "default": true
+              },
               "create_initial_admin_user": {
                 "type": "boolean",
                 "title": "Create Initial Admin User",
@@ -6054,6 +6075,7 @@
         ],
         "default": {
           "print_sql": false,
+          "print_traceback": true,
           "create_initial_admin_user": true,
           "initial_admin_user_username": "admin",
           "initial_admin_user_password": "password"
@@ -6309,6 +6331,17 @@
                 ],
                 "title": "Proxy"
               },
+              "wss_proxy": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Wss Proxy"
+              },
               "common_timeout": {
                 "type": "integer",
                 "minimum": 1,
@@ -6530,6 +6563,11 @@
                 "title": "Print Sql",
                 "default": false
               },
+              "print_traceback": {
+                "type": "boolean",
+                "title": "Print Traceback",
+                "default": true
+              },
               "create_initial_admin_user": {
                 "type": "boolean",
                 "title": "Create Initial Admin User",
@@ -6552,6 +6590,7 @@
         ],
         "default": {
           "print_sql": false,
+          "print_traceback": true,
           "create_initial_admin_user": true,
           "initial_admin_user_username": "admin",
           "initial_admin_user_password": "password"
@@ -10872,6 +10911,17 @@
           }
         ],
         "title": "Proxy"
+      },
+      "wss_proxy": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Wss Proxy"
       },
       "common_timeout": {
         "type": "integer",

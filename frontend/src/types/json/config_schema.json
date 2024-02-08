@@ -35,6 +35,11 @@
           "title": "Print Sql",
           "type": "boolean"
         },
+        "print_traceback": {
+          "default": true,
+          "title": "Print Traceback",
+          "type": "boolean"
+        },
         "create_initial_admin_user": {
           "default": true,
           "title": "Create Initial Admin User",
@@ -261,6 +266,18 @@
           "default": null,
           "title": "Proxy"
         },
+        "wss_proxy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wss Proxy"
+        },
         "common_timeout": {
           "default": 20,
           "description": "Increase this value if timeout error occurs.",
@@ -406,6 +423,7 @@
         "team_account_id": null,
         "chatgpt_base_url": null,
         "proxy": null,
+        "wss_proxy": null,
         "common_timeout": 20,
         "ask_timeout": 600,
         "sync_conversations_on_startup": false,
@@ -461,6 +479,7 @@
       ],
       "default": {
         "print_sql": false,
+        "print_traceback": true,
         "create_initial_admin_user": true,
         "initial_admin_user_username": "admin",
         "initial_admin_user_password": "password"

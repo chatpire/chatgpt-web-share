@@ -460,6 +460,11 @@ export interface components {
        */
       print_sql: boolean;
       /**
+       * Print Traceback
+       * @default true
+       */
+      print_traceback: boolean;
+      /**
        * Create Initial Admin User
        * @default true
        */
@@ -543,6 +548,7 @@ export interface components {
       /**
        * @default {
        *   "print_sql": false,
+       *   "print_traceback": true,
        *   "create_initial_admin_user": true,
        *   "initial_admin_user_username": "admin",
        *   "initial_admin_user_password": "password"
@@ -652,6 +658,7 @@ export interface components {
       /**
        * @default {
        *   "print_sql": false,
+       *   "print_traceback": true,
        *   "create_initial_admin_user": true,
        *   "initial_admin_user_username": "admin",
        *   "initial_admin_user_password": "password"
@@ -1216,6 +1223,8 @@ export interface components {
       chatgpt_base_url?: string | null;
       /** Proxy */
       proxy?: string | null;
+      /** Wss Proxy */
+      wss_proxy?: string | null;
       /**
        * Common Timeout
        * @description Increase this value if timeout error occurs.

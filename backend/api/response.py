@@ -101,4 +101,4 @@ def handle_exception_response(e: Exception) -> CustomJSONResponse:
         else:
             tip = get_http_message(e.status_code)
         return response(e.status_code or -1, tip, desensitize(f"{e.status_code} {e.detail}"))
-    return response(-1, desensitize(str(e)))
+    return response(-1, desensitize(f"{e.__class__.__name__}: {desensitize(str(e))}"))

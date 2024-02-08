@@ -30,7 +30,7 @@ from api.schemas.openai_schemas import OpenaiChatPlugin, OpenaiChatPluginUserSet
 from api.sources import OpenaiWebChatManager, convert_openai_web_message, OpenaiApiChatManager
 from api.users import websocket_auth, current_active_user, current_super_user
 from utils.common import desensitize
-from utils.logger import get_logger
+from utils.logger import get_logger, with_traceback
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -376,7 +376,7 @@ async def chat(websocket: WebSocket):
                         assert ask_request.new_conversation
                         conversation_id = uuid.uuid4()
             except Exception as e:
-                logger.warning(f"convert message error: {e}")
+                logger.warning(f"convert message error: {with_traceback((e))}")
                 continue
 
             await reply(AskResponse(
@@ -399,7 +399,7 @@ async def chat(websocket: WebSocket):
         websocket_code = 1001
         websocket_reason = "errors.timout"
     except OpenaiException as e:
-        logger.error(str(e))
+        logger.error(with_traceback(e))
         error_detail_map = {
             400: "errors.openai.400",
             401: "errors.openai.401",
@@ -421,7 +421,7 @@ async def chat(websocket: WebSocket):
         websocket_code = 1001
         websocket_reason = "errors.openaiResponseUnknownError"
     except HTTPError as e:
-        logger.error(str(e))
+        logger.error(with_traceback(e))
         content = str(e)
         await reply(AskResponse(
             type=AskResponseType.error,
@@ -431,7 +431,7 @@ async def chat(websocket: WebSocket):
         websocket_code = 1014
         websocket_reason = "errors.httpError"
     except Exception as e:
-        logger.error(str(e))
+        logger.error(with_traceback(e))
         await reply(AskResponse(
             type=AskResponseType.error,
             tip="errors.unknownError",

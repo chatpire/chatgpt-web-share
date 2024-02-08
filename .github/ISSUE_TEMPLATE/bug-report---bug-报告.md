@@ -1,6 +1,6 @@
 ---
 name: Bug report / bug 报告
-about: report a code bug / 除非你肯定是代码的问题而不是你的问题
+about: 注意：配置问题请到 Discussions 区提问。请仅在确信这是一个来自代码的 bug 时使用此模板。
 title: ''
 labels: bug
 assignees: ''

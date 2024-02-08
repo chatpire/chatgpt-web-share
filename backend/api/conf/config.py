@@ -23,6 +23,7 @@ default_openai_web_model_code_mapping = {
 
 class CommonSetting(BaseModel):
     print_sql: bool = False
+    print_traceback: bool = True
     create_initial_admin_user: bool = True
     initial_admin_user_username: str = 'admin'
     initial_admin_user_password: str = 'password'
@@ -72,6 +73,7 @@ class OpenaiWebChatGPTSetting(BaseModel):
     team_account_id: Optional[str] = None
     chatgpt_base_url: Optional[str] = None
     proxy: Optional[str] = None
+    wss_proxy: Optional[str] = None
     common_timeout: int = Field(20, ge=1,
                                 description="Increase this value if timeout error occurs.")  # connect, read, write
     ask_timeout: int = Field(600, ge=1)
