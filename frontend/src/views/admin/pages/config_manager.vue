@@ -1,4 +1,5 @@
 <template>
+  <!-- <ArkoseScript script-id="arkose-test" /> -->
   <n-tabs type="segment">
     <n-tab-pane v-for="tab of tabInfos" :key="tab.name" :name="tab.name" :tab="tab.name">
       <n-card class="mb-4">
@@ -14,26 +15,42 @@
             </div>
           </div>
         </template>
-        <n-tooltip placement="bottom" trigger="hover">
-          <template #trigger>
-            <n-button
-              v-show="tab.name === 'config'"
-              type="success"
-              class="mb-2"
-              :loading="checkLoading"
-              :disabled="checkResponse !== null"
-              @click="checkChatgptAccount()"
-            >
-              <template #icon>
-                <n-icon v-if="checkResponse !== null">
-                  <CheckCircleOutlineRound />
-                </n-icon>
-              </template>
-              {{ $t('commons.check_chatgpt_accounts') }}
-            </n-button>
-          </template>
-          <span> {{ $t('tips.check_chatgpt_accounts') }} </span>
-        </n-tooltip>
+        <div class="flex flex-row space-x-3 align-center">
+          <n-tooltip placement="bottom" trigger="hover">
+            <template #trigger>
+              <n-button
+                v-show="tab.name === 'config'"
+                type="success"
+                class="mb-2"
+                :loading="checkLoading"
+                :disabled="checkResponse !== null"
+                @click="checkChatgptAccount()"
+              >
+                <template #icon>
+                  <n-icon v-if="checkResponse !== null">
+                    <CheckCircleOutlineRound />
+                  </n-icon>
+                </template>
+                {{ $t('commons.check_chatgpt_accounts') }}
+              </n-button>
+            </template>
+            <span> {{ $t('tips.check_chatgpt_accounts') }} </span>
+          </n-tooltip>
+          <n-tooltip placement="bottom" trigger="hover">
+            <template #trigger>
+              <n-button
+                v-show="tab.name === 'config'"
+                type="success"
+                class="mb-2"
+                :loading="testArkoseLoading"
+                @click="testArkose()"
+              >
+                {{ $t('commons.test_arkose') }}
+              </n-button>
+            </template>
+            <span> {{ $t('tips.test_arkose') }} </span>
+          </n-tooltip>
+        </div>
         <n-space vertical>
           <vue-form
             v-model="tab.model.value"
@@ -70,6 +87,7 @@ import { NDynamicTags } from 'naive-ui';
 import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { getArkoseInfo } from '@/api/arkose';
 import {
   getSystemConfig,
   getSystemCredentials,
@@ -79,6 +97,7 @@ import {
 } from '@/api/system';
 import { jsonConfigModelSchema, jsonCredentialsModelSchema } from '@/types/json_schema';
 import { ConfigModel, CredentialsModel, OpenaiWebAccountsCheckResponse } from '@/types/schema';
+import { getArkoseToken } from '@/utils/arkose';
 import { fixModelSchema } from '@/utils/json_schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { Dialog, Message } from '@/utils/tips';
@@ -102,6 +121,8 @@ const DynamicTags = modelValueComponent(NDynamicTags, { model: 'value' });
 const checkLoading = ref(false);
 const checkResponse = ref<OpenaiWebAccountsCheckResponse | null>(null);
 
+const testArkoseLoading = ref(false);
+
 const configUiSchema = {
   'ui:title': '',
   http: {
@@ -115,6 +136,13 @@ const configUiSchema = {
     },
   },
   openai_web: {
+    enable_arkose_endpoint: {
+      'ui:title': t('labels.config.enable_arkose_endpoint'),
+      'ui:description': t('desc.config.enable_arkose_endpoint'),
+    },
+    arkose_endpoint_base: {
+      'ui:description': t('desc.config.arkose_endpoint_base'),
+    },
     enabled_models: {
       'ui:title': t('labels.config.enabled_models'),
       'ui:description': t('desc.config.enabled_models'),
@@ -253,6 +281,29 @@ const checkChatgptAccount = () => {
     .finally(() => {
       checkLoading.value = false;
     });
+};
+
+const testArkose = async () => {
+  const { data } = await getArkoseInfo();
+  const { enabled, url } = data;
+
+  if (!enabled) {
+    Message.error('Please set enable_arkose_endpoint to true in the config');
+    return;
+  }
+
+  testArkoseLoading.value = true;
+
+  try {
+    const arkoseToken = await getArkoseToken(url);
+    Message.success(t('tips.success') + ': ' + arkoseToken);
+    console.log('Get arkose token', arkoseToken);
+  } catch (err: any) {
+    console.error('Failed to get Arkose token', err);
+    Message.error('Failed to get Arkose token');
+  } finally {
+    testArkoseLoading.value = false;
+  }
 };
 
 type TabInfo = {

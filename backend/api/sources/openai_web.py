@@ -320,6 +320,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                        plugin_ids: list[str] = None,
                        attachments: list[OpenaiWebChatMessageMetadataAttachment] = None,
                        multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None,
+                       arkose_token: str = None,
                        **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
@@ -367,23 +368,27 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
 
         completion_request = OpenaiWebCompleteRequest(
             action=action,
-            arkose_token=None,
+            arkose_token=arkose_token,
             conversation_mode=OpenaiWebCompleteRequestConversationMode(kind="primary_assistant"),
             conversation_id=str(conversation_id) if conversation_id else None,
             messages=messages,
             parent_message_id=str(parent_message_id) if parent_message_id else None,
             model=model.code(),
             plugin_ids=plugin_ids
-        ).dict(exclude_none=True)
-        completion_request["arkose_token"] = None
+        )
+        completion_request_dict = completion_request.dict(exclude_none=True)
+        if "arkose_token" not in completion_request_dict:
+            completion_request_dict["arkose_token"] = None
         data_json = json.dumps(jsonable_encoder(completion_request))
+
+        headers = req_headers(use_team) | {
+            "referer": "https://chat.openai.com/" + (f"c/{conversation_id}" if conversation_id else "")}
+        if arkose_token is not None:
+            headers["Openai-Sentinel-Arkose-Token"] = arkose_token
 
         async with self.session.stream(method="POST", url=f"{config.openai_web.chatgpt_base_url}conversation",
                                        data=data_json, timeout=timeout,
-                                       headers=req_headers(use_team) | {
-                                           "referer": "https://chat.openai.com/" + (
-                                                   f"c/{conversation_id}" if conversation_id else "")
-                                       }) as response:
+                                       headers=headers) as response:
             await _check_response(response)
 
             async for line in response.aiter_lines():

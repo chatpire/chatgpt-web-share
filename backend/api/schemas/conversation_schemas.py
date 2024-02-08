@@ -41,6 +41,7 @@ class AskRequest(BaseModel):
     openai_web_plugin_ids: Optional[list[str]] = None
     openai_web_attachments: Optional[list[OpenaiWebChatMessageMetadataAttachment]] = None
     openai_web_multimodal_image_parts: Optional[list[OpenaiWebChatMessageMultimodalTextContentImagePart]] = None
+    arkose_token: Optional[str] = None
 
     @model_validator(mode='before')
     @classmethod
