@@ -73,19 +73,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-create-release:
-  runs-on: ubuntu-latest
-  needs: build-and-push-x64-image
-  permissions:  # Explicitly defining permissions for this job
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-and-push-x64-image
+    permissions:  # Explicitly defining permissions for this job
     contents: write  # Ensuring this job has write access to the repository contents, which includes releases
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Create Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ env.VERSION }}
-        prerelease: ${{ contains(env.VERSION, 'alpha') || contains(env.VERSION, 'beta') }}
-        generate_release_notes: true
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.VERSION }}
+          prerelease: ${{ contains(env.VERSION, 'alpha') || contains(env.VERSION, 'beta') }}
+          generate_release_notes: true
