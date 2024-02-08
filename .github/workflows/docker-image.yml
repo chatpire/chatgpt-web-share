@@ -76,8 +76,9 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     needs: build-and-push-x64-image
-    permissions:  # Explicitly defining permissions for this job
-    contents: write  # Ensuring this job has write access to the repository contents, which includes releases
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
