@@ -206,9 +206,9 @@ async def _receive_from_websocket(wss_url, conversation_id):
                         continue
                     sequence_id = message["sequenceId"]
                     msg_conversion_id = message['data']['conversation_id']
-+                   if msg_conversion_id != conversation_id:
-+                       # This is not an reply to this conversation, ignore it.
-+                       continue
+                    if msg_conversion_id != conversation_id:
+                        # This is not an reply to this conversation, ignore it.
+                        continue
                     data = base64.b64decode(message['data']['body']).decode('utf-8')
                     if not data or data is None:
                         continue
