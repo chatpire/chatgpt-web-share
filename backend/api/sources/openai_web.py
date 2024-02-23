@@ -237,6 +237,8 @@ async def _receive_from_websocket(wss_url, conversation_id):
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     logger.error("WebSocket connection closed with exception %s" % ws.exception())
                     break
+                elif msg.type == aiohttp.WSMsgType.CLOSED:
+                    break
     logger.debug("Connection closed.")
 
 
