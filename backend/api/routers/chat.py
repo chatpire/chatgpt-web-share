@@ -433,11 +433,16 @@ async def chat(websocket: WebSocket):
         websocket_reason = "errors.httpError"
     except Exception as e:
         logger.error(with_traceback(e))
-        await reply(AskResponse(
-            type=AskResponseType.error,
-            tip="errors.unknownError",
-            error_detail=str(e)
-        ))
+        is_canceled = True
+        try:
+            await reply(AskResponse(
+                type=AskResponseType.error,
+                tip="errors.unknownError",
+                error_detail=str(e)
+            ))
+        except Exception as e:
+            # Ignore exception, websocket may be already closed.
+            pass
         websocket_code = 1011
         websocket_reason = "errors.unknownError"
 
