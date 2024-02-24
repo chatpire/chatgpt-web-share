@@ -188,11 +188,13 @@ def make_session() -> httpx.AsyncClient:
     return session
 
 
-async def _receive_from_websocket(wss_url):
+async def _receive_from_websocket(wss_url, conversation_id):
     timeout = Config().openai_web.common_timeout
     wss_proxy = Config().openai_web.wss_proxy
     recv_msg_count = 0
-    timeout_settings = aiohttp.ClientTimeout(total=None, connect=timeout, sock_read=timeout)
+
+    # Set total timeout to avoid infinite block
+    timeout_settings = aiohttp.ClientTimeout(total=timeout, connect=timeout, sock_read=timeout)
 
     async with aiohttp.ClientSession(timeout=timeout_settings) as session:
         async with session.ws_connect(wss_url, protocols=["json.reliable.webpubsub.azure.v1"], proxy=wss_proxy) as ws:
@@ -203,6 +205,10 @@ async def _receive_from_websocket(wss_url):
                     if "data" not in message:
                         continue
                     sequence_id = message["sequenceId"]
+                    msg_conversion_id = message['data']['conversation_id']
+                    if msg_conversion_id != conversation_id:
+                        # This is not an reply to this conversation, ignore it.
+                        continue
                     data = base64.b64decode(message['data']['body']).decode('utf-8')
                     if not data or data is None:
                         continue
@@ -230,6 +236,8 @@ async def _receive_from_websocket(wss_url):
                     yield data
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     logger.error("WebSocket connection closed with exception %s" % ws.exception())
+                    break
+                elif msg.type == aiohttp.WSMsgType.CLOSED:
                     break
     logger.debug("Connection closed.")
 
@@ -398,10 +406,11 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                 # wss
                 try:
                     line = json.loads(line)
+                    conversation_id = line.get("conversation_id")
                     wss_url = line.get("wss_url")
                     # connect to wss_url and receive messages
                     if wss_url:
-                        async for l in _receive_from_websocket(wss_url):
+                        async for l in _receive_from_websocket(wss_url, conversation_id):
                             yield l
                         break
                 except json.decoder.JSONDecodeError:
