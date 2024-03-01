@@ -38,6 +38,14 @@ logger = get_logger(__name__)
 
 
 def convert_openai_web_message(item: dict, message_id: str = None) -> OpenaiWebChatMessage | None:
+    if item.get("type") == "title_generation":
+        result = OpenaiWebChatMessage(
+            id='3aa263a5-6acf-4975-b7e8-7a8c85bf5167',
+            source="openai_web",
+            children=[],
+            title=item.get("title"),
+        )
+        return result
     if not item.get("message"):
         return None
     if not item["message"].get("author"):
@@ -123,6 +131,8 @@ def get_latest_model_from_mapping(current_node_uuid: str | None,
 
 def _check_fields(data: dict) -> bool:
     try:
+        if "type" in data and data["type"] == "title_generation":
+            return True
         data["message"]["content"]
     except (TypeError, KeyError):
         return False

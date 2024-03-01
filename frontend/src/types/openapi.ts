@@ -364,6 +364,7 @@ export interface components {
       content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | null;
       /** Metadata */
       metadata?: (components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"]) | null;
+      title?: string | null;
     };
     /** BaseConversationHistory */
     BaseConversationHistory: {

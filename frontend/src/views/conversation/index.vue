@@ -103,7 +103,7 @@ import { useI18n } from 'vue-i18n';
 
 import { getArkoseInfo } from '@/api/arkose';
 import { getAskWebsocketApiUrl } from '@/api/chat';
-import { generateConversationTitleApi } from '@/api/conv';
+import { generateConversationTitleApi, setConversationTitleApi } from '@/api/conv';
 import { useAppStore, useConversationStore, useFileStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
 import {
@@ -429,6 +429,10 @@ const sendMsg = async () => {
         console.log('got message', message);
         currentSendMessage.value = message;
       } else {
+        if (message.title != null) {
+          currentConvHistory.value!.title = message.title;
+          return;
+        }
         const index = currentRecvMessages.value.findIndex((msg) => msg.id === message.id);
         if (index === -1) {
           currentRecvMessages.value.push(message);
@@ -465,19 +469,29 @@ const sendMsg = async () => {
 
         // 更新对话信息，恢复正常状态
         if (isCurrentNewConversation.value) {
-          // 尝试生成标题
+          // 尝试生成标题或保存标题
           if (
             askRequest.source == 'openai_web' &&
             (askRequest.new_title == undefined || askRequest.new_title.length == 0)
           ) {
-            const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
-            console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
-            try {
-              const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
-              currentConvHistory.value!.title = response.data;
-            } catch (err) {
-              console.error('Failed to generate conversation title', err);
-            }
+            if (currentConvHistory.value!.title == undefined || currentConvHistory.value!.title.length == 0) {
+              const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
+              console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
+              try {
+                const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
+                currentConvHistory.value!.title = response.data;
+              } catch (err) {
+                console.error('Failed to generate conversation title', err);
+              }
+            } else {
+              // 自动生成了标题，更新到数据库
+              const title = currentConvHistory.value!.title;
+              try {
+                console.log('update title', respConversationId, title);
+                await setConversationTitleApi(respConversationId!, title);
+              } catch (err) {
+                console.error('Failed to set conversation title', err);
+              }
           }
 
           const newConvHistory = {
