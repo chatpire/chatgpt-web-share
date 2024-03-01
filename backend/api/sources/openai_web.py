@@ -8,6 +8,7 @@ import base64
 
 import aiofiles
 import httpx
+from aiohttp import WSMessage
 from fastapi.encoders import jsonable_encoder
 import aiohttp
 from httpx import AsyncClient
@@ -210,6 +211,7 @@ async def _receive_from_websocket(wss_url, conversation_id):
         async with session.ws_connect(wss_url, protocols=["json.reliable.webpubsub.azure.v1"], proxy=wss_proxy) as ws:
             logger.debug(f"Connected to Websocket {wss_url[:65]}...{wss_url[-10:]}")
             async for msg in ws:
+                msg: WSMessage
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     message = json.loads(msg.data)
                     if "data" not in message:

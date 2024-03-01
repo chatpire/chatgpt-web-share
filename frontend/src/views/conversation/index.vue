@@ -366,7 +366,7 @@ const sendMsg = async () => {
         title: t('errors.arkoseError'),
         content: t('errors.arkoseTokenError'),
       });
-      return;
+      // return;
     }
   }
 
@@ -492,6 +492,7 @@ const sendMsg = async () => {
               } catch (err) {
                 console.error('Failed to set conversation title', err);
               }
+            }
           }
 
           const newConvHistory = {
