@@ -361,6 +361,7 @@ async def chat(websocket: WebSocket):
                                            plugin_ids=ask_request.openai_web_plugin_ids if ask_request.new_conversation else None,
                                            attachments=ask_request.openai_web_attachments,
                                            multimodal_image_parts=ask_request.openai_web_multimodal_image_parts,
+                                           arkose_token=ask_request.arkose_token,
                                            ):
             has_got_reply = True
 
@@ -432,11 +433,16 @@ async def chat(websocket: WebSocket):
         websocket_reason = "errors.httpError"
     except Exception as e:
         logger.error(with_traceback(e))
-        await reply(AskResponse(
-            type=AskResponseType.error,
-            tip="errors.unknownError",
-            error_detail=str(e)
-        ))
+        is_canceled = True
+        try:
+            await reply(AskResponse(
+                type=AskResponseType.error,
+                tip="errors.unknownError",
+                error_detail=str(e)
+            ))
+        except Exception as e:
+            # Ignore exception, websocket may be already closed.
+            pass
         websocket_code = 1011
         websocket_reason = "errors.unknownError"
 

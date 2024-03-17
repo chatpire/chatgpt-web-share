@@ -1,7 +1,7 @@
 <template>
   <n-config-provider :locale="locale" :theme="theme">
     <n-global-style />
-    <div class="w-full box-border min-h-screen flex flex-col">
+    <div class="w-full box-border flex flex-col">
       <n-layout>
         <PageHeader v-if="userStore.user" />
         <div style="height: calc(100vh - var(--header-height)); height: calc(100dvh - var(--header-height))">

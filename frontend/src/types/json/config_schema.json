@@ -278,6 +278,23 @@
           "default": null,
           "title": "Wss Proxy"
         },
+        "enable_arkose_endpoint": {
+          "default": false,
+          "title": "Enable Arkose Endpoint",
+          "type": "boolean"
+        },
+        "arkose_endpoint_base": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Arkose Endpoint Base"
+        },
         "common_timeout": {
           "default": 20,
           "description": "Increase this value if timeout error occurs.",
@@ -424,6 +441,8 @@
         "chatgpt_base_url": null,
         "proxy": null,
         "wss_proxy": null,
+        "enable_arkose_endpoint": false,
+        "arkose_endpoint_base": null,
         "common_timeout": 20,
         "ask_timeout": 600,
         "sync_conversations_on_startup": false,

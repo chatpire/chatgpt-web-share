@@ -18,18 +18,16 @@
 - 快速部署指南：http://cws-docs.pages.dev/zh/guide/quick-start.html
 - 演示截图：http://cws-docs.pages.dev/zh/demo/screenshots.html
 
-> （广告）如果你没有 ChatGPT Plus 账号，并且想省点心，可以考虑 [**赛博小铺的拼车服务**](https://cws-docs.pages.dev/zh/support/ads.html#%E8%B5%9B%E5%8D%9A%E5%B0%8F%E9%93%BA-chatgpt-plus-%E6%8B%BC%E8%BD%A6%E6%9C%8D%E5%8A%A1)
-> 
-> *正价Plus | 6人1车 | 会话隔离 | 支持 gpts | 网页功能齐全 | 并发提问 | 直连优化*
+> [!IMPORTANT]
+> 部署 CWS 需要海外 VPS。项目文档内推荐了一些高性价比的服务器，低至 $11/年。请移步：[VPS推荐](https://cws-docs.pages.dev/zh/support/vps.html)
 
-> 部署 CWS 需要一台 1C1G 以上的服务器。项目文档里的这个页面推荐了一些高性价比的服务器，低至 $15/年：[VPS推荐](https://cws-docs.pages.dev/zh/support/vps.html)
+> [!NOTE]
+> （广告）**【长期有效】推荐拼车服务：[Aizex 合租面板](https://cws-docs.pages.dev/zh/support/ads.html#aizex-%E5%90%88%E7%A7%9F%E9%9D%A2%E6%9D%BF-%E5%8F%A3%E7%A2%91-chatgpt-plus-%E6%8B%BC%E8%BD%A6%E6%9C%8D%E5%8A%A1)**
+> 
+> *优美UI | 正价Plus | 会话隔离 | 号池模式 | 负载均衡 | 网页功能齐全 | 三网 cn2 直连优化*
+> 
+> 运营一年，值得信赖
 
 ## 声明
 
 本项目仅供学习和研究使用，不鼓励用于商业用途。您应当知悉使用本项目可能会违反相关用户协议，并了解相关的风险。我们不对任何因使用本项目而导致的任何损失负责。
-
-## 捐助和支持
-
-如果觉得本项目对您有帮助，欢迎通过扫描下方赞赏码捐助项目 :)
-
-<img src="docs/donate.png" alt="donate" width="200" height="200" />

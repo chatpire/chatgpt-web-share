@@ -164,8 +164,9 @@ async def vanish_conversation(conversation: BaseConversation = Depends(_get_conv
 async def update_conversation_title(title: str, conversation: BaseConversation = Depends(_get_conversation_by_id),
                                     user: User = Depends(current_active_user)):
     if conversation.source == ChatSourceTypes.openai_web:
-        await openai_web_manager.set_conversation_title(conversation.conversation_id,
-                                                        title, conversation.source_id)
+        pass
+        #await openai_web_manager.set_conversation_title(conversation.conversation_id,
+        #                                                title, conversation.source_id)
     else:  # api
         doc = await OpenaiApiConversationHistoryDocument.get(conversation.conversation_id)
         if doc is None:

@@ -101,8 +101,9 @@ import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { getArkoseInfo } from '@/api/arkose';
 import { getAskWebsocketApiUrl } from '@/api/chat';
-import { generateConversationTitleApi } from '@/api/conv';
+import { generateConversationTitleApi, setConversationTitleApi } from '@/api/conv';
 import { useAppStore, useConversationStore, useFileStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
 import {
@@ -114,6 +115,7 @@ import {
   OpenaiWebChatMessageMetadataAttachment,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
+import { getArkoseToken } from '@/utils/arkose';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
 // import { popupNewConversationDialog } from '@/utils/renders';
@@ -287,6 +289,9 @@ const sendMsg = async () => {
   isAborted.value = false;
   let hasGotReply = false;
 
+  // 唤起 arkose
+  const { data: arkoseInfo } = await getArkoseInfo();
+
   // 处理附件
   let attachments = null as OpenaiWebChatMessageMetadataAttachment[] | null;
   if (uploadMode.value !== null && fileStore.uploadedFileInfos.length > 0) {
@@ -324,25 +329,6 @@ const sendMsg = async () => {
       });
   }
 
-  const askRequest: AskRequest = {
-    new_conversation: isCurrentNewConversation.value,
-    source: currentConversation.value!.source,
-    model: currentConversation.value!.current_model!,
-    text_content: text,
-    openai_web_plugin_ids:
-      currentConvHistory.value!.metadata?.source === 'openai_web'
-        ? currentConvHistory.value!.metadata?.plugin_ids
-        : undefined,
-    openai_web_attachments: attachments || undefined,
-    openai_web_multimodal_image_parts: multimodalImages || undefined,
-  };
-  if (conversationStore.newConversation) {
-    askRequest.new_title = conversationStore.newConversation.title || ''; // 这里可能为空串，表示需要生成标题
-  } else {
-    askRequest.conversation_id = currentConversationId.value!;
-    askRequest.parent = currentConvHistory.value.current_node;
-  }
-
   // 使用临时的随机 id 保持当前更新的两个消息
   if (text == ':continue') {
     currentSendMessage.value = null;
@@ -367,6 +353,43 @@ const sendMsg = async () => {
       ),
     ];
   }
+
+  let arkoseToken = null as string | null;
+  if (arkoseInfo.enabled) {
+    const url = arkoseInfo.url;
+    try {
+      arkoseToken = await getArkoseToken(url);
+      console.log('Get arkose token', arkoseToken);
+    } catch (err: any) {
+      console.error('Failed to get Arkose token', err);
+      Dialog.error({
+        title: t('errors.arkoseError'),
+        content: t('errors.arkoseTokenError'),
+      });
+      // return;
+    }
+  }
+
+  const askRequest: AskRequest = {
+    new_conversation: isCurrentNewConversation.value,
+    source: currentConversation.value!.source,
+    model: currentConversation.value!.current_model!,
+    text_content: text,
+    openai_web_plugin_ids:
+      currentConvHistory.value!.metadata?.source === 'openai_web'
+        ? currentConvHistory.value!.metadata?.plugin_ids
+        : undefined,
+    openai_web_attachments: attachments || undefined,
+    openai_web_multimodal_image_parts: multimodalImages || undefined,
+    arkose_token: arkoseToken,
+  };
+  if (conversationStore.newConversation) {
+    askRequest.new_title = conversationStore.newConversation.title || ''; // 这里可能为空串，表示需要生成标题
+  } else {
+    askRequest.conversation_id = currentConversationId.value!;
+    askRequest.parent = currentConvHistory.value.current_node;
+  }
+
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
   let wsErrorMessage: AskResponse | null = null;
@@ -406,6 +429,10 @@ const sendMsg = async () => {
         console.log('got message', message);
         currentSendMessage.value = message;
       } else {
+        if (message.title != null) {
+          currentConvHistory.value!.title = message.title;
+          return;
+        }
         const index = currentRecvMessages.value.findIndex((msg) => msg.id === message.id);
         if (index === -1) {
           currentRecvMessages.value.push(message);
@@ -442,18 +469,29 @@ const sendMsg = async () => {
 
         // 更新对话信息，恢复正常状态
         if (isCurrentNewConversation.value) {
-          // 尝试生成标题
+          // 尝试生成标题或保存标题
           if (
             askRequest.source == 'openai_web' &&
             (askRequest.new_title == undefined || askRequest.new_title.length == 0)
           ) {
-            const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
-            console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
-            try {
-              const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
-              currentConvHistory.value!.title = response.data;
-            } catch (err) {
-              console.error('Failed to generate conversation title', err);
+            if (currentConvHistory.value!.title == undefined || currentConvHistory.value!.title.length == 0) {
+              const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
+              console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
+              try {
+                const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
+                currentConvHistory.value!.title = response.data;
+              } catch (err) {
+                console.error('Failed to generate conversation title', err);
+              }
+            } else {
+              // 自动生成了标题，更新到数据库
+              const title = currentConvHistory.value!.title;
+              try {
+                console.log('update title', respConversationId, title);
+                await setConversationTitleApi(respConversationId!, title);
+              } catch (err) {
+                console.error('Failed to set conversation title', err);
+              }
             }
           }
 

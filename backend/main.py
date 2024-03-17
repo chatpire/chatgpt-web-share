@@ -19,11 +19,11 @@ import api.globals as g
 from api.database.sqlalchemy import initialize_db, get_async_session_context, get_user_db_context
 from api.database.mongodb import init_mongodb
 from api.enums import OpenaiWebChatStatus
-from api.exceptions import SelfDefinedException, UserAlreadyExists
+from api.exceptions import SelfDefinedException, UserAlreadyExists, ArkoseForwardException
 from api.middlewares import AccessLoggerMiddleware, StatisticsMiddleware
 from api.models.db import User
-from api.response import CustomJSONResponse, handle_exception_response
-from api.routers import users, conv, chat, system, status, files, logs
+from api.response import CustomJSONResponse, handle_exception_response, handle_arkose_forward_exception
+from api.routers import users, conv, chat, system, status, files, logs, arkose
 from api.schemas import UserCreate, UserSettingSchema
 from api.sources import OpenaiWebChatManager
 from api.users import get_user_manager_context
@@ -129,8 +129,8 @@ app.include_router(system.router)
 app.include_router(logs.router)
 app.include_router(status.router)
 app.include_router(files.router)
+app.include_router(arkose.router)
 
-# 解决跨站问题
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.http.cors_allow_origins,
@@ -151,8 +151,13 @@ async def validation_exception_handler(request, exc):
 
 
 @app.exception_handler(SelfDefinedException)
-async def validation_exception_handler(request, exc):
+async def self_defined_exception_handler(request, exc):
     return handle_exception_response(exc)
+
+
+@app.exception_handler(ArkoseForwardException)
+async def arkose_forward_exception_handler(request, exc):
+    return handle_arkose_forward_exception(exc)
 
 
 if __name__ == "__main__":

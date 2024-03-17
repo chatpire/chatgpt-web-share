@@ -6,6 +6,8 @@ openai_web:
   chatgpt_base_url:
   proxy:
   wss_proxy:
+  enable_arkose_endpoint: false
+  arkose_endpoint_base:
   common_timeout: 20
   ask_timeout: 600
   sync_conversations_on_startup: false

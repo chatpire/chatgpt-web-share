@@ -157,10 +157,7 @@ export interface paths {
     get: operations["get_completion_logs_logs_completions_get"];
   };
   "/status/common": {
-    /**
-     * Get Server Status
-     * @description 普通用户获取服务器状态
-     */
+    /** Get Server Status */
     get: operations["get_server_status_status_common_get"];
   };
   "/files/{file_id}/download-url": {
@@ -207,6 +204,17 @@ export interface paths {
      * @description 将服务器上已有的文件上传到 OpenAI Web（Azure blob）
      */
     post: operations["upload_local_file_to_openai_web_files_local_upload_to_openai_web__file_id__post"];
+  };
+  "/arkose/v2/{path}": {
+    /**
+     * Forward Arkose Request
+     * @description TODO 经过转发，arkose 会报错 "API_REQUEST_ERROR"
+     */
+    get: operations["forward_arkose_request_arkose_v2__path__get"];
+  };
+  "/arkose/info": {
+    /** Get Arkose Info */
+    get: operations["get_arkose_info_arkose_info_get"];
   };
 }
 
@@ -282,6 +290,8 @@ export interface components {
       openai_web_attachments?: components["schemas"]["OpenaiWebChatMessageMetadataAttachment"][] | null;
       /** Openai Web Multimodal Image Parts */
       openai_web_multimodal_image_parts?: components["schemas"]["OpenaiWebChatMessageMultimodalTextContentImagePart-Input"][] | null;
+      /** Arkose Token */
+      arkose_token?: string | null;
     };
     /** AskResponse */
     AskResponse: {
@@ -354,6 +364,7 @@ export interface components {
       content?: (components["schemas"]["OpenaiWebChatMessageTextContent"] | components["schemas"]["OpenaiWebChatMessageMultimodalTextContent"] | components["schemas"]["OpenaiWebChatMessageCodeContent"] | components["schemas"]["OpenaiWebChatMessageExecutionOutputContent"] | components["schemas"]["OpenaiWebChatMessageStderrContent"] | components["schemas"]["OpenaiWebChatMessageTetherBrowsingDisplayContent"] | components["schemas"]["OpenaiWebChatMessageTetherQuoteContent"] | components["schemas"]["OpenaiWebChatMessageSystemErrorContent"]) | components["schemas"]["OpenaiApiChatMessageTextContent"] | null;
       /** Metadata */
       metadata?: (components["schemas"]["OpenaiWebChatMessageMetadata"] | components["schemas"]["OpenaiApiChatMessageMetadata"]) | null;
+      title?: string | null;
     };
     /** BaseConversationHistory */
     BaseConversationHistory: {
@@ -502,6 +513,7 @@ export interface components {
        *   "enabled": true,
        *   "is_plus_account": true,
        *   "enable_team_subscription": false,
+       *   "enable_arkose_endpoint": false,
        *   "common_timeout": 20,
        *   "ask_timeout": 600,
        *   "sync_conversations_on_startup": false,
@@ -612,6 +624,7 @@ export interface components {
        *   "enabled": true,
        *   "is_plus_account": true,
        *   "enable_team_subscription": false,
+       *   "enable_arkose_endpoint": false,
        *   "common_timeout": 20,
        *   "ask_timeout": 600,
        *   "sync_conversations_on_startup": false,
@@ -1225,6 +1238,13 @@ export interface components {
       proxy?: string | null;
       /** Wss Proxy */
       wss_proxy?: string | null;
+      /**
+       * Enable Arkose Endpoint
+       * @default false
+       */
+      enable_arkose_endpoint: boolean;
+      /** Arkose Endpoint Base */
+      arkose_endpoint_base?: string | null;
       /**
        * Common Timeout
        * @description Increase this value if timeout error occurs.
@@ -2791,10 +2811,7 @@ export interface operations {
       };
     };
   };
-  /**
-   * Get Server Status
-   * @description 普通用户获取服务器状态
-   */
+  /** Get Server Status */
   get_server_status_status_common_get: {
     responses: {
       /** @description Successful Response */
@@ -2961,6 +2978,42 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Forward Arkose Request
+   * @description TODO 经过转发，arkose 会报错 "API_REQUEST_ERROR"
+   */
+  forward_arkose_request_arkose_v2__path__get: {
+    parameters: {
+      path: {
+        path: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Arkose Info */
+  get_arkose_info_arkose_info_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
         };
       };
     };

@@ -11,7 +11,7 @@ from pydantic import BaseModel, ValidationError
 from starlette.background import BackgroundTask
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from api.exceptions import SelfDefinedException
+from api.exceptions import SelfDefinedException, ArkoseForwardException
 from utils.common import desensitize
 
 T = TypeVar('T')
@@ -102,3 +102,7 @@ def handle_exception_response(e: Exception) -> CustomJSONResponse:
             tip = get_http_message(e.status_code)
         return response(e.status_code or -1, tip, desensitize(f"{e.status_code} {e.detail}"))
     return response(-1, desensitize(f"{e.__class__.__name__}: {desensitize(str(e))}"))
+
+
+def handle_arkose_forward_exception(e: ArkoseForwardException):
+    return Response(content=e.message, status_code=e.code, media_type="application/plain")

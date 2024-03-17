@@ -8,6 +8,7 @@ import base64
 
 import aiofiles
 import httpx
+from aiohttp import WSMessage
 from fastapi.encoders import jsonable_encoder
 import aiohttp
 from httpx import AsyncClient
@@ -38,6 +39,14 @@ logger = get_logger(__name__)
 
 
 def convert_openai_web_message(item: dict, message_id: str = None) -> OpenaiWebChatMessage | None:
+    if item.get("type") == "title_generation":
+        result = OpenaiWebChatMessage(
+            id='3aa263a5-6acf-4975-b7e8-7a8c85bf5167',
+            source="openai_web",
+            children=[],
+            title=item.get("title"),
+        )
+        return result
     if not item.get("message"):
         return None
     if not item["message"].get("author"):
@@ -123,6 +132,8 @@ def get_latest_model_from_mapping(current_node_uuid: str | None,
 
 def _check_fields(data: dict) -> bool:
     try:
+        if "type" in data and data["type"] == "title_generation":
+            return True
         data["message"]["content"]
     except (TypeError, KeyError):
         return False
@@ -188,21 +199,28 @@ def make_session() -> httpx.AsyncClient:
     return session
 
 
-async def _receive_from_websocket(wss_url):
+async def _receive_from_websocket(wss_url, conversation_id):
     timeout = Config().openai_web.common_timeout
     wss_proxy = Config().openai_web.wss_proxy
     recv_msg_count = 0
-    timeout_settings = aiohttp.ClientTimeout(total=None, connect=timeout, sock_read=timeout)
+
+    # Set total timeout to avoid infinite block
+    timeout_settings = aiohttp.ClientTimeout(total=timeout, connect=timeout, sock_read=timeout)
 
     async with aiohttp.ClientSession(timeout=timeout_settings) as session:
         async with session.ws_connect(wss_url, protocols=["json.reliable.webpubsub.azure.v1"], proxy=wss_proxy) as ws:
             logger.debug(f"Connected to Websocket {wss_url[:65]}...{wss_url[-10:]}")
             async for msg in ws:
+                msg: WSMessage
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     message = json.loads(msg.data)
                     if "data" not in message:
                         continue
                     sequence_id = message["sequenceId"]
+                    msg_conversion_id = message['data']['conversation_id']
+                    if msg_conversion_id != conversation_id:
+                        # This is not an reply to this conversation, ignore it.
+                        continue
                     data = base64.b64decode(message['data']['body']).decode('utf-8')
                     if not data or data is None:
                         continue
@@ -230,6 +248,8 @@ async def _receive_from_websocket(wss_url):
                     yield data
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     logger.error("WebSocket connection closed with exception %s" % ws.exception())
+                    break
+                elif msg.type == aiohttp.WSMsgType.CLOSED:
                     break
     logger.debug("Connection closed.")
 
@@ -320,6 +340,7 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                        plugin_ids: list[str] = None,
                        attachments: list[OpenaiWebChatMessageMetadataAttachment] = None,
                        multimodal_image_parts: list[OpenaiWebChatMessageMultimodalTextContentImagePart] = None,
+                       arkose_token: str = None,
                        **_kwargs):
 
         assert config.openai_web.enabled, "OpenAI Web is not enabled"
@@ -367,23 +388,27 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
 
         completion_request = OpenaiWebCompleteRequest(
             action=action,
-            arkose_token=None,
+            arkose_token=arkose_token,
             conversation_mode=OpenaiWebCompleteRequestConversationMode(kind="primary_assistant"),
             conversation_id=str(conversation_id) if conversation_id else None,
             messages=messages,
             parent_message_id=str(parent_message_id) if parent_message_id else None,
             model=model.code(),
             plugin_ids=plugin_ids
-        ).dict(exclude_none=True)
-        completion_request["arkose_token"] = None
+        )
+        completion_request_dict = completion_request.dict(exclude_none=True)
+        if "arkose_token" not in completion_request_dict:
+            completion_request_dict["arkose_token"] = None
         data_json = json.dumps(jsonable_encoder(completion_request))
+
+        headers = req_headers(use_team) | {
+            "referer": "https://chat.openai.com/" + (f"c/{conversation_id}" if conversation_id else "")}
+        if arkose_token is not None:
+            headers["Openai-Sentinel-Arkose-Token"] = arkose_token
 
         async with self.session.stream(method="POST", url=f"{config.openai_web.chatgpt_base_url}conversation",
                                        data=data_json, timeout=timeout,
-                                       headers=req_headers(use_team) | {
-                                           "referer": "https://chat.openai.com/" + (
-                                                   f"c/{conversation_id}" if conversation_id else "")
-                                       }) as response:
+                                       headers=headers) as response:
             await _check_response(response)
 
             async for line in response.aiter_lines():
@@ -393,10 +418,11 @@ class OpenaiWebChatManager(metaclass=SingletonMeta):
                 # wss
                 try:
                     line = json.loads(line)
+                    conversation_id = line.get("conversation_id")
                     wss_url = line.get("wss_url")
                     # connect to wss_url and receive messages
                     if wss_url:
-                        async for l in _receive_from_websocket(wss_url):
+                        async for l in _receive_from_websocket(wss_url, conversation_id):
                             yield l
                         break
                 except json.decoder.JSONDecodeError:

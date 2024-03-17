@@ -191,7 +191,8 @@
     "time": "时间",
     "timeRange": "时间范围",
     "limit": "限制",
-    "check_chatgpt_accounts": "检查 ChatGPT 账户可用性"
+    "check_chatgpt_accounts": "检查 ChatGPT 账户可用性",
+    "test_arkose": "测试 Arkose"
   },
   "errors": {
     "403": "403 错误：无访问权限",
@@ -238,7 +239,9 @@
       "unknown": "未知 OpenAI 错误"
     },
     "unknown": "未知错误",
-    "invalidRequest": "非法请求"
+    "invalidRequest": "非法请求",
+    "arkoseError": "Arkose 验证失败",
+    "arkoseTokenError": "Arkose 验证失败，请联系管理员处理。"
   },
   "tips": {
     "loginExpired": "登录已过期。是否跳转到登录页面？",
@@ -313,7 +316,8 @@
     "gpt4UploadingRequirements": "不超过10份文件或图片，每份文件不超过512MB；请确保文件不含敏感信息",
     "check_chatgpt_accounts": "请在保存配置并更新到最新 Access Token 后使用此功能。如果您开通了 Team 订阅，将会自动填写 Team Account ID。",
     "autoFillTeamAccountIdSuccess": "已自动填写 Team Account ID",
-    "checkChatgptAccountsFailed": "请求失败"
+    "checkChatgptAccountsFailed": "请求失败",
+    "test_arkose": "请参考文档填写 arkose_endpoint_base 设置并保存后使用此功能"
   },
   "labels": {
     "nickname": "昵称",
@@ -357,7 +361,8 @@
       "enabled_models": "启用的模型",
       "model_code_mapping": "模型代码映射",
       "file_upload_strategy": "文件上传策略",
-      "max_completion_concurrency": "最大并行对话数量"
+      "max_completion_concurrency": "最大并行对话数量",
+      "enable_arkose_endpoint": "启用前端 Arkose 验证"
     },
     "conversation_id": "对话ID",
     "queueing_time": "排队时长",
@@ -404,7 +409,9 @@
     "config": {
       "enabled_models": "设置全局启用哪些模型，在此处不启用的模型所有账号都无法使用",
       "file_upload_strategy": "配置使用 code interpreter 模型时文件如何上传，详见文档",
-      "max_completion_concurrency": "决定同时能有多少用户进行对话。如果设置为一个很大的值，相当于禁用排队对话功能。"
+      "max_completion_concurrency": "决定同时能有多少用户进行对话。如果设置为一个很大的值，相当于禁用排队对话功能。",
+      "enable_arkose_endpoint": "实验性功能，启用前请仔细阅读文档说明。启用后务必填写下方的 arkose_endpoint_base。如果启用，将会在前端取得 Arkose token，用户可能需要进行手动验证。",
+      "arkose_endpoint_base": "Arkose 代理的地址前缀，必须以 /v2/ 结尾，如：http://ninja/v2/"
     }
   },
   "dialog": {

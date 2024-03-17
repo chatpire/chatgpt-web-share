@@ -32,6 +32,8 @@ enum ApiUrl {
   FilesOpenaiWebUploadStart = '/files/openai-web/upload-start',
   FilesOpenaiWebUploadComplete = '/files/openai-web/upload-complete',
   FilesLocalUploadToOpenaiWeb = '/files/local/upload-to-openai-web',
+
+  ArkoseInfo = '/arkose/info',
 }
 
 export default ApiUrl;
