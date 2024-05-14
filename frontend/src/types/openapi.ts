@@ -528,6 +528,7 @@ export interface components {
        *     "gpt_3_5": "text-davinci-002-render-sha",
        *     "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
        *     "gpt_4": "gpt-4",
+       *     "gpt_4o": "gpt-4o",
        *     "gpt_4_browsing": "gpt-4-browsing",
        *     "gpt_4_code_interpreter": "gpt-4-code-interpreter",
        *     "gpt_4_dalle": "gpt-4-dalle",
@@ -552,7 +553,8 @@ export interface components {
        *   ],
        *   "model_code_mapping": {
        *     "gpt_3_5": "gpt-3.5-turbo",
-       *     "gpt_4": "gpt-4"
+       *     "gpt_4": "gpt-4",
+       *     "gpt_4o": "gpt-4o",
        *   }
        * }
        */
@@ -639,6 +641,7 @@ export interface components {
        *     "gpt_3_5": "text-davinci-002-render-sha",
        *     "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
        *     "gpt_4": "gpt-4",
+       *     "gpt_4o": "gpt-4o",
        *     "gpt_4_browsing": "gpt-4-browsing",
        *     "gpt_4_code_interpreter": "gpt-4-code-interpreter",
        *     "gpt_4_dalle": "gpt-4-dalle",
@@ -664,6 +667,7 @@ export interface components {
        *   "model_code_mapping": {
        *     "gpt_3_5": "gpt-3.5-turbo",
        *     "gpt_4": "gpt-4"
+       *     "gpt_4o": "gpt-4o",
        *   }
        * }
        */
@@ -1025,6 +1029,7 @@ export interface components {
        * @default {
        *   "gpt_3_5": "gpt-3.5-turbo",
        *   "gpt_4": "gpt-4"
+       *   "gpt_4o": "gpt-4o",
        * }
        */
       model_code_mapping: {
@@ -1286,6 +1291,7 @@ export interface components {
        *   "gpt_3_5": "text-davinci-002-render-sha",
        *   "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
        *   "gpt_4": "gpt-4",
+       *   "gpt_4o": "gpt-4o",
        *   "gpt_4_mobile": "gpt-4-mobile",
        *   "gpt_4_browsing": "gpt-4-browsing",
        *   "gpt_4_plugins": "gpt-4-plugins",
