@@ -204,8 +204,7 @@
           },
           "default": {
             "gpt_3_5": "gpt-3.5-turbo",
-            "gpt_4": "gpt-4",
-            "gpt_4o": "gpt-4o"
+            "gpt_4": "gpt-4"
           },
           "title": "Model Code Mapping",
           "type": "object"
@@ -383,6 +382,7 @@
         "gpt_3_5",
         "gpt_3_5_mobile",
         "gpt_4",
+        "gpt_4o",
         "gpt_4_mobile",
         "gpt_4_browsing",
         "gpt_4_code_interpreter",

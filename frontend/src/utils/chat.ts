@@ -24,6 +24,7 @@ export const chatModelColorMap: Record<string, string> = {
   gpt_3_5: 'green',
   gpt_3_5_mobile: 'darkgreen',
   gpt_4: 'purple',
+  gpt_4o: 'purple',
   gpt_4_mobile: 'darkpurple',
   gpt_4_browsing: 'purple',
   gpt_4_plugins: 'purple',

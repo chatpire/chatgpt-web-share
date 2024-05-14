@@ -521,8 +521,7 @@ export interface components {
        *   "sync_conversations_schedule_interval_hours": 12,
        *   "enabled_models": [
        *     "gpt_3_5",
-       *     "gpt_4",
-       *     "gpt_4_plugins"
+       *     "gpt_4"
        *   ],
        *   "model_code_mapping": {
        *     "gpt_3_5": "text-davinci-002-render-sha",
@@ -553,8 +552,7 @@ export interface components {
        *   ],
        *   "model_code_mapping": {
        *     "gpt_3_5": "gpt-3.5-turbo",
-       *     "gpt_4": "gpt-4",
-       *     "gpt_4o": "gpt-4o",
+       *     "gpt_4": "gpt-4"
        *   }
        * }
        */
@@ -634,8 +632,7 @@ export interface components {
        *   "sync_conversations_schedule_interval_hours": 12,
        *   "enabled_models": [
        *     "gpt_3_5",
-       *     "gpt_4",
-       *     "gpt_4_plugins"
+       *     "gpt_4"
        *   ],
        *   "model_code_mapping": {
        *     "gpt_3_5": "text-davinci-002-render-sha",
@@ -667,7 +664,6 @@ export interface components {
        *   "model_code_mapping": {
        *     "gpt_3_5": "gpt-3.5-turbo",
        *     "gpt_4": "gpt-4"
-       *     "gpt_4o": "gpt-4o",
        *   }
        * }
        */
@@ -1029,7 +1025,6 @@ export interface components {
        * @default {
        *   "gpt_3_5": "gpt-3.5-turbo",
        *   "gpt_4": "gpt-4"
-       *   "gpt_4o": "gpt-4o",
        * }
        */
       model_code_mapping: {
@@ -1280,8 +1275,7 @@ export interface components {
        * Enabled Models
        * @default [
        *   "gpt_3_5",
-       *   "gpt_4",
-       *   "gpt_4_plugins"
+       *   "gpt_4"
        * ]
        */
       enabled_models: components["schemas"]["OpenaiWebChatModels"][];
@@ -1600,7 +1594,7 @@ export interface components {
      * OpenaiWebChatModels
      * @enum {string}
      */
-    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_code_interpreter" | "gpt_4_plugins" | "gpt_4_dalle";
+    OpenaiWebChatModels: "gpt_3_5" | "gpt_3_5_mobile" | "gpt_4" | "gpt_4o"| "gpt_4_mobile" | "gpt_4_browsing" | "gpt_4_code_interpreter" | "gpt_4_plugins" | "gpt_4_dalle";
     /**
      * OpenaiWebChatStatus
      * @enum {string}
@@ -1704,6 +1698,7 @@ export interface components {
      *   "gpt_3_5": 0,
      *   "gpt_3_5_mobile": 0,
      *   "gpt_4": 0,
+     *   "gpt_4o": 0,
      *   "gpt_4_mobile": 0,
      *   "gpt_4_browsing": 0,
      *   "gpt_4_code_interpreter": 0,

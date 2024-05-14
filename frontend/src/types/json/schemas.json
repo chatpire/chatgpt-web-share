@@ -26,6 +26,7 @@
                               "gpt_3_5",
                               "gpt_3_5_mobile",
                               "gpt_4",
+                              "gpt_4o",
                               "gpt_4_mobile",
                               "gpt_4_browsing",
                               "gpt_4_code_interpreter",
@@ -161,6 +162,7 @@
                       "gpt_3_5",
                       "gpt_3_5_mobile",
                       "gpt_4",
+                      "gpt_4o",
                       "gpt_4_mobile",
                       "gpt_4_browsing",
                       "gpt_4_code_interpreter",
@@ -255,6 +257,7 @@
                   "gpt_3_5",
                   "gpt_3_5_mobile",
                   "gpt_4",
+                  "gpt_4o",
                   "gpt_4_mobile",
                   "gpt_4_browsing",
                   "gpt_4_code_interpreter",
@@ -5890,6 +5893,7 @@
                     "gpt_3_5",
                     "gpt_3_5_mobile",
                     "gpt_4",
+                    "gpt_4o",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_code_interpreter",
@@ -6046,8 +6050,7 @@
                 "title": "Model Code Mapping",
                 "default": {
                   "gpt_3_5": "gpt-3.5-turbo",
-                  "gpt_4": "gpt-4",
-                  "gpt_4o": "gpt-4o"
+                  "gpt_4": "gpt-4"
                 }
               }
             },
@@ -6066,8 +6069,7 @@
           ],
           "model_code_mapping": {
             "gpt_3_5": "gpt-3.5-turbo",
-            "gpt_4": "gpt-4",
-            "gpt_4o": "gpt-4o"
+            "gpt_4": "gpt-4"
           }
         }
       },
@@ -6426,6 +6428,7 @@
                     "gpt_3_5",
                     "gpt_3_5_mobile",
                     "gpt_4",
+                    "gpt_4o",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_code_interpreter",
@@ -6582,8 +6585,7 @@
                 "title": "Model Code Mapping",
                 "default": {
                   "gpt_3_5": "gpt-3.5-turbo",
-                  "gpt_4": "gpt-4",
-                  "gpt_4o": "gpt-4o"
+                  "gpt_4": "gpt-4"
                 }
               }
             },
@@ -6602,8 +6604,7 @@
           ],
           "model_code_mapping": {
             "gpt_3_5": "gpt-3.5-turbo",
-            "gpt_4": "gpt-4",
-            "gpt_4o": "gpt-4o"
+            "gpt_4": "gpt-4"
           }
         }
       },
@@ -9248,8 +9249,7 @@
         "title": "Model Code Mapping",
         "default": {
           "gpt_3_5": "gpt-3.5-turbo",
-          "gpt_4": "gpt-4",
-          "gpt_4o": "gpt-4o"
+          "gpt_4": "gpt-4"
         }
       }
     },
@@ -10900,6 +10900,7 @@
           "gpt_3_5",
           "gpt_3_5_mobile",
           "gpt_4",
+          "gpt_4o",
           "gpt_4_mobile",
           "gpt_4_browsing",
           "gpt_4_code_interpreter",
@@ -11029,6 +11030,7 @@
             "gpt_3_5",
             "gpt_3_5_mobile",
             "gpt_4",
+            "gpt_4o",
             "gpt_4_mobile",
             "gpt_4_browsing",
             "gpt_4_code_interpreter",
@@ -14259,6 +14261,7 @@
       "gpt_3_5",
       "gpt_3_5_mobile",
       "gpt_4",
+      "gpt_4o",
       "gpt_4_mobile",
       "gpt_4_browsing",
       "gpt_4_code_interpreter",
@@ -15839,6 +15842,7 @@
       "gpt_3_5": 0,
       "gpt_3_5_mobile": 0,
       "gpt_4": 0,
+      "gpt_4o": 0,
       "gpt_4_mobile": 0,
       "gpt_4_browsing": 0,
       "gpt_4_code_interpreter": 0,
@@ -15929,6 +15933,7 @@
             "gpt_3_5",
             "gpt_3_5_mobile",
             "gpt_4",
+            "gpt_4o",
             "gpt_4_mobile",
             "gpt_4_browsing",
             "gpt_4_code_interpreter",
@@ -15950,6 +15955,7 @@
           "gpt_3_5": 0,
           "gpt_3_5_mobile": 0,
           "gpt_4": 0,
+          "gpt_4o": 0,
           "gpt_4_mobile": 0,
           "gpt_4_browsing": 0,
           "gpt_4_code_interpreter": 0,
@@ -16930,6 +16936,7 @@
                     "gpt_3_5",
                     "gpt_3_5_mobile",
                     "gpt_4",
+                    "gpt_4o",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_code_interpreter",
@@ -16951,6 +16958,7 @@
                   "gpt_3_5": 0,
                   "gpt_3_5_mobile": 0,
                   "gpt_4": 0,
+                  "gpt_4o": 0,
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
                   "gpt_4_code_interpreter": 0,
@@ -17332,6 +17340,7 @@
                     "gpt_3_5",
                     "gpt_3_5_mobile",
                     "gpt_4",
+                    "gpt_4o",
                     "gpt_4_mobile",
                     "gpt_4_browsing",
                     "gpt_4_code_interpreter",
@@ -17353,6 +17362,7 @@
                   "gpt_3_5": 0,
                   "gpt_3_5_mobile": 0,
                   "gpt_4": 0,
+                  "gpt_4o": 0,
                   "gpt_4_mobile": 0,
                   "gpt_4_browsing": 0,
                   "gpt_4_code_interpreter": 0,
@@ -17686,6 +17696,7 @@
                 "gpt_3_5",
                 "gpt_3_5_mobile",
                 "gpt_4",
+                "gpt_4o",
                 "gpt_4_mobile",
                 "gpt_4_browsing",
                 "gpt_4_code_interpreter",
@@ -17707,6 +17718,7 @@
               "gpt_3_5": 0,
               "gpt_3_5_mobile": 0,
               "gpt_4": 0,
+              "gpt_4o": 0,
               "gpt_4_mobile": 0,
               "gpt_4_browsing": 0,
               "gpt_4_code_interpreter": 0,
@@ -18013,6 +18025,7 @@
                 "gpt_3_5",
                 "gpt_3_5_mobile",
                 "gpt_4",
+                "gpt_4o",
                 "gpt_4_mobile",
                 "gpt_4_browsing",
                 "gpt_4_code_interpreter",
@@ -18034,6 +18047,7 @@
               "gpt_3_5": 0,
               "gpt_3_5_mobile": 0,
               "gpt_4": 0,
+              "gpt_4o": 0,
               "gpt_4_mobile": 0,
               "gpt_4_browsing": 0,
               "gpt_4_code_interpreter": 0,
