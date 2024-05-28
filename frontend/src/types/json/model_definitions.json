@@ -1,1 +1,1 @@
-{"openai_web": ["gpt_3_5", "gpt_3_5_mobile", "gpt_4", "gpt_4_mobile", "gpt_4_browsing", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_dalle"], "openai_api": ["gpt_3_5", "gpt_4"]}
+{"openai_web": ["gpt_3_5", "gpt_3_5_mobile", "gpt_4", "gpt_4o", "gpt_4_mobile", "gpt_4_browsing", "gpt_4_code_interpreter", "gpt_4_plugins", "gpt_4_dalle"], "openai_api": ["gpt_3_5", "gpt_4"]}

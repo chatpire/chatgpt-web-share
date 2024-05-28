@@ -226,15 +226,16 @@ async def check_limits(user: UserReadAdmin, ask_request: AskRequest):
 
     # 判断是否允许上传文件
     if ask_request.openai_web_attachments and len(ask_request.openai_web_attachments) > 0:
-        if ask_request.model != OpenaiWebChatModels.gpt_4_code_interpreter and \
+        if ask_request.model != OpenaiWebChatModels.gpt_4o and \
                 ask_request.model != OpenaiWebChatModels.gpt_4:
             raise WebsocketInvalidAskException("errors.uploadingNotAllowed",
-                                               "only gpt-4 and gpt-4-code-interpreter models support uploading")
+                                               "only gpt-4 and gpt-4o models support uploading")
         if user.setting.openai_web.disable_uploading or config.openai_web.disable_uploading:
             raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "uploading disabled")
     if ask_request.openai_web_multimodal_image_parts and len(ask_request.openai_web_multimodal_image_parts) > 0:
-        if ask_request.model != OpenaiWebChatModels.gpt_4:
-            raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "only gpt-4 support uploading images")
+        if ask_request.model != OpenaiWebChatModels.gpt_4o and \
+                ask_request.model != OpenaiWebChatModels.gpt_4:
+            raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "only gpt-4 and gpt-4o models support uploading images")
         if user.setting.openai_web.disable_uploading or config.openai_web.disable_uploading:
             raise WebsocketInvalidAskException("errors.uploadingNotAllowed", "uploading disabled")
 

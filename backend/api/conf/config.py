@@ -13,6 +13,7 @@ default_openai_web_model_code_mapping = {
     "gpt_3_5": "text-davinci-002-render-sha",
     "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
     "gpt_4": "gpt-4",
+    "gpt_4o": "gpt-4o",
     "gpt_4_mobile": "gpt-4-mobile",
     "gpt_4_browsing": "gpt-4-browsing",
     "gpt_4_plugins": "gpt-4-plugins",
