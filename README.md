@@ -1,3 +1,8 @@
+> [!WARNING]
+> 项目已终止，不再维护。
+> 
+> This project was terminated.
+
 <h1 align="center">ChatGPT Web Share</h1>
 
 <div align="center">
@@ -22,11 +27,11 @@
 > 部署 CWS 需要海外 VPS。项目文档内推荐了一些高性价比的服务器，低至 $11/年。请移步：[VPS推荐](https://cws-docs.pages.dev/zh/support/vps.html)
 
 > [!NOTE]
-> （广告）**【长期有效】推荐拼车服务：[Aizex 合租面板](https://cws-docs.pages.dev/zh/support/ads.html#aizex-%E5%90%88%E7%A7%9F%E9%9D%A2%E6%9D%BF-%E5%8F%A3%E7%A2%91-chatgpt-plus-%E6%8B%BC%E8%BD%A6%E6%9C%8D%E5%8A%A1)**
-> 
-> *优美UI | 正价Plus | 会话隔离 | 号池模式 | 负载均衡 | 网页功能齐全 | 三网 cn2 直连优化*
-> 
-> 运营一年，值得信赖
+> （广告）**【长期有效】推荐拼车服务：[Aizex 合租面板](https://aizex.cn/91KhYi)**
+>
+> 已运营近两年，平价官网 『ChatGPT Plus × Claude Pro 』 账号隔离共享使用方案
+>
+> 优美UI | 正价Plus | 量大管饱 | 会话隔离 | 负载均衡 | 号池模式 | 功能强大 | 三网BGP优化
 
 ## 声明
 
